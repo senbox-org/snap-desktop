@@ -225,126 +225,29 @@ public class SpectrumTopComponent extends ToolTopComponent {
             if (currentView != null) {
                 currentView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_SELECTED_PIN, pinSelectionChangeListener);
                 setCurrentProduct(currentView.getProduct());
-//                if (currentProduct.getName().contains("SPEX")) {
-//                    List<Integer> view_Angles = new ArrayList<Integer>();
-//                    for (int  i = 0; i < currentProduct.getNumBands(); i++ ) {
-//                        int viewAngle = (int) currentProduct.getBandAt(i).getAngularValue();
-//                        if (!view_Angles.contains(viewAngle)) {
-//                            view_Angles.add(viewAngle);
-//                            if (view_Angles.size()  == 5) {
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    String autoGroupingStr = "QC:QC_bitwise:QC_polsample_bitwise:QC_polsample:";
-//                    if (view_Angles != null) {
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "I_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "DOLP_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "AOLP_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "i_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "i_stdev_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "i_polsample_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "i_polsample_stdev_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "aolp_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "aolp_stdev_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "dolp_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "dolp_stdev_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "q_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "q_stdev_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "u_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "u_stdev_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "q_over_i_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "q_over_i_stdev_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "u_over_i_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "u_over_i_stdev_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "qc_" + view_Angles.get(i);
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "qc_polsample_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "i_noisefree_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "i_noisefree_polsample_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "dolp_noisefree_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "q_over_i_noisefree_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "aolp_noisefree_" + view_Angles.get(i) + "_*:";
-//                        }
-//                        for (int i = 0; i < 5; i ++) {
-//                            autoGroupingStr += "u_over_i_noisefree_" + view_Angles.get(i) + "_*:";
-//                        }
-//                    }
-//                    autoGroupingStr += "I:I_noise:I_noisefree:I_polsample:" +
-//                            "I_polsample_noise:I_noisefree_polsample:DOLP:DOLP_noise:DOLP_noisefree:" +
-//                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:AOLP:AOLP_noise:AOLP_noisefree:" +
-//                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:rotation_angle:" +
-//                            "sensor_azimuth:sensor_azimuth_angle:sensor_zenith:sensor_zenith_angle:"  +
-//                            "solar_azimuth:solar_azimuth_angle:solar_zenith:solar_zenith_angle:" +
-//                            "obs_per_view:view_time_offsets:number_of_observations";
 
-//                    currentProduct.setAutoGrouping(autoGroupingStr);
-//                    currentProduct.setAutoGrouping("I:I_58_*:I_22_*:I_4_*:I_-22_*:I_-58_*:" +
-//                            "AOLP:AOLP_58_*:AOLP_22_*:AOLP_4_*:AOLP_-22_*:AOLP_-58_*:" +
-//                            "DOLP:DOLP_58_*:DOLP_22_*:DOLP_4_*:DOLP_-22_*:DOLP_-58_*:" +
-//                            "QC:QC_58_*:QC_22_*:QC_4_*:QC_-22_*:QC_-58_*:" +
-//                            "I_57_*:I_50_*:I_20_*:I_0_*:I_-20_*:I_-57_*:I_-50*:" +
-//                            "AOLP_57_*:AOLP_50:AOLP_20_*:AOLP_0_*:AOLP_-20_*:AOLP_-57_*:AOLP_-50" +
-//                            "DOLP_57_*:DOLP_20_*:DOLP_0_*:DOLP_-20_*:DOLP_-57_*:" +
-//                            "QC_57_*:QC_20_*:QC_0_*:QC_-22_*:QC_-57_*:" +
-//                            "QC_bitwise:QC_polsample_bitwise:QC_polsample:" +
-//                            "I_noise:I_noisefree:I_polsample:I_polsample_noise:I_noisefree_polsample:" +
-//                            "DOLP_noise:DOLP_noisefree:AOLP_noise:AOLP_noisefree:" +
-//                            "Q_over_I:Q_over_I_noise:Q_over_I_noisefree:" +
-//                            "U_over_I:U_over_I_noise:U_over_I_noisefree:scattering_angle:" +
-//                            "sensor_azimuth:sensor_zenith:solar_azimuth:solar_zenith:" +
-//                            "obs_per_view:view_time_offsets");
-//                }
+                //Make sure AutoGrouping is set for Spectrum View
+                if (currentProduct.getProductType().contains("SPEX Level-2")) {
+                    String autoGroupingStr = "angstrom:fmf:" +
+                            "aot_*:aot_fine:aot_coarse:mi_:mi_fine:mi_coarse:mr:mr_fine:mr_coarse:ssa:ssa_fine:ssa_coarse:"+
+                            "Rrs1_-50_:Rrs1_-20_:Rrs1_0_:Rrs1_20_:Rrs1_50_:Rrs2_-50_:Rrs2_-20_:Rrs2_0_:Rrs2_20_:Rrs2_50_:" +
+                            "Rrs1_mean:Rrs1_std:Rrs2_mean:Rrs2_std:" +
+                            "mask_dolp_-50_:mask_dolp_-20_:mask_dolp_0_:mask_dolp_20_:mask_dolp_50_:mask_ref_-50_:mask_ref_-20_:mask_ref_0_:mask_ref_20_:mask_ref_50_:" ;
+                    currentProduct.setAutoGrouping(autoGroupingStr);
+                } else if (currentProduct.getName().contains("SPEX")) {
+                    String autoGroupingStr = "i_-50:i_-20:i_0:i_20:i_50:i_stdev_-50:i_stdev_-20:i_stdev_0:i_stdev_20:i_stdev_50:" +
+                            "i_polsample_-50:i_polsample_-20:i_polsample_0:i_polsample_20:i_polsample_50:i_polsample_stdev_-50:i_polsample_stdev_-20:i_polsample_stdev_0:i_polsample_stdev_20:i_polsample_stdev_50:" +
+                            "aolp_-50:aolp_-20:aolp_0:aolp_20:aolp_50:aolp_stdev_-50:aolp_stdev_-20:aolp_stdev_0:aolp_stdev_20:aolp_stdev_50:" +
+                            "dolp_-50:dolp_-20:dolp_0:dolp_20:dolp_50:dolp_stdev_-50:dolp_stdev_-20:dolp_stdev_0:dolp_stdev_20:dolp_stdev_50:" +
+                            "q_-50:q_-20:q_0:q_20:q_50:q_stdev_-50:q_stdev_-20:q_stdev_0:q_stdev_20:q_stdev_50:" +
+                            "u_-50:u_-20:u_0:u_20:u_50:u_stdev_-50:u_stdev_-20:u_stdev_0:u_stdev_20:u_stdev_50:" +
+                            "qc_-50:qc_-20:qc_0:qc_20:qc_50:qc_polsample_-50:qc_polsample_-20:qc_polsample_0:qc_polsample_20:qc_polsample_50:" +
+                            "q_over_i_-50:q_over_i_-20:q_over_i_0:q_over_i_20:q_over_i_50:q_over_i_stdev_-50:q_over_i_stdev_-20:q_over_i_stdev_0:q_over_i_stdev_20:q_over_i_stdev_50:" +
+                            "u_over_i_-50:u_over_i_-20:u_over_i_0:u_over_i_20:u_over_i_50:u_over_i_stdev_-50:u_over_i_stdev_-20:u_over_i_stdev_0:u_over_i_stdev_20:u_over_i_stdev_50:" +
+                            "sensor_zenith:sensor_azimuth:solar_zenith:solar_azimuth:scattering_angle:rotation_angle:" +
+                            "view_time_offsets:number_of_observations" ;
+                    currentProduct.setAutoGrouping(autoGroupingStr);
+                }
 
                 boolean showProgressMonitor = false;
                 if (getAllSpectra() == null && getAllSpectra().length == 0) {
