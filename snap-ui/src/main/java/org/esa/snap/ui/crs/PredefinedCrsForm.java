@@ -18,6 +18,7 @@ package org.esa.snap.ui.crs;
 
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.ModalDialog;
 import org.opengis.referencing.FactoryException;
@@ -27,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.util.List;
 
 /**
  * @author Marco Peters
@@ -35,6 +37,8 @@ import javax.swing.JTextField;
 public class PredefinedCrsForm extends CrsForm {
 
     private CrsInfo selectedCrsInfo;
+    private JTextField crsCodeField;
+    private List<CrsInfo> crsInfoList;
 
     public PredefinedCrsForm(AppContext appContext) {
         super(appContext);
@@ -54,6 +58,22 @@ public class PredefinedCrsForm extends CrsForm {
         }
     }
 
+    public boolean selectCrsInfoByCrsName(String authCode){
+        if (StringUtils.isNullOrEmpty(authCode) || crsInfoList == null){
+            return false;
+        }
+        CrsInfo crsInfo =  crsInfoList.stream()
+                .filter(c -> authCode.equals(c.getCrsName()))
+                .findFirst()
+                .orElse(null);
+        if (crsInfo != null) {
+            selectedCrsInfo = crsInfo;
+                crsCodeField.setText(selectedCrsInfo.toString());
+                fireCrsChanged();
+                return true;
+        }
+        return false;
+    }
 
     @Override
     public void prepareShow() {
@@ -72,11 +92,12 @@ public class PredefinedCrsForm extends CrsForm {
         tableLayout.setColumnWeightX(0, 1.0);
         tableLayout.setColumnWeightX(1, 0.0);
 
-        final JTextField crsCodeField = new JTextField();
+        crsInfoList = CrsInfo.generateCRSList();
+        crsCodeField = new JTextField();
         crsCodeField.setEditable(false);
         final JButton crsButton = new JButton("Select...");
         final PredefinedCrsPanel predefinedCrsForm = new PredefinedCrsPanel(
-                new CrsInfoListModel(CrsInfo.generateCRSList()));
+                new CrsInfoListModel(crsInfoList));
         crsButton.addActionListener(e -> {
             final ModalDialog dialog = new ModalDialog(null,
                                                        "Select Coordinate Reference System",
