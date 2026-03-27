@@ -427,6 +427,7 @@
             <file name="MetadataPlot.wsmode" url="modes/MetadataPlot.wsmode"/>
             <file name="Statistics.wsmode" url="modes/Statistics.wsmode"/>
             <file name="Spectrum.wsmode" url="modes/Spectrum.wsmode"/>
+            <file name="SpectralLibrary.wsmode" url="modes/SpectralLibrary.wsmode"/>
             <file name="CorrelativePlot.wsmode" url="modes/CorrelativePlot.wsmode"/>
         </folder>
     </folder>

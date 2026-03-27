@@ -3,29 +3,34 @@ package org.esa.snap.rcp.spectrallibrary.controller;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
+import org.esa.snap.rcp.spectrallibrary.ui.AddPreviewAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
-import org.esa.snap.rcp.spectrallibrary.util.SpectralAxisUtils;
+import org.esa.snap.rcp.spectrallibrary.util.ColorUtils;
+import org.esa.snap.rcp.spectrallibrary.util.SpectralLibraryUtils;
+import org.esa.snap.rcp.spectrallibrary.util.WktUtils;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.model.*;
+import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.locationtech.jts.io.WKTReader;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
-import java.time.Instant;
 import java.util.*;
+import java.util.List;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
 
 public class SpectralLibraryController {
 
 
-    private static final String PROFILE_PREFIX = "Profile_";
-    private static final Pattern NAME_PATTERN = Pattern.compile("^Profile_(\\d+)$");
-    private static final String ATTR_WKT = "wkt";
-    private static final String ATTR_PRODUCT_NAME = "product_name";
-    private static final String ATTR_DATE_TIME = "time";
+    private List<SpectralProfile> lastExtractedAllProfiles = List.of();
 
     private final SpectralLibraryService service;
     private final SpectralLibraryIO io;
@@ -119,11 +124,18 @@ public class SpectralLibraryController {
             }
         }
 
+        Optional<Map<String, AttributeValue>> attrsOpt = askAttributesForPreviewAdd();
+        if (attrsOpt.isEmpty()) {
+            return;
+        }
+
+        SpectralProfile toAdd = SpectralLibraryUtils.applyAttributes(sel, attrsOpt.get());
+
         try {
-            service.addProfile(libId, sel);
+            SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, List.of(toAdd));
             reloadLibraries();
             refreshActiveLibraryProfiles();
-            vm.setStatus(UiStatus.info("Profile added"));
+            vm.setStatus(r.added() > 0 ? UiStatus.info("Profile added") : UiStatus.info("Profile already exists (skipped)"));
         } catch (Throwable t) {
             reloadLibraries();
             refreshActiveLibraryProfiles();
@@ -137,7 +149,9 @@ public class SpectralLibraryController {
             return;
         }
 
-        List<SpectralProfile> preview = vm.getPreviewProfiles();
+        List<SpectralProfile> preview = !lastExtractedAllProfiles.isEmpty()
+                ? lastExtractedAllProfiles
+                : vm.getPreviewProfiles();
         if (preview.isEmpty()) {
             vm.setStatus(UiStatus.warn("No preview profiles"));
             return;
@@ -149,6 +163,13 @@ public class SpectralLibraryController {
             return;
         }
 
+        Optional<Map<String, AttributeValue>> attrsOpt = askAttributesForPreviewAdd();
+        if (attrsOpt.isEmpty()) {
+            return;
+        }
+
+        Map<String, AttributeValue> attrs = attrsOpt.get();
+
         Set<UUID> existingIds = new HashSet<>();
         for (SpectralProfile p : lib.getProfiles()) {
             if (p != null && p.getId() != null) {
@@ -156,46 +177,25 @@ public class SpectralLibraryController {
             }
         }
 
-        int added = 0;
-        int skipped = 0;
-        int failed = 0;
-
+        List<SpectralProfile> toAdd = new ArrayList<>(preview.size());
         for (SpectralProfile p : preview) {
-            if (p == null || p.getId() == null) {
+            if (p == null) {
                 continue;
             }
-
-            if (existingIds.contains(p.getId())) {
-                skipped++;
-                continue;
-            }
-
-            try {
-                service.addProfile(libId, p);
-                existingIds.add(p.getId());
-                added++;
-            } catch (Throwable t) {
-                failed++;
-            }
+            toAdd.add(SpectralLibraryUtils.applyAttributes(p, attrs));
         }
+
+        SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, toAdd);
 
         reloadLibraries();
         refreshActiveLibraryProfiles();
 
-        if (added > 0) {
-            String msg = "Profiles added (" + added + ")";
-            if (skipped > 0) {
-                msg += ", skipped (" + skipped + ")";
-            }
-            if (failed > 0) {
-                msg += ", failed (" + failed + ")";
-            }
-            vm.setStatus(UiStatus.info(msg));
-        } else if (skipped > 0 && failed == 0) {
-            vm.setStatus(UiStatus.warn("Nothing added (all already existed: " + skipped + ")"));
-        } else {
-            vm.setStatus(UiStatus.warn("Nothing added"));
-        }
+        int added = r.added();
+        int skipped = r.skippedExisting();
+        vm.setStatus(added > 0
+                ? UiStatus.info("Profiles added (" + added + ")" + (skipped > 0 ? ", skipped (" + skipped + ")" : ""))
+                : (skipped > 0 ? UiStatus.warn("Nothing added (all already existed: " + skipped + ")") : UiStatus.warn("Nothing added")));
+
     }
 
     private Optional<UUID> requireActiveLibraryIdOrWarn() {
@@ -221,7 +221,38 @@ public class SpectralLibraryController {
         return Optional.empty();
     }
 
-    public SpectralLibrary createLibrary(String name, SpectralAxis axis, String defaultYUnit) {
+    private Optional<Map<String, AttributeValue>> askAttributesForPreviewAdd() {
+        Optional<List<AddPreviewAttributeDialog.AttributeSpec>> specsOpt = AddPreviewAttributeDialog.show(previewPanel);
+
+        if (specsOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<AddPreviewAttributeDialog.AttributeSpec> specs = specsOpt.get();
+        if (specs.isEmpty()) {
+            return Optional.of(Collections.emptyMap());
+        }
+
+        Map<String, AttributeValue> out = new LinkedHashMap<>();
+        for (var s : specs) {
+            if (s == null || s.key() == null || s.key().trim().isEmpty()) {
+                continue;
+            }
+
+            AttributeType t = (s.type() != null) ? s.type() : AttributeType.STRING;
+            try {
+                AttributeValue v = SpectralLibraryAttributeValueParser.parseForType(t, s.valueText());
+                out.put(s.key().trim(), v);
+            } catch (IllegalArgumentException ex) {
+                vm.setStatus(UiStatus.warn("Invalid value for '" + s.key().trim() + "': " + ex.getMessage()));
+                return Optional.empty();
+            }
+        }
+        return Optional.of(out.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(out));
+    }
+
+
+    private SpectralLibrary createLibrary(String name, SpectralAxis axis, String defaultYUnit) {
         SpectralLibrary lib = service.createLibrary(name, axis, defaultYUnit);
         reloadLibraries();
         vm.setActiveLibraryId(lib.getId());
@@ -231,8 +262,10 @@ public class SpectralLibraryController {
     }
 
     public SpectralLibrary createLibraryFromBands(String name, List<Band> bands) {
-        SpectralAxis axis = SpectralAxisUtils.axisFromReferenceSpectralGroup(bands);
-        String yUnit = SpectralAxisUtils.defaultYUnitFromBands(bands);
+        SpectralLibraryUtils.AxisBandSelection sel = SpectralLibraryUtils.selectAxisBandsUniqueByWavelength(bands);
+        SpectralAxis axis = SpectralLibraryUtils.axisFromOrderedBands(sel.bandsOrdered());
+        String yUnit = SpectralLibraryUtils.defaultYUnitFromBands(sel.bandsOrdered());
+
         if (yUnit == null || yUnit.isBlank()) {
             yUnit = "value";
         }
@@ -290,10 +323,18 @@ public class SpectralLibraryController {
     }
 
 
-    public void setPreviewProfiles(List<SpectralProfile> profiles) {
-        vm.setPreviewProfiles(safeCopyWithoutNulls(profiles));
-        vm.setSelectedPreviewProfileId(null);
-        vm.setStatus(UiStatus.info("Preview updated (" + vm.getPreviewProfiles().size() + ")"));
+    public void setPreviewProfilesLimited(List<SpectralProfile> allProfiles) {
+        lastExtractedAllProfiles = SpectralLibraryUtils.safeCopyWithoutNulls(allProfiles);
+        List<SpectralProfile> display = SpectralLibraryUtils.limitForDisplay(lastExtractedAllProfiles);
+
+        vm.setPreviewProfiles(display);
+        vm.setSelectedPreviewProfileId(display.isEmpty() ? null : display.get(display.size() - 1).getId());
+
+        if (lastExtractedAllProfiles.size() > display.size()) {
+            vm.setStatus(UiStatus.warn("Preview limited: showing " + display.size() + " of " + lastExtractedAllProfiles.size()));
+        } else {
+            vm.setStatus(UiStatus.info("Preview updated (" + display.size() + ")"));
+        }
     }
 
     public void addAttributeToActiveLibrary(AttributeDef def, AttributeValue fillValue) {
@@ -381,19 +422,14 @@ public class SpectralLibraryController {
     }
 
     public void clearPreview() {
+        lastExtractedAllProfiles = List.of();
         vm.setPreviewProfiles(List.of());
         vm.setSelectedPreviewProfileId(null);
         vm.setStatus(UiStatus.idle());
     }
 
 
-    public void extractPreviewFromPins(Product product,
-                                       SpectralAxis axis,
-                                       String yUnit,
-                                       List<Band> bands,
-                                       List<Placemark> pins,
-                                       int level,
-                                       Set<String> selectedBandNames) {
+    public void extractPreviewFromPins(Product product, SpectralAxis axis, String yUnit, List<Band> bands, List<Placemark> pins, int level, Set<String> selectedBandNames, String namePrefix) {
         if (product == null || axis == null || bands == null || pins == null) {
             return;
         }
@@ -411,7 +447,8 @@ public class SpectralLibraryController {
             }
 
             Set<String> used = new HashSet<>();
-            String unit = normalizeUnit(yUnit);
+            String unit = SpectralLibraryUtils.normalizeUnit(yUnit);
+            Map<UUID, Color> overrides = new HashMap<>();
 
             for (Placemark pin : pins) {
                 if (pin == null || pin.getPixelPos() == null) {
@@ -421,37 +458,32 @@ public class SpectralLibraryController {
                 int px = (int) Math.floor(pin.getPixelPos().getX());
                 int py = (int) Math.floor(pin.getPixelPos().getY());
 
-                String profileName = nextAutoProfileName(libId, out, used);
+                String prefix = SpectralLibraryUtils.normalizePrefix(namePrefix);
+                String profileName = nextAutoProfileName(prefix, libId, out, used, false);
 
                 Optional<SpectralProfile> pOpt = service.extractProfile(profileName, axis, bands, px, py, level, unit, product.getName());
 
                 if (pOpt.isPresent()) {
-                    SpectralProfile masked = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
-                    masked = withDefaultAttributesIfPossible(product, px, py, masked);
+                    SpectralProfile masked = SpectralLibraryUtils.maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
+                    masked = SpectralLibraryUtils.withDefaultAttributesIfPossible(product, px, py, masked);
 
                     out.add(masked);
+                    overrides.put(masked.getId(), ColorUtils.colorFromPlacemark(pin));
                     added++;
                 }
             }
 
             UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
-            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added);
+            return ExtractResult.bulk(SpectralLibraryUtils.safeCopyWithoutNulls(out), selectId, added, overrides);
         }, "Extracting spectra from pins...");
     }
 
-    public void extractPreviewAtCursor(Product product,
-                                       SpectralAxis axis,
-                                       String yUnit,
-                                       List<Band> bands,
-                                       int x,
-                                       int y,
-                                       int level,
-                                       Set<String> selectedBandNames) {
+    public void extractPreviewAtCursor(Product product, SpectralAxis axis, String yUnit, List<Band> bands, int x, int y, int level, Set<String> selectedBandNames, String namePrefix) {
         if (product == null || axis == null || bands == null || bands.isEmpty()) {
             return;
         }
 
-        String unit = normalizeUnit(yUnit);
+        String unit = SpectralLibraryUtils.normalizeUnit(yUnit);
 
         startExtractAsync(() -> {
             List<SpectralProfile> preview = vm.getPreviewProfiles();
@@ -461,7 +493,9 @@ public class SpectralLibraryController {
                 return ExtractResult.error("No active library");
             }
 
-            String profileName = nextAutoProfileName(libId, preview, null);
+            Map<UUID, Color> overrides = new HashMap<>();
+            String prefix = SpectralLibraryUtils.normalizePrefix(namePrefix);
+            String profileName = nextAutoProfileName(prefix, libId, preview, null, false);
 
             Optional<SpectralProfile> pOpt = service.extractProfile(profileName, axis, bands, x, y, level, unit, product.getName());
 
@@ -469,23 +503,18 @@ public class SpectralLibraryController {
                 return ExtractResult.noSpectrum();
             }
 
-            SpectralProfile masked = maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
-            masked = withDefaultAttributesIfPossible(product, x, y, masked);
+            SpectralProfile masked = SpectralLibraryUtils.maskUnselectedToNaN(pOpt.get(), bands, selectedBandNames);
+            masked = SpectralLibraryUtils.withDefaultAttributesIfPossible(product, x, y, masked);
+            overrides.put(masked.getId(), Color.BLACK);
 
             List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
             out.add(masked);
 
-            return ExtractResult.success(safeCopyWithoutNulls(out), masked.getId());
+            return ExtractResult.success(SpectralLibraryUtils.safeCopyWithoutNulls(out), masked.getId(), overrides);
         }, "Extracting spectrum...");
     }
 
-    public void extractPreviewFromPixels(Product product,
-                                         SpectralAxis axis,
-                                         String yUnit,
-                                         List<Band> bands,
-                                         List<PixelPos> pixels,
-                                         int level,
-                                         Set<String> selectedBandNames) {
+    public void extractPreviewFromPixels(Product product, SpectralAxis axis, String yUnit, List<Band> bands, List<PixelPos> pixels, int level, Set<String> selectedBandNames, String namePrefix) {
         if (product == null || axis == null || bands == null || pixels == null) {
             return;
         }
@@ -502,16 +531,17 @@ public class SpectralLibraryController {
                 return ExtractResult.error("No active library");
             }
 
-            String unit = normalizeUnit(yUnit);
+            String unit = SpectralLibraryUtils.normalizeUnit(yUnit);
             Set<String> used = new HashSet<>();
 
-            String baseName = nextAutoProfileName(libId, out, used);
+            String prefix = SpectralLibraryUtils.normalizePrefix(namePrefix);
+            String baseName = nextAutoProfileName(prefix, libId, out, used, true);
             List<SpectralProfile> extractedProfiles = service.extractProfiles(baseName, axis, bands, pixels, level, unit, product.getName());
 
             if (!extractedProfiles.isEmpty()) {
                 for (int ii = 0; ii < extractedProfiles.size(); ii++) {
-                    SpectralProfile masked = maskUnselectedToNaN(extractedProfiles.get(ii), bands, selectedBandNames);
-                    masked = withDefaultAttributesIfPossible(product, (int) pixels.get(ii).x, (int) pixels.get(ii).y, masked);
+                    SpectralProfile masked = SpectralLibraryUtils.maskUnselectedToNaN(extractedProfiles.get(ii), bands, selectedBandNames);
+                    masked = SpectralLibraryUtils.withDefaultAttributesIfPossible(product, (int) pixels.get(ii).x, (int) pixels.get(ii).y, masked);
 
                     out.add(masked);
                     added++;
@@ -519,7 +549,7 @@ public class SpectralLibraryController {
             }
 
             UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
-            return ExtractResult.bulk(safeCopyWithoutNulls(out), selectId, added);
+            return ExtractResult.bulk(SpectralLibraryUtils.safeCopyWithoutNulls(out), selectId, added, Collections.emptyMap());
         }, "Extracting spectra from geometry...");
     }
 
@@ -558,18 +588,9 @@ public class SpectralLibraryController {
                     yUnit
             );
 
-            int added = 0;
-            for (SpectralProfile p : imported.getProfiles()) {
-                if (p == null) {
-                    continue;
-                }
-                try {
-                    service.addProfile(persisted.getId(), p);
-                    added++;
-                } catch (Throwable ignored) {
-                    // skip broken profiles, continue import
-                }
-            }
+            List<SpectralProfile> toAdd = SpectralLibraryUtils.safeCopyWithoutNulls(imported.getProfiles());
+            SpectralLibraryService.BulkAddResult r = service.addProfiles(persisted.getId(), toAdd);
+            int added = r.added();
 
             reloadLibraries();
             vm.setActiveLibraryId(persisted.getId());
@@ -583,50 +604,76 @@ public class SpectralLibraryController {
     }
 
 
-    private static String normalizeUnit(String yUnit) {
-        String unit = (yUnit == null) ? "" : yUnit.trim();
-        return unit.isEmpty() ? "value" : unit;
-    }
-
-    private static List<SpectralProfile> safeCopyWithoutNulls(List<SpectralProfile> profiles) {
-        if (profiles == null || profiles.isEmpty()) {
-            return List.of();
-        }
-        List<SpectralProfile> out = new ArrayList<>(profiles.size());
-        for (SpectralProfile p : profiles) {
-            if (p != null) {
-                out.add(p);
-            }
-        }
-        return List.copyOf(out);
-    }
-
-    private static SpectralProfile maskUnselectedToNaN(SpectralProfile p, List<Band> bands, Set<String> selected) {
-        if (p == null || selected == null || selected.isEmpty()) {
-            return p;
+    public void addProfilesAsVectorLayer(Product product, List<UUID> profileIds, String layerName) {
+        UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+        if (libId == null) {
+            return;
         }
 
-        var sig = p.getSignature();
+        SpectralLibrary lib = service.getLibrary(libId).orElse(null);
+        if (lib == null) {
+            vm.setStatus(UiStatus.warn("No active library"));
+            return;
+        }
 
-        double[] y = sig.getValues();
-        String yUnit = sig.getYUnitOrNull();
-
-        for (int i = 0; i < bands.size() && i < y.length; i++) {
-            Band b = bands.get(i);
-            if (b != null && !selected.contains(b.getName())) {
-                y[i] = Double.NaN;
+        Map<UUID, SpectralProfile> profilesById = new LinkedHashMap<>();
+        for (SpectralProfile profile : lib.getProfiles()) {
+            if (profile != null && profile.getId() != null) {
+                profilesById.put(profile.getId(), profile);
             }
         }
 
-        SpectralSignature maskedSig = SpectralSignature.of(y, yUnit);
+        List<SpectralProfile> selectedProfiles = new ArrayList<>();
+        for (UUID profileId : profileIds) {
+            SpectralProfile profile = profilesById.get(profileId);
+            if (profile != null) {
+                selectedProfiles.add(profile);
+            }
+        }
 
-        return new SpectralProfile(p.getId(), p.getName(), maskedSig, p.getAttributes(), p.getSourceRef().orElse(null));
+        if (selectedProfiles.isEmpty()) {
+            vm.setStatus(UiStatus.warn("Selected profiles not found in active library"));
+            return;
+        }
+
+        DefaultFeatureCollection collection = WktUtils.createEmptyFeaturecollection(layerName);
+        SimpleFeatureType featureType = collection.getSchema();
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
+        WKTReader reader = new WKTReader();
+
+        int added = 0;
+        for (SpectralProfile profile : selectedProfiles) {
+            if (WktUtils.addProfileGeometryToCollection(collection, profile, layerName, added, reader, featureBuilder)) {
+                added++;
+            }
+        }
+
+        if (added == 0) {
+            vm.setStatus(UiStatus.warn("No valid WKT geometry could be added to the vector layer"));
+            return;
+        }
+
+        VectorDataNode vectorDataNode = new VectorDataNode(layerName, collection.getSchema());
+        for (SimpleFeature feature : collection) {
+            vectorDataNode.getFeatureCollection().add(feature);
+        }
+
+        if (product.getVectorDataGroup().get(layerName) == null) {
+            product.getVectorDataGroup().add(vectorDataNode);
+            vm.setStatus(UiStatus.info("Vector layer added (" + added + " features)"));
+        } else {
+            vm.setStatus(UiStatus.warn("Vector layer '" + layerName + "' already exists."));
+        }
     }
 
 
-    private String nextAutoProfileName(UUID libId,
+
+    private String nextAutoProfileName(String prefix,
+                                       UUID libId,
                                        Collection<SpectralProfile> preview,
-                                       Set<String> reserved) {
+                                       Set<String> reserved,
+                                       boolean isGeometry) {
+        prefix = SpectralLibraryUtils.normalizePrefix(prefix);
 
         Set<String> used = new HashSet<>();
         int max = 0;
@@ -635,10 +682,10 @@ public class SpectralLibraryController {
             SpectralLibrary lib = service.getLibrary(libId).orElse(null);
             if (lib != null) {
                 for (SpectralProfile p : lib.getProfiles()) {
-                    String n = nameOf(p);
+                    String n = SpectralLibraryUtils.nameOf(p);
                     if (n != null) {
                         used.add(n);
-                        max = Math.max(max, extractAutoIndex(n));
+                        max = Math.max(max, SpectralLibraryUtils.extractAutoIndex(prefix, n));
                     }
                 }
             }
@@ -646,103 +693,34 @@ public class SpectralLibraryController {
 
         if (preview != null) {
             for (SpectralProfile p : preview) {
-                String n = nameOf(p);
+                String n = SpectralLibraryUtils.nameOf(p);
                 if (n != null) {
                     used.add(n);
-                    max = Math.max(max, extractAutoIndex(n));
+                    max = Math.max(max, SpectralLibraryUtils.extractAutoIndex(prefix, n));
                 }
             }
         }
 
         if (reserved != null) {
             for (String n : reserved) {
-                if (n != null && !n.isBlank()) {
-                    used.add(n.trim());
-                }
+                if (n != null && !n.isBlank()) used.add(n.trim());
             }
         }
 
         int next = max + 1;
         String candidate;
         do {
-            candidate = PROFILE_PREFIX + next++;
+            if (isGeometry) {
+                candidate = prefix;
+            } else {
+                candidate = prefix + next++;
+            }
         } while (used.contains(candidate));
 
         if (reserved != null) {
             reserved.add(candidate);
         }
         return candidate;
-    }
-
-    private static String nameOf(SpectralProfile p) {
-        if (p == null || p.getName() == null) {
-            return null;
-        }
-        String n = p.getName().trim();
-        return n.isEmpty() ? null : n;
-    }
-
-    private int extractAutoIndex(String name) {
-        if (name == null) {
-            return 0;
-        }
-        var m = NAME_PATTERN.matcher(name.trim());
-        if (!m.matches()) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(m.group(1));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    private static SpectralProfile withDefaultAttributesIfPossible(Product product, int x, int y, SpectralProfile profile) {
-        profile = withWktIfPossible(product, x, y, profile);
-        profile = withProductNameIfPossible(product, profile);
-        profile = withDateTimeIfPossible(product, profile);
-        return profile;
-    }
-
-    private static SpectralProfile withWktIfPossible(Product product, int x, int y, SpectralProfile profile) {
-        String wkt = wktPointForPixel(product, x, y);
-        if (wkt != null && !wkt.isBlank()) {
-            profile = profile.withAttribute(ATTR_WKT, AttributeValue.ofString(wkt));
-        }
-        return profile;
-    }
-
-
-    private static String wktPointForPixel(Product product, int x, int y) {
-        var gc = product.getSceneGeoCoding();
-        if (gc == null) {
-            return null;
-        }
-
-        PixelPos px = new PixelPos(x, y);
-        GeoPos gp = gc.getGeoPos(px, null);
-
-        if (gp == null || !gp.isValid()) {
-            return null;
-        }
-        return "POINT (" + gp.lon + " " + gp.lat + ")";
-    }
-
-    private static SpectralProfile withProductNameIfPossible(Product product, SpectralProfile profile) {
-        String name = product.getName();
-        if (name != null) {
-            profile = profile.withAttribute(ATTR_PRODUCT_NAME, AttributeValue.ofString(name));
-        }
-        return profile;
-    }
-
-    private static SpectralProfile withDateTimeIfPossible(Product product, SpectralProfile profile) {
-        ProductData.UTC startTime = product.getStartTime();
-        if (startTime != null) {
-            Instant instant = startTime.getAsCalendar().toInstant();
-            profile = profile.withAttribute(ATTR_DATE_TIME, AttributeValue.ofInstant(instant));
-        }
-        return profile;
     }
 
 
@@ -773,11 +751,25 @@ public class SpectralLibraryController {
                     ExtractResult r = get();
 
                     if (r.profiles != null) {
-                        vm.setPreviewProfiles(r.profiles);
-                        vm.setSelectedPreviewProfileId(r.selectedId);
-                    }
+                        lastExtractedAllProfiles = r.profiles;
+                        List<SpectralProfile> display = SpectralLibraryUtils.limitForDisplay(r.profiles);
 
-                    vm.setStatus(r.status != null ? r.status : UiStatus.idle());
+                        if (r.paintOverrides != null && !r.paintOverrides.isEmpty()) {
+                            mergeProfileColors(r.paintOverrides);
+                        }
+
+                        vm.setPreviewProfiles(display);
+                        UUID sel = SpectralLibraryUtils.containsId(display, r.selectedId) ? r.selectedId : (display.isEmpty() ? null : display.get(display.size()-1).getId());
+                        vm.setSelectedPreviewProfileId(sel);
+
+                        if (r.profiles.size() > display.size()) {
+                            vm.setStatus(UiStatus.warn("Preview limited: showing " + display.size() + " of " + r.profiles.size()));
+                        } else {
+                            vm.setStatus(r.status != null ? r.status : UiStatus.idle());
+                        }
+                    } else {
+                        vm.setStatus(r.status != null ? r.status : UiStatus.idle());
+                    }
                 } catch (Exception ex) {
                     vm.setStatus(UiStatus.error("Extract failed: " + ex.getMessage()));
                 } finally {
@@ -789,32 +781,46 @@ public class SpectralLibraryController {
         currentExtractWorker.execute();
     }
 
+
+    private void mergeProfileColors(Map<UUID, Color> updates) {
+        if (updates == null || updates.isEmpty()) {
+            return;
+        }
+        UUID libId = vm.getActiveLibraryId().get();
+        Map<UUID, Color> merged = new HashMap<>(vm.getProfileColors(libId));
+        merged.putAll(updates);
+        vm.setProfileColors(libId, Collections.unmodifiableMap(merged));
+    }
+
+
     private static final class ExtractResult {
         final List<SpectralProfile> profiles;
         final UUID selectedId;
         final UiStatus status;
+        final Map<UUID, Color> paintOverrides;
 
-        private ExtractResult(List<SpectralProfile> profiles, UUID selectedId, UiStatus status) {
+        private ExtractResult(List<SpectralProfile> profiles, UUID selectedId, UiStatus status, Map<UUID, Color> paintOverrides) {
             this.profiles = profiles;
             this.selectedId = selectedId;
             this.status = status;
+            this.paintOverrides = paintOverrides;
         }
 
-        static ExtractResult success(List<SpectralProfile> profiles, UUID selectedId) {
-            return new ExtractResult(profiles, selectedId, UiStatus.info("Preview added"));
+        static ExtractResult success(List<SpectralProfile> profiles, UUID selectedId, Map<UUID, Color> paintOverrides) {
+            return new ExtractResult(profiles, selectedId, UiStatus.info("Preview added"), paintOverrides);
         }
 
-        static ExtractResult bulk(List<SpectralProfile> profiles, UUID selectedId, int added) {
+        static ExtractResult bulk(List<SpectralProfile> profiles, UUID selectedId, int added, Map<UUID, Color> paintOverrides) {
             UiStatus st = added > 0 ? UiStatus.info("Preview extracted (" + added + ")") : UiStatus.warn("No spectra extracted");
-            return new ExtractResult(profiles, selectedId, st);
+            return new ExtractResult(profiles, selectedId, st, paintOverrides);
         }
 
         static ExtractResult noSpectrum() {
-            return new ExtractResult(null, null, UiStatus.warn("No spectrum extracted"));
+            return new ExtractResult(null, null, UiStatus.warn("No spectrum extracted"), Collections.emptyMap());
         }
 
         static ExtractResult error(String msg) {
-            return new ExtractResult(null, null, UiStatus.error(msg));
+            return new ExtractResult(null, null, UiStatus.error(msg), Collections.emptyMap());
         }
     }
 }
