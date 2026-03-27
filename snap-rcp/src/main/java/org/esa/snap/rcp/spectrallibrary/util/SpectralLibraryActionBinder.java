@@ -10,6 +10,7 @@ import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.AddAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
+import org.esa.snap.rcp.spectrallibrary.ui.noise.SpectralNoiseReductionProfilesDialog;
 import org.esa.snap.speclib.model.*;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 import org.esa.snap.ui.AbstractDialog;
@@ -112,6 +113,7 @@ public class SpectralLibraryActionBinder {
     public void bind() {
         wireToolbarBasics();
         wireAddProfilesCoordinatesToVectorLayer();
+        wireApplyNoiseReduction();
         wireProfileColorButton();
         wireTableEditing();
         wireImportExport();
@@ -331,6 +333,66 @@ public class SpectralLibraryActionBinder {
 
             controller.addProfilesAsVectorLayer(product, selectedProfiles, layerName);
         });
+    }
+
+    private void wireApplyNoiseReduction() {
+        panel.getApplySpectralNoiseReduction().addActionListener(e -> {
+            UUID libId = vm.getActiveLibraryId().orElse(null);
+            if (libId == null) {
+                vm.setStatus(UiStatus.warn("No active library"));
+                return;
+            }
+
+            int[] viewRows = panel.getLibraryTable().getSelectedRows();
+            if (viewRows == null || viewRows.length == 0) {
+                vm.setStatus(UiStatus.warn("No profiles selected"));
+                return;
+            }
+
+            SpectralLibrary lib = getSelectedLibraryFromCombo();
+            if (lib == null) {
+                vm.setStatus(UiStatus.warn("No active library"));
+                return;
+            }
+
+            List<UUID> profileIds = new ArrayList<>(viewRows.length);
+            for (int viewRow : viewRows) {
+                int modelRow = panel.getLibraryTable().convertRowIndexToModel(viewRow);
+                UUID id = panel.getLibraryTableModel().getIdAt(modelRow);
+                if (id != null) {
+                    profileIds.add(id);
+                }
+            }
+
+            if (profileIds.isEmpty()) {
+                vm.setStatus(UiStatus.warn("No valid profiles selected"));
+                return;
+            }
+
+            Optional<SpectralNoiseReductionProfilesDialog.Result> resultOpt =
+                    SpectralNoiseReductionProfilesDialog.showDialog(panel, lib.getName(), profileIds.size());
+
+            if (resultOpt.isEmpty()) {
+                return;
+            }
+
+            SpectralNoiseReductionProfilesDialog.Result result = resultOpt.get();
+
+            if (result.settings() == null) {
+                vm.setStatus(UiStatus.warn("No noise reduction settings provided"));
+                return;
+            }
+
+            controller.applySpectralNoiseReduction(
+                    libId,
+                    profileIds,
+                    result.settings(),
+                    result.saveMode(),
+                    result.nameSuffix(),
+                    result.newLibraryName()
+            );
+        }
+        );
     }
 
     private void wireProfileColorButton() {
