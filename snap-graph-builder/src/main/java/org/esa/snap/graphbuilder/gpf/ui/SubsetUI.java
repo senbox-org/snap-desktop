@@ -199,10 +199,10 @@ public class SubsetUI extends BaseOperatorUI {
             final int currentSceneRasterHeight = currentProductSize.height;
             final int productSceneRasterWidth = sourceProducts[0].getSceneRasterWidth();
             final int productSceneRasterHeight = sourceProducts[0].getSceneRasterHeight();
-            if (region == null || region.width == 0 || currentSceneRasterWidth != productSceneRasterWidth)
-                width.setText(String.valueOf(productSceneRasterWidth));
-            if (region == null || region.height == 0 || currentSceneRasterHeight != productSceneRasterHeight)
-                height.setText(String.valueOf(productSceneRasterHeight));
+            if (region == null || region.width == 0 || (currentSceneRasterWidth > 0 && currentSceneRasterWidth != productSceneRasterWidth))
+                width.setText(String.valueOf(productSceneRasterWidth - Integer.valueOf(regionX.getText())));
+            if (region == null || region.height == 0 || (currentSceneRasterWidth > 0 && currentSceneRasterHeight != productSceneRasterHeight))
+                height.setText(String.valueOf(productSceneRasterHeight - Integer.valueOf(regionY.getText())));
 
             currentProductSize = sourceProducts[0].getSceneRasterSize();
             worldMapUI.getModel().setAutoZoomEnabled(true);
@@ -321,7 +321,7 @@ public class SubsetUI extends BaseOperatorUI {
             paramMap.put("geoRegion", geoRegion);
         } else if (vectorFileRadio.isSelected() && polygonRegion != null) {
             paramMap.put(POLYGON_REGION_PARAMETER, polygonRegion);
-        } else if(sourceProducts!=null) {
+        } else if(pixelCoordRadio.isSelected()) {
             paramMap.put("region", new Rectangle(x,y,w,h));
         }
     }
