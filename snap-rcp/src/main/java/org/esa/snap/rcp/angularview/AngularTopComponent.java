@@ -992,40 +992,40 @@ private void setCurrentView(ProductSceneView view) {
         int symbolSize = AngularViewController.getPreferenceSymbolSize();
         Color plotColor = AngularViewController.getPreferencePlotColor();
         
-        double group1Wavelength = AngularViewController.getPreferenceGroup1Wavelength();
-        double group1Tolerance = AngularViewController.getPreferenceGroup1Tolerance();
+        double group1MinWavelength = AngularViewController.getPreferenceGroup1MinWavelength();
+        double group1MaxWavelength = AngularViewController.getPreferenceGroup1MaxWavelength();
         int group1LineIndex = AngularViewController.getPreferenceGroup1LineIndex();
         int group1SymbolIndex = AngularViewController.getPreferenceGroup1SymbolIndex();
         int group1SymbolSize = AngularViewController.getPreferenceGroup1SymbolSize();
         Color group1Color = AngularViewController.getPreferenceGroup1Color();
 
 
-        double group2Wavelength = AngularViewController.getPreferenceGroup2Wavelength();
-        double group2Tolerance = AngularViewController.getPreferenceGroup2Tolerance();
+        double group2MinWavelength = AngularViewController.getPreferenceGroup2MinWavelength();
+        double group2MaxWavelength = AngularViewController.getPreferenceGroup2MaxWavelength();
         int group2LineIndex = AngularViewController.getPreferenceGroup2LineIndex();
         int group2SymbolIndex = AngularViewController.getPreferenceGroup2SymbolIndex();
         int group2SymbolSize = AngularViewController.getPreferenceGroup2SymbolSize();
         Color group2Color = AngularViewController.getPreferenceGroup2Color();
 
         
-        double group3Wavelength = AngularViewController.getPreferenceGroup3Wavelength();
-        double group3Tolerance = AngularViewController.getPreferenceGroup3Tolerance();
+        double group3MinWavelength = AngularViewController.getPreferenceGroup3MinWavelength();
+        double group3MaxWavelength = AngularViewController.getPreferenceGroup3MaxWavelength();
         int group3LineIndex = AngularViewController.getPreferenceGroup3LineIndex();
         int group3SymbolIndex = AngularViewController.getPreferenceGroup3SymbolIndex();
         int group3SymbolSize = AngularViewController.getPreferenceGroup3SymbolSize();
         Color group3Color = AngularViewController.getPreferenceGroup3Color();
 
 
-        double group4Wavelength = AngularViewController.getPreferenceGroup4Wavelength();
-        double group4Tolerance = AngularViewController.getPreferenceGroup4Tolerance();
+        double group4MinWavelength = AngularViewController.getPreferenceGroup4MinWavelength();
+        double group4MaxWavelength = AngularViewController.getPreferenceGroup4MaxWavelength();
         int group4LineIndex = AngularViewController.getPreferenceGroup4LineIndex();
         int group4SymbolIndex = AngularViewController.getPreferenceGroup4SymbolIndex();
         int group4SymbolSize = AngularViewController.getPreferenceGroup4SymbolSize();
         Color group4Color = AngularViewController.getPreferenceGroup4Color();
 
 
-        double group5Wavelength = AngularViewController.getPreferenceGroup5Wavelength();
-        double group5Tolerance = AngularViewController.getPreferenceGroup5Tolerance();
+        double group5MinWavelength = AngularViewController.getPreferenceGroup5MinWavelength();
+        double group5MaxWavelength = AngularViewController.getPreferenceGroup5MaxWavelength();
         int group5LineIndex = AngularViewController.getPreferenceGroup5LineIndex();
         int group5SymbolIndex = AngularViewController.getPreferenceGroup5SymbolIndex();
         int group5SymbolSize = AngularViewController.getPreferenceGroup5SymbolSize();
@@ -1034,11 +1034,11 @@ private void setCurrentView(ProductSceneView view) {
         
         final AngularViewChooser angularViewChooser = new AngularViewChooser(SwingUtilities.getWindowAncestor(this), allAngularViews,
                 lineIndex, symbolIndex, symbolSize, plotColor,
-                group1Wavelength, group1Tolerance, group1LineIndex, group1SymbolIndex, group1SymbolSize, group1Color,
-                group2Wavelength, group2Tolerance, group2LineIndex, group2SymbolIndex, group2SymbolSize, group2Color,
-                group3Wavelength, group3Tolerance, group3LineIndex, group3SymbolIndex, group3SymbolSize, group3Color,
-                group4Wavelength, group4Tolerance, group4LineIndex, group4SymbolIndex, group4SymbolSize, group4Color,
-                group5Wavelength, group5Tolerance, group5LineIndex, group5SymbolIndex, group5SymbolSize, group5Color
+                group1MinWavelength, group1MaxWavelength, group1LineIndex, group1SymbolIndex, group1SymbolSize, group1Color,
+                group2MinWavelength, group2MaxWavelength, group2LineIndex, group2SymbolIndex, group2SymbolSize, group2Color,
+                group3MinWavelength, group3MaxWavelength, group3LineIndex, group3SymbolIndex, group3SymbolSize, group3Color,
+                group4MinWavelength, group4MaxWavelength, group4LineIndex, group4SymbolIndex, group4SymbolSize, group4Color,
+                group5MinWavelength, group5MaxWavelength, group5LineIndex, group5SymbolIndex, group5SymbolSize, group5Color
                 );
         if (angularViewChooser.show() == ModalDialog.ID_OK) {
             final DisplayableAngularview[] angularViews = angularViewChooser.getAngularViews();
