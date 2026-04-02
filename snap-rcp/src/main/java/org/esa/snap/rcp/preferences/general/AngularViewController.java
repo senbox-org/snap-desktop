@@ -58,7 +58,7 @@ public final class AngularViewController extends DefaultConfigController {
 
     boolean propertyValueChangeEventsEnabled = true;
 
-    private static final String PROPERTY_ROOT_KEY = "angular.view";
+    private static final String PROPERTY_ROOT_KEY = "angular.view.v2.";
 
     public static final String PROPERTY_ANGULAR_VIEW_RANGE_DOMAIN_SECTION_KEY =  PROPERTY_ROOT_KEY + "plot.range_domain.section";
     public static final String PROPERTY_ANGULAR_VIEW_RANGE_DOMAIN_SECTION_LABEL = "Plot Range & Domain";
@@ -148,25 +148,25 @@ public final class AngularViewController extends DefaultConfigController {
 
     public static final String PROPERTY_ANGULAR_VIEW_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.line_index";
     public static final String PROPERTY_ANGULAR_VIEW_LINE_INDEX_LABEL = "Plot Line Type (Index)";
-    public static final String PROPERTY_ANGULAR_VIEW_LINE_INDEX_TOOLTIP = "Sets the plot line type (index of selector)";
+    public static final String PROPERTY_ANGULAR_VIEW_LINE_INDEX_TOOLTIP = "Sets the default plot line type (index of selector)";
     public static String PROPERTY_ANGULAR_VIEW_LINE_INDEX_DEFAULT = "1";
     public static int PROPERTY_ANGULAR_VIEW_LINE_INDEX_DEFAULT_INT = 1;
 
     public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.symbol_index";
     public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_LABEL = "Plot Symbol (Index)";
-    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_TOOLTIP = "Sets the plot symbol (index of selector)";
+    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_TOOLTIP = "Sets the default plot symbol (index of selector)";
     public static String PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_DEFAULT = "1";
     public static int PROPERTY_ANGULAR_VIEW_SYMBOL_INDEX_DEFAULT_INT = 1;
 
     public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_KEY = PROPERTY_ROOT_KEY + "plot.symbol_size";
     public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_LABEL = "Plot Symbol Size";
-    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_TOOLTIP = "Sets the plot symbol size";
+    public static final String PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_TOOLTIP = "Sets the default plot symbol size";
     public static String PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_DEFAULT = "3";
     public static int PROPERTY_ANGULAR_VIEW_SYMBOL_SIZE_DEFAULT_INT = 3;
 
     public static final String PROPERTY_ANGULAR_VIEW_PLOT_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.color";
     public static final String PROPERTY_ANGULAR_VIEW_PLOT_COLOR_LABEL = "Plot Color";
-    public static final String PROPERTY_ANGULAR_VIEW_PLOT_COLOR_TOOLTIP = "Sets the color of the plot lines and symbols for Group 1";
+    public static final String PROPERTY_ANGULAR_VIEW_PLOT_COLOR_TOOLTIP = "Sets the default color of the plot lines and symbols";
     public static Color PROPERTY_ANGULAR_VIEW_PLOT_COLOR_DEFAULT = Color.BLACK;
     
     
@@ -176,15 +176,15 @@ public final class AngularViewController extends DefaultConfigController {
     public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_LABEL = "Plot Graphics: Group 1";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 1";
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group1.wavelength";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_LABEL = "Group 1 - Wavelength (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 1<br>wavelength=-1 indicates group is disabled</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_DEFAULT = 440.0;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group1.min_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_LABEL = "Group 1 - Min Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_TOOLTIP = "<html>Minimum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_DEFAULT = 100.0;
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group1.tolerance";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_LABEL = "Group 1 - Tolerance (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 1<br>Matches for wavelength +/- tolerance</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_DEFAULT = 5;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group1.max_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_LABEL = "Group 1 - Max Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_TOOLTIP = "<html>Maximum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_DEFAULT = 399.9;
 
     public static final String PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group1.line_index";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_LABEL = "Group 1 - Plot Line Type (Index)";
@@ -207,7 +207,7 @@ public final class AngularViewController extends DefaultConfigController {
     public static final String PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group1.color";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_LABEL = "Group 1 - Plot Color";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_TOOLTIP = "Sets the color of the plot lines and symbols for Group 1";
-    public static Color PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_DEFAULT = Color.BLUE;
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP1_COLOR_DEFAULT = new Color(114,77,163);
 
 
 
@@ -216,15 +216,15 @@ public final class AngularViewController extends DefaultConfigController {
     public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_LABEL = "Plot Graphics: Group 2";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 2";
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group2.wavelength";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_LABEL = "Group 2 - Wavelength (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 2<br>wavelength=-1 indicates group is disabled</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_DEFAULT = 549.0;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group2.min_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_LABEL = "Group 2 - Min Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_TOOLTIP = "<html>Minimum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_DEFAULT = 400.0;
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group2.tolerance";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_LABEL = "Group 2 - Tolerance (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 2<br>Matches for wavelength +/- tolerance</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_DEFAULT = 5;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group2.max_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_LABEL = "Group 2 - Max Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_TOOLTIP = "<html>Maximum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_DEFAULT = 499.9;
 
     public static final String PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group2.line_index";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_LABEL = "Group 2 - Plot Line Type (Index)";
@@ -245,9 +245,9 @@ public final class AngularViewController extends DefaultConfigController {
     public static int PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_DEFAULT_INT = 3;
 
     public static final String PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group2.color";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_LABEL = "Group2 (549nm) Color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_LABEL = "Group2 - Plot Color";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_TOOLTIP = "Sets the color of the plot lines whose associated wavelengths are specified as Group 2";
-    public static Color PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_DEFAULT = new Color(0,180,0);;
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP2_COLOR_DEFAULT = Color.BLUE;;
 
 
 
@@ -257,15 +257,15 @@ public final class AngularViewController extends DefaultConfigController {
     public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_LABEL = "Plot Graphics: Group 3";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 3";
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group3.wavelength";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_LABEL = "Group 3 - Wavelength (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 3<br>wavelength=-1 indicates group is disabled</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_DEFAULT = 664.0;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group3.min_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_LABEL = "Group 3 - Min Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_TOOLTIP = "<html>Minimum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_DEFAULT = 500.0;
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group3.tolerance";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_LABEL = "Group 3 - Tolerance (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 3<br>Matches for wavelength +/- tolerance</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_DEFAULT = 5;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group3.max_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_LABEL = "Group 3 - Max Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_TOOLTIP = "<html>Maximum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_DEFAULT = 599.0;
 
     public static final String PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group3.line_index";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_LABEL = "Group 3 - Plot Line Type (Index)";
@@ -286,9 +286,9 @@ public final class AngularViewController extends DefaultConfigController {
     public static int PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_DEFAULT_INT = 3;
     
     public static final String PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group3.color";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_LABEL = "Group3 (664nm) Color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_LABEL = "Group3 - Plot Color";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_TOOLTIP = "Sets the color of the plot lines whose associated wavelengths are specified as Group 3";
-    public static Color PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_DEFAULT = Color.RED ;
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP3_COLOR_DEFAULT = new Color(0,180,0) ;
 
 
 
@@ -298,15 +298,15 @@ public final class AngularViewController extends DefaultConfigController {
     public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_LABEL = "Plot Graphics: Group 4";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 4";
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group4.wavelength";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_LABEL = "Group 4 - Wavelength (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 4<br>wavelength=-1 indicates group is disabled</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_DEFAULT = 865.0;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group4.min_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_LABEL = "Group 4 - Min Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_TOOLTIP = "<html>Minimum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_DEFAULT = 600.0;
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group4.tolerance";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_LABEL = "Group 4 - Tolerance (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 4<br>Matches for wavelength +/- tolerance</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_DEFAULT = 5;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group4.max_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_LABEL = "Group 4 - Max Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_TOOLTIP = "<html>Maximum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_DEFAULT = 724.9;
 
     public static final String PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group4.line_index";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_LABEL = "Group 4 - Plot Line Type (Index)";
@@ -327,9 +327,9 @@ public final class AngularViewController extends DefaultConfigController {
     public static int PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_DEFAULT_INT = 3;
     
     public static final String PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group4.color";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_LABEL = "Group4 (865nm) Color";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_LABEL = "Group4 - Plot Color";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_TOOLTIP = "Sets the color of the plot lines whose associated wavelengths are specified as Group 4";
-    public static Color PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_DEFAULT = Color.BLACK;
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP4_COLOR_DEFAULT = new Color (230,0,0);
 
 
 
@@ -338,15 +338,15 @@ public final class AngularViewController extends DefaultConfigController {
     public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_LABEL = "Plot Graphics: Group 5";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_TOOLTIP = "Sets plot graphics based on the specified wavelength for Group 5";
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group5.wavelength";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_LABEL = "Group 5 - Wavelength (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_TOOLTIP = "<html>Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_DEFAULT = -1;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group5.min_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_LABEL = "Group 5 - Min Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_TOOLTIP = "<html>Minimum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_DEFAULT = 725.0;
 
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_KEY = PROPERTY_ROOT_KEY + "plot.group5.tolerance";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_LABEL = "Group 5 - Tolerance (nm)";
-    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_TOOLTIP = "<html>Wavelength matching tolerance for Group 5<br>Matches for wavelength +/- tolerance</html>";
-    public static double PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_DEFAULT = 5;
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_KEY = PROPERTY_ROOT_KEY + "plot.group5.max_wavelength";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_LABEL = "Group 5 - Max Wavelength (nm)";
+    public static final String PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_TOOLTIP = "<html>Maximum Wavelength for Group 5<br>wavelength=-1 indicates group is disabled</html>";
+    public static double PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_DEFAULT = 15000.0;
 
     public static final String PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_KEY = PROPERTY_ROOT_KEY + "plot.group5.line_index";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_LABEL = "Group 5 - Plot Line Type (Index)";
@@ -369,7 +369,7 @@ public final class AngularViewController extends DefaultConfigController {
     public static final String PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_KEY = PROPERTY_ROOT_KEY + "plot.group5.color";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_LABEL = "Group 5 - Plot Color";
     public static final String PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_TOOLTIP = "Sets the color of the plot lines and symbols for Group 5";
-    public static Color PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_DEFAULT = Color.BLACK;
+    public static Color PROPERTY_ANGULAR_VIEW_GROUP5_COLOR_DEFAULT = new Color (75,0,0);
     
     
 
@@ -436,8 +436,8 @@ public final class AngularViewController extends DefaultConfigController {
         
         
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_KEY, true);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_DEFAULT);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_SYMBOL_SIZE_DEFAULT);
@@ -446,8 +446,8 @@ public final class AngularViewController extends DefaultConfigController {
         
         
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_KEY, true);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_DEFAULT);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_SYMBOL_SIZE_DEFAULT);
@@ -457,8 +457,8 @@ public final class AngularViewController extends DefaultConfigController {
 
 
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_KEY, true);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_DEFAULT);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_SYMBOL_SIZE_DEFAULT);
@@ -469,8 +469,8 @@ public final class AngularViewController extends DefaultConfigController {
 
 
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_KEY, true);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_DEFAULT);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_SYMBOL_SIZE_DEFAULT);
@@ -480,8 +480,8 @@ public final class AngularViewController extends DefaultConfigController {
         
         
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_KEY, true);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_DEFAULT);
-        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_DEFAULT);
+        initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_INDEX_DEFAULT);
         initPropertyDefaults(context, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_SYMBOL_SIZE_DEFAULT);
@@ -783,17 +783,17 @@ public final class AngularViewController extends DefaultConfigController {
                 description = PROPERTY_ANGULAR_VIEW_GROUP1_SECTION_TOOLTIP)
         boolean group1Section = true;
         
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_LABEL,
-                interval = "[-1, 1000]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_TOOLTIP)
-        double angularViewGroup1WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_TOOLTIP)
+        double angularViewGroup1MinWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_DEFAULT;
 
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_LABEL,
-                interval = "[0, 50]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_TOOLTIP)
-        double angularViewGroup1ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_TOOLTIP)
+        double angularViewGroup1MaxWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_DEFAULT;
         
         @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_KEY,
                 label = PROPERTY_ANGULAR_VIEW_GROUP1_LINE_INDEX_LABEL,
@@ -828,17 +828,17 @@ public final class AngularViewController extends DefaultConfigController {
                 description = PROPERTY_ANGULAR_VIEW_GROUP2_SECTION_TOOLTIP)
         boolean group2Section = true;
 
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_LABEL,
-                interval = "[-1, 1000]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_TOOLTIP)
-        double angularViewGroup2WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_TOOLTIP)
+        double angularViewGroup2MinWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_DEFAULT;
 
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_LABEL,
-                interval = "[0, 50]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_TOOLTIP)
-        double angularViewGroup2ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_TOOLTIP)
+        double angularViewGroup2MaxWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_DEFAULT;
 
         @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_KEY,
                 label = PROPERTY_ANGULAR_VIEW_GROUP2_LINE_INDEX_LABEL,
@@ -873,17 +873,17 @@ public final class AngularViewController extends DefaultConfigController {
                 description = PROPERTY_ANGULAR_VIEW_GROUP3_SECTION_TOOLTIP)
         boolean group3Section = true;
 
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_LABEL,
-                interval = "[-1, 1000]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_TOOLTIP)
-        double angularViewGroup3WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_TOOLTIP)
+        double angularViewGroup3MinWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_DEFAULT;
 
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_LABEL,
-                interval = "[0, 50]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_TOOLTIP)
-        double angularViewGroup3ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_TOOLTIP)
+        double angularViewGroup3MaxWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_DEFAULT;
 
         @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_KEY,
                 label = PROPERTY_ANGULAR_VIEW_GROUP3_LINE_INDEX_LABEL,
@@ -917,17 +917,17 @@ public final class AngularViewController extends DefaultConfigController {
                 description = PROPERTY_ANGULAR_VIEW_GROUP4_SECTION_TOOLTIP)
         boolean group4Section = true;
 
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_LABEL,
-                interval = "[-1, 1000]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_TOOLTIP)
-        double angularViewGroup4WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_TOOLTIP)
+        double angularViewGroup4MinWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_DEFAULT;
 
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_LABEL,
-                interval = "[0, 50]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_TOOLTIP)
-        double angularViewGroup4ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_TOOLTIP)
+        double angularViewGroup4MaxWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_DEFAULT;
 
         @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_KEY,
                 label = PROPERTY_ANGULAR_VIEW_GROUP4_LINE_INDEX_LABEL,
@@ -960,17 +960,17 @@ public final class AngularViewController extends DefaultConfigController {
                 description = PROPERTY_ANGULAR_VIEW_GROUP5_SECTION_TOOLTIP)
         boolean group5Section = true;
 
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_LABEL,
-                interval = "[-1, 1000]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_TOOLTIP)
-        double angularViewGroup5WavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_TOOLTIP)
+        double angularViewGroup5MinWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_DEFAULT;
 
-        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_KEY,
-                label = PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_LABEL,
-                interval = "[0, 50]",
-                description = PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_TOOLTIP)
-        double angularViewGroup5ToleranceDefault = PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_DEFAULT;
+        @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_KEY,
+                label = PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_LABEL,
+                interval = "[-1, 15000]",
+                description = PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_TOOLTIP)
+        double angularViewGroup5MaxWavelengthDefault = PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_DEFAULT;
 
         @Preference( key = PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_KEY,
                 label = PROPERTY_ANGULAR_VIEW_GROUP5_LINE_INDEX_LABEL,
@@ -1102,14 +1102,14 @@ public final class AngularViewController extends DefaultConfigController {
     
 
 
-    public static double getPreferenceGroup1Wavelength() {
+    public static double getPreferenceGroup1MinWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_WAVELENGTH_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_MIN_WAVELENGTH_DEFAULT);
     }
 
-    public static double getPreferenceGroup1Tolerance() {
+    public static double getPreferenceGroup1MaxWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_TOLERANCE_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP1_MAX_WAVELENGTH_DEFAULT);
     }
 
     public static int getPreferenceGroup1LineIndex() {
@@ -1142,14 +1142,14 @@ public final class AngularViewController extends DefaultConfigController {
 
 
 
-    public static double getPreferenceGroup2Wavelength() {
+    public static double getPreferenceGroup2MinWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_WAVELENGTH_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_MIN_WAVELENGTH_DEFAULT);
     }
 
-    public static double getPreferenceGroup2Tolerance() {
+    public static double getPreferenceGroup2MaxWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_TOLERANCE_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP2_MAX_WAVELENGTH_DEFAULT);
     }
 
     public static int getPreferenceGroup2LineIndex() {
@@ -1181,14 +1181,14 @@ public final class AngularViewController extends DefaultConfigController {
 
 
 
-    public static double getPreferenceGroup3Wavelength() {
+    public static double getPreferenceGroup3MinWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_WAVELENGTH_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_MIN_WAVELENGTH_DEFAULT);
     }
 
-    public static double getPreferenceGroup3Tolerance() {
+    public static double getPreferenceGroup3MaxWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_TOLERANCE_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP3_MAX_WAVELENGTH_DEFAULT);
     }
 
     public static int getPreferenceGroup3LineIndex() {
@@ -1221,14 +1221,14 @@ public final class AngularViewController extends DefaultConfigController {
     
     
 
-    public static double getPreferenceGroup4Wavelength() {
+    public static double getPreferenceGroup4MinWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_WAVELENGTH_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_MIN_WAVELENGTH_DEFAULT);
     }
 
-    public static double getPreferenceGroup4Tolerance() {
+    public static double getPreferenceGroup4MaxWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_TOLERANCE_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP4_MAX_WAVELENGTH_DEFAULT);
     }
 
     public static int getPreferenceGroup4LineIndex() {
@@ -1264,14 +1264,14 @@ public final class AngularViewController extends DefaultConfigController {
 
 
 
-    public static double getPreferenceGroup5Wavelength() {
+    public static double getPreferenceGroup5MinWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_WAVELENGTH_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_MIN_WAVELENGTH_DEFAULT);
     }
 
-    public static double getPreferenceGroup5Tolerance() {
+    public static double getPreferenceGroup5MaxWavelength() {
         final PropertyMap preferences = SnapApp.getDefault().getAppContext().getPreferences();
-        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_TOLERANCE_DEFAULT);
+        return preferences.getPropertyDouble(PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_KEY, PROPERTY_ANGULAR_VIEW_GROUP5_MAX_WAVELENGTH_DEFAULT);
     }
 
     public static int getPreferenceGroup5LineIndex() {
