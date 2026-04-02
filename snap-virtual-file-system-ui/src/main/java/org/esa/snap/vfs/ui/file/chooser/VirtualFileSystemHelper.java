@@ -5,6 +5,7 @@ import org.esa.snap.vfs.VFS;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystem;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystemProvider;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.net.URI;
@@ -31,8 +32,8 @@ public class VirtualFileSystemHelper {
      * @param vfsRemoteFileRepository The VFS Remote File Repository
      */
     public VirtualFileSystemHelper(VFSRemoteFileRepository vfsRemoteFileRepository) throws URISyntaxException {
-        AbstractRemoteFileSystemProvider fileSystemProvider = (AbstractRemoteFileSystemProvider) VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.getScheme());
-        URI uri = new URI(vfsRemoteFileRepository.getScheme(), vfsRemoteFileRepository.getRoot(), null);
+        AbstractRemoteFileSystemProvider fileSystemProvider = (AbstractRemoteFileSystemProvider) VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.scheme());
+        URI uri = new URI(vfsRemoteFileRepository.scheme(), vfsRemoteFileRepository.getRoot(), null);
         Map<String, ?> env = Collections.emptyMap();
         this.fileSystem = fileSystemProvider.getFileSystemOrCreate(uri, env);
     }
@@ -112,6 +113,7 @@ public class VirtualFileSystemHelper {
          * @return The name of the file or directory denoted by this abstract pathname, or the empty string if this pathname's name sequence is empty
          */
         @Override
+        @NotNull
         public String getName() {
             String name = super.getName();
             if (name.isEmpty()) {
@@ -126,6 +128,7 @@ public class VirtualFileSystemHelper {
          * @return The string form of this abstract pathname
          */
         @Override
+        @NotNull
         public String getPath() {
             return super.getPath();
         }

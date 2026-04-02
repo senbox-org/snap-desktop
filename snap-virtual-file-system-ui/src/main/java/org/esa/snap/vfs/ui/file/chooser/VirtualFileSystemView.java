@@ -79,7 +79,7 @@ public class VirtualFileSystemView extends FileSystemView {
                 String key = vfsFileSystemView.getRoot().toString();
                 this.vfsFileSystemViews.put(key, vfsFileSystemView);
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "Unable to initialize " + vfsRemoteFileRepository.getName() + " VFS. Details: " + ex.getMessage(), ex);
+                logger.log(Level.SEVERE, "Unable to initialize " + vfsRemoteFileRepository.name() + " VFS. Details: " + ex.getMessage(), ex);
             }
         }
     }
