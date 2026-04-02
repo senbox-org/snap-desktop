@@ -4,15 +4,12 @@ import com.bc.ceres.swing.TableLayout;
 import com.jidesoft.swing.TristateCheckBox;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.util.ArrayUtils;
-import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.ui.DecimalTableCellRenderer;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.color.ColorComboBox;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsComponent;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsProvider;
-import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
-import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
 import javax.swing.*;
@@ -74,39 +71,39 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
     
     
 
-    private double group1Wavelength = -1;
-    private double group1Tolerance = 1;
+    private double group1MinWavelength = -1;
+    private double group1MaxWavelength = 1;
     private int group1LineIndex = 1;
     private int group1SymbolIndex = 1;
     private int group1SymbolSize = 3;
     private Color group1Color = Color.BLACK;
 
-    private double group2Wavelength = -1;
-    private double group2Tolerance = 1;
+    private double group2MinWavelength = -1;
+    private double group2MaxWavelength = 1;
     private int group2LineIndex = 1;
     private int group2SymbolIndex = 1;
     private int group2SymbolSize = 3;
     private Color group2Color = Color.BLACK;
 
 
-    private double group3Wavelength = -1;
-    private double group3Tolerance = 1;
+    private double group3MinWavelength = -1;
+    private double group3MaxWavelength = 1;
     private int group3LineIndex = 1;
     private int group3SymbolIndex = 1;
     private int group3SymbolSize = 3;
     private Color group3Color = Color.BLACK;
 
 
-    private double group4Wavelength = -1;
-    private double group4Tolerance = 1;
+    private double group4MinWavelength = -1;
+    private double group4MaxWavelength = 1;
     private int group4LineIndex = 1;
     private int group4SymbolIndex = 1;
     private int group4SymbolSize = 3;
     private Color group4Color = Color.BLACK;
 
 
-    private double group5Wavelength = -1;
-    private double group5Tolerance = 1;
+    private double group5MinWavelength = -1;
+    private double group5MaxWavelength = 1;
     private int group5LineIndex = 1;
     private int group5SymbolIndex = 1;
     private int group5SymbolSize = 3;
@@ -117,11 +114,11 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
     
     public AngularViewChooser(Window parent, DisplayableAngularview[] originalangularViews,
                               int lineIndex, int symbolIndex, int symbolSize, Color plotColor,
-                              double group1Wavelength, double group1Tolerance, int group1LineIndex, int group1SymbolIndex, int group1SymbolSize, Color group1Color,
-                              double group2Wavelength, double group2Tolerance, int group2LineIndex, int group2SymbolIndex, int group2SymbolSize, Color group2Color,
-                              double group3Wavelength, double group3Tolerance, int group3LineIndex, int group3SymbolIndex, int group3SymbolSize, Color group3Color,
-                              double group4Wavelength, double group4Tolerance, int group4LineIndex, int group4SymbolIndex, int group4SymbolSize, Color group4Color,
-                              double group5Wavelength, double group5Tolerance, int group5LineIndex, int group5SymbolIndex, int group5SymbolSize, Color group5Color
+                              double group1MinWavelength, double group1MaxWavelength, int group1LineIndex, int group1SymbolIndex, int group1SymbolSize, Color group1Color,
+                              double group2MinWavelength, double group2MaxWavelength, int group2LineIndex, int group2SymbolIndex, int group2SymbolSize, Color group2Color,
+                              double group3MinWavelength, double group3MaxWavelength, int group3LineIndex, int group3SymbolIndex, int group3SymbolSize, Color group3Color,
+                              double group4MinWavelength, double group4MaxWavelength, int group4LineIndex, int group4SymbolIndex, int group4SymbolSize, Color group4Color,
+                              double group5MinWavelength, double group5MaxWavelength, int group5LineIndex, int group5SymbolIndex, int group5SymbolSize, Color group5Color
     ) {
 
 
@@ -155,32 +152,32 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
         this.plotColor = plotColor;
         
         
-        this.group1Wavelength = group1Wavelength;
-        this.group1Tolerance = group1Tolerance;
+        this.group1MinWavelength = group1MinWavelength;
+        this.group1MaxWavelength = group1MaxWavelength;
         this.group1LineIndex = group1LineIndex;
         this.group1SymbolIndex = group1SymbolIndex;
         this.group1SymbolSize = group1SymbolSize;
         this.group1Color = group1Color;
 
 
-        this.group2Wavelength = group2Wavelength;
-        this.group2Tolerance = group2Tolerance;
+        this.group2MinWavelength = group2MinWavelength;
+        this.group2MaxWavelength = group2MaxWavelength;
         this.group2LineIndex = group2LineIndex;
         this.group2SymbolIndex = group2SymbolIndex;
         this.group2SymbolSize = group2SymbolSize;
         this.group2Color = group2Color;
 
 
-        this.group3Wavelength = group3Wavelength;
-        this.group3Tolerance = group3Tolerance;
+        this.group3MinWavelength = group3MinWavelength;
+        this.group3MaxWavelength = group3MaxWavelength;
         this.group3LineIndex = group3LineIndex;
         this.group3SymbolIndex = group3SymbolIndex;
         this.group3SymbolSize = group3SymbolSize;
         this.group3Color = group3Color;
 
 
-        this.group4Wavelength = group4Wavelength;
-        this.group4Tolerance = group4Tolerance;
+        this.group4MinWavelength = group4MinWavelength;
+        this.group4MaxWavelength = group4MaxWavelength;
         this.group4LineIndex = group4LineIndex;
         this.group4SymbolIndex = group4SymbolIndex;
         this.group4SymbolSize = group4SymbolSize;
@@ -188,8 +185,8 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
 
 
 
-        this.group5Wavelength = group5Wavelength;
-        this.group5Tolerance = group5Tolerance;
+        this.group5MinWavelength = group5MinWavelength;
+        this.group5MaxWavelength = group5MaxWavelength;
         this.group5LineIndex = group5LineIndex;
         this.group5SymbolIndex = group5SymbolIndex;
         this.group5SymbolSize = group5SymbolSize;
@@ -384,33 +381,33 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
 
 
 //                float TOLERANCE = (float) 2.0;
-                if (angularBandSpectralWavelength >= (group1Wavelength - group1Tolerance) && angularBandSpectralWavelength <= (group1Wavelength + group1Tolerance)) {
+                if (group1MinWavelength >= 0 && group1MaxWavelength > 0 && angularBandSpectralWavelength >= (group1MinWavelength) && angularBandSpectralWavelength <= (group1MaxWavelength)) {
                     mainLineIndex = group1LineIndex;
                     mainSymbolIndex = group1SymbolIndex;
                     mainSymbolSize = group1SymbolSize;
                     mainPlotColor = group1Color;
 
-                } else if (angularBandSpectralWavelength >= (group2Wavelength - group2Tolerance) && angularBandSpectralWavelength <= (group2Wavelength + group2Tolerance)) {
+                } else if (group2MinWavelength >= 0 && group2MaxWavelength > 0 && angularBandSpectralWavelength >= (group2MinWavelength) && angularBandSpectralWavelength <= (group2MaxWavelength)) {
                     mainLineIndex = group2LineIndex;
                     mainSymbolIndex = group2SymbolIndex;
                     mainSymbolSize = group2SymbolSize;
                     mainPlotColor = group2Color;
 
-                } else if (angularBandSpectralWavelength >= (group3Wavelength - group3Tolerance) && angularBandSpectralWavelength <= (group3Wavelength + group3Tolerance)) {
+                } else if (group3MinWavelength >= 0 && group3MaxWavelength > 0 && angularBandSpectralWavelength >= (group3MinWavelength) && angularBandSpectralWavelength <= (group3MaxWavelength)) {
                     mainLineIndex = group3LineIndex;
                     mainSymbolIndex = group3SymbolIndex;
                     mainSymbolSize = group3SymbolSize;
                     mainPlotColor = group3Color;
 
 
-                } else if (angularBandSpectralWavelength >= (group4Wavelength - group4Tolerance) && angularBandSpectralWavelength <= (group4Wavelength + group4Tolerance)) {
+                } else if (group4MinWavelength >= 0 && group4MaxWavelength > 0 && angularBandSpectralWavelength >= (group4MinWavelength) && angularBandSpectralWavelength <= (group4MaxWavelength)) {
                     mainLineIndex = group4LineIndex;
                     mainSymbolIndex = group4SymbolIndex;
                     mainSymbolSize = group4SymbolSize;
                     mainPlotColor = group4Color;
 
 
-                } else if (angularBandSpectralWavelength >= (group5Wavelength - group5Tolerance) && angularBandSpectralWavelength <= (group5Wavelength + group5Tolerance)) {
+                } else if (group5MinWavelength >= 0 && group5MaxWavelength > 0 && angularBandSpectralWavelength >= (group5MinWavelength) && angularBandSpectralWavelength <= (group5MaxWavelength)) {
                     mainLineIndex = group5LineIndex;
                     mainSymbolIndex = group5SymbolIndex;
                     mainSymbolSize = group5SymbolSize;
