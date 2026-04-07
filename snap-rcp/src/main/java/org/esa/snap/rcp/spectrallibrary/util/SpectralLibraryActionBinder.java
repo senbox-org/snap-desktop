@@ -10,6 +10,10 @@ import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.AddAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
+import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
+import org.esa.snap.speclib.io.CompositeSpectralLibraryIO;
+import org.esa.snap.speclib.io.SpectralLibraryIO;
+import org.esa.snap.speclib.io.SpectralLibraryIODelegate;
 import org.esa.snap.speclib.model.*;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 import org.esa.snap.ui.AbstractDialog;
@@ -23,6 +27,7 @@ import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 import org.locationtech.jts.geom.*;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -30,6 +35,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class SpectralLibraryActionBinder {
@@ -767,14 +773,22 @@ public class SpectralLibraryActionBinder {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Import Spectral Library");
         fileChooser.setApproveButtonText("Import");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Spectral Libraries (*.sli, *.hdr, *)", "sli", "hdr"));
+        fileChooser.setAcceptAllFileFilterUsed(true);
+
+        for (FileFilter filter : buildFormatFilters()) {
+            fileChooser.addChoosableFileFilter(filter);
+        }
 
         int ok = fileChooser.showOpenDialog(panel);
         if (ok != JFileChooser.APPROVE_OPTION) {
             return;
         }
 
-        File file = fileChooser.getSelectedFile();
+        final File file = fileChooser.getSelectedFile();
+        if (!EngineAccess.libraryIO().canRead(file.toPath())) {
+            vm.setStatus(UiStatus.warn("Unsupported file format: " + file.getName()));
+            return;
+        }
         controller.importLibraryFromFile(file);
     }
 
@@ -784,30 +798,92 @@ public class SpectralLibraryActionBinder {
             return;
         }
 
+        List<FileNameExtensionFilter> filters = buildFormatFilters();
+        if (filters.isEmpty()) {
+            vm.setStatus(UiStatus.warn("No export format available"));
+            return;
+        }
+
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Export Spectral Library");
         fileChooser.setApproveButtonText("Export");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("ENVI Spectral Library (*.sli)", "sli"));
+        fileChooser.setAcceptAllFileFilterUsed(false);
 
-        String base = "spectral-library";
-        Object sel = panel.getLibraryCombo().getSelectedItem();
-        if (sel instanceof SpectralLibrary lib && lib.getName() != null && !lib.getName().isBlank()) {
-            base = lib.getName().trim().replaceAll("[\\\\/:*?\"<>|]", "_");
+        for (FileNameExtensionFilter filter : filters) {
+            fileChooser.addChoosableFileFilter(filter);
         }
-        fileChooser.setSelectedFile(new File(base + ".sli"));
+        fileChooser.setFileFilter(filters.getFirst());
+
+        String base = resolveExportBaseName();
+        String defaultExtension = filters.getFirst().getExtensions()[0];
+        fileChooser.setSelectedFile(new File(base + "." + defaultExtension));
 
         int ok = fileChooser.showSaveDialog(panel);
         if (ok != JFileChooser.APPROVE_OPTION) {
             return;
         }
-
-        File file = fileChooser.getSelectedFile();
-        if (!file.getName().toLowerCase().endsWith(".sli")) {
-            file = new File(file.getParentFile(), file.getName() + ".sli");
-        }
+        File file = ensureExtension(fileChooser.getSelectedFile(), (FileNameExtensionFilter) fileChooser.getFileFilter());
 
         controller.exportActiveLibraryToFile(file);
     }
+
+
+
+    private List<FileNameExtensionFilter> buildFormatFilters() {
+        SpectralLibraryIO io = EngineAccess.libraryIO();
+        List<FileNameExtensionFilter> filters = new ArrayList<>();
+
+        if (io instanceof CompositeSpectralLibraryIO composite) {
+            for (SpectralLibraryIODelegate delegate : composite.getDelegates()) {
+                List<String> exts = delegate.getFileExtensions();
+
+                if (!exts.isEmpty()) {
+                    String label = formatLabel(delegate.getClass().getSimpleName(), exts);
+                    filters.add(new FileNameExtensionFilter(label, exts.toArray(new String[0])));
+                }
+            }
+        } else {
+            List<String> exts = io.getFileExtensions();
+            if (!exts.isEmpty()) {
+                filters.add(new FileNameExtensionFilter(
+                        "Spectral Libraries (" + String.join(", *.", exts) + ")",
+                        exts.toArray(new String[0]))
+                );
+            }
+        }
+        return filters;
+    }
+
+    private static String formatLabel(String className, List<String> exts) {
+        String extList = exts.stream()
+                .map(e -> "*." + e)
+                .collect(Collectors.joining(", "));
+        String name = className
+                .replace("SpectralLibraryIO", "")
+                .replace("GeoJson", "GeoJSON")
+                .replace("Envi", "ENVI");
+        return name + " Spectral Library (" + extList + ")";
+    }
+
+    private String resolveExportBaseName() {
+        Object sel = panel.getLibraryCombo().getSelectedItem();
+
+        if (sel instanceof SpectralLibrary lib && lib.getName() != null && !lib.getName().isBlank()) {
+            return lib.getName().trim().replaceAll("[\\\\/:*?\"<>|]", "_");
+        }
+        return "spectral-library";
+    }
+
+    private static File ensureExtension(File file, FileNameExtensionFilter filter) {
+        String name = file.getName().toLowerCase(Locale.ROOT);
+        for (String ext : filter.getExtensions()) {
+            if (name.endsWith("." + ext)) {
+                return file;
+            }
+        }
+        return new File(file.getParentFile(), file.getName() + "." + filter.getExtensions()[0]);
+    }
+
 
 
     @FunctionalInterface
