@@ -8,3 +8,10 @@ red=log(rhos_620/0.01)/log(1/0.01)
 green=log(rhos_555/0.01)/log(1/0.01)
 blue=log(rhos_465/0.01)/log(1/0.01)
 valid_pixel_expression=\!nan(rhos_620) and \!nan(rhos_555) and \!nan(rhos_465)
+
+red_min=0.0
+red_max=1.1
+green_min=0.0
+green_max=1.1
+blue_min=0.0
+blue_max=1.1
