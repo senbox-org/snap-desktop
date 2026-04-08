@@ -5,3 +5,10 @@ green=log('i_20_555'/30)/log(450/30)
 blue=log('i_20_465'/30)/log(450/30)
 name=TC_OCI_L1C_i_AftTilt_645_555_465.rgb
 valid_pixel_expression=\!nan('i_20_645') and \!nan('i_20_555') and \!nan('i_20_465')
+
+red_min=0.0
+red_max=1.1
+green_min=0.0
+green_max=1.1
+blue_min=0.0
+blue_max=1.1
