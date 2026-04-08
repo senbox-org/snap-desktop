@@ -9,3 +9,10 @@ red=log(rhos_670/0.01)/log(1/0.01)
 green=log(rhos_555/0.01)/log(1/0.01)
 blue=log(rhos_490/0.01)/log(1/0.01)
 valid_pixel_expression=\!nan(rhos_670) and \!nan(rhos_555) and \!nan(rhos_490) and LAT >= -90 and LAT <= 90
+
+red_min=0.0
+red_max=1.1
+green_min=0.0
+green_max=1.1
+blue_min=0.0
+blue_max=1.1
