@@ -35,10 +35,10 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
 
     private static final int MIN_SCENE_VALUE = 0;
 
-    private final JList bandList;
-    private final JList maskList;
+    private final JList<String> bandList;
+    private final JList<String> maskList;
 
-    private JCheckBox copyMetadata;
+    private final JCheckBox copyMetadata;
     private final JCheckBox copyMasks;
 
     private final JRadioButton pixelCoordRadio;
@@ -53,7 +53,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
 
     private MetadataInspector.Metadata readerInspectorExposeParameters;
 
-    private AtomicBoolean updatingUI;
+    private final AtomicBoolean updatingUI;
 
     private int productWidth;
     private int productHeight;
@@ -67,8 +67,8 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
     private JSpinner geoCoordNorthLatSpinner;
     private JSpinner geoCoordSouthLatSpinner;
 
-    private MetadataInspector metadataInspector;
-    private File file;
+    private final MetadataInspector metadataInspector;
+    private final File file;
     private ProductSubsetDef productSubsetDef;
     private final ProductSubsetByPolygonUiComponents productSubsetByPolygonUiComponents = new ProductSubsetByPolygonUiComponents(this.getJDialog());
 
@@ -79,8 +79,8 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
         this.metadataInspector = metadataInspector;
         this.file = file;
 
-        bandList = new JList();
-        maskList = new JList();
+        bandList = new JList<>();
+        maskList = new JList<>();
 
         copyMetadata = new JCheckBox("Copy Metadata", true);
         copyMasks = new JCheckBox("Copy Masks", true);
@@ -92,6 +92,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
         pixelPanel = new JPanel(new GridBagLayout());
         geoPanel = new JPanel(new GridBagLayout());
         vectorFilePanel = productSubsetByPolygonUiComponents.getImportVectorFilePanel();
+        productSubsetByPolygonUiComponents.setPolygonChangedListener(this::updateUIStatePolygonChanged);
     }
 
     @Override
@@ -363,9 +364,9 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
         productWidth = result.getProductWidth();
         productHeight = result.getProductHeight();
 
-        ((SpinnerNumberModel)pixelCoordXSpinner.getModel()).setMaximum(result.getProductWidth() - 1 > 0 ? result.getProductWidth() - 1 : 0);
+        ((SpinnerNumberModel)pixelCoordXSpinner.getModel()).setMaximum(Math.max(result.getProductWidth() - 1, 0));
 
-        ((SpinnerNumberModel)pixelCoordYSpinner.getModel()).setMaximum(result.getProductHeight() - 1 > 0 ? result.getProductHeight() - 1 : 0);
+        ((SpinnerNumberModel)pixelCoordYSpinner.getModel()).setMaximum(Math.max(result.getProductHeight() - 1, 0));
 
         ((SpinnerNumberModel)pixelCoordWidthSpinner.getModel()).setMinimum((Integer) pixelCoordXSpinner.getValue());
         ((SpinnerNumberModel)pixelCoordWidthSpinner.getModel()).setMaximum(result.getProductWidth());
@@ -382,8 +383,8 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
             geoPanel.setEnabled(false);
         }
 
-        this.bandList.setListData(result.getBandList().toArray());
-        this.maskList.setListData(result.getMaskList().toArray());
+        this.bandList.setListData(result.getBandList().toArray(new String[0]));
+        this.maskList.setListData(result.getMaskList().toArray(new String[0]));
         if (!result.isHasMasks()) {
             copyMasks.setSelected(false);
             copyMasks.setEnabled(false);
@@ -415,6 +416,38 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
                 if (event != null && geoCoordRadio.isEnabled()) {
                     geoCodingChange();
                 }
+            } finally {
+                updatingUI.set(false);
+            }
+        }
+    }
+
+    private void updateUIStatePolygonChanged() {
+        if (updatingUI.compareAndSet(false, true)) {
+            try {
+                if (!vectorFileRadio.isSelected()) {
+                    return;
+                }
+                if (!productSubsetByPolygonUiComponents.getProductSubsetByPolygon().isLoaded()) {
+                    return;
+                }
+                final Rectangle extent = productSubsetByPolygonUiComponents.getProductSubsetByPolygon().getExtentOfPolygon();
+                if (extent == null) {
+                    return;
+                }
+                if (isValueInNumericSpinnerRange(pixelCoordXSpinner, extent.x)) {
+                    pixelCoordXSpinner.setValue(extent.x);
+                }
+                if (isValueInNumericSpinnerRange(pixelCoordYSpinner, extent.y)) {
+                    pixelCoordYSpinner.setValue(extent.y);
+                }
+                if (isValueInNumericSpinnerRange(pixelCoordWidthSpinner, extent.width)) {
+                    pixelCoordWidthSpinner.setValue(extent.width);
+                }
+                if (isValueInNumericSpinnerRange(pixelCoordHeightSpinner, extent.height)) {
+                    pixelCoordHeightSpinner.setValue(extent.height);
+                }
+                syncLatLonWithXYParams();
             } finally {
                 updatingUI.set(false);
             }
@@ -598,19 +631,19 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
         productSubsetDef = new ProductSubsetDef();
         //if the user specify the bands that want to be added in the product add only them, else mark the fact that the product must have all the bands
         if (!bandList.isSelectionEmpty()) {
-            productSubsetDef.addNodeNames((String[]) bandList.getSelectedValuesList().stream().toArray(String[]::new));
+            productSubsetDef.addNodeNames(bandList.getSelectedValuesList().toArray(String[]::new));
         } else {
             if(this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.getBandList() != null){
-                productSubsetDef.addNodeNames(this.readerInspectorExposeParameters.getBandList().stream().toArray(String[]::new));
+                productSubsetDef.addNodeNames(this.readerInspectorExposeParameters.getBandList().toArray(String[]::new));
             }
         }
 
         //if the user specify the masks that want to be added in the product add only them, else mark the fact that the product must have all the masks
         if (!maskList.isSelectionEmpty()) {
-            productSubsetDef.addNodeNames((String[]) maskList.getSelectedValuesList().stream().toArray(String[]::new));
+            productSubsetDef.addNodeNames((String[]) maskList.getSelectedValuesList().toArray(String[]::new));
         } else if (copyMasks.isSelected()) {
             if(this.readerInspectorExposeParameters != null && this.readerInspectorExposeParameters.getMaskList() != null){
-                productSubsetDef.addNodeNames(this.readerInspectorExposeParameters.getMaskList().stream().toArray(String[]::new));
+                productSubsetDef.addNodeNames(this.readerInspectorExposeParameters.getMaskList().toArray(String[]::new));
             }
         }
         if (!copyMetadata.isSelected()) {

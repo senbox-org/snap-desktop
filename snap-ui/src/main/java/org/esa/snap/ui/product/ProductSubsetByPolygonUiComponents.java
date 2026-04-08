@@ -40,6 +40,7 @@ public class ProductSubsetByPolygonUiComponents {
     private final JRadioButton pixelCoordRadio = new JRadioButton("Pixel Coordinates");
     private final Component hostComponent;
     private MetadataInspector.Metadata targetProductMetadata;
+    private Runnable polygonChangedListener;
 
     /**
      * Creates and initialises all the internal UI components which will be used to build a subset polygon
@@ -136,6 +137,7 @@ public class ProductSubsetByPolygonUiComponents {
         this.vectorFileField.setText("");
         this.pixelPolygonField.setText("");
         this.geoPolygonField.setText("");
+        notifyPolygonChanged();
     }
 
     private void importGeometryFromVectorFile(MetadataInspector.Metadata targetProductMetadata) {
@@ -172,6 +174,7 @@ public class ProductSubsetByPolygonUiComponents {
             this.vectorFileField.setText(vectorFile.getAbsolutePath());
             printPixelPolygonOnField(this.productSubsetByPolygon.getSubsetPolygon());
             printGeoPolygonOnField(this.productSubsetByPolygon.getSubsetGeoPolygon());
+            notifyPolygonChanged();
         } catch (Exception e) {
             if (e.getCause() instanceof IllegalArgumentException) {
                 final String msg = "Importing the polygon from a vector file, failed. Reason: " + e.getCause().getMessage();
@@ -208,6 +211,7 @@ public class ProductSubsetByPolygonUiComponents {
             this.vectorFileField.setText("");
             printPixelPolygonOnField(this.productSubsetByPolygon.getSubsetPolygon());
             printGeoPolygonOnField(this.productSubsetByPolygon.getSubsetGeoPolygon());
+            notifyPolygonChanged();
         } catch (Exception e) {
             if (e.getCause() instanceof IllegalArgumentException) {
                 final String msg = "Importing the polygon from a WKT string, failed. Reason: " + e.getCause().getMessage();
@@ -275,8 +279,14 @@ public class ProductSubsetByPolygonUiComponents {
      * @param targetProductMetadata the target product metadata which will be used when loading the polygon
      */
     public void setTargetProductMetadata(MetadataInspector.Metadata targetProductMetadata) {
+        setTargetProductMetadata(targetProductMetadata, true);
+    }
+
+    public void setTargetProductMetadata(MetadataInspector.Metadata targetProductMetadata, boolean clearPolygon) {
         this.targetProductMetadata = targetProductMetadata;
-        unloadPolygon();
+        if (clearPolygon) {
+            unloadPolygon();
+        }
     }
 
     /**
@@ -286,5 +296,15 @@ public class ProductSubsetByPolygonUiComponents {
      */
     public JPanel getImportVectorFilePanel() {
         return this.vectorFilePanel;
+    }
+
+    public void setPolygonChangedListener(Runnable polygonChangedListener) {
+        this.polygonChangedListener = polygonChangedListener;
+    }
+
+    private void notifyPolygonChanged() {
+        if (polygonChangedListener != null) {
+            SwingUtilities.invokeLater(polygonChangedListener);
+        }
     }
 }
