@@ -110,7 +110,7 @@
     -->
                     <verifyRuntime>false</verifyRuntime>
                     <publicPackages>
-                        <publicPackage>org.esa.snap.*</publicPackage>
+                        <publicPackage>org.esa.snap.dem.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

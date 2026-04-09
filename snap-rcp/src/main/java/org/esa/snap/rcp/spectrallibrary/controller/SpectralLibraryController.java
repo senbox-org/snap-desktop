@@ -5,14 +5,18 @@ import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.AddPreviewAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
+import org.esa.snap.rcp.spectrallibrary.ui.noise.SpectralNoiseReductionProfilesDialog;
+import org.esa.snap.rcp.spectrallibrary.ui.noise.SpectralNoiseSettings;
 import org.esa.snap.rcp.spectrallibrary.util.ColorUtils;
 import org.esa.snap.rcp.spectrallibrary.util.SpectralLibraryUtils;
 import org.esa.snap.rcp.spectrallibrary.util.WktUtils;
+import org.esa.snap.rcp.spectrallibrary.util.noise.SpectralNoiseUtils;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.model.*;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
+import org.esa.snap.speclib.util.noise.SpectralNoiseKernelFactory;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.locationtech.jts.io.WKTReader;
@@ -663,6 +667,88 @@ public class SpectralLibraryController {
             vm.setStatus(UiStatus.info("Vector layer added (" + added + " features)"));
         } else {
             vm.setStatus(UiStatus.warn("Vector layer '" + layerName + "' already exists."));
+        }
+    }
+
+    public void applySpectralNoiseReduction(UUID libraryId,
+                                            List<UUID> profileIds,
+                                            SpectralNoiseSettings settings,
+                                            SpectralNoiseReductionProfilesDialog.SaveMode saveMode,
+                                            String nameSuffix,
+                                            String newLibraryName) {
+
+        SpectralLibrary sourceLibrary = service.getLibrary(libraryId).orElse(null);
+
+        Map<UUID, SpectralProfile> profilesById = new LinkedHashMap<>();
+        for (SpectralProfile profile : sourceLibrary.getProfiles()) {
+            if (profile != null && profile.getId() != null) {
+                profilesById.put(profile.getId(), profile);
+            }
+        }
+
+        List<SpectralProfile> selectedProfiles = new ArrayList<>();
+        for (UUID profileId : profileIds) {
+            SpectralProfile profile = profilesById.get(profileId);
+            if (profile != null) {
+                selectedProfiles.add(profile);
+            }
+        }
+
+        final double[] kernel;
+        try {
+            SpectralNoiseKernelFactory kernelFactory = new SpectralNoiseKernelFactory(
+                    settings.filterType(),
+                    settings.kernelSize(),
+                    settings.gaussianSigma(),
+                    settings.sgPolynomialOrder()
+            );
+            kernelFactory.validateFilterParameters();
+            kernelFactory.ensureKernelSize(sourceLibrary.getAxis().size());
+            kernel = kernelFactory.createKernel();
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            vm.setStatus(UiStatus.warn(ex.getMessage()));
+            return;
+        }
+
+        List<SpectralProfile> smoothedProfiles = new ArrayList<>(selectedProfiles.size());
+        for (SpectralProfile profile : selectedProfiles) {
+            smoothedProfiles.add(SpectralNoiseUtils.createSmoothedProfile(profile, kernel, nameSuffix));
+        }
+
+        try {
+            if (saveMode == SpectralNoiseReductionProfilesDialog.SaveMode.ACTIVE_LIBRARY) {
+                SpectralLibraryService.BulkAddResult r = service.addProfiles(libraryId, smoothedProfiles);
+                reloadLibraries();
+                refreshActiveLibraryProfiles();
+                vm.setStatus(UiStatus.info(
+                        "Smoothed profiles added (" + r.added() + ")" +
+                                (r.skippedExisting() > 0 ? ", skipped (" + r.skippedExisting() + ")" : "")
+                ));
+            } else {
+                String libName = (newLibraryName == null || newLibraryName.isBlank())
+                        ? sourceLibrary.getName() + "_smoothed"
+                        : newLibraryName.trim();
+
+                SpectralLibrary newLibrary = service.createLibrary(
+                        libName,
+                        sourceLibrary.getAxis(),
+                        sourceLibrary.getDefaultYUnit().orElse(null)
+                );
+
+                SpectralLibraryService.BulkAddResult r = service.addProfiles(newLibrary.getId(), smoothedProfiles);
+
+                reloadLibraries();
+                vm.setActiveLibraryId(newLibrary.getId());
+                refreshActiveLibraryProfiles();
+
+                vm.setStatus(UiStatus.info(
+                        "New library created: " + libName + " (" + r.added() + " profiles)"
+                ));
+            }
+        } catch (Exception ex) {
+            reloadLibraries();
+            refreshActiveLibraryProfiles();
+            vm.setStatus(UiStatus.error("Spectral noise reduction failed: " + ex.getMessage()));
         }
     }
 
