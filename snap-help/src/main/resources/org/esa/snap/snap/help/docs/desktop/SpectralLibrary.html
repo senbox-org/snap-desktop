@@ -43,7 +43,7 @@
     </p>
     <ul>
         <li>
-            <b>Library</b> - manages spectral libraries and stored profiles (add/remove/rename, attributes, import/export).
+            <b>Library</b> - manages spectral libraries and stored profiles (add/remove/rename, attributes, import/export, spectral noise reduction).
         </li>
         <li>
             <b>Spectral Profile Extraction</b> - extracts and previews spectral profiles
@@ -71,6 +71,14 @@
             <b>Manage stored profiles</b><br> All profiles contained in the active library are listed in
             the profiles table. Selected entries can be removed from the active library and
             can be previewed in the chart.
+        </li>
+        <li>
+            <b>Reduce spectral noise for stored profiles</b><br>
+            Select one or more profiles in the table and use
+            <b>Apply Spectral Noise Reduction for selected Profiles</b>.
+            A dialog opens where the filter method and its parameters can be configured.
+            The smoothed profiles can either be stored in the current active library or in a newly created library.
+            New profile names are created by appending a suffix such as <code>_smoothed</code>.
         </li>
         <li>
             <b>Create a vector layer from stored profile coordinates</b><br>
