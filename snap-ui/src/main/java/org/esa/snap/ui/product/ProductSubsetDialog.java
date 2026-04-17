@@ -28,6 +28,7 @@ import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.apache.commons.lang3.ArrayUtils;
+import org.esa.snap.core.dataio.ProductSubsetByPolygon;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
@@ -58,7 +59,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -1150,49 +1150,42 @@ public class ProductSubsetDialog extends ModalDialog {
         }
 
         private void updateXYParams(GeoPos geoPos1, GeoPos geoPos2) {
-            final GeoCoding geoCoding = getProductGeocoding();
-            final PixelPos pixelPos1 = geoCoding.getPixelPos(geoPos1, null);
-            if (!pixelPos1.isValid()) {
-                pixelPos1.setLocation(0, 0);
-            }
-            final PixelPos pixelPos2 = geoCoding.getPixelPos(geoPos2, null);
-            if (!pixelPos2.isValid()) {
-                if (product.isMultiSize()) {
-                    pixelPos2.setLocation(product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth(),
-                            product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight());
-                } else {
-                    pixelPos2.setLocation(product.getSceneRasterWidth(),
-                            product.getSceneRasterHeight());
-                }
+            var coordinates = getCoordinates(geoPos1, geoPos2);
+            ProductSubsetByPolygon.GeometryNormalizer.validateGeoCoordinates(coordinates);
 
-            }
-            final Rectangle2D.Float region = new Rectangle2D.Float();
-            region.setFrameFromDiagonal(pixelPos1.x, pixelPos1.y, pixelPos2.x, pixelPos2.y);
-            final Rectangle2D.Float productBounds;
+            final Polygon inputGeoPolygon = ProductSubsetByPolygon.GeometryNormalizer.buildPolygonFromCoordinates(coordinates);
+            Dimension sceneDimension;
             if (product.isMultiSize()) {
-                productBounds = new Rectangle2D.Float(0, 0,
-                        product.getBand((String) referenceCombo.getSelectedItem()).getRasterWidth(),
-                        product.getBand((String) referenceCombo.getSelectedItem()).getRasterHeight());
+                var band = product.getBand((String) referenceCombo.getSelectedItem());
+                sceneDimension = new Dimension(band.getRasterWidth(), band.getRasterHeight());
             } else {
-                productBounds = new Rectangle2D.Float(0, 0,
-                        product.getSceneRasterWidth(),
-                        product.getSceneRasterHeight());
+                sceneDimension = new Dimension(product.getSceneRasterWidth(), product.getSceneRasterHeight());
             }
 
-            Rectangle2D finalRegion = productBounds.createIntersection(region);
+            final GeoCoding geoCoding = getProductGeocoding();
+            final Polygon clippedGeoPolygon = ProductSubsetByPolygon.PolygonClipper.clipGeoPolygonToProductBounds(inputGeoPolygon, geoCoding, sceneDimension);
+            final Coordinate[] polygonCoordinates = ProductSubsetByPolygon.PolygonSubsetLoader.projectGeoCoordinatesToPixel(clippedGeoPolygon.getCoordinates(), geoCoding);
+            final Polygon polygon = ProductSubsetByPolygon.GeometryNormalizer.buildPolygonFromCoordinates(polygonCoordinates);
+            final Polygon clippedPolygon = ProductSubsetByPolygon.PolygonClipper.clipPixelPolygonToProductBounds(polygon, sceneDimension);
 
-            paramX1.setValue((int) finalRegion.getMinX(), ex -> true);
-            paramY1.setValue((int) finalRegion.getMinY(), ex -> true);
-            int maxX = (int) finalRegion.getMaxX();
-            if (maxX > productBounds.width - 1) {
-                maxX -= 1;
-            }
-            paramX2.setValue(maxX, ex -> true);
-            int maxY = (int) finalRegion.getMaxY();
-            if (maxY > productBounds.height - 1) {
-                maxY -= 1;
-            }
-            paramY2.setValue(maxY, ex -> true);
+
+            var envelopeInternal = clippedPolygon.getEnvelopeInternal();
+            paramX1.setValue(envelopeInternal.getMinX(), ex -> true);
+            paramY1.setValue(envelopeInternal.getMinY(), ex -> true);
+            paramX2.setValue(envelopeInternal.getMaxX(), ex -> true);
+            paramY2.setValue(envelopeInternal.getMaxY(), ex -> true);
+        }
+
+        private static Coordinate @NonNull [] getCoordinates(GeoPos geoPos1, GeoPos geoPos2) {
+            Coordinate coord1 = new Coordinate(geoPos1.getLon(), geoPos1.getLat());
+            Coordinate coord2 = new Coordinate(geoPos2.getLon(), geoPos2.getLat());
+            return new Coordinate[]{
+                    new Coordinate(coord1.x, coord1.y),
+                    new Coordinate(coord2.x, coord1.y),
+                    new Coordinate(coord2.x, coord2.y),
+                    new Coordinate(coord1.x, coord2.y),
+                    new Coordinate(coord1.x, coord1.y)
+            };
         }
 
         private Dimension getScaledImageSize() {
