@@ -53,8 +53,6 @@ import org.esa.snap.ui.SliderBoxImageDisplay;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.util.GeoCodingUtil;
 import org.jspecify.annotations.NonNull;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Polygon;
 
 import javax.swing.*;
 import java.awt.*;
