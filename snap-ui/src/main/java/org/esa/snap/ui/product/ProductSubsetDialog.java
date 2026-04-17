@@ -53,6 +53,9 @@ import org.esa.snap.ui.SliderBoxImageDisplay;
 import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.util.GeoCodingUtil;
 import org.jspecify.annotations.NonNull;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -1153,7 +1156,7 @@ public class ProductSubsetDialog extends ModalDialog {
             var coordinates = getCoordinates(geoPos1, geoPos2);
             ProductSubsetByPolygon.GeometryNormalizer.validateGeoCoordinates(coordinates);
 
-            final Polygon inputGeoPolygon = ProductSubsetByPolygon.GeometryNormalizer.buildPolygonFromCoordinates(coordinates);
+            final org.locationtech.jts.geom.Polygon inputGeoPolygon = ProductSubsetByPolygon.GeometryNormalizer.buildPolygonFromCoordinates(coordinates);
             Dimension sceneDimension;
             if (product.isMultiSize()) {
                 var band = product.getBand((String) referenceCombo.getSelectedItem());
@@ -1163,9 +1166,9 @@ public class ProductSubsetDialog extends ModalDialog {
             }
 
             final GeoCoding geoCoding = getProductGeocoding();
-            final Polygon clippedGeoPolygon = ProductSubsetByPolygon.PolygonClipper.clipGeoPolygonToProductBounds(inputGeoPolygon, geoCoding, sceneDimension);
+            final org.locationtech.jts.geom.Polygon clippedGeoPolygon = ProductSubsetByPolygon.PolygonClipper.clipGeoPolygonToProductBounds(inputGeoPolygon, geoCoding, sceneDimension);
             final Coordinate[] polygonCoordinates = ProductSubsetByPolygon.PolygonSubsetLoader.projectGeoCoordinatesToPixel(clippedGeoPolygon.getCoordinates(), geoCoding);
-            final Polygon polygon = ProductSubsetByPolygon.GeometryNormalizer.buildPolygonFromCoordinates(polygonCoordinates);
+            final org.locationtech.jts.geom.Polygon polygon = ProductSubsetByPolygon.GeometryNormalizer.buildPolygonFromCoordinates(polygonCoordinates);
             final Polygon clippedPolygon = ProductSubsetByPolygon.PolygonClipper.clipPixelPolygonToProductBounds(polygon, sceneDimension);
 
 

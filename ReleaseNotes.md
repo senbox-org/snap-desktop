@@ -2,6 +2,7 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 13.0.1
+    [SNAP-4188] The preview subset-rectangle is not updated when importing a polygon
     [SNAP-4121] Generic Reader Caching library
 
 # New in SNAP 13.0.0
