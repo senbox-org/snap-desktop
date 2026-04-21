@@ -437,14 +437,14 @@ public class SpectralLibraryActionBinder {
                         return;
                     }
 
-                    Optional<SpectralResamplingProfilesDialog.Result2> resultOpt =
+                    Optional<SpectralResamplingProfilesDialog.Result> resultOpt =
                             SpectralResamplingProfilesDialog.showDialog(panel, lib.getName(), profileIds.size());
 
                     if (resultOpt.isEmpty()) {
                         return;
                     }
 
-                    SpectralResamplingProfilesDialog.Result2 result = resultOpt.get();
+                    SpectralResamplingProfilesDialog.Result result = resultOpt.get();
 
                     if (result.settings() == null) {
                         vm.setStatus(UiStatus.warn("No noise reduction settings provided"));

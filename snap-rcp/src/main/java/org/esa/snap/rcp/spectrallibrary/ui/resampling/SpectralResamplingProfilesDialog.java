@@ -13,7 +13,7 @@ public class SpectralResamplingProfilesDialog extends JDialog {
         NEW_LIBRARY
     }
 
-    public record Result2(
+    public record Result(
             SpectralResamplingSettings settings,
             SaveMode saveMode,
             String nameSuffix,
@@ -22,15 +22,15 @@ public class SpectralResamplingProfilesDialog extends JDialog {
 
     private final SpectralResamplingSettingsPanel settingsPanel = new SpectralResamplingSettingsPanel();
 
-    private final JRadioButton saveToActiveLibraryButton = new JRadioButton("Save as new profiles in active library", true);
-    private final JRadioButton saveToNewLibraryButton = new JRadioButton("Save in new library");
+    private final JRadioButton saveToActiveLibraryButton = new JRadioButton("Save as new profiles in active library");
+    private final JRadioButton saveToNewLibraryButton = new JRadioButton("Save in new library", true);
 
     private final JTextField suffixField = new JTextField("_resampled", 18);
     private final JTextField newLibraryNameField = new JTextField(24);
 
     private final JLabel statusLabel = new JLabel(" ");
 
-    private Result2 result;
+    private Result result;
 
 
     private SpectralResamplingProfilesDialog(Window owner,
@@ -52,9 +52,9 @@ public class SpectralResamplingProfilesDialog extends JDialog {
         setLocationRelativeTo(owner);
     }
 
-    public static Optional<Result2> showDialog(Component parent,
-                                               String activeLibraryName,
-                                               int selectedProfileCount) {
+    public static Optional<Result> showDialog(Component parent,
+                                              String activeLibraryName,
+                                              int selectedProfileCount) {
         Window owner = parent == null ? null : SwingUtilities.getWindowAncestor(parent);
         SpectralResamplingProfilesDialog dialog =
                 new SpectralResamplingProfilesDialog(owner, activeLibraryName, selectedProfileCount);
@@ -80,6 +80,7 @@ public class SpectralResamplingProfilesDialog extends JDialog {
 
         ButtonGroup group = new ButtonGroup();
         group.add(saveToActiveLibraryButton);
+        saveToActiveLibraryButton.setEnabled(false);
         group.add(saveToNewLibraryButton);
 
         gbc = createConstraints();
@@ -127,7 +128,6 @@ public class SpectralResamplingProfilesDialog extends JDialog {
     }
 
     private void installListeners() {
-//        saveToActiveLibraryButton.addActionListener(e -> updateTargetControls());
         saveToNewLibraryButton.addActionListener(e -> updateTargetControls());
     }
 
@@ -135,7 +135,7 @@ public class SpectralResamplingProfilesDialog extends JDialog {
         String baseName = (activeLibraryName == null || activeLibraryName.isBlank())
                 ? "Library"
                 : activeLibraryName.trim();
-        newLibraryNameField.setText(baseName + "_smoothed");
+        newLibraryNameField.setText(baseName + "_resampled");
     }
 
     private void updateTargetControls() {
@@ -169,7 +169,7 @@ public class SpectralResamplingProfilesDialog extends JDialog {
             }
         }
 
-        result = new Result2(
+        result = new Result(
                 settingsPanel.getSettings(),
                 saveMode,
                 suffix,

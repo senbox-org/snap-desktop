@@ -17,11 +17,13 @@ import org.esa.snap.rcp.spectrallibrary.util.resampling.SpectralResamplingUtils;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
+import org.esa.snap.speclib.io.csv.util.CsvTable;
 import org.esa.snap.speclib.model.*;
 import org.esa.snap.speclib.model.AttributeValue;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 import org.esa.snap.speclib.util.noise.SpectralNoiseKernelFactory;
 import org.esa.snap.speclib.util.resampling.SpectralResamplingSensor;
+import org.esa.snap.speclib.util.resampling.SpectralResponseFunction;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.locationtech.jts.io.WKTReader;
@@ -783,16 +785,25 @@ public class SpectralLibraryController {
             }
         }
 
+        CsvTable fwhmTable;
+        try {
+            fwhmTable = SpectralResamplingUtils.readFwhmFromCsv(settings.targetSensorName());
+        } catch (IOException | URISyntaxException e) {
+            vm.setStatus(UiStatus.error("Spectral Resampling failed: " + e.getMessage()));
+            return;
+        }
+
         List<SpectralProfile> resampledProfiles = new ArrayList<>(selectedProfiles.size());
         for (SpectralProfile profile : selectedProfiles) {
             try {
                 resampledProfiles.add(SpectralResamplingUtils.createResampledProfile(profile,
                         sourceLibrary.getAxis().getWavelengths(),
+                        fwhmTable,
                         settings.targetSensorName(),
                         nameSuffix));
             } catch (IOException | URISyntaxException e) {
-                // TODO
-                throw new RuntimeException(e);
+                vm.setStatus(UiStatus.error("Spectral Resampling failed: " + e.getMessage()));
+                return;
             }
         }
 
@@ -801,14 +812,17 @@ public class SpectralLibraryController {
                     ? sourceLibrary.getName() + "_resampled"
                     : newLibraryName.trim();
 
+            final double[] resampledWvls = SpectralResponseFunction.getFwhmTableColumnsAsArrays(fwhmTable)[0];
+            final SpectralAxis resampledAxis = new SpectralAxis(resampledWvls, sourceLibrary.getAxis().getXUnit());
             SpectralLibrary newLibrary = service.createLibrary(
                     libName,
-                    sourceLibrary.getAxis(),
+                    resampledAxis,
                     sourceLibrary.getDefaultYUnit().orElse(null)
             );
 
             SpectralLibraryService.BulkAddResult r = service.addProfiles(newLibrary.getId(), resampledProfiles);
 
+            clearPreview();
             reloadLibraries();
             vm.setActiveLibraryId(newLibrary.getId());
             refreshActiveLibraryProfiles();

@@ -4,7 +4,6 @@ import org.esa.snap.speclib.util.resampling.SpectralResamplingSensor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Map;
 
 public class SpectralResamplingSettingsPanel extends JPanel {
     private final JComboBox<String> targetSensorCombo = new JComboBox<>(new String[]{
@@ -39,25 +38,8 @@ public class SpectralResamplingSettingsPanel extends JPanel {
         updateTargetSensorSpecificControls();
     }
 
-    public void applyParameterMap(Map<String, Object> paramMap) {
-        setSettings(new SpectralResamplingSettings(
-                paramMap.get("targetSensorName") instanceof String s ? s : SpectralResamplingSensor.ENMAP.getName()
-        ));
-    }
-
-    public void updateParameterMap(Map<String, Object> paramMap) {
-        SpectralResamplingSettings s = getSettings();
-        paramMap.put("targetSensorName", s.targetSensorName());
-    }
-
     public String validateParameters() {
         // nothing to do yet
-//        try {
-//            getSettings().validate();
-//            return null;
-//        } catch (IllegalArgumentException e) {
-//            return e.getMessage();
-//        }
         return null;
     }
 
