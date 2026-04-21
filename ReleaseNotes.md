@@ -1,6 +1,11 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 13.0.1
+    [SNAP-4189] Subset GUI issue resetting outside product geo-coordinates
+    [SNAP-4188] The preview subset-rectangle is not updated when importing a polygon
+    [SNAP-4121] Generic Reader Caching library
+
 # New in SNAP 13.0.0
     [SNAP-1517] Empty results when using only Write operator with gpt
     [SNAP-3641] Bug when writing flags to DIMAP, NetCDF and other formats

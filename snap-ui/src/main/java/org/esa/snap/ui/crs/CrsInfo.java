@@ -42,12 +42,15 @@ import java.util.Set;
 class CrsInfo implements Comparable<CrsInfo> {
 
     private static final String AUTHORITY = "EPSG";
+
     private final String crsCode;
+    private String crsName;
     private final CRSAuthorityFactory factory;
 
     CrsInfo(String crsCode, CRSAuthorityFactory factory) {
         this.crsCode = crsCode;
         this.factory = factory;
+        getCrsName();
     }
 
     public CoordinateReferenceSystem getCrs(GeoPos referencePos) throws FactoryException {
@@ -98,6 +101,18 @@ class CrsInfo implements Comparable<CrsInfo> {
         }
     }
 
+    public String getCrsName() {
+        try {
+            if (crsName == null){
+                crsName = getCrs(null).getName().getCode();
+            }
+
+            return crsName;
+        } catch (FactoryException e) {
+            return e.getMessage();
+        }
+    }
+
     private static class AutoCrsInfo extends CrsInfo {
 
         AutoCrsInfo(String epsgCode, CRSAuthorityFactory factory) {
@@ -130,8 +145,6 @@ class CrsInfo implements Comparable<CrsInfo> {
         public String getDescription() {
             return toString();
         }
-
-
     }
 
     static List<CrsInfo> generateCRSList() {

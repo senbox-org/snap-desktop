@@ -43,7 +43,7 @@
     </p>
     <ul>
         <li>
-            <b>Library</b> - manages spectral libraries and stored profiles (add/remove/rename, attributes, import/export).
+            <b>Library</b> - manages spectral libraries and stored profiles (add/remove/rename, attributes, import/export, spectral noise reduction).
         </li>
         <li>
             <b>Spectral Profile Extraction</b> - extracts and previews spectral profiles
@@ -71,6 +71,14 @@
             <b>Manage stored profiles</b><br> All profiles contained in the active library are listed in
             the profiles table. Selected entries can be removed from the active library and
             can be previewed in the chart.
+        </li>
+        <li>
+            <b>Reduce spectral noise for stored profiles</b><br>
+            Select one or more profiles in the table and use
+            <b>Apply Spectral Noise Reduction for selected Profiles</b>.
+            A dialog opens where the filter method and its parameters can be configured.
+            The smoothed profiles can either be stored in the current active library or in a newly created library.
+            New profile names are created by appending a suffix such as <code>_smoothed</code>.
         </li>
         <li>
             <b>Create a vector layer from stored profile coordinates</b><br>
@@ -179,14 +187,24 @@
 
     <h4>File Formats</h4>
     <p>
-        Libraries can be imported and exported in common formats.
+        Libraries can be imported and exported in the following formats.
     </p>
     <ul>
         <li>
-            <b>ENVI Spectral Library (SLI)</b> - A widely used binary+header format where spectra are stored as rows sharing a common wavelength axis.
+            <b>ENVI Spectral Library (*.sli / *.hdr)</b> - A widely used binary format where spectra
+            are stored as rows sharing a common wavelength axis. Custom attributes are stored in an
+            accompanying CSV sidecar file.
         </li>
         <li>
-            Additionally, custom attributes are stored in a csv file format.
+            <b>GeoJSON (*.geojson)</b> - A text-based format compatible with the EnMAP-Box spectral
+            library GeoJSON format. Each profile is stored as a GeoJSON Feature, including spectral
+            data, bad band information, custom attributes, and optional point geometry.
+        </li>
+        <li>
+            <b>Spectral Library CSV (*.csv)</b> - A tabular text format compatible with the EcoSIS
+            (Ecological Spectral Information System) convention. Wavelengths are stored as numeric
+            column headers; non-numeric columns are treated as metadata attributes. Both
+            By-Row and By-Column orientations can be imported; export is always By-Row.
         </li>
     </ul>
 
