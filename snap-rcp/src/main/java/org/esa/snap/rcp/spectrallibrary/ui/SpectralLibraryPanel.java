@@ -35,6 +35,7 @@ public class SpectralLibraryPanel extends JPanel {
     private final JButton changePreviewColorButton = new JButton("Set Preview Color for Selected Profiles...");
     private final JButton addProfilesCoordinatesToVectorLayer = new JButton("Add Selected Profiles as Vector Layer");
     private final JButton applySpectralNoiseReduction = new JButton("Apply Spectral Noise Reduction for selected Profiles");
+    private final JButton applySpectralResamplingReduction = new JButton("Apply Spectral Resampling for selected Profiles");
 
     // preview actions
     private final PreviewPanel previewPanel = new PreviewPanel();
@@ -154,16 +155,19 @@ public class SpectralLibraryPanel extends JPanel {
         JPanel header2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         JPanel header3 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         JPanel header4 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        JPanel header5 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         header1.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
         header2.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
         header3.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
         header4.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
+        header5.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
         header1.add(removeSelectedProfilesButton);
         header1.add(addAttributeButton);
         header2.add(previewSelectedProfilesButton);
         header2.add(changePreviewColorButton);
         header3.add(addProfilesCoordinatesToVectorLayer);
         header4.add(applySpectralNoiseReduction);
+        header5.add(applySpectralResamplingReduction);
 
 
         JPanel header = new JPanel();
@@ -172,6 +176,7 @@ public class SpectralLibraryPanel extends JPanel {
         header.add(header2);
         header.add(header3);
         header.add(header4);
+        header.add(header5);
 
         tablePanel.add(header, BorderLayout.NORTH);
         tablePanel.add(new JScrollPane(libraryTable), BorderLayout.CENTER);
@@ -311,6 +316,9 @@ public class SpectralLibraryPanel extends JPanel {
 
     public JButton getApplySpectralNoiseReduction() {
         return applySpectralNoiseReduction;
+    }
+    public JButton getApplySpectralResampling() {
+        return applySpectralResamplingReduction;
     }
 
     // preview actions

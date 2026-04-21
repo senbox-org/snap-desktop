@@ -11,6 +11,7 @@ import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.AddAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
 import org.esa.snap.rcp.spectrallibrary.ui.noise.SpectralNoiseReductionProfilesDialog;
+import org.esa.snap.rcp.spectrallibrary.ui.resampling.SpectralResamplingProfilesDialog;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.io.CompositeSpectralLibraryIO;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
@@ -120,6 +121,7 @@ public class SpectralLibraryActionBinder {
         wireToolbarBasics();
         wireAddProfilesCoordinatesToVectorLayer();
         wireApplyNoiseReduction();
+        wireApplyResampling();
         wireProfileColorButton();
         wireTableEditing();
         wireImportExport();
@@ -398,6 +400,66 @@ public class SpectralLibraryActionBinder {
                     result.newLibraryName()
             );
         }
+        );
+    }
+
+    private void wireApplyResampling() {
+        panel.getApplySpectralResampling().addActionListener(e -> {
+                    UUID libId = vm.getActiveLibraryId().orElse(null);
+                    if (libId == null) {
+                        vm.setStatus(UiStatus.warn("No active library"));
+                        return;
+                    }
+
+                    int[] viewRows = panel.getLibraryTable().getSelectedRows();
+                    if (viewRows == null || viewRows.length == 0) {
+                        vm.setStatus(UiStatus.warn("No profiles selected"));
+                        return;
+                    }
+
+                    SpectralLibrary lib = getSelectedLibraryFromCombo();
+                    if (lib == null) {
+                        vm.setStatus(UiStatus.warn("No active library"));
+                        return;
+                    }
+
+                    List<UUID> profileIds = new ArrayList<>(viewRows.length);
+                    for (int viewRow : viewRows) {
+                        int modelRow = panel.getLibraryTable().convertRowIndexToModel(viewRow);
+                        UUID id = panel.getLibraryTableModel().getIdAt(modelRow);
+                        if (id != null) {
+                            profileIds.add(id);
+                        }
+                    }
+
+                    if (profileIds.isEmpty()) {
+                        vm.setStatus(UiStatus.warn("No valid profiles selected"));
+                        return;
+                    }
+
+                    Optional<SpectralResamplingProfilesDialog.Result2> resultOpt =
+                            SpectralResamplingProfilesDialog.showDialog(panel, lib.getName(), profileIds.size());
+
+                    if (resultOpt.isEmpty()) {
+                        return;
+                    }
+
+                    SpectralResamplingProfilesDialog.Result2 result = resultOpt.get();
+
+                    if (result.settings() == null) {
+                        vm.setStatus(UiStatus.warn("No noise reduction settings provided"));
+                        return;
+                    }
+
+                    controller.applySpectralResampling(
+                            libId,
+                            profileIds,
+                            result.settings(),
+                            result.saveMode(),
+                            result.nameSuffix(),
+                            result.newLibraryName()
+                    );
+                }
         );
     }
 
