@@ -555,17 +555,17 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
                 int wavelengthInt = Math.round(wvl);
                 float wavelengthIntFloat = (float) (wavelengthInt * 1.0);
                 if (wavelengthIntFloat == wvl) {
-                    if (wvl > 1e6) {
-                        setDisplayName(String.format("%s (%.2f mm)", band.getName(), wvl / 1e6));
+                    if (wvl >= 1e3) {
+                        setDisplayName(String.format("%s (%.3f μm)", band.getName(), wvl / 1e3));
                     } else if (wvl > 0.0) {
                         setDisplayName(String.format("%s (%.1f nm)", band.getName(), wvl));
                     }
 
                 } else {
                     String wavelengthUnits = "nm";
-                    if (wvl > 1e6) {
-                        wvl = (float) (wvl / 1e6);
-                        wavelengthUnits = "mm";
+                    if (wvl >= 1e3) {
+                        wvl = (float) (wvl / 1e3);
+                        wavelengthUnits = "μm";
                     }
 
                     String wavelengthString = Float.toString(wvl);
