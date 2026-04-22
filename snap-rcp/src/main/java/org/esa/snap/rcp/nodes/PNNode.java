@@ -549,17 +549,34 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         void updateDisplayName(Band band) {
             super.updateDisplayName(band);
-            if (band.getSpectralWavelength() > 0.0) {
-                int wavelengthInt = Math.round(band.getSpectralWavelength());
+            float wvl = band.getSpectralWavelength();
+
+            if (wvl > 0.0) {
+                int wavelengthInt = Math.round(wvl);
                 float wavelengthIntFloat = (float) (wavelengthInt * 1.0);
-                if (wavelengthIntFloat == band.getSpectralWavelength()) {
-                    setDisplayName(String.format("%s (%.1f nm)", band.getName(), band.getSpectralWavelength()));
+                if (wavelengthIntFloat == wvl) {
+                    if (wvl > 1e6) {
+                        setDisplayName(String.format("%s (%.2f mm)", band.getName(), wvl / 1e6));
+                    } else if (wvl > 0.0) {
+                        setDisplayName(String.format("%s (%.1f nm)", band.getName(), wvl));
+                    }
+
                 } else {
-                    String wavelengthString = Float.toString(band.getSpectralWavelength());
-                    setDisplayName(band.getName() + " (" + wavelengthString + " nm)");
+                    String wavelengthUnits = "nm";
+                    if (wvl > 1e6) {
+                        wvl = (float) (wvl / 1e6);
+                        wavelengthUnits = "mm";
+                    }
+
+                    String wavelengthString = Float.toString(wvl);
+
+                    setDisplayName(band.getName() + " (" + wavelengthString + " " + wavelengthUnits + ")");
                 }
             }
         }
+
+
+
 
         @Override
         public void nodeChanged(ProductNodeEvent event) {
