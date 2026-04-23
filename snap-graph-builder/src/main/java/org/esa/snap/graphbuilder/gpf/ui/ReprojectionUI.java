@@ -34,8 +34,14 @@ import org.esa.snap.ui.crs.OutputGeometryForm;
 import org.esa.snap.ui.crs.OutputGeometryFormModel;
 import org.esa.snap.ui.crs.PredefinedCrsForm;
 import org.esa.snap.ui.product.ProductExpressionPane;
+import org.geotools.referencing.CRS;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.ProjectedCRS;
+import org.opengis.referencing.datum.GeodeticDatum;
+import org.opengis.referencing.operation.OperationMethod;
+import org.opengis.referencing.operation.Projection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,6 +89,7 @@ public class ReprojectionUI extends BaseOperatorUI {
 
     private CustomCrsForm customCrsUI;
 
+    private PredefinedCrsForm predefinedCrsUI;
 
     //Components of output setting panel
     JCheckBox preserveResolutionCheckBox;
@@ -139,6 +146,49 @@ public class ReprojectionUI extends BaseOperatorUI {
             } else {
                 addDeltaBandsCheckBox.setEnabled(false);
             }
+
+            Object crsAsWKT = paramMap.get("crs");
+            if (crsAsWKT instanceof String) {
+                try {
+                    CoordinateReferenceSystem crs;
+                    crs = CRS.parseWKT((String) crsAsWKT);
+                    String crsCode = crs.getName().getCode();
+
+                    if (crsCode != null && predefinedCrsUI.selectCrsInfoByCrsName(crsCode.toString())) {
+                        predefinedCrsUI.getRadioButton().setSelected(true);
+                        crsSelectionPanel.prepareShow();
+                    }else{
+                        if (crs instanceof ProjectedCRS) {
+                            ProjectedCRS projectedCRS = (ProjectedCRS) crs;
+                            Projection conversionFromBase = projectedCRS.getConversionFromBase();
+                            OperationMethod operationMethod = conversionFromBase.getMethod();
+                            ParameterValueGroup parameterValues = conversionFromBase.getParameterValues();
+                            GeodeticDatum geodeticDatum = projectedCRS.getDatum();
+
+                            customCrsUI.setCustom(geodeticDatum, operationMethod, parameterValues);
+                            customCrsUI.getRadioButton().setSelected(true);
+                            crsSelectionPanel.prepareShow();
+                        }
+                    }
+                } catch (FactoryException e) { }
+
+            }
+        }
+
+        Double dblNoData = (Double) paramMap.get("noDataValue");
+        if (dblNoData != null) {
+            noDataField.setText(String.valueOf(dblNoData));
+        }
+        if (paramMap.get("resamplingName") != null) {
+            resampleComboBox.setSelectedItem((String)paramMap.get("resamplingName"));
+        }
+        final Boolean includeTPGrid = ((Boolean) paramMap.get("includeTiePointGrids"));
+        if (includeTPGrid != null) {
+            includeTPcheck.setSelected(includeTPGrid);
+        }
+
+        if (paramMap.get("referencePixelX") != null ){
+            preserveResolutionCheckBox.setSelected(false);
         }
         updateCRS();
 
