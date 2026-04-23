@@ -1,27 +1,17 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 
-import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertySet;
-import com.bc.ceres.binding.PropertySetDescriptor;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.ImageGeometry;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.gpf.GPF;
-import org.esa.snap.core.gpf.OperatorSpi;
-import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.core.gpf.common.BandMathsOp;
-import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
-import org.esa.snap.core.gpf.descriptor.PropertySetDescriptorFactory;
 import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
-import org.esa.snap.core.param.ParamProperties;
 import org.esa.snap.core.param.Parameter;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.ProductUtils;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
@@ -825,23 +815,18 @@ public class ReprojectionUI extends BaseOperatorUI {
                 OutputGeometryFormModel workCopy;
                 if (outputGeometryModel != null) {
                     workCopy = new OutputGeometryFormModel(outputGeometryModel);
-                } else if (!propertySet.getValue("orientation").equals(0.0) ||
-                        propertySet.getValue("easting") != null ||
-                        propertySet.getValue("northing") != null ||
-                        propertySet.getValue("pixelSizeX") != null ||
-                        propertySet.getValue("pixelSizeY") != null ||
-                        propertySet.getValue("referencePixelX") != null ||
-                        propertySet.getValue("referencePixelY") != null ||
-                        propertySet.getValue("width") != null ||
-                        propertySet.getValue("height") != null) {
+                } else {
                     // final Product collocationProduct = collocationCrsUI.getCollocationProduct();
                     // if (collocationCrsUI.getRadioButton().isSelected() && collocationProduct != null) {
                     //    workCopy = new OutputGeometryFormModel(sourceProduct, collocationProduct);
                     // } else {
-                    workCopy = new OutputGeometryFormModel(sourceProduct, crs, propertySet);
-                    // }
+                        if (paramMap != null && paramMap.containsKey("referencePixelX")) {
+                            PropertySet propertyContainer = PropertyContainer.createMapBacked(paramMap);
+                            workCopy = new OutputGeometryFormModel(sourceProduct, crs, propertyContainer);
                 } else {
                     workCopy = new OutputGeometryFormModel(sourceProduct, crs);
+                }
+                   // }
                 }
                 final OutputGeometryForm form = new OutputGeometryForm(workCopy);
                 final ModalDialog outputParametersDialog = new OutputParametersDialog(appContext.getApplicationWindow(),
