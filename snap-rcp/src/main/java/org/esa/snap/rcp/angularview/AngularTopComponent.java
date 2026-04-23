@@ -1416,6 +1416,11 @@ private void setCurrentView(ProductSceneView view) {
             setCurrentView(null);
         }
         
+        if (currentProduct != null) {
+            currentProduct.removeProductNodeListener(productNodeHandler);
+        }
+
+
         chartHandler.setEmptyPlot();
         removeCursorAngularViewsFromDataset();
     }
@@ -1429,7 +1434,7 @@ private void setCurrentView(ProductSceneView view) {
 
         private static final String MESSAGE_NO_ANGULAR_BANDS = "No angular bands available";   /*I18N*/
         private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
-        private static final String MESSAGE_NO_AngularView_SELECTED = "No angular View selected";
+        private static final String MESSAGE_NO_AngularView_SELECTED = "No angular view selected";
         private static final String MESSAGE_COLLECTING_ANGULAR_INFORMATION = "Collecting angular information...";
         private static final String MESSAGE_CURSOR_MODE_OFF = "Cursor Mode de-activated.";
         private static final String MESSAGE_CURSOR_MODE_NAN = "Cursor Mode activated.\n  \nData likely masked out or NaN at cursor pixel position.";
@@ -2503,6 +2508,9 @@ private void setCurrentView(ProductSceneView view) {
         }
 
         private void removeBandFromAngularViews(Band band) {
+            if (currentView == null) {
+                return;
+            }
             DisplayableAngularview[] allAngularViews = rasterToAngularMap.get(currentView.getRaster());
             for (DisplayableAngularview displayableAngularView : allAngularViews) {
                 Band[] angularBands = displayableAngularView.getAngularBands();

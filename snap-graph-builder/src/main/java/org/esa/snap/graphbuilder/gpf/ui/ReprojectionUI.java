@@ -1,27 +1,17 @@
 package org.esa.snap.graphbuilder.gpf.ui;
 
 
-import com.bc.ceres.binding.ConversionException;
 import com.bc.ceres.binding.PropertyContainer;
 import com.bc.ceres.binding.PropertySet;
-import com.bc.ceres.binding.PropertySetDescriptor;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.ImageGeometry;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.gpf.GPF;
-import org.esa.snap.core.gpf.OperatorSpi;
-import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
-import org.esa.snap.core.gpf.common.BandMathsOp;
-import org.esa.snap.core.gpf.descriptor.OperatorDescriptor;
-import org.esa.snap.core.gpf.descriptor.PropertySetDescriptorFactory;
 import org.esa.snap.core.param.ParamChangeEvent;
 import org.esa.snap.core.param.ParamChangeListener;
-import org.esa.snap.core.param.ParamProperties;
 import org.esa.snap.core.param.Parameter;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.ProductUtils;
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
@@ -34,13 +24,20 @@ import org.esa.snap.ui.crs.OutputGeometryForm;
 import org.esa.snap.ui.crs.OutputGeometryFormModel;
 import org.esa.snap.ui.crs.PredefinedCrsForm;
 import org.esa.snap.ui.product.ProductExpressionPane;
+import org.geotools.referencing.CRS;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.ProjectedCRS;
+import org.opengis.referencing.datum.GeodeticDatum;
+import org.opengis.referencing.operation.OperationMethod;
+import org.opengis.referencing.operation.Projection;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -83,6 +80,7 @@ public class ReprojectionUI extends BaseOperatorUI {
 
     private CustomCrsForm customCrsUI;
 
+    private PredefinedCrsForm predefinedCrsUI;
 
     //Components of output setting panel
     JCheckBox preserveResolutionCheckBox;
@@ -139,6 +137,49 @@ public class ReprojectionUI extends BaseOperatorUI {
             } else {
                 addDeltaBandsCheckBox.setEnabled(false);
             }
+
+            Object crsAsWKT = paramMap.get("crs");
+            if (crsAsWKT instanceof String) {
+                try {
+                    CoordinateReferenceSystem crs;
+                    crs = CRS.parseWKT((String) crsAsWKT);
+                    String crsCode = crs.getName().getCode();
+
+                    if (crsCode != null && predefinedCrsUI.selectCrsInfoByCrsName(crsCode.toString())) {
+                        predefinedCrsUI.getRadioButton().setSelected(true);
+                        crsSelectionPanel.prepareShow();
+                    }else{
+                        if (crs instanceof ProjectedCRS) {
+                            ProjectedCRS projectedCRS = (ProjectedCRS) crs;
+                            Projection conversionFromBase = projectedCRS.getConversionFromBase();
+                            OperationMethod operationMethod = conversionFromBase.getMethod();
+                            ParameterValueGroup parameterValues = conversionFromBase.getParameterValues();
+                            GeodeticDatum geodeticDatum = projectedCRS.getDatum();
+
+                            customCrsUI.setCustom(geodeticDatum, operationMethod, parameterValues);
+                            customCrsUI.getRadioButton().setSelected(true);
+                            crsSelectionPanel.prepareShow();
+                        }
+                    }
+                } catch (FactoryException e) { }
+
+            }
+        }
+
+        Double dblNoData = (Double) paramMap.get("noDataValue");
+        if (dblNoData != null) {
+            noDataField.setText(String.valueOf(dblNoData));
+        }
+        if (paramMap.get("resamplingName") != null) {
+            resampleComboBox.setSelectedItem((String)paramMap.get("resamplingName"));
+        }
+        final Boolean includeTPGrid = ((Boolean) paramMap.get("includeTiePointGrids"));
+        if (includeTPGrid != null) {
+            includeTPcheck.setSelected(includeTPGrid);
+        }
+
+        if (paramMap.get("referencePixelX") != null ){
+            preserveResolutionCheckBox.setSelected(false);
         }
         updateCRS();
 
@@ -154,6 +195,12 @@ public class ReprojectionUI extends BaseOperatorUI {
 
     @Override
     public void updateParameters() {
+
+        Object oldCrsValue = paramMap.get("crs");
+        PropertySet outputGeometryParams = null;
+        if (paramMap != null && paramMap.containsKey("referencePixelX")) {
+            outputGeometryParams = PropertyContainer.createMapBacked(new HashMap<>(paramMap));
+        }
 
         if (!propertySet.getValue("orientation").equals(0.0) ||
                 propertySet.getValue("easting") != null ||
@@ -176,6 +223,8 @@ public class ReprojectionUI extends BaseOperatorUI {
         CoordinateReferenceSystem selectedCrs = getSelectedCrs();
         if (selectedCrs != null) {
             paramMap.put("crs", selectedCrs.toWKT());
+            } else if (oldCrsValue != null) {
+                paramMap.put("crs", oldCrsValue);
         } else {
             paramMap.put("crs", "EPSG:4326");
         }
@@ -200,17 +249,28 @@ public class ReprojectionUI extends BaseOperatorUI {
             }
         }
 
-        if (!preserveResolutionCheckBox.isSelected() && outputGeometryModel != null) {
-            PropertySet container = outputGeometryModel.getPropertySet();
-            paramMap.put("referencePixelX", container.getValue("referencePixelX"));
-            paramMap.put("referencePixelY", container.getValue("referencePixelY"));
-            paramMap.put("easting", container.getValue("easting"));
-            paramMap.put("northing", container.getValue("northing"));
-            paramMap.put("orientation", container.getValue("orientation"));
-            paramMap.put("pixelSizeX", container.getValue("pixelSizeX"));
-            paramMap.put("pixelSizeY", container.getValue("pixelSizeY"));
-            paramMap.put("width", container.getValue("width"));
-            paramMap.put("height", container.getValue("height"));
+        if (!preserveResolutionCheckBox.isSelected()) {
+            PropertySet container =  (outputGeometryModel != null ) ? outputGeometryModel.getPropertySet() : outputGeometryParams;
+            if (container != null ) {
+                if (container.getValue("referencePixelX") != null)
+                    paramMap.put("referencePixelX", container.getValue("referencePixelX"));
+                if (container.getValue("referencePixelY") != null)
+                    paramMap.put("referencePixelY", container.getValue("referencePixelY"));
+                if (container.getValue("easting") != null)
+                    paramMap.put("easting", container.getValue("easting"));
+                if (container.getValue("northing") != null)
+                    paramMap.put("northing", container.getValue("northing"));
+                if (container.getValue("orientation") != null)
+                    paramMap.put("orientation", container.getValue("orientation"));
+                if (container.getValue("pixelSizeX") != null)
+                    paramMap.put("pixelSizeX", container.getValue("pixelSizeX"));
+                if (container.getValue("pixelSizeY") != null)
+                    paramMap.put("pixelSizeY", container.getValue("pixelSizeY"));
+                if (container.getValue("width") != null)
+                    paramMap.put("width", container.getValue("width"));
+                if (container.getValue("height") != null)
+                    paramMap.put("height", container.getValue("height"));
+            }
         }
 
         paramMap.put("applyValidPixelExpression", applyValidPixelExpressionCheckBox.isSelected());
@@ -274,7 +334,7 @@ public class ReprojectionUI extends BaseOperatorUI {
 
         //Create panel with CrsForms
         customCrsUI = new CustomCrsForm(appContext);
-        CrsForm predefinedCrsUI = new PredefinedCrsForm(appContext);
+        predefinedCrsUI = new PredefinedCrsForm(appContext);
         //collocationCrsUI = new CollocationCrsForm(appContext);
         CrsForm[] crsForms = new CrsForm[]{customCrsUI, predefinedCrsUI/*, collocationCrsUI*/};
         crsSelectionPanel = new CrsSelectionPanel(crsForms);
@@ -755,23 +815,18 @@ public class ReprojectionUI extends BaseOperatorUI {
                 OutputGeometryFormModel workCopy;
                 if (outputGeometryModel != null) {
                     workCopy = new OutputGeometryFormModel(outputGeometryModel);
-                } else if (!propertySet.getValue("orientation").equals(0.0) ||
-                        propertySet.getValue("easting") != null ||
-                        propertySet.getValue("northing") != null ||
-                        propertySet.getValue("pixelSizeX") != null ||
-                        propertySet.getValue("pixelSizeY") != null ||
-                        propertySet.getValue("referencePixelX") != null ||
-                        propertySet.getValue("referencePixelY") != null ||
-                        propertySet.getValue("width") != null ||
-                        propertySet.getValue("height") != null) {
+                } else {
                     // final Product collocationProduct = collocationCrsUI.getCollocationProduct();
                     // if (collocationCrsUI.getRadioButton().isSelected() && collocationProduct != null) {
                     //    workCopy = new OutputGeometryFormModel(sourceProduct, collocationProduct);
                     // } else {
-                    workCopy = new OutputGeometryFormModel(sourceProduct, crs, propertySet);
-                    // }
+                        if (paramMap != null && paramMap.containsKey("referencePixelX")) {
+                            PropertySet propertyContainer = PropertyContainer.createMapBacked(paramMap);
+                            workCopy = new OutputGeometryFormModel(sourceProduct, crs, propertyContainer);
                 } else {
                     workCopy = new OutputGeometryFormModel(sourceProduct, crs);
+                }
+                   // }
                 }
                 final OutputGeometryForm form = new OutputGeometryForm(workCopy);
                 final ModalDialog outputParametersDialog = new OutputParametersDialog(appContext.getApplicationWindow(),
