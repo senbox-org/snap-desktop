@@ -259,17 +259,28 @@ public class ReprojectionUI extends BaseOperatorUI {
             }
         }
 
-        if (!preserveResolutionCheckBox.isSelected() && outputGeometryModel != null) {
-            PropertySet container = outputGeometryModel.getPropertySet();
-            paramMap.put("referencePixelX", container.getValue("referencePixelX"));
-            paramMap.put("referencePixelY", container.getValue("referencePixelY"));
-            paramMap.put("easting", container.getValue("easting"));
-            paramMap.put("northing", container.getValue("northing"));
-            paramMap.put("orientation", container.getValue("orientation"));
-            paramMap.put("pixelSizeX", container.getValue("pixelSizeX"));
-            paramMap.put("pixelSizeY", container.getValue("pixelSizeY"));
-            paramMap.put("width", container.getValue("width"));
-            paramMap.put("height", container.getValue("height"));
+        if (!preserveResolutionCheckBox.isSelected()) {
+            PropertySet container =  (outputGeometryModel != null ) ? outputGeometryModel.getPropertySet() : outputGeometryParams;
+            if (container != null ) {
+                if (container.getValue("referencePixelX") != null)
+                    paramMap.put("referencePixelX", container.getValue("referencePixelX"));
+                if (container.getValue("referencePixelY") != null)
+                    paramMap.put("referencePixelY", container.getValue("referencePixelY"));
+                if (container.getValue("easting") != null)
+                    paramMap.put("easting", container.getValue("easting"));
+                if (container.getValue("northing") != null)
+                    paramMap.put("northing", container.getValue("northing"));
+                if (container.getValue("orientation") != null)
+                    paramMap.put("orientation", container.getValue("orientation"));
+                if (container.getValue("pixelSizeX") != null)
+                    paramMap.put("pixelSizeX", container.getValue("pixelSizeX"));
+                if (container.getValue("pixelSizeY") != null)
+                    paramMap.put("pixelSizeY", container.getValue("pixelSizeY"));
+                if (container.getValue("width") != null)
+                    paramMap.put("width", container.getValue("width"));
+                if (container.getValue("height") != null)
+                    paramMap.put("height", container.getValue("height"));
+            }
         }
 
         paramMap.put("applyValidPixelExpression", applyValidPixelExpressionCheckBox.isSelected());
@@ -333,7 +344,7 @@ public class ReprojectionUI extends BaseOperatorUI {
 
         //Create panel with CrsForms
         customCrsUI = new CustomCrsForm(appContext);
-        CrsForm predefinedCrsUI = new PredefinedCrsForm(appContext);
+        predefinedCrsUI = new PredefinedCrsForm(appContext);
         //collocationCrsUI = new CollocationCrsForm(appContext);
         CrsForm[] crsForms = new CrsForm[]{customCrsUI, predefinedCrsUI/*, collocationCrsUI*/};
         crsSelectionPanel = new CrsSelectionPanel(crsForms);
