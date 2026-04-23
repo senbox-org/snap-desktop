@@ -17,13 +17,8 @@ package org.esa.snap.ui;
 
 import org.esa.snap.core.util.Guardian;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.LayoutManager;
+import javax.swing.*;
+import java.awt.*;
 import java.util.StringTokenizer;
 
 /**
@@ -73,15 +68,38 @@ public class GridBagUtils {
         return gbc;
     }
 
+    public static GridBagConstraints createConstraints() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        return gbc;
+    }
+
     /**
-     * Creates a <code>GridBagConstraints</code> instance with the following attributes:
-     * <ul>
-     *     <li>{@link GridBagConstraints#anchor anchor}=<b>WEST</b></li>
-     *     <li>{@link GridBagConstraints#insets insets.top}=<b>0</b></li>
-     *     <li>{@link GridBagConstraints#insets insets.left}=<b>3</b></li>
-     *     <li>{@link GridBagConstraints#insets insets.bottom}=<b>0</b></li>
-     *     <li>{@link GridBagConstraints#insets insets.right}=<b>3</b></li>
-     * </ul>
+     * Resets the constraints to the default value but keeps current grid location (gridx and gridy)
+     * @param gbcIn
+     * @return
+     */
+    public static GridBagConstraints restoreConstraints(GridBagConstraints gbcIn) {
+        GridBagConstraints gbc = createConstraints();
+        gbc.gridx = gbcIn.gridx;
+        gbc.gridy = gbcIn.gridy;
+        return gbc;
+    }
+
+
+
+
+    /**
+     * Creates a <code>GridBagConstraints</code> instance with the following attributes: <ld> <li><code>{@link
+     * GridBagConstraints#anchor anchor}=<b>WEST</b></li> <li><code>{@link GridBagConstraints#insets
+     * insets.top}=<b>0</b></code></li> <li><code>{@link GridBagConstraints#insets insets.left}=<b>3</b></code></li>
+     * <li><code>{@link GridBagConstraints#insets insets.bottom}=<b>0</b></code></li> <li><code>{@link
+     * GridBagConstraints#insets insets.right}=<b>3</b></code></li> </ld>
      */
     public static GridBagConstraints createDefaultConstraints() {
         GridBagConstraints gbc = new GridBagConstraints();

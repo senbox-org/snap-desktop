@@ -32,32 +32,32 @@ import javax.swing.JPanel;
  *
  * @author thomas
  */
-@org.openide.util.NbBundle.Messages({
-        "Options_DisplayName_RGB=RGB-Image Profiles",
-        "Options_Keywords_RGB=RGB, profile"
-})
-@OptionsPanelController.SubRegistration(
-        location = "GeneralPreferences",
-        displayName = "#Options_DisplayName_RGB",
-        keywords = "#Options_Keywords_RGB",
-        keywordsCategory = "RGB",
-        id = "rgb-image-profiles",
-        position = 4
-)
-public final class RgbController extends DefaultConfigController {
-
-    @Override
-    protected PropertySet createPropertySet() {
-        return new PropertyContainer();
-    }
-
-    @Override
-    protected JPanel createPanel(BindingContext context) {
-        return new RGBImageProfilePane(new DefaultPropertyMap());
-    }
-
-    @Override
-    public HelpCtx getHelpCtx() {
-        return new HelpCtx("options-rgb");
-    }
-}
+//@org.openide.util.NbBundle.Messages({
+//        "Options_DisplayName_RGB=RGB-Image Profiles",
+//        "Options_Keywords_RGB=RGB, profile"
+//})
+//@OptionsPanelController.SubRegistration(
+//        location = "GeneralPreferences",
+//        displayName = "#Options_DisplayName_RGB",
+//        keywords = "#Options_Keywords_RGB",
+//        keywordsCategory = "RGB",
+//        id = "rgb-image-profiles",
+//        position = 4
+//)
+//public final class RgbController extends DefaultConfigController {
+//
+//    @Override
+//    protected PropertySet createPropertySet() {
+//        return new PropertyContainer();
+//    }
+//
+//    @Override
+//    protected JPanel createPanel(BindingContext context) {
+//        return new RGBImageProfilePane(new DefaultPropertyMap());
+//    }
+//
+//    @Override
+//    public HelpCtx getHelpCtx() {
+//        return new HelpCtx("options-rgb");
+//    }
+//}

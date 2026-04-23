@@ -1,18 +1,3 @@
-<!--
-  ~ Copyright (C) 2010 Brockmann Consult GmbH (info@brockmann-consult.de)
-  ~
-  ~ This program is free software; you can redistribute it and/or modify it
-  ~ under the terms of the GNU General Public License as published by the Free
-  ~ Software Foundation; either version 3 of the License, or (at your option)
-  ~ any later version.
-  ~ This program is distributed in the hope that it will be useful, but WITHOUT
-  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-  ~ more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License along
-  ~ with this program; if not, see http://www.gnu.org/licenses/
-  -->
 
 <html>
 <head>
@@ -31,133 +16,560 @@
             <img src="../images/snap_header.jpg" border=0></a></td>
     </tr>
 </table>
+</div>
 
-<h3>Reprojection Dialog</h3>
 
-<p>
-    Here you can create a new product with a projected Coordinate Reference System (CRS).
-    If you want that the created product is also orthorectified use the
-    <a href="Orthorectification.html">Orthorectification</a> command.
-    If it is your intention to create one product from multiple input products use the
-    <a href="Mosaic.html">Mosaic Processor</a>.
+
+<h3>Overview</h3>
 
 <p>
-    After the new product has been created, you can change to the
-    <a href="ProductExplorer.html">Product Explorer</a> in order to open
-    an <a href="ProductSceneView.html">Image View</a> for a band of the new product.
+    The Reprojection tool enables you to take any file (one which contains geo-coding) and resample it into a new file
+    of a specified map projection. Some key parameters which you can specify are: coordinate reference system (CRS),
+    resolution, masking, interpolation method, and geographic location.
+</p>
 
-<h4>I/O Parameters</h4>
-<table border="0">
-    <tr>
-        <td style="border-width:0;" valign="top">
-            <h5>Source Product</h5>
+<p>
+    The Reproject tool can be accessed in the menu system (Raster -> Geometric -> Reprojection) and at the gpf command line.
+</p>
 
-            <p class="i1">
-                <b>Name:</b>
-                Here the user specifies the name of the source product. The combo box presents
-                a list of all products opened in the Sentinel Toolbox. The user may select one of these
-                or, by clicking on the button next to the combo box, choose a product
-                from the file system.
+<p>
+    Figures 1a and 1b illustrate the results of applying the Reproject tool to a level-2 file using an oblique stereographic
+    projection.  Figure 1a is the original unmapped level-2 image (of a rhos_s band) and figure 1b is the reprojected image.
+    Note: since all pixels in the reprojected file contain geocoding, the LandMask tool was
+    subsequently used on the reprojected file to add Land (in brown) and water (in aqua) masks which span beyond the
+    actual level-2 scene boundaries.
+</p>
 
-            <h5>Target Product</h5>
-
-            <p class="i1">
-                <b>Name:</b>
-                Used to specify the name of the target product.
-            </p>
-
-            <p class="i1">
-                <b>Save as:</b>
-                Used to specify whether the target product should be saved to the file system. The
-                combo box presents a list of file formats.
-                The text field allows to specify a target directory.
-            </p>
-
-            <p class="i1">
-                <b>Open in SNAP:</b>
-                Used to specify whether the target product should be opened in the Sentinel Toolbox.
-                When the target product is not saved, it is opened in the Sentinel Toolbox automatically.
-            </p></td>
-        <td style="border-width:0;" valign="top"><img src="images/ReprojectionIOParameters.png"></td>
-    </tr>
-</table>
-
-<h4>Projection Parameters</h4>
-<table border="0">
-    <tr>
-        <td style="border-width:0;" valign="top">
-            <h5>Coordinate Reference System (CRS)</h5>
-
-            <p class="i1">
-                <b>Custom CRS:</b>
-                The transformation used by the projection can be selected. Also the geodetic datum and
-                projection parameters can be set, if possible for the selected transformation.
-            </p>
-
-            <p class="i1">
-                <b>Predefined CRS:</b>
-                By clicking on the <b>Select...</b> button a new <a href="SelectCrsDialog.html">Select Coordinate Reference System</a> dialog is shown
-                where a predefined CRS can be selected.
-            </p>
-
-            <p class="i1">
-                <b>Use CRS of:</b>
-                A product can be selected to use its projected Coordinate Reference System. This will have the effect
-                that source product will cover the same geographic region on the same CRS. Which means that both
-                products are collocated.
-            </p>
-
-            <h5>Output Settings</h5>
-
-            <p class="i1">
-                <b>Preserve resolution:</b>
-                If unchecked the <b>Output Parameters...</b> is enabled and the upcoming
-                <a href="ReprojectionOutputParametersDialog.html">Output Parameters</a> dialog lets you edit the output parameters like
-                easting and northing of the reference pixel, the pixel size and the scene height and width.
-            </p>
-
-            <p class="i1">
-                <b>Reproject tie-point grids:</b>
-                Specifies whether or not the tie-point grids shall be included. If they are reprojected they will appear
-                as bands in the target product and not any more as tie-point grids.
-            </p>
-
-            <p class="i1">
-                <b> Add delta lat/lon bands:</b>
-                Specifies whether or not delta latitude and longitude bands will be added to the target product.
-                These are virtual bands, which can be used to assess the accuracy of the new geo-coding given
-                by the Coordinate Reference System (CRS) with respect to the old geo-coding.
-            </p>
+<div class="center">
+    <table class="invisibletable">
+        <tr class="invisibletable">
+            <td class="invisibletable">
+                <div class="center">
+                    <img src="images/Reproject_1a.png" border="0"> <br>
+                    <i>Figure 1a. Unmapped scene of a level-2 file <br></i>
+                </div>
+            </td>
+            <td class="invisibletable">
+                <div class="center">
+                    <img src="images/Reproject_1b.png" border="0"> <br>
+                    <i>Figure 1b. Projected scene of a level-2 file <br>(Oblique Sterographic)</i>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
 
 
-            <p class="i1">
-                <b>No-data value:</b>
-                The default no-data value is used for output pixels in the projected band which have either no
-                corresponding pixel in the source product or the source pixel is invalid.
-            </p>
 
-            <p class="i1">
-                <b>Resampling Method:</b>
-                You can select one resampling method for the projection.<br>
-                For a brief description have a look at <a href="../general/overview/ResamplingMethods.html">Resampling
-                Methods</a>.
-            </p>
 
-            <h5>Output Information</h5>
+<h3>I/O Parameters</h3>
 
-            <p class="i1">
-                Displays some information about the output, like scene width and height, the geographic coordinate of
-                the scene center and short description of the selected CRS.<br>
-                When clicking the <b>Show WKT...</b> button the corresponding Well-Known Text of the currently defined
-                CRS is shown.
-            </p>
-        </td>
-        <td style="border-width:0;" valign="top"><img src="images/ReprojectionProjectionParameters.png">
-        </td>
-    </tr>
-</table>
+<div class="center">
+    <img src="images/Reproject_GUI_01.png" border="0"> <br><br>
+    <i>Figure 1. I/O Parameters</i>
+</div>
 
+
+
+<h4>- Source Product -</h4>
+
+<p class="i1">
+    <b>Name</b><br>This is the file to be reprojected and serves as the input file to the Reprojection Tool. You
+    may conveniently select one of the files currently loaded in SeaDAS using the drop down selector. In this case, a file
+    reference index appears to the left of the file name indicating that it is a loaded file and not a direct system
+    file. To select a file directly from your computer system, use the selector button to the right and navigate to the
+    desired file. A file selected this way directly from your system will not have a file reference number displayed next to it.
+    <br><br>
+    <i>Note: a loaded file can differ from a system file (even though they may bear the same name) in that you may have
+        made changes to the loaded file in SeaDAS and not saved them.</i>
+</p>
+
+
+
+<h4>- Target Product -</h4>
+
+<p class="i1">
+    <b>Name</b><br>This is the name of the reprojected file which will be generated. The default behavior appends
+    "_reprojected" to the original filename.
+</p>
+
+<p class="i1">
+    <b>Save file as</b><br>Used to specify whether the file should be physically saved to the file system. The
+    combo box presents a list of file formats, currently BEAM-DIMAP, GeoTIFF, and HDF5.
+    <br><br>
+    <i>Note: if deselected this tool will run much faster as the reprojection
+        does not actually occur at the time of run. Subsequently when the user opens a band in the reprojected file the
+        reprojection occurs for that band only.</i>
+</p>
+
+<p class="i1">
+    <b>Directory</b><br>Location in which to save the reprojected file.
+    <br><br>
+    <i>Note: the default is the last directory saved to by any standard GUI tool in SeaDAS</i>
+</p>
+
+<p class="i1">
+    <b>Open in SNAP (SeaDAS)</b><br>Used to specify whether the file should be automatically opened in SNAP (SeaDAS).
+</p>
+
+
+<br><br>
+<hr>
+
+
+
+
+<h3>Reprojection Parameters</h3>
+
+
+<div class="center">
+    <img src="images/Reproject_GUI_02.png"><br><br>
+    <i>Figure 2. Map Projection & Settings Tab</i>
+
+</div>
+
+
+<h4>Coordinate Reference System (CRS)</h4>
+<p>
+    There are 3 options for selecting a CRS: create one yourself - "Custom CRS"; select one - "Predefined CRS"; or use
+    one
+    from an existing file - "Use CRS of file".
+</p>
+
+
+<p class="i1">
+    <b>Custom CRS</b><br>
+    With this option you will manually select the map projection (along with it's parameters) and the datum to use.
+</p>
+
+<p class="i2">
+    <b>Geodetic datum</b><br>
+    The coordinate system for locating positions on the Earth. In general, these are based on reference ellipsoids used
+    to represent the shape of the Earth. You can select from a variety of datums. The most common (and default)
+    is "WGS 84" (WGS 1984, EPSG:4326).
+
+</p>
+
+<p class="i2">
+    <b>Projection</b><br>
+    The map projection (or how the 3 dimensional Earth's surface will be transformed onto a 2 dimensional surface).
+    Select from a list of map projections. If a projection requires parameters then the "Projection Parameters" button will
+    become selectable.
+</p>
+
+<a name="crsParametersButton"></a>
+<p class="i3">
+    <b>Projection Parameters</b><br>
+    This opens a window of selectable parameters needed by the selected map projection. These contain default values,
+    but likely
+    you will want to modify these values based on your scene location or region of interest.
+    (See <a href="Reprojection.html#crsParameters" class="invisibleLink">CRS Parameters</a> for a more on these
+    parameters)
+</p>
+
+
+</p>
+
+<a name="predefinedCRS"></a>
+<p class="i1">
+    <b>Predefined CRS</b><br>
+    SeaDAS contains a multitude of pre-defined coordinate reference systems including the EPSG (European Petroleum
+    Survey Group) Geodetic Parameter
+    Dataset. Use the selector to the right to choose one
+    of these projections. (
+    See <a href="Reprojection.html#Figure4" class="invisibleLink">Predefined CRS</a> for more on this).
+</p>
+
+<p class="i1">
+    <b>Use CRS of file</b><br>
+    Select a file from your system (one with geo-coding) and use the identical map projection criteria and geographic
+    boundaries of that file. This will have the effect that both files are collocated (same raster grid size and grid
+    geocoding) but separate files. See the Collocation Tool if you wish to actually merge the files together.
+</p>
+<br>
+
+
+
+
+
+
+<p>
+    <i><b>Masking</b></i>
+</p>
+
+<p>
+    <i><b>Expression</b></i><br>
+    You can create a custom logical expression to constrain which pixels of the source band get used.
+</p>
+
+
+<p class="i1">
+    <b>Edit Expression</b><br>
+    This accesses the Expression Editor to help you construct a logical expression.  Note that the mask expression
+    you create here is applied to all of the bands so avoid band specific expressions.
+</p>
+
+
+<p class="i1">
+    <b>Apply source valid pixel expression</b><br>
+    Each band of the source file has a valid pixel expression which designates whether a pixel is valid for display
+    or some other operation.  These expressions are unique to each band.  When reprojecting a source file you want to
+    consider whether or not to allow the "invalid" pixels to be used or ignored.
+    When this is selected only the pixels which are "valid" based on the valid pixel expression contraints,
+    will be used in the creation of the reproject file.
+</p>
+
+
+<br>
+
+
+
+
+<p>
+    <i><b>Output Settings</b></i>
+</p>
+
+<a name="outputParameters"></a>
+<p class="i1">
+    <b>Preserve resolution</b><br>
+    Use the SeaDAS defaults which will automatically determine a "best-fit" resolution, output file size, and easting
+    and westing.  You can deselect this and manually set these parameters by clicking "Output Parameters".
+    <a href="Reprojection.html#outputParametersDetails" class="invisibleLink">(see details)</a>
+</p>
+
+<p class="i1">
+    <b>Resampling method</b><br>
+    This is the interpolation method. Choose between Nearest, Bilinear, and Bicubic. (<a
+        href="../general/overview/ResamplingMethods.html">See details</a>)
+</p>
+
+<p class="i1">
+    <b>No-data value</b><br>
+    The default no-data value is used for output pixels in the projected band which have either no corresponding pixel
+    in the source product or the source pixel is invalid.
+</p>
+
+
+<p class="i1">
+    <b>Retain valid pixel expression</b><br>
+    The valid pixel expression of each of the source file bands will be retained and stored in the corresponding
+    bands of the reprojected file.
+</p>
+
+
+<p class="i1">
+    <b>Reproject tie-point grids</b><br>
+    Specifies whether or not the tie-point grids shall be included. If they are reprojected they will appear as bands in
+    the target product and not any more as tie-point grids.
+</p>
+
+
+<p class="i1">
+    <b>Add delta lat/lon bands</b><br>
+    Specifies whether or not delta latitude and longitude bands will be added to the target product. These are virtual
+    bands, which can be used to assess the accuracy of the new geo-coding given by the Coordinate Reference System (CRS)
+    with respect to the old geo-coding.
+</p>
+
+
+
+
+
+
+<br>
+
+
+<i><b>Output Information</b></i>
+
+<p class="i1">
+    <b>Scene width</b><br>
+    This will be the width in pixels of the output file.
+</p>
+
+<p class="i1">
+    <b>Scene height</b><br>
+    This will be the height in pixels of the output file.
+</p>
+
+<p class="i1">
+    <b>Center longitude</b><br>
+    This is the longitude of the center of the source file.
+</p>
+
+<p class="i1">
+    <b>Center latitude</b><br>
+    This is the latitude of the center of the source file.
+</p>
+
+<p class="i1">
+    <b>CRS</b><br>
+    This is name of the chosen projection and datum
+</p>
+
+<p class="i1">
+    <b>Show WKT</b><br>
+    This is the CRS WKT (well-known text)
+</p>
+
+<br><br>
+<hr>
+
+
+<a name="crsParameters"></a>
+<h4>GUI: CRS Parameters</h4>
+<p>
+    This is a sub window of options launched from the <a href="Reprojection.html#crsParametersButton"
+                                                         class="invisibleLink">Custom CRS Projection Parameters</a> button
+</p>
+
+<br>
+
+<div class="center">
+    <img src="images/Reproject_GUI_03.png"><br>
+    <i>Figure 3. </i>
+</div>
+
+<br><br>
+
+<p class="i1">
+    <b>Semi-Major</b><br>
+    The semi-major axis of the planet's shape treated as an ellipsoid, which in the case of the Earth, is the equatorial
+    radius.
+    This value is automatically filled based on the datum (reference ellipsoid) which you selected.
+</p>
+
+
+<p class="i1">
+    <b>Semi-Minor</b><br>
+    The semi-minor axis of the planet's shape treated as an ellipsoid, which in the case of the Earth, is the polar
+    radius.
+    This value is automatically filled based on the datum (reference ellipsoid) which you selected.
+</p>
+
+
+<p class="i1">
+    <b>False Easting</b><br>
+    This is the distance away from the origin (x component) to place the reference pixel. This essentially has the
+    effect of
+    shifting the geographic boundaries of your output file sideways. 
+</p>
+
+
+<p class="i1">
+    <b>False Northing</b><br>
+    This is the distance away from the origin (y component) to place the reference pixel. This essentially has the
+    effect of
+    shifting the geographic boundaries of your output file up and down.
+</p>
+
+
+<p class="i1">
+    <b>Map Projection dependent fields</b><br>
+    Each map projection may have additional fields dependent on the particular projection. Some of these parameters are:
+<p class="i2">
+    Latitude of center<br>
+    Longitude of center<br>
+    Central meridian<br>
+    Latitude of origin<br>
+    Scale factor<br>
+    Azimuth<br>
+    Standard parallel 1<br>
+    ...</p>
+</p>
+<br><br>
 
 <hr>
+
+
+<a name="Figure4"></a>
+<h4>GUI: Predefined CRS</h4>
+
+<p>
+    This is a sub window of options launched from the <a href="Reprojection.html#predefinedCRS"
+                                                         class="invisibleLink">Map Projection & Settings</a> window
+</p>
+
+<br>
+<div class="center">
+
+    <img src="images/Reproject_GUI_04.png"><br>
+    <i>Figure 4. </i>
+</div>
+
+
+<br><br>
+
+<p class="i1">
+    Select a CRS in the left window of this GUI
+    and an XML text representation of the selected projection will be displayed and loaded in the right side of this GUI
+    . If you look at the XML, you can see
+    all the individual parameters which go into the particular projection. You could replicate or deviate from these
+    parameters
+    if you wish by instead using the "Custom CRS" option of the parent window and manually setting these parameters.
+</p>
+
+<p class="i1">
+    <i>Note 1: as of SeaDAS 7.5, the EPSG dataset being used is version 7.9.0</i>
+</p>
+<p class="i1">
+    <i>Note 2: you can
+        use this XML or the authority code when running Reproject in the command line mode.</i>
+</p>
+
+<br><br>
+
+<hr>
+
+<a name="outputParametersDetails"></a>
+<h4>GUI: Output Parameters</h4>
+<p>
+    This is a sub window of options launched from the <a href="Reprojection.html#outputParameters"
+                                                         class="invisibleLink">Resolution Output Parameters</a> button.
+</p>
+
+<br>
+
+<div class="center">
+    <img src="images/Reproject_GUI_05.png"><br>
+    <i>Figure 5. </i>
+</div>
+
+<br><br>
+
+<p class="i1">
+    <b>Reference Pixel</b><br>
+    This is the pixel of your output file to use for setting the easting and northing.
+</p>
+
+<p class="i2">
+    <b>Reference pixel is at scene upper left</b><br>
+    In this case the upper left pixel of the output file will be used as the reference.
+</p>
+
+<p class="i2">
+    <b>Reference pixel is at scene center</b><br>
+    In this case the center pixel of the output file will be used as the reference.
+</p>
+
+<p class="i2">
+    <b>Other reference pixel position</b><br>
+    In this case you custom specify which pixel of the output file will be used as the reference.
+</p>
+
+
+<p class="i1">
+    <b>Easting</b><br>
+    This is the distance away from the origin (x component) to place the reference pixel. This essentially has the
+    effect of
+    shifting the geographic boundaries of your output file sideways.
+</p>
+
+
+<p class="i1">
+    <b>Northing</b><br>
+    This is the distance away from the origin (y component) to place the reference pixel. This essentially has the
+    effect of
+    shifting the geographic boundaries of your output file up and down.
+</p>
+
+
+<p class="i1">
+    <b>Orientation</b><br>
+    This is the angular rotation of the output image.  It is the angle between geographic north and map grid north (in degrees),
+    in other words, the convergence angle of the projection's vertical axis from true north.
+</p>
+
+<p class="i1">
+    <b>Pixel sizeX</b><br>
+    This is the resolution in the x direction of the output image. The units are dependent on which CRS you have
+    defined.
+</p>
+
+<p class="i1">
+    <b>Pixel sizeY</b><br>
+    This is the resolution in the y direction of the output image. The units are dependent on which CRS you have
+    defined.
+</p>
+
+<p class="i1">
+    <b>Fit product size</b><br>
+    This is used to define the width and height in pixels of the output file such that all data from the input file
+    will be "best fit" and fully included in the output file.
+    Of note and caution is that SeaDAS (as of version 7.5) uses the width and height setting and ignores this checkbox
+    when Reproject runs.
+    Really the wording on this should be "Edit sizing". We will have to look into this. Regardless, clicking "Reset"
+    will set
+    these values for the width and height to "best fit".
+</p>
+
+<p class="i2">
+    <b>Width</b><br>
+    This is the desired width in pixels of the output file.
+</p>
+
+<p class="i2">
+    <b>Height</b><br>
+    This is the desired height in pixels of the output file.
+</p>
+
+
+
+
+<br><br>
+
+<hr>
+
+
+
+
+
+<a name="Metadata"></a>
+<h4>Metadata</h4>
+
+<p>The following meta data is added to the output file by the Reproject tool. All the rest of the original meta data from the
+    input file is retained and included in the output file<br>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><code>Reproject_gpt_parameters</code></td>
+        <td>The full GPT operator parameter xml string used in the creation the output file</td>
+    </tr>
+    <tr>
+        <td><code>crs</code></td>
+        <td>The coordinate reference system (WKT) used in the creation of the output file</td>
+    </tr>
+    <tr>
+        <td><code>map_projection</code></td>
+        <td>The map projection name used in the creation of the output file</td>
+    </tr>
+    <tr>
+        <td><code>history</code></td>
+        <td>"Reproject" is prepended to original history value</td>
+    </tr>
+    <tr>
+        <td><code>spatial_resolution</code></td>
+        <td>If exists in original file, "Derived from" is prepended to original value</td>
+    </tr>
+    <tr>
+        <td><code>processing_level</code></td>
+        <td>If exists in original file, "Derived from" is prepended to original value</td>
+    </tr>
+    <tr>
+        <td><code>product_name</code></td>
+        <td>If exists in original file, "Derived from" is prepended to original value</td>
+    </tr>
+    <tr>
+        <td><code>title</code></td>
+        <td>If exists in original file, "Derived from" is prepended to original value</td>
+    </tr>
+
+</table>
+
+
+
 </body>
 </html>

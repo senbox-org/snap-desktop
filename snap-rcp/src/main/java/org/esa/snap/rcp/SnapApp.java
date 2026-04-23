@@ -259,9 +259,10 @@ public class SnapApp {
         try {
             final ModuleInfo moduleInfo = Modules.getDefault().ownerOf(SnapApp.class);
             Version specVersion = Version.parseVersion(moduleInfo.getImplementationVersion() );
-            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation") + " " + specVersion.getMajor();
+//            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation") + " " + specVersion.getMajor();
+            return NbBundle.getBundle("org.netbeans.core.ui.Bundle").getString("LBL_ProductInformation");
         } catch (Exception e) {
-            return "SNAP";
+            return SystemUtils.getApplicationName();
         }
     }
 
@@ -545,7 +546,7 @@ public class SnapApp {
             } else {
                 title = sceneView.getSceneName();
             }
-            title = appendTitleSuffix(title);
+            title = getEmptyTitle() + " - " + appendTitleSuffix(title);
         } else {
             title = getEmptyTitle();
         }
@@ -565,7 +566,7 @@ public class SnapApp {
             } else {
                 title = node.getDisplayName();
             }
-            title = appendTitleSuffix(title);
+            title = getEmptyTitle() + " - " + appendTitleSuffix(title);
         } else {
             title = getEmptyTitle();
         }
@@ -601,13 +602,61 @@ public class SnapApp {
     private String getEmptyTitle() {
         String instanceName = getInstanceName();
 
-        if (instanceName != null && instanceName.length() > 0) {
-            return String.format("%s", instanceName);
-        } else {
-            return String.format("[%s]", "Empty");
-        }
+        boolean isReleaseCandidate = false;
+        String NULL_RC_NUM = "0";
+        String rcNum = NULL_RC_NUM;
 
+        if (instanceName != null && instanceName.length() > 0) {
+            String version = SystemUtils.getReleaseVersion();
+            if (SystemUtils.isMainframeTitleIncludeVersion() && version != null && version.length() > 0) {
+                version = version.trim();
+
+                if (version.contains("RC")) {
+                    String[] versionArray = version.split("RC");
+                    version = versionArray[0];
+                    version = version.trim();
+                    if (version.endsWith("-") || version.endsWith("_")) {
+                        version = version.substring(0, version.length() -1);
+                    }
+                    if (versionArray.length > 1) {
+                        isReleaseCandidate = true;
+                        rcNum = versionArray[1].trim();
+                        if (rcNum.startsWith("-") || rcNum.startsWith("_")) {
+                            rcNum = rcNum.substring(1);
+                        }
+                    }
+                }
+
+                String preferenceVersionRCKey = SystemUtils.getApplicationContextId() + "." + "version.rc";
+                String preferenceVersionRCValue = Config.instance().preferences().get(preferenceVersionRCKey, NULL_RC_NUM);
+                if (!NULL_RC_NUM.equals(preferenceVersionRCValue)) {
+                    isReleaseCandidate = true;
+                    rcNum = preferenceVersionRCValue.trim();
+                }
+
+                String versionTitleMsg = version;
+
+                if (versionTitleMsg.endsWith(".0.0")) {
+                    versionTitleMsg = versionTitleMsg.replace(".0.0", "");
+                } else if (versionTitleMsg.endsWith(".0")) {
+                    versionTitleMsg = versionTitleMsg.replace(".0", "");
+                }
+
+                if (isReleaseCandidate) {
+                    String rcString = "";
+                    if (!NULL_RC_NUM.equals(rcNum)) {
+                        rcString = "RC-" + rcNum;
+                    }
+                    versionTitleMsg = versionTitleMsg + " (Release Candidate " + rcString + ": For Testing Only)";
+                }
+
+                return String.format("%s %s", instanceName, versionTitleMsg);
+            }
+            return String.format("%s", instanceName);
+        }
+        return String.format("[%s]", "Empty");
     }
+
 
     /**
      * Provides a hint to {@link SnapApp#getSelectedProduct(SelectionSourceHint)} } which selection provider should be used as primary selection source

@@ -25,11 +25,7 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.ImageGeometry;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductFilter;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.gpf.ui.CollocationCrsForm;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.gpf.ui.TargetProductSelector;
@@ -37,6 +33,7 @@ import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.param.ParamParseException;
 import org.esa.snap.core.param.ParamValidateException;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.DemSelector;
@@ -47,6 +44,7 @@ import org.esa.snap.ui.crs.CustomCrsForm;
 import org.esa.snap.ui.crs.OutputGeometryForm;
 import org.esa.snap.ui.crs.OutputGeometryFormModel;
 import org.esa.snap.ui.crs.PredefinedCrsForm;
+import org.esa.snap.ui.product.ProductExpressionPane;
 import org.geotools.referencing.AbstractReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.opengis.parameter.ParameterValueGroup;
@@ -57,16 +55,7 @@ import org.opengis.referencing.datum.GeodeticDatum;
 import org.opengis.referencing.operation.OperationMethod;
 import org.opengis.referencing.operation.Projection;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -75,6 +64,9 @@ import java.awt.event.ActionListener;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.prefs.Preferences;
+
+import static org.esa.snap.rcp.preferences.general.ReprojectionController.*;
 
 /**
  * @author Marco Zuehlke
@@ -104,6 +96,16 @@ class ReprojectionForm extends JTabbedPane {
     private CollocationCrsForm collocationCrsUI;
     private CustomCrsForm customCrsUI;
 
+    private boolean applyValidPixelExpression;
+    private JCheckBox applyValidPixelExpressionCheckBox;
+
+
+
+    private JPanel maskExpressionPanel;
+
+    private JButton editExpressionButton;
+    private JTextArea expressionArea;
+    private JTabbedPane t = this;
 
     ReprojectionForm(TargetProductSelector targetProductSelector, boolean orthorectify, AppContext appContext) {
         this.targetProductSelector = targetProductSelector;
@@ -122,12 +124,15 @@ class ReprojectionForm extends JTabbedPane {
         createUI();
     }
 
+
+
     void updateParameterMap(Map<String, Object> parameterMap) {
         parameterMap.clear();
         parameterMap.put("resamplingName", reprojectionModel.resamplingName);
         parameterMap.put("includeTiePointGrids", reprojectionModel.includeTiePointGrids);
         parameterMap.put("addDeltaBands", reprojectionModel.addDeltaBands);
         parameterMap.put("noDataValue", reprojectionModel.noDataValue);
+        parameterMap.put("retainValidPixelExpression", reprojectionModel.retainValidPixelExpression);
         if (!collocationCrsUI.getRadioButton().isSelected()) {
             CoordinateReferenceSystem selectedCrs = getSelectedCrs();
             if (selectedCrs != null) {
@@ -159,6 +164,14 @@ class ReprojectionForm extends JTabbedPane {
             parameterMap.put("pixelSizeY", container.getValue("pixelSizeY"));
             parameterMap.put("width", container.getValue("width"));
             parameterMap.put("height", container.getValue("height"));
+        }
+
+        applyValidPixelExpression = applyValidPixelExpressionCheckBox.isSelected();
+        parameterMap.put("applyValidPixelExpression", applyValidPixelExpression);
+
+
+        if (expressionArea.getText() != null) {
+            parameterMap.put("maskExpression", expressionArea.getText());
         }
     }
 
@@ -254,6 +267,8 @@ class ReprojectionForm extends JTabbedPane {
     private void createUI() {
         addTab("I/O Parameters", createIOPanel());
         addTab("Reprojection Parameters", createParametersPanel());
+//        addTab("Validation Masking", createMaskPanel());
+
     }
 
     private JPanel createIOPanel() {
@@ -296,14 +311,25 @@ class ReprojectionForm extends JTabbedPane {
             demSelector = new DemSelector();
             parameterPanel.add(demSelector);
         }
-        parameterPanel.add(createOuputSettingsPanel());
+
+        parameterPanel.add(createMaskSettingsPanel());
+
+
+        parameterPanel.add(createOutputSettingsPanel());
+
+
         infoForm = new InfoForm();
         parameterPanel.add(infoForm.createUI());
+
+
 
         crsSelectionPanel.addPropertyChangeListener("crs", evt -> updateCRS());
         updateCRS();
         return parameterPanel;
     }
+
+
+
 
     private void updateCRS() {
         final Product sourceProduct = getSourceProduct();
@@ -345,9 +371,9 @@ class ReprojectionForm extends JTabbedPane {
                     iGeometry = ImageGeometry.createCollocationTargetGeometry(sourceProduct, collocationProduct);
                 } else {
                     iGeometry = ImageGeometry.createTargetGeometry(sourceProduct, crs,
-                                                                   null, null, null, null,
-                                                                   null, null, null, null,
-                                                                   null);
+                            null, null, null, null,
+                            null, null, null, null,
+                            null);
 
                 }
                 Rectangle imageRect = iGeometry.getImageRect();
@@ -442,9 +468,9 @@ class ReprojectionForm extends JTabbedPane {
                 wktArea.setText(wkt);
                 final JScrollPane scrollPane = new JScrollPane(wktArea);
                 final ModalDialog dialog = new ModalDialog(appContext.getApplicationWindow(),
-                                                           "Coordinate reference system as well known text",
-                                                           scrollPane,
-                                                           ModalDialog.ID_OK, null);
+                        "Coordinate reference system as well known text",
+                        scrollPane,
+                        ModalDialog.ID_OK, null);
                 dialog.show();
             });
             wktButton.setEnabled(false);
@@ -453,58 +479,137 @@ class ReprojectionForm extends JTabbedPane {
         }
     }
 
-    private JPanel createOuputSettingsPanel() {
-        final TableLayout tableLayout = new TableLayout(3);
+    private JPanel createOutputSettingsPanel() {
+
+        Preferences preferences = SnapApp.getDefault().getPreferences();
+
+
+        final TableLayout tableLayout = new TableLayout(2);
         tableLayout.setTableAnchor(TableLayout.Anchor.WEST);
         tableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
-        tableLayout.setColumnFill(0, TableLayout.Fill.NONE);
         tableLayout.setTablePadding(4, 4);
-        tableLayout.setColumnPadding(0, new Insets(4, 4, 4, 20));
-        tableLayout.setColumnWeightX(0, 0.0);
-        tableLayout.setColumnWeightX(1, 0.0);
-        tableLayout.setColumnWeightX(2, 1.0);
-        tableLayout.setCellColspan(0, 1, 2);
-        tableLayout.setCellPadding(1, 0, new Insets(4, 24, 4, 20));
+
 
         final JPanel outputSettingsPanel = new JPanel(tableLayout);
-        outputSettingsPanel.setBorder(BorderFactory.createTitledBorder("Output Settings"));
+        outputSettingsPanel.setBorder(BorderFactory.createTitledBorder(PROPERTY_OUTPUT_SETTINGS_SECTION_LABEL));
 
         final BindingContext context = new BindingContext(reprojectionContainer);
 
-        final JCheckBox preserveResolutionCheckBox = new JCheckBox("Preserve resolution");
+
+
+        final TableLayout resolutionTableLayout = new TableLayout(2);
+        resolutionTableLayout.setTableAnchor(TableLayout.Anchor.WEST);
+        resolutionTableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        resolutionTableLayout.setColumnFill(0, TableLayout.Fill.NONE);
+        resolutionTableLayout.setTablePadding(4, 4);
+
+        final JPanel resolutionPanel = new JPanel(resolutionTableLayout);
+        resolutionPanel.setBorder(BorderFactory.createTitledBorder("Resolution"));
+
+        final JCheckBox preserveResolutionCheckBox = new JCheckBox(PROPERTY_PRESERVE_RESOLUTION_LABEL);
+        preserveResolutionCheckBox.setToolTipText(PROPERTY_PRESERVE_RESOLUTION_TOOLTIP);
         context.bind(Model.PRESERVE_RESOLUTION, preserveResolutionCheckBox);
         collocationCrsUI.getCrsUI().addPropertyChangeListener("collocate", evt -> {
             final boolean collocate = (Boolean) evt.getNewValue();
             reprojectionContainer.setValue(Model.PRESERVE_RESOLUTION,
-                                           collocate || reprojectionModel.preserveResolution);
+                    collocate || reprojectionModel.preserveResolution);
             preserveResolutionCheckBox.setEnabled(!collocate);
         });
-        outputSettingsPanel.add(preserveResolutionCheckBox);
+        resolutionPanel.add(preserveResolutionCheckBox);
 
-        JCheckBox includeTPcheck = new JCheckBox("Reproject tie-point grids", true);
+        preserveResolutionCheckBox.addActionListener(e -> {
+            if (preserveResolutionCheckBox.isSelected()) {
+                outputParamButton.setEnabled(false);
+            } else {
+                outputParamButton.setEnabled(true);
+            }
+
+        });
+
+        outputParamButton = new JButton(PROPERTY_RESOLUTION_PARAMETERS_BUTTON_NAME);
+        outputParamButton.setEnabled(!reprojectionModel.preserveResolution);
+        outputParamButton.addActionListener(new OutputParamActionListener());
+        resolutionPanel.add(outputParamButton);
+
+
+        outputSettingsPanel.add(resolutionPanel);
+
+
+        // Resampling Method Component
+        final TableLayout resamplingTableLayout = new TableLayout(2);
+        resamplingTableLayout.setTableAnchor(TableLayout.Anchor.WEST);
+        resamplingTableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        resamplingTableLayout.setColumnFill(0, TableLayout.Fill.NONE);
+        resamplingTableLayout.setTablePadding(4, 4);
+        final JPanel resamplingPanel = new JPanel(resamplingTableLayout);
+
+        JLabel resamplingMethodLabel = new JLabel(PROPERTY_RESAMPLING_METHOD_LABEL);
+        String resamplingMethodPreference = preferences.get(PROPERTY_RESAMPLING_METHOD_KEY, PROPERTY_RESAMPLING_METHOD_DEFAULT);
+        JComboBox<String> resampleComboBox = new JComboBox<>(PROPERTY_RESAMPLING_METHOD_OPTIONS);
+        resampleComboBox.setPrototypeDisplayValue(resamplingMethodPreference);
+        resampleComboBox.setSelectedItem(resamplingMethodPreference);
+        resamplingMethodLabel.setToolTipText(PROPERTY_RESAMPLING_METHOD_TOOLTIP);
+        resampleComboBox.setToolTipText(PROPERTY_RESAMPLING_METHOD_TOOLTIP);
+        context.bind(Model.RESAMPLING_NAME, resampleComboBox);
+        resamplingPanel.add(resamplingMethodLabel);
+        resamplingPanel.add(resampleComboBox);
+
+        outputSettingsPanel.add(resamplingPanel);
+
+
+
+
+
+        // No-Data Component
+        final TableLayout noDataTableLayout = new TableLayout(2);
+        noDataTableLayout.setTableAnchor(TableLayout.Anchor.WEST);
+        noDataTableLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        noDataTableLayout.setColumnFill(0, TableLayout.Fill.NONE);
+        noDataTableLayout.setColumnFill(1, TableLayout.Fill.NONE);
+        noDataTableLayout.setColumnAnchor(0, TableLayout.Anchor.EAST);
+        noDataTableLayout.setColumnAnchor(1, TableLayout.Anchor.WEST);
+        noDataTableLayout.setCellWeightX(0,0,0.0);
+        noDataTableLayout.setCellWeightX(0,1,1.0);
+
+        noDataTableLayout.setTablePadding(4, 4);
+        final JPanel noDataPanel = new JPanel(noDataTableLayout);
+
+        JLabel noDataLabel = new JLabel(PROPERTY_NO_DATA_VALUE_LABEL);
+        noDataLabel.setToolTipText(PROPERTY_NO_DATA_VALUE_TOOLTIP);
+        final JTextField noDataField = new JTextField("12345678");
+        noDataField.setMinimumSize(noDataField.getPreferredSize());
+        noDataField.setPreferredSize(noDataField.getPreferredSize());
+        noDataField.setToolTipText(PROPERTY_NO_DATA_VALUE_TOOLTIP);
+        context.bind(Model.NO_DATA_VALUE, noDataField);
+        noDataPanel.add(noDataLabel);
+        noDataPanel.add(noDataField);
+
+        outputSettingsPanel.add(noDataPanel);
+
+
+
+        JCheckBox retainValidPixelExpressionCheckBox = new JCheckBox(PROPERTY_RETAIN_VALID_PIXEL_EXPRESSION_LABEL);
+        retainValidPixelExpressionCheckBox.setToolTipText(PROPERTY_RETAIN_VALID_PIXEL_EXPRESSION_TOOLTIP);
+        outputSettingsPanel.add(retainValidPixelExpressionCheckBox);
+        context.bind(Model.RETAIN_VALID_PIXEL_EXPRESSION, retainValidPixelExpressionCheckBox);
+
+
+
+        // Tie-Point Grids
+        JCheckBox includeTPcheck = new JCheckBox(PROPERTY_INCLUDE_TIE_POINT_GRIDS_LABEL);
+        includeTPcheck.setToolTipText(PROPERTY_INCLUDE_TIE_POINT_GRIDS_TOOLTIP);
         context.bind(Model.REPROJ_TIEPOINTS, includeTPcheck);
         outputSettingsPanel.add(includeTPcheck);
 
-        outputParamButton = new JButton("Output Parameters...");
-        outputParamButton.setEnabled(!reprojectionModel.preserveResolution);
-        outputParamButton.addActionListener(new OutputParamActionListener());
-        outputSettingsPanel.add(outputParamButton);
 
-        outputSettingsPanel.add(new JLabel("No-data value:"));
-        final JTextField noDataField = new JTextField();
-
-        outputSettingsPanel.add(noDataField);
-        context.bind(Model.NO_DATA_VALUE, noDataField);
-
-        JCheckBox addDeltaBandsChecker = new JCheckBox("Add delta lat/lon bands");
+        // Add Delta Bands Component
+        JCheckBox addDeltaBandsChecker = new JCheckBox(PROPERTY_ADD_DELTA_BANDS_LABEL);
+        addDeltaBandsChecker.setToolTipText(PROPERTY_ADD_DELTA_BANDS_TOOLTIP);
         outputSettingsPanel.add(addDeltaBandsChecker);
         context.bind(Model.ADD_DELTA_BANDS, addDeltaBandsChecker);
 
-        outputSettingsPanel.add(new JLabel("Resampling method:"));
-        JComboBox<String> resampleComboBox = new JComboBox<>(RESAMPLING_IDENTIFIER);
-        resampleComboBox.setPrototypeDisplayValue(RESAMPLING_IDENTIFIER[0]);
-        context.bind(Model.RESAMPLING_NAME, resampleComboBox);
-        outputSettingsPanel.add(resampleComboBox);
+
+
 
         reprojectionContainer.addPropertyChangeListener(Model.PRESERVE_RESOLUTION, evt -> updateOutputParameterState());
 
@@ -515,6 +620,74 @@ class ReprojectionForm extends JTabbedPane {
         outputParamButton.setEnabled(!reprojectionModel.preserveResolution && (crs != null));
         updateProductSize();
     }
+
+    private JPanel createMaskSettingsPanel() {
+        Preferences preferences = SnapApp.getDefault().getPreferences();
+
+        final TableLayout maskExpressionLayout = new TableLayout(2);
+        maskExpressionLayout.setTablePadding(4, 0);
+        maskExpressionLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        maskExpressionLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        maskExpressionLayout.setTableWeightX(1.0);
+
+        maskExpressionPanel = new JPanel(maskExpressionLayout);
+
+        editExpressionButton = new JButton(PROPERTY_MASK_EXPRESSION_BUTTON_NAME);
+        editExpressionButton.setPreferredSize(editExpressionButton.getPreferredSize());
+        editExpressionButton.setMaximumSize(editExpressionButton.getPreferredSize());
+        editExpressionButton.setMinimumSize(editExpressionButton.getPreferredSize());
+        final Window parentWindow = SwingUtilities.getWindowAncestor(maskExpressionPanel);
+        editExpressionButton.addActionListener(new EditExpressionActionListener(parentWindow));
+        expressionArea = new JTextArea(3, 40);
+        expressionArea.setLineWrap(true);
+
+        JLabel maskExpressionLabel = new JLabel(PROPERTY_MASK_EXPRESSION_LABEL);
+        maskExpressionPanel.add(maskExpressionLabel);
+        maskExpressionPanel.add(new JScrollPane(expressionArea));
+
+        maskExpressionPanel.setToolTipText(PROPERTY_MASK_EXPRESSION_TOOLTIP);
+        maskExpressionLabel.setToolTipText(PROPERTY_MASK_EXPRESSION_TOOLTIP);
+        editExpressionButton.setToolTipText(PROPERTY_MASK_EXPRESSION_TOOLTIP);
+        expressionArea.setToolTipText(PROPERTY_MASK_EXPRESSION_TOOLTIP);
+
+        String maskExpressionText = preferences.get(PROPERTY_MASK_EXPRESSION_KEY, PROPERTY_MASK_EXPRESSION_DEFAULT);
+        expressionArea.setText(maskExpressionText);
+
+        boolean applyValidPixelExpressionPreference = preferences.getBoolean(PROPERTY_APPLY_VALID_PIXEL_EXPRESSION_KEY, PROPERTY_APPLY_VALID_PIXEL_EXPRESSION_DEFAULT);
+        applyValidPixelExpressionCheckBox = new JCheckBox(PROPERTY_APPLY_VALID_PIXEL_EXPRESSION_LABEL);
+        applyValidPixelExpressionCheckBox.setToolTipText(PROPERTY_APPLY_VALID_PIXEL_EXPRESSION_TOOLTIP);
+        applyValidPixelExpressionCheckBox.setSelected(applyValidPixelExpressionPreference);
+
+        final TableLayout secondRowLayout = new TableLayout(3);
+        secondRowLayout.setTablePadding(4, 0);
+        secondRowLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        secondRowLayout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        secondRowLayout.setTableWeightX(1.0);
+
+        final JPanel secondRowPanel = new JPanel(secondRowLayout);
+        secondRowPanel.add(applyValidPixelExpressionCheckBox);
+
+        secondRowPanel.add(secondRowLayout.createHorizontalSpacer());
+
+        secondRowLayout.setTableAnchor(TableLayout.Anchor.NORTHEAST);
+        secondRowPanel.setLayout(secondRowLayout);
+        secondRowPanel.add(editExpressionButton);
+
+        final TableLayout layout = new TableLayout(1);
+        layout.setTablePadding(4, 4);
+        layout.setTableFill(TableLayout.Fill.HORIZONTAL);
+        layout.setTableAnchor(TableLayout.Anchor.NORTHWEST);
+        layout.setTableWeightX(1.0);
+
+        final JPanel panel = new JPanel(layout);
+        panel.setBorder(BorderFactory.createTitledBorder(PROPERTY_MASKING_SECTION_LABEL));
+        panel.add(maskExpressionPanel);
+        panel.add(secondRowPanel);
+
+        return panel;
+    }
+
+
 
     private JPanel createSourceProductPanel() {
         final JPanel panel = sourceProductSelector.createDefaultPanel();
@@ -577,7 +750,7 @@ class ReprojectionForm extends JTabbedPane {
                 }
                 final OutputGeometryForm form = new OutputGeometryForm(workCopy);
                 final ModalDialog outputParametersDialog = new OutputParametersDialog(appContext.getApplicationWindow(),
-                                                                                      sourceProduct, workCopy);
+                        sourceProduct, workCopy);
                 outputParametersDialog.setContent(form);
                 if (outputParametersDialog.show() == ModalDialog.ID_OK) {
                     outputGeometryModel = workCopy;
@@ -585,7 +758,7 @@ class ReprojectionForm extends JTabbedPane {
                 }
             } catch (Exception e) {
                 appContext.handleError("Could not create a 'Coordinate Reference System'.\n" +
-                                               e.getMessage(), e);
+                        e.getMessage(), e);
             }
         }
 
@@ -617,8 +790,8 @@ class ReprojectionForm extends JTabbedPane {
                 imageGeometry = ImageGeometry.createCollocationTargetGeometry(sourceProduct, collocationProduct);
             } else {
                 imageGeometry = ImageGeometry.createTargetGeometry(sourceProduct, crs,
-                                                                   null, null, null, null,
-                                                                   null, null, null, null, null);
+                        null, null, null, null,
+                        null, null, null, null, null);
             }
             outputGeometryFormModel.resetToDefaults(imageGeometry);
         }
@@ -631,13 +804,19 @@ class ReprojectionForm extends JTabbedPane {
         private static final String ADD_DELTA_BANDS = "addDeltaBands";
         private static final String NO_DATA_VALUE = "noDataValue";
         private static final String RESAMPLING_NAME = "resamplingName";
+        private static final String RETAIN_VALID_PIXEL_EXPRESSION = "retainValidPixelExpression";
 
-        private boolean preserveResolution = true;
-        private boolean includeTiePointGrids = true;
-        private boolean addDeltaBands = false;
-        private double noDataValue = Double.NaN;
-        private String resamplingName = RESAMPLING_IDENTIFIER[0];
+
+        Preferences preferences = SnapApp.getDefault().getPreferences();
+
+        private boolean preserveResolution = preferences.getBoolean(PROPERTY_PRESERVE_RESOLUTION_KEY, PROPERTY_PRESERVE_RESOLUTION_DEFAULT);
+        private boolean retainValidPixelExpression = preferences.getBoolean(PROPERTY_RETAIN_VALID_PIXEL_EXPRESSION_KEY, PROPERTY_RETAIN_VALID_PIXEL_EXPRESSION_DEFAULT);
+        private boolean includeTiePointGrids = preferences.getBoolean(PROPERTY_INCLUDE_TIE_POINT_GRIDS_KEY, PROPERTY_INCLUDE_TIE_POINT_GRIDS_DEFAULT);
+        private boolean addDeltaBands = preferences.getBoolean(PROPERTY_ADD_DELTA_BANDS_KEY, PROPERTY_ADD_DELTA_BANDS_DEFAULT);
+        private double noDataValue = preferences.getDouble(PROPERTY_NO_DATA_VALUE_KEY, PROPERTY_NO_DATA_VALUE_DEFAULT);
+        private String resamplingName = preferences.get(PROPERTY_RESAMPLING_METHOD_KEY, PROPERTY_RESAMPLING_METHOD_DEFAULT);;
     }
+
 
     private static class OrthorectifyProductFilter implements ProductFilter {
 
@@ -655,4 +834,27 @@ class ReprojectionForm extends JTabbedPane {
             return geoCoding != null && geoCoding.canGetGeoPos() && geoCoding.canGetPixelPos();
         }
     }
+
+    public class EditExpressionActionListener implements ActionListener {
+
+        private final Window parentWindow;
+
+        private EditExpressionActionListener(Window parentWindow) {
+            this.parentWindow = parentWindow;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            ProductExpressionPane pep = ProductExpressionPane.createBooleanExpressionPane(new Product[]{getSourceProduct()},
+                    getSourceProduct(),
+                    appContext.getPreferences());
+            pep.setCode(expressionArea.getText());
+            final int i = pep.showModalDialog(parentWindow, "Mask Expression Editor");
+            if (i == ModalDialog.ID_OK) {
+                expressionArea.setText(pep.getCode());
+            }
+
+        }
+    }
+
 }

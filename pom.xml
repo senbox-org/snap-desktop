@@ -261,7 +261,7 @@
                     </subpackages>
                     <!-- Not possible to exclude packages; it is not considered by the plugin -->
                     <!--<excludePackageNames>*.internal:*.impl:com.bc.*</excludePackageNames>-->
-                    <maxmemory>512M</maxmemory>
+                    <maxmemory>4096M</maxmemory>
                     <doctitle>SNAP Desktop API</doctitle>
                     <windowtitle>SNAP Desktop API</windowtitle>
                     <quiet>true</quiet><!-- show only warnings and errors -->

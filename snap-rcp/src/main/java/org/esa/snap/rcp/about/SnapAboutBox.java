@@ -8,6 +8,7 @@ package org.esa.snap.rcp.about;
 import com.bc.ceres.core.runtime.Version;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.BrowserUtils;
 import org.openide.modules.ModuleInfo;
 import org.openide.modules.Modules;
@@ -20,17 +21,16 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.io.File;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * @author Norman
  */
 public class SnapAboutBox extends JPanel {
 
-    private final static String defaultReleaseNotesUrlString = "https://senbox.atlassian.net/issues/?filter=-4&jql=project%20%3D%20SNAP%20AND%20fixVersion%20%3D%20"; // the version is appended in the code below
-    private final static String stepReleaseNotesUrlString = "https://step.esa.int/main/wp-content/releasenotes/SNAP/SNAP_<version>.html";
+    private String releaseNotesUrlString;
     private final JLabel versionText;
     private final ModuleInfo engineModuleInfo;
 
@@ -38,9 +38,19 @@ public class SnapAboutBox extends JPanel {
         super(new BorderLayout(4, 4));
         ModuleInfo desktopModuleInfo = Modules.getDefault().ownerOf(SnapAboutBox.class);
         engineModuleInfo = Modules.getDefault().ownerOf(Product.class);
-        ImageIcon image = new ImageIcon(SnapAboutBox.class.getResource("SNAP_Banner.jpg"));
+
+        URL resourceUrl = getResourceUrl("snap-branding", "org.esa.snap.rcp.branding", "About_Banner.jpg");
+        if (resourceUrl == null) {
+            resourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
+        }
+        ImageIcon image = new ImageIcon(resourceUrl);
+
+
+        releaseNotesUrlString = SystemUtils.getReleaseNotesUrl();
+
+
         JLabel banner = new JLabel(image);
-        versionText = new JLabel("<html><b>SNAP " + SystemUtils.getReleaseVersion() + "</b>");
+        versionText = new JLabel("<html><b>" + SnapApp.getDefault().getInstanceName() + " " + SystemUtils.getReleaseVersion() + "</b>");
 
         JLabel infoText = new JLabel("<html>"
                 + "This program is free software: you can redistribute it and/or modify it<br>"
@@ -83,6 +93,7 @@ public class SnapAboutBox extends JPanel {
 */
     }
 
+
     private JPanel createVersionPanel() {
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -90,7 +101,8 @@ public class SnapAboutBox extends JPanel {
 
         Version specVersion = Version.parseVersion(engineModuleInfo.getSpecificationVersion().toString());
         String versionString = String.format("%s.%s.%s", specVersion.getMajor(), specVersion.getMinor(), specVersion.getMicro());
-        String changelogUrl = getReleaseNotesURLString(versionString);
+        String changelogUrl = releaseNotesUrlString + versionString;
+
         final JLabel releaseNoteLabel = new JLabel("<html><a href=\"" + changelogUrl + "\">Release Notes</a>");
         releaseNoteLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         releaseNoteLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(changelogUrl));
@@ -98,20 +110,68 @@ public class SnapAboutBox extends JPanel {
         return panel;
     }
 
-    private String getReleaseNotesURLString(String versionString){
-        String changelogUrl = stepReleaseNotesUrlString.replace("<version>", versionString);
-        try {
-            URL url = new URL(changelogUrl);
-            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-            huc.setRequestMethod("HEAD");
 
-            int responseCode = huc.getResponseCode();
-            if(responseCode != HttpURLConnection.HTTP_OK) {
-                changelogUrl = defaultReleaseNotesUrlString + versionString;
+    // This method acts as a convenience wrapper to the method getResourcePath
+    public static URL getResourceUrl(String moduleName, String path, String filename) {
+        try {
+            String resourcePath = getResourcePath(moduleName, path, filename);
+
+            if (resourcePath != null) {
+                File resourceFile = new File(resourcePath);
+                if (resourceFile != null && resourceFile.toURI() != null) {
+                    if (resourceFile.exists()) {
+                        return resourceFile.toURI().toURL();
+                    }
+                }
             }
-        } catch (IOException e) {
-            changelogUrl = defaultReleaseNotesUrlString + versionString;
+        } catch (Exception e) {
         }
-        return changelogUrl;
+
+        return null;
+    }
+
+    // This method returns the resource path when there is no java method available for getting the resource
+    // (which is the case with the branding module.)  The assumptions are that org.esa.snap is the directory
+    // structure at the parent level within the module and that SnapAboutBox.class.getResource("SNAP_Banner.jpg")
+    // returns a value which can be used as a reference to determine the parent directory structure of the target resource.
+    public static String getResourcePath(String moduleName, String path, String filename) {
+
+        if (moduleName == null || path == null || filename == null) {
+            return null;
+        }
+
+        // Get a known resource from module "snap-rcp"
+        URL knownResourceUrl = SnapAboutBox.class.getResource("SNAP_Banner.jpg");
+        if (knownResourceUrl == null) {
+            return null;
+        }
+
+        String knownResourcePath = knownResourceUrl.getPath();
+
+        String fileSeparator = System.getProperty("file.separator");
+
+        String orgEsaSnap = "org" + fileSeparator + "esa" + fileSeparator + "snap";
+
+        String[] splitStr = knownResourcePath.split(orgEsaSnap);
+        if (splitStr.length <= 1) {
+            return null;
+        }
+
+        String knownResourceParentPath = splitStr[0];
+        String targetResourceParentPath = knownResourceParentPath.replace("snap-rcp", moduleName);
+
+        String[] pathArray = path.split(Pattern.quote("."));
+        if (pathArray == null || pathArray.length <= 1) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder(targetResourceParentPath);
+        for (String dir : pathArray) {
+            sb.append(dir);
+            sb.append(fileSeparator);
+        }
+        sb.append(filename);
+
+        return sb.toString();
     }
 }

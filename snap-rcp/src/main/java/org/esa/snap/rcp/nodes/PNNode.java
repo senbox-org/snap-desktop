@@ -11,9 +11,7 @@ import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.datamodel.quicklooks.Quicklook;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
-import org.esa.snap.core.image.VirtualBandOpImage;
 import org.esa.snap.core.jexp.ParseException;
-import org.esa.snap.core.jexp.Term;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.window.OpenImageViewAction;
@@ -551,11 +549,15 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         void updateDisplayName(Band band) {
             super.updateDisplayName(band);
-            float wvl = band.getSpectralWavelength();
-            if (wvl > 1e6) {
-                setDisplayName(String.format("%s (%.2f mm)", band.getName(), wvl / 1e6));
-            } else if (wvl > 0.0) {
-                setDisplayName(String.format("%s (%.1f nm)", band.getName(), wvl));
+            if (band.getSpectralWavelength() > 0.0) {
+                int wavelengthInt = Math.round(band.getSpectralWavelength());
+                float wavelengthIntFloat = (float) (wavelengthInt * 1.0);
+                if (wavelengthIntFloat == band.getSpectralWavelength()) {
+                    setDisplayName(String.format("%s (%.1f nm)", band.getName(), band.getSpectralWavelength()));
+                } else {
+                    String wavelengthString = Float.toString(band.getSpectralWavelength());
+                    setDisplayName(band.getName() + " (" + wavelengthString + " nm)");
+                }
             }
         }
 
@@ -578,22 +580,6 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
 
         @Override
         public boolean canDestroy() {
-            Band bandToBeDeleted = getProductNode();
-            Product product = bandToBeDeleted.getProduct();
-
-            for (Band band : product.getBands()) {
-                if (band instanceof VirtualBand vband) {
-                    String exp = vband.getExpression();
-                    Term term = VirtualBandOpImage.parseExpression(exp, product);
-                    RasterDataNode[] refRasters = BandArithmetic.getRefRasters(term);
-
-                    for (RasterDataNode ref : refRasters) {
-                        if (ref == bandToBeDeleted) {
-                            return false;
-                        }
-                    }
-                }
-            }
             return true;
         }
 
@@ -790,17 +776,9 @@ abstract class PNNode<T extends ProductNode> extends PNNodeBase {
             StringBuilder tooltip = new StringBuilder();
             append(tooltip, band.getDescription());
             if (band.getSpectralWavelength() > 0.0) {
-                double wlNm = band.getSpectralWavelength();
-                boolean useMm = wlNm > 1e6;
-
-                double wl = useMm ? wlNm / 1e6 : wlNm;
-                String unit = useMm ? "mm" : "nm";
-                append(tooltip, String.format("%.1f %s", wl, unit));
-
+                append(tooltip, String.format("%s nm", band.getSpectralWavelength()));
                 if (band.getSpectralBandwidth() > 0.0) {
-                    double bwNm = band.getSpectralBandwidth();
-                    double bw = useMm ? bwNm / 1e6 : bwNm;
-                    append(tooltip, String.format("+/-%.3f %s", 0.5 * bw, unit));
+                    append(tooltip, String.format("+/-%s nm", 0.5 * band.getSpectralBandwidth()));
                 }
             } else if (band.getDate() != null) {
                 append(tooltip, String.format("%s", band.getDate()));

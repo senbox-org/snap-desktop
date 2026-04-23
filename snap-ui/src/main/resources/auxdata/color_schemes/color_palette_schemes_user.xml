@@ -1,0 +1,11 @@
+<schemeList>
+    <Scheme name="user_scheme">
+        <VERBOSE_NAME></VERBOSE_NAME>
+        <MIN>0.0</MIN>
+        <MAX>1.0</MAX>
+        <LOG_SCALE>false</LOG_SCALE>
+        <STANDARD_FILENAME>oceancolor_standard.cpd</STANDARD_FILENAME>
+        <UNIVERSAL_FILENAME>universal_bluered.cpd</UNIVERSAL_FILENAME>
+        <DESCRIPTION>Custom User Scheme</DESCRIPTION>
+    </Scheme>
+</schemeList>

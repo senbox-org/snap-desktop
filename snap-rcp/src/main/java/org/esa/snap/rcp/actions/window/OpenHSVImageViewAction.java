@@ -82,7 +82,7 @@ public class OpenHSVImageViewAction extends AbstractAction implements HelpCtx.Pr
         try {
             pm.beginTask("Creating HSV image...", 2);
             final String[] rgbaExpressions = convertHSVToRGBExpressions(hsvExpressions);
-            rgbBands = OpenRGBImageViewAction.allocateRgbBands(product, rgbaExpressions);
+            rgbBands = OpenRGBImageViewAction.allocateRgbBands(product, rgbaExpressions, null);
 
             final Preferences preferences = SnapApp.getDefault().getPreferences();
             final PreferencesPropertyMap configuration = new PreferencesPropertyMap(preferences);

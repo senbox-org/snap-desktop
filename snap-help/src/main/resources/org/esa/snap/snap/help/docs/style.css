@@ -9,7 +9,7 @@ body {
 
 p {
     font-family: Verdana, Arial, Helvetica, sans-serif;
-    margin: 6pt;
+    margin: 0pt;
 }
 
 .i1 {
@@ -56,7 +56,7 @@ h2 {
     margin-top: 18pt;
     margin-right: 6pt;
     margin-bottom: 12pt;
-    margin-left: 6pt;
+    margin-left: 0pt;
 }
 
 h3 {
@@ -65,8 +65,8 @@ h3 {
     font-weight: bold;
     margin-top: 18pt;
     margin-right: 6pt;
-    margin-bottom: 12pt;
-    margin-left: 6pt;
+    margin-bottom: 6pt;
+    margin-left: 0pt;
 }
 
 h4 {
@@ -76,7 +76,7 @@ h4 {
     margin-top: 18pt;
     margin-right: 6pt;
     margin-bottom: 6pt;
-    margin-left: 6pt;
+    margin-left: 0pt;
 }
 
 h5 {
@@ -102,6 +102,11 @@ h6 {
 li {
     margin-top: 4pt;
     margin-bottom: 4pt;
+}
+
+hr_custom {
+size: 5px
+color: #00cccc
 }
 
 table {
@@ -155,7 +160,7 @@ table.header {
     font-size: 17;
     color: #ffffff;
     vertical-align: middle;
-    background-color: #024150;
+    background-color: #ffffff;
     border-width: 0;
     padding: 0;
     margin: 0;
@@ -171,6 +176,55 @@ table.header {
     padding: 0;
     white-space: nowrap;
 }
+
+.headerMain {
+    font-size: 20;
+    height: 29;
+    color: #000000;
+    vertical-align: middle;
+    background-color: #ffffff;
+    border-width: 0;
+    padding: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    white-space: nowrap;
+}
+
+.headerTop {
+    font-size: 8;
+    height: 10;
+    color: #ffffff;
+    vertical-align: middle;
+    background-color: #000000;
+    border-width: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.headerBottom {
+    font-size: 6;
+    height: 6;
+    color: #ffffff;
+    vertical-align: middle;
+    background-color: #CAD6E2;
+    border-width: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+
+.intro {
+    font-size: 12;
+    color: #000000;
+    vertical-align: top;
+    background-color: #ffffff;
+    border-width: 0;
+    padding: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    white-space: wrap;
+}
+
 
 hr {
     height: 4;

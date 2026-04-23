@@ -16,6 +16,7 @@
 
 package org.esa.snap.rcp.statistics;
 
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -36,7 +37,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "org.esa.snap.rcp.statistics.GeoCodingTopComponent")
 @ActionReferences({
         @ActionReference(path = "Menu/Analysis",position = 40),
-        @ActionReference(path = "Toolbars/Analysis")
+        @ActionReference(path = "Toolbars/" + PackageDefaults.GEO_CODING_TOOLBAR_NAME)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GeoCodingTopComponent_Name",

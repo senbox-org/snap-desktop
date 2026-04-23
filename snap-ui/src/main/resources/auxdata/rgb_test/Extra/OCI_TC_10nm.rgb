@@ -1,0 +1,12 @@
+# RGB-Image Profile
+# A true color RGB configuration profile for PACE OCI
+# which uses a red, green and blue band for the
+# respective RGB color model channels similar to MODIS bands
+# RSRs were obtained from: https://www.researchgate.net/publication/3204170_Terra_MODIS_on-orbit_spectral_characterization_and_performance?
+#
+# based on 645, 555, 465 centerwavelengths with 38 sigma guassian curve and minor red in the uv bands centered at 400nm with 20 sigma and max normalized to blue band at 400nm
+name=OCI_TC_10nm
+red=log((1/9.55)*(0.23*rhos_400 + 0.2*rhos_410 + 0.14*rhos_420 + 0.08*rhos_430 + 0.03*rhos_440 + 0.01*rhos_450 + 0.0*rhos_460 + 0.0*rhos_470 + 0.0*rhos_480 + 0.0*rhos_490 + 0.0*rhos_500 + 0.0*rhos_510 + 0.0*rhos_520 + 0.01*rhos_530 + 0.02*rhos_540 + 0.04*rhos_550 + 0.08*rhos_560 + 0.14*rhos_570 + 0.23*rhos_580 + 0.36*rhos_591 + 0.51*rhos_601 + 0.65*rhos_610 + 0.81*rhos_620 + 0.93*rhos_630 + 0.99*rhos_640 + 0.99*rhos_650 + 0.93*rhos_660 + 0.81*rhos_670 + 0.64*rhos_681 + 0.48*rhos_691 + 0.34*rhos_701)/0.01)/log(1/0.01)
+green=log((1/9.49)*(0.0*rhos_400 + 0.0*rhos_410 + 0.0*rhos_420 + 0.0*rhos_430 + 0.01*rhos_440 + 0.02*rhos_450 + 0.04*rhos_460 + 0.08*rhos_470 + 0.14*rhos_480 + 0.23*rhos_490 + 0.35*rhos_500 + 0.5*rhos_510 + 0.65*rhos_520 + 0.81*rhos_530 + 0.93*rhos_540 + 0.99*rhos_550 + 0.99*rhos_560 + 0.93*rhos_570 + 0.81*rhos_580 + 0.64*rhos_591 + 0.48*rhos_601 + 0.35*rhos_610 + 0.23*rhos_620 + 0.14*rhos_630 + 0.08*rhos_640 + 0.04*rhos_650 + 0.02*rhos_660 + 0.01*rhos_670 + 0.0*rhos_681 + 0.0*rhos_691 + 0.0*rhos_701)/0.01)/log(1/0.01)
+blue=log((1/9.28)*(0.23*rhos_400 + 0.35*rhos_410 + 0.5*rhos_420 + 0.65*rhos_430 + 0.81*rhos_440 + 0.93*rhos_450 + 0.99*rhos_460 + 0.99*rhos_470 + 0.93*rhos_480 + 0.81*rhos_490 + 0.65*rhos_500 + 0.5*rhos_510 + 0.35*rhos_520 + 0.23*rhos_530 + 0.14*rhos_540 + 0.08*rhos_550 + 0.04*rhos_560 + 0.02*rhos_570 + 0.01*rhos_580 + 0.01*rhos_591 + 0.0*rhos_601 + 0.0*rhos_610 + 0.0*rhos_620 + 0.0*rhos_630 + 0.0*rhos_640 + 0.0*rhos_650 + 0.0*rhos_660 + 0.0*rhos_670 + 0.0*rhos_681 + 0.0*rhos_691 + 0.0*rhos_701)/0.01)/log(1/0.01)
+valid_pixel_expression=LAT >\= -90 and LAT <\= 90

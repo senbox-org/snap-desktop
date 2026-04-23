@@ -39,7 +39,7 @@ import java.awt.event.ActionEvent;
 })
 public class ShowOnlineHelpAction extends AbstractAction {
     /** URl for the online help. */
-    private static final String DEFAULT_ONLINE_HELP_URL = "https://step.esa.int/main/doc/online-help";
+    private static final String DEFAULT_ONLINE_HELP_URL = "https://seadas.gsfc.nasa.gov/help/";
 
     /**
      * Launches the default browser to display the tutorials.
@@ -49,7 +49,8 @@ public class ShowOnlineHelpAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        final String url = Config.instance().preferences().get("snap.online.help.url", DEFAULT_ONLINE_HELP_URL);
-        DesktopHelper.browse(url + "?version=" + SystemUtils.getReleaseVersion());
+//        final String url = Config.instance().preferences().get("snap.online.help.url", DEFAULT_ONLINE_HELP_URL);
+//        DesktopHelper.browse(url + "?version=" + SystemUtils.getReleaseVersion());
+        DesktopHelper.browse(DEFAULT_ONLINE_HELP_URL);
     }
 }

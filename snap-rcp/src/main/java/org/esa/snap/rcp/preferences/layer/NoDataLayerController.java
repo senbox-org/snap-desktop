@@ -22,15 +22,14 @@ import com.bc.ceres.swing.TableLayout;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.PropertyEditorRegistry;
 import org.esa.snap.core.layer.NoDataLayerType;
+import org.esa.snap.core.util.NamingConvention;
 import org.esa.snap.rcp.preferences.DefaultConfigController;
 import org.esa.snap.rcp.preferences.Preference;
 import org.esa.snap.rcp.preferences.PreferenceUtils;
 import org.netbeans.spi.options.OptionsPanelController;
 import org.openide.util.HelpCtx;
 
-import javax.swing.Box;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Insets;
@@ -60,6 +59,11 @@ public final class NoDataLayerController extends DefaultConfigController {
      */
     public static final String PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY = "noDataOverlay.transparency";
 
+    /**
+     * Preferences key for the no-data valid geo
+     */
+    public static final String PROPERTY_KEY_NO_DATA_OVERLAY_VALID_GEO = "noDataOverlay.valid.geo";
+
     protected PropertySet createPropertySet() {
         return createPropertySet(new NoDataBean());
     }
@@ -77,14 +81,18 @@ public final class NoDataLayerController extends DefaultConfigController {
         PropertyEditorRegistry registry = PropertyEditorRegistry.getInstance();
         Property noDataOverlayColor = context.getPropertySet().getProperty(PROPERTY_KEY_NO_DATA_OVERLAY_COLOR);
         Property noDataOverlayTransparency = context.getPropertySet().getProperty(PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY);
+        Property noDataOverlayValidGeo = context.getPropertySet().getProperty(PROPERTY_KEY_NO_DATA_OVERLAY_VALID_GEO);
 
         JComponent[] noDataOverlayColorComponents = PreferenceUtils.createColorComponents(noDataOverlayColor);
         JComponent[] noDataOverlayTransparencyComponents = registry.findPropertyEditor(noDataOverlayTransparency.getDescriptor()).createComponents(noDataOverlayTransparency.getDescriptor(), context);
+        JComponent[] noDataOverlayValidGeoComponents = registry.findPropertyEditor(noDataOverlayValidGeo.getDescriptor()).createComponents(noDataOverlayValidGeo.getDescriptor(), context);
 
         pageUI.add(noDataOverlayColorComponents[0]);
         pageUI.add(noDataOverlayColorComponents[1]);
         pageUI.add(noDataOverlayTransparencyComponents[1]);
         pageUI.add(noDataOverlayTransparencyComponents[0]);
+        pageUI.add(noDataOverlayValidGeoComponents[0]);
+        pageUI.add(new JLabel(""));
         pageUI.add(tableLayout.createVerticalSpacer());
 
         JPanel parent = new JPanel(new BorderLayout());
@@ -101,14 +109,18 @@ public final class NoDataLayerController extends DefaultConfigController {
     @SuppressWarnings("UnusedDeclaration")
     static class NoDataBean {
 
-        @Preference(label = "No-data overlay colour",
+        @Preference(label = "No-Data Overlay " + NamingConvention.COLOR_MIXED_CASE,
                 key = PROPERTY_KEY_NO_DATA_OVERLAY_COLOR)
         Color noDataOverlayColor = NoDataLayerType.DEFAULT_COLOR;
 
-        @Preference(label = "No-data overlay transparency",
+        @Preference(label = "No-Data Overlay Transparency",
                 key = PROPERTY_KEY_NO_DATA_OVERLAY_TRANSPARENCY,
                 interval = "[0.0,1.0]")
         double noDataOverlayTransparency = 0.3;
+
+        @Preference(label = "Limit No-Data mask to valid geolocated pixels",
+                key = PROPERTY_KEY_NO_DATA_OVERLAY_VALID_GEO)
+        boolean noDataOverlayValidGeo = NoDataLayerType.DEFAULT_VALID_GEO;
     }
 
 }
