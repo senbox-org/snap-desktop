@@ -47,6 +47,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -205,6 +206,12 @@ public class ReprojectionUI extends BaseOperatorUI {
     @Override
     public void updateParameters() {
 
+        Object oldCrsValue = paramMap.get("crs");
+        PropertySet outputGeometryParams = null;
+        if (paramMap != null && paramMap.containsKey("referencePixelX")) {
+            outputGeometryParams = PropertyContainer.createMapBacked(new HashMap<>(paramMap));
+        }
+
         if (!propertySet.getValue("orientation").equals(0.0) ||
                 propertySet.getValue("easting") != null ||
                 propertySet.getValue("northing") != null ||
@@ -226,6 +233,8 @@ public class ReprojectionUI extends BaseOperatorUI {
         CoordinateReferenceSystem selectedCrs = getSelectedCrs();
         if (selectedCrs != null) {
             paramMap.put("crs", selectedCrs.toWKT());
+            } else if (oldCrsValue != null) {
+                paramMap.put("crs", oldCrsValue);
         } else {
             paramMap.put("crs", "EPSG:4326");
         }
