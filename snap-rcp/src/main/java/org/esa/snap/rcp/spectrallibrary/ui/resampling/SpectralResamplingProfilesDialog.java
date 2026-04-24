@@ -22,7 +22,6 @@ public class SpectralResamplingProfilesDialog extends JDialog {
 
     private final SpectralResamplingSettingsPanel settingsPanel = new SpectralResamplingSettingsPanel();
 
-    private final JRadioButton saveToActiveLibraryButton = new JRadioButton("Save as new profiles in active library");
     private final JRadioButton saveToNewLibraryButton = new JRadioButton("Save in new library", true);
 
     private final JTextField suffixField = new JTextField("_resampled", 18);
@@ -79,8 +78,6 @@ public class SpectralResamplingProfilesDialog extends JDialog {
         targetPanel.setBorder(BorderFactory.createTitledBorder("Output"));
 
         ButtonGroup group = new ButtonGroup();
-        group.add(saveToActiveLibraryButton);
-        saveToActiveLibraryButton.setEnabled(false);
         group.add(saveToNewLibraryButton);
 
         gbc = createConstraints();
@@ -89,9 +86,7 @@ public class SpectralResamplingProfilesDialog extends JDialog {
         gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        targetPanel.add(saveToActiveLibraryButton, gbc);
 
-        gbc.gridy = 1;
         targetPanel.add(saveToNewLibraryButton, gbc);
 
         gbc.gridwidth = 1;
