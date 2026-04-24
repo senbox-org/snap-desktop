@@ -19,7 +19,6 @@ public class SpectralLibraryPanel extends JPanel {
 
     // library actions
     private final JComboBox<Object> libraryCombo = new JComboBox<>();
-    private AbstractButton refreshButton;
     private final JButton createFromProductButton = new JButton("New Library from Product...");
     private final JButton deleteLibraryButton = new JButton("Delete Active Library");
     private final JButton renameLibraryButton = new JButton("Rename Active Library");
@@ -35,6 +34,7 @@ public class SpectralLibraryPanel extends JPanel {
     private final JButton changePreviewColorButton = new JButton("Set Preview Color for Selected Profiles...");
     private final JButton addProfilesCoordinatesToVectorLayer = new JButton("Add Selected Profiles as Vector Layer");
     private final JButton applySpectralNoiseReduction = new JButton("Apply Spectral Noise Reduction for selected Profiles");
+    private final JButton applySpectralResamplingReduction = new JButton("Apply Spectral Resampling for selected Profiles");
 
     // preview actions
     private final PreviewPanel previewPanel = new PreviewPanel();
@@ -106,11 +106,6 @@ public class SpectralLibraryPanel extends JPanel {
         exportButton.setToolTipText("Export Spectral Library to file.");
         exportButton.setEnabled(true);
 
-        refreshButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Update24.gif"), false);
-        refreshButton.setName("refreshButton");
-        refreshButton.setToolTipText("Refresh Profiles Table of Active Library.");
-        refreshButton.setEnabled(true);
-
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row1.add(importButton);
         row1.add(exportButton);
@@ -122,8 +117,6 @@ public class SpectralLibraryPanel extends JPanel {
         row3.add(new JLabel("Active Library: "));
         libraryCombo.setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         row3.add(libraryCombo);
-        row3.add(Box.createHorizontalStrut(5));
-        row3.add(refreshButton);
 
         JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row4.add(renameLibraryButton);
@@ -154,16 +147,19 @@ public class SpectralLibraryPanel extends JPanel {
         JPanel header2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         JPanel header3 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         JPanel header4 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        JPanel header5 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         header1.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
         header2.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
         header3.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
         header4.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
+        header5.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
         header1.add(removeSelectedProfilesButton);
         header1.add(addAttributeButton);
         header2.add(previewSelectedProfilesButton);
         header2.add(changePreviewColorButton);
         header3.add(addProfilesCoordinatesToVectorLayer);
         header4.add(applySpectralNoiseReduction);
+        header5.add(applySpectralResamplingReduction);
 
 
         JPanel header = new JPanel();
@@ -172,6 +168,7 @@ public class SpectralLibraryPanel extends JPanel {
         header.add(header2);
         header.add(header3);
         header.add(header4);
+        header.add(header5);
 
         tablePanel.add(header, BorderLayout.NORTH);
         tablePanel.add(new JScrollPane(libraryTable), BorderLayout.CENTER);
@@ -267,9 +264,6 @@ public class SpectralLibraryPanel extends JPanel {
     public JComboBox<Object> getLibraryCombo() {
         return libraryCombo;
     }
-    public AbstractButton getRefreshButton() {
-        return refreshButton;
-    }
     public JButton getCreateFromProductButton() {
         return createFromProductButton;
     }
@@ -311,6 +305,9 @@ public class SpectralLibraryPanel extends JPanel {
 
     public JButton getApplySpectralNoiseReduction() {
         return applySpectralNoiseReduction;
+    }
+    public JButton getApplySpectralResampling() {
+        return applySpectralResamplingReduction;
     }
 
     // preview actions
