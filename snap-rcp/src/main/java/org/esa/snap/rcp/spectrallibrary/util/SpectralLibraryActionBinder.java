@@ -132,12 +132,6 @@ public class SpectralLibraryActionBinder {
 
 
     private void wireToolbarBasics() {
-        panel.getRefreshButton().addActionListener(e -> {
-            controller.reloadLibraries();
-            controller.refreshActiveLibraryProfiles();
-            vm.setStatus(UiStatus.info("Refreshed"));
-        });
-
         panel.getDeleteLibraryButton().addActionListener(e -> {
                 int answer = JOptionPane.showConfirmDialog(panel, "Are you sure you want to delete this library?");
                 if (answer == JOptionPane.YES_OPTION) {

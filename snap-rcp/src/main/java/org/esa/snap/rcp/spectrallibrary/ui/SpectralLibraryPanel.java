@@ -19,7 +19,6 @@ public class SpectralLibraryPanel extends JPanel {
 
     // library actions
     private final JComboBox<Object> libraryCombo = new JComboBox<>();
-    private AbstractButton refreshButton;
     private final JButton createFromProductButton = new JButton("New Library from Product...");
     private final JButton deleteLibraryButton = new JButton("Delete Active Library");
     private final JButton renameLibraryButton = new JButton("Rename Active Library");
@@ -107,11 +106,6 @@ public class SpectralLibraryPanel extends JPanel {
         exportButton.setToolTipText("Export Spectral Library to file.");
         exportButton.setEnabled(true);
 
-        refreshButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Update24.gif"), false);
-        refreshButton.setName("refreshButton");
-        refreshButton.setToolTipText("Refresh Profiles Table of Active Library.");
-        refreshButton.setEnabled(true);
-
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row1.add(importButton);
         row1.add(exportButton);
@@ -123,8 +117,6 @@ public class SpectralLibraryPanel extends JPanel {
         row3.add(new JLabel("Active Library: "));
         libraryCombo.setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         row3.add(libraryCombo);
-        row3.add(Box.createHorizontalStrut(5));
-        row3.add(refreshButton);
 
         JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         row4.add(renameLibraryButton);
@@ -271,9 +263,6 @@ public class SpectralLibraryPanel extends JPanel {
     // library actions
     public JComboBox<Object> getLibraryCombo() {
         return libraryCombo;
-    }
-    public AbstractButton getRefreshButton() {
-        return refreshButton;
     }
     public JButton getCreateFromProductButton() {
         return createFromProductButton;

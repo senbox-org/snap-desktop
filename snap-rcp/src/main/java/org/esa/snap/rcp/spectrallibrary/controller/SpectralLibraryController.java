@@ -73,7 +73,6 @@ public class SpectralLibraryController {
         reloadLibraries();
         ensureActiveLibrary();
         refreshActiveLibraryProfiles();
-        vm.setStatus(UiStatus.info("Refreshed"));
     }
 
     public void reloadLibraries() {
