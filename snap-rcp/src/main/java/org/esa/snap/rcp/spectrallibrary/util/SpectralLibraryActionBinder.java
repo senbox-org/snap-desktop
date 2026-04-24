@@ -282,6 +282,7 @@ public class SpectralLibraryActionBinder {
 
             saveFilterState(curId);
             controller.setActiveLibrary(newId);
+            controller.clearPreview();
 
             ProductSceneView view = viewProvider.getSelectedProductSceneView();
             Product product = view != null ? view.getProduct() : null;
