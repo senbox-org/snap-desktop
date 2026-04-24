@@ -22,8 +22,6 @@ public class SpectralResamplingProfilesDialog extends JDialog {
 
     private final SpectralResamplingSettingsPanel settingsPanel = new SpectralResamplingSettingsPanel();
 
-    private final JRadioButton saveToNewLibraryButton = new JRadioButton("Save in new library", true);
-
     private final JTextField suffixField = new JTextField("_resampled", 18);
     private final JTextField newLibraryNameField = new JTextField(24);
 
@@ -43,8 +41,7 @@ public class SpectralResamplingProfilesDialog extends JDialog {
         add(buildButtons(), BorderLayout.SOUTH);
 
         prefillNewLibraryName(activeLibraryName);
-        installListeners();
-        updateTargetControls();
+        newLibraryNameField.setEnabled(true);
 
         pack();
         setMinimumSize(new Dimension(560, getPreferredSize().height));
@@ -77,17 +74,11 @@ public class SpectralResamplingProfilesDialog extends JDialog {
         JPanel targetPanel = new JPanel(new GridBagLayout());
         targetPanel.setBorder(BorderFactory.createTitledBorder("Output"));
 
-        ButtonGroup group = new ButtonGroup();
-        group.add(saveToNewLibraryButton);
-
         gbc = createConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        targetPanel.add(saveToNewLibraryButton, gbc);
 
         gbc.gridwidth = 1;
         addRow(targetPanel, gbc, 2, new JLabel("Suffix for smoothed profiles:"), suffixField);
@@ -122,20 +113,11 @@ public class SpectralResamplingProfilesDialog extends JDialog {
         return buttons;
     }
 
-    private void installListeners() {
-        saveToNewLibraryButton.addActionListener(e -> updateTargetControls());
-    }
-
     private void prefillNewLibraryName(String activeLibraryName) {
         String baseName = (activeLibraryName == null || activeLibraryName.isBlank())
                 ? "Library"
                 : activeLibraryName.trim();
         newLibraryNameField.setText(baseName + "_resampled");
-    }
-
-    private void updateTargetControls() {
-        boolean saveToNewLibrary = saveToNewLibraryButton.isSelected();
-        newLibraryNameField.setEnabled(saveToNewLibrary);
     }
 
     private void onOk() {
@@ -151,17 +133,12 @@ public class SpectralResamplingProfilesDialog extends JDialog {
             return;
         }
 
-        SaveMode saveMode = saveToNewLibraryButton.isSelected()
-                ? SaveMode.NEW_LIBRARY
-                : SaveMode.ACTIVE_LIBRARY;
+        SaveMode saveMode = SaveMode.NEW_LIBRARY;
 
-        String newLibraryName = null;
-        if (saveMode == SaveMode.NEW_LIBRARY) {
-            newLibraryName = newLibraryNameField.getText() != null ? newLibraryNameField.getText().trim() : "";
-            if (newLibraryName.isEmpty()) {
-                setStatus("Please provide a name for the new library.");
-                return;
-            }
+        String newLibraryName = newLibraryNameField.getText() != null ? newLibraryNameField.getText().trim() : "";
+        if (newLibraryName.isEmpty()) {
+            setStatus("Please provide a name for the new library.");
+            return;
         }
 
         result = new Result(
