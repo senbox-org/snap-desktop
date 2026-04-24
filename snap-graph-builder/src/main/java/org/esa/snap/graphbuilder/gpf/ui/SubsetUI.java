@@ -236,11 +236,14 @@ public class SubsetUI extends BaseOperatorUI {
         polygonRegion = (Polygon) paramMap.get(POLYGON_REGION_PARAMETER);
         vectorFile = (File) paramMap.get(VECTOR_FILE_PARAMETER);
         if (polygonRegion != null || vectorFile != null) {
-            getPolygonRegion();
             vectorFileRadio.setSelected(true);
             pixelPanel.setVisible(false);
             geoPanel.setVisible(false);
             vectorFilePanel.setVisible(true);
+            if (polygonRegion != null){
+                productSubsetByPolygonUiComponents.setUsePixelCoordinates(false);
+            }
+            getPolygonRegion();
         }
         //enable or disable referenceCombo depending on sourceProduct
         if(sourceProducts == null || sourceProducts.length == 0 || !sourceProducts[0].isMultiSize()) {

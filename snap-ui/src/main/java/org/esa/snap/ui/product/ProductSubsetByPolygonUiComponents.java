@@ -38,6 +38,7 @@ public class ProductSubsetByPolygonUiComponents {
     private final JPanel wktStringPanel = new JPanel(new GridBagLayout());
     private final JTextArea wktStringInput = new JTextArea(16, 32);
     private final JRadioButton pixelCoordRadio = new JRadioButton("Pixel Coordinates");
+    private final JRadioButton geoCoordRadio = new JRadioButton("Geo Coordinates");
     private final Component hostComponent;
     private MetadataInspector.Metadata targetProductMetadata;
 
@@ -81,7 +82,6 @@ public class ProductSubsetByPolygonUiComponents {
 
     private void setupWKTStringPanel() {
         wktStringInput.setEditable(true);
-        final JRadioButton geoCoordRadio = new JRadioButton("Geo Coordinates");
         final ButtonGroup group = new ButtonGroup();
         group.add(pixelCoordRadio);
         group.add(geoCoordRadio);
@@ -287,4 +287,11 @@ public class ProductSubsetByPolygonUiComponents {
     public JPanel getImportVectorFilePanel() {
         return this.vectorFilePanel;
     }
+
+    public void setUsePixelCoordinates(boolean usePixelCoordinates) {
+        this.pixelCoordRadio.setSelected(usePixelCoordinates);
+        this.geoCoordRadio.setSelected(!usePixelCoordinates);
+    }
+
+
 }
