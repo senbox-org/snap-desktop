@@ -79,7 +79,7 @@ public class VirtualFileSystemView extends FileSystemView {
                 String key = vfsFileSystemView.getRoot().toString();
                 this.vfsFileSystemViews.put(key, vfsFileSystemView);
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "Unable to initialize " + vfsRemoteFileRepository.getName() + " VFS. Details: " + ex.getMessage(), ex);
+                logger.log(Level.SEVERE, "Unable to initialize " + vfsRemoteFileRepository.name() + " VFS. Details: " + ex.getMessage(), ex);
             }
         }
     }
@@ -92,8 +92,7 @@ public class VirtualFileSystemView extends FileSystemView {
      */
     private static boolean isVirtualRoot(Path path) {
         FileSystem fileSystem = path.getFileSystem();
-        if (fileSystem instanceof AbstractRemoteFileSystem) {
-            AbstractRemoteFileSystem remoteFileSystem = (AbstractRemoteFileSystem) fileSystem;
+        if (fileSystem instanceof AbstractRemoteFileSystem remoteFileSystem) {
             return remoteFileSystem.getRoot().equals(path);
         }
         return false;
@@ -567,7 +566,7 @@ public class VirtualFileSystemView extends FileSystemView {
      *
      * @param dirPath       the target dir path
      * @param useFileHiding the hiding flag
-     * @return the list of VFS files
+     * @return the array of VFS files
      */
     private File[] getVirtualFiles(Path dirPath, boolean useFileHiding) {
         String pathName = dirPath.toString();
