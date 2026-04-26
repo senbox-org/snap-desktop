@@ -7,16 +7,23 @@ import org.esa.snap.rcp.spectrallibrary.ui.AddPreviewAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
 import org.esa.snap.rcp.spectrallibrary.ui.noise.SpectralNoiseReductionProfilesDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.noise.SpectralNoiseSettings;
+import org.esa.snap.rcp.spectrallibrary.ui.resampling.SpectralResamplingProfilesDialog;
+import org.esa.snap.rcp.spectrallibrary.ui.resampling.SpectralResamplingSettings;
 import org.esa.snap.rcp.spectrallibrary.util.ColorUtils;
 import org.esa.snap.rcp.spectrallibrary.util.SpectralLibraryUtils;
 import org.esa.snap.rcp.spectrallibrary.util.WktUtils;
 import org.esa.snap.rcp.spectrallibrary.util.noise.SpectralNoiseUtils;
+import org.esa.snap.rcp.spectrallibrary.util.resampling.SpectralResamplingUtils;
 import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
+import org.esa.snap.speclib.io.csv.util.CsvTable;
 import org.esa.snap.speclib.model.*;
+import org.esa.snap.speclib.model.AttributeValue;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 import org.esa.snap.speclib.util.noise.SpectralNoiseKernelFactory;
+import org.esa.snap.speclib.util.resampling.SpectralResamplingSensor;
+import org.esa.snap.speclib.util.resampling.SpectralResponseFunction;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.locationtech.jts.io.WKTReader;
@@ -26,6 +33,8 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
@@ -64,7 +73,6 @@ public class SpectralLibraryController {
         reloadLibraries();
         ensureActiveLibrary();
         refreshActiveLibraryProfiles();
-        vm.setStatus(UiStatus.info("Refreshed"));
     }
 
     public void reloadLibraries() {
@@ -752,6 +760,81 @@ public class SpectralLibraryController {
         }
     }
 
+    public void applySpectralResampling(UUID libraryId,
+                                        List<UUID> profileIds,
+                                        SpectralResamplingSettings settings,
+                                        SpectralResamplingProfilesDialog.SaveMode saveMode,
+                                        String nameSuffix,
+                                        String newLibraryName) {
+
+        SpectralLibrary sourceLibrary = service.getLibrary(libraryId).orElse(null);
+
+        Map<UUID, SpectralProfile> profilesById = new LinkedHashMap<>();
+        for (SpectralProfile profile : sourceLibrary.getProfiles()) {
+            if (profile != null && profile.getId() != null) {
+                profilesById.put(profile.getId(), profile);
+            }
+        }
+
+        List<SpectralProfile> selectedProfiles = new ArrayList<>();
+        for (UUID profileId : profileIds) {
+            SpectralProfile profile = profilesById.get(profileId);
+            if (profile != null) {
+                selectedProfiles.add(profile);
+            }
+        }
+
+        CsvTable fwhmTable;
+        try {
+            fwhmTable = SpectralResamplingUtils.readFwhmFromCsv(settings.targetSensorName());
+        } catch (IOException | URISyntaxException e) {
+            vm.setStatus(UiStatus.error("Spectral Resampling failed: " + e.getMessage()));
+            return;
+        }
+
+        List<SpectralProfile> resampledProfiles = new ArrayList<>(selectedProfiles.size());
+        for (SpectralProfile profile : selectedProfiles) {
+            try {
+                resampledProfiles.add(SpectralResamplingUtils.createResampledProfile(profile,
+                        sourceLibrary.getAxis().getWavelengths(),
+                        fwhmTable,
+                        settings.targetSensorName(),
+                        nameSuffix));
+            } catch (IOException | URISyntaxException e) {
+                vm.setStatus(UiStatus.error("Spectral Resampling failed: " + e.getMessage()));
+                return;
+            }
+        }
+
+        try {
+            String libName = (newLibraryName == null || newLibraryName.isBlank())
+                    ? sourceLibrary.getName() + "_resampled"
+                    : newLibraryName.trim();
+
+            final double[] resampledWvls = SpectralResponseFunction.getFwhmTableColumnsAsArrays(fwhmTable)[0];
+            final SpectralAxis resampledAxis = new SpectralAxis(resampledWvls, sourceLibrary.getAxis().getXUnit());
+            SpectralLibrary newLibrary = service.createLibrary(
+                    libName,
+                    resampledAxis,
+                    sourceLibrary.getDefaultYUnit().orElse(null)
+            );
+
+            SpectralLibraryService.BulkAddResult r = service.addProfiles(newLibrary.getId(), resampledProfiles);
+
+            clearPreview();
+            reloadLibraries();
+            vm.setActiveLibraryId(newLibrary.getId());
+            refreshActiveLibraryProfiles();
+
+            vm.setStatus(UiStatus.info(
+                    "New library created: " + libName + " (" + r.added() + " profiles)"
+            ));
+        } catch (Exception ex) {
+            reloadLibraries();
+            refreshActiveLibraryProfiles();
+            vm.setStatus(UiStatus.error("Spectral resamopling failed: " + ex.getMessage()));
+        }
+    }
 
 
     private String nextAutoProfileName(String prefix,
@@ -845,7 +928,7 @@ public class SpectralLibraryController {
                         }
 
                         vm.setPreviewProfiles(display);
-                        UUID sel = SpectralLibraryUtils.containsId(display, r.selectedId) ? r.selectedId : (display.isEmpty() ? null : display.get(display.size()-1).getId());
+                        UUID sel = SpectralLibraryUtils.containsId(display, r.selectedId) ? r.selectedId : (display.isEmpty() ? null : display.get(display.size() - 1).getId());
                         vm.setSelectedPreviewProfileId(sel);
 
                         if (r.profiles.size() > display.size()) {

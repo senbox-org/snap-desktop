@@ -73,14 +73,6 @@
             can be previewed in the chart.
         </li>
         <li>
-            <b>Reduce spectral noise for stored profiles</b><br>
-            Select one or more profiles in the table and use
-            <b>Apply Spectral Noise Reduction for selected Profiles</b>.
-            A dialog opens where the filter method and its parameters can be configured.
-            The smoothed profiles can either be stored in the current active library or in a newly created library.
-            New profile names are created by appending a suffix such as <code>_smoothed</code>.
-        </li>
-        <li>
             <b>Create a vector layer from stored profile coordinates</b><br>
             Select one or more profiles in the table and use <b>Add Selected Profiles as Vector Layer</b> to create a
             vector layer in the currently selected product. Only profiles with a <code>wkt</code> attribute are used; profiles
@@ -121,6 +113,22 @@
             library, or add <b>only the selected</b> preview profile. <br><br> <b>Note:</b> For performance reasons,
             the preview chart may show only a limited subset when very large numbers of profiles are extracted
             (e.g. thousands to hundreds of thousands). Adding to the library still uses the full extraction result.
+        </li>
+        <li>
+            <b>Reduce spectral noise for stored profiles</b><br>
+            Select one or more profiles in the table and use
+            <b>Apply Spectral Noise Reduction for selected Profiles</b>.
+            A dialog opens where the filter method and its parameters can be configured.
+            The smoothed profiles can either be stored in the current active library or in a newly created library.
+            New profile names are created by appending a suffix such as <code>_smoothed</code>.
+        </li>
+        <li>
+            <b>Resample spectra to spectral axis of other sensors</b><br>
+            Select one or more profiles in the table and use
+            <b>Apply Spectral Resampling for selected Profiles</b>.
+            A dialog opens where the target sensor can be configured.
+            The resampled profiles are stored in a new library because one library corresponds to a single spectral axis.
+            Resampled profile names are created by appending a suffix such as <code>_resampled</code>.
         </li>
     </ol>
 
@@ -220,10 +228,6 @@
         <tr>
             <td><img src="images/icons/Export24.gif"></td>
             <td>Export active library to file.</td>
-        </tr>
-        <tr>
-            <td><img src="images/icons/Update24.gif"></td>
-            <td>Refresh active library and profiles table.</td>
         </tr>
         <tr>
             <td><img src="images/icons/Filter24.gif"></td>
