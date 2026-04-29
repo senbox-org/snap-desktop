@@ -39,7 +39,7 @@ public final class OperatorUIUtils {
 
     public static void initParamList(final JList paramList, final String[] availNames, final Object[] defaultSelection) {
         final List selectedValues = paramList.getSelectedValuesList();
-
+        paramList.clearSelection();
         paramList.removeAll();
         paramList.setListData(availNames);
         paramList.setFixedCellWidth(200);

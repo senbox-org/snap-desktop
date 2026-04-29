@@ -493,6 +493,22 @@ public class VirtualFileSystemView extends FileSystemView {
     }
 
     /**
+     * Returns whether the specified file denotes a shell interpreted link which
+     * can be obtained by the {@link #getLinkLocation(File)}.
+     *
+     * @param file a file
+     * @return whether this is a link
+     * @throws NullPointerException if {@code file} equals {@code null}
+     * @throws SecurityException if the caller does not have necessary
+     *                           permissions
+     * @see #getLinkLocation(File)
+     * @since 9
+     */
+    public boolean isLink(File file) {
+        return false;
+    }
+
+    /**
      * Converts given file paths from native class for OS used by FSW (which is considered to not use NIO API) to base {@code File}.
      * Fix the issue with large paths (>256 characters) on Windows OS. (the goal)
      */

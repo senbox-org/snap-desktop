@@ -794,6 +794,9 @@ public class ResamplingUI extends BaseOperatorUI {
 
         private void reactToSourceProductChange(Product product) {
             Object selected = referenceBandNameBox.getSelectedItem();
+            if (selected == null && referenceBandParam != null) {
+                selected = referenceBandParam;
+            }
             referenceBandNameBox.removeAllItems();
             String[] bandNames = new String[0];
             if (product != null) {
