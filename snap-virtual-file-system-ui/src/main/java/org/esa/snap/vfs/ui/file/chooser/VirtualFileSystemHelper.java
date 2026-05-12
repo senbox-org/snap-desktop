@@ -5,6 +5,7 @@ import org.esa.snap.vfs.VFS;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystem;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystemProvider;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.net.URI;
@@ -31,8 +32,8 @@ public class VirtualFileSystemHelper {
      * @param vfsRemoteFileRepository The VFS Remote File Repository
      */
     public VirtualFileSystemHelper(VFSRemoteFileRepository vfsRemoteFileRepository) throws URISyntaxException {
-        AbstractRemoteFileSystemProvider fileSystemProvider = (AbstractRemoteFileSystemProvider) VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.getScheme());
-        URI uri = new URI(vfsRemoteFileRepository.getScheme(), vfsRemoteFileRepository.getRoot(), null);
+        AbstractRemoteFileSystemProvider fileSystemProvider = (AbstractRemoteFileSystemProvider) VFS.getInstance().getFileSystemProviderByScheme(vfsRemoteFileRepository.scheme());
+        URI uri = new URI(vfsRemoteFileRepository.scheme(), vfsRemoteFileRepository.getRoot(), null);
         Map<String, ?> env = Collections.emptyMap();
         this.fileSystem = fileSystemProvider.getFileSystemOrCreate(uri, env);
     }
@@ -74,7 +75,7 @@ public class VirtualFileSystemHelper {
          * For our scope this method will always returns <code>true</code>.
          *
          * @return <code>true</code> if and only if the file denoted by this abstract pathname exists <em>and</em> is a directory; <code>false</code> otherwise
-         * @throws SecurityException If a security manager exists and its <code>{@link java.lang.SecurityManager#checkRead(java.lang.String)}</code> method denies read access to the file
+         * @throws SecurityException If a security manager exists it denies read access to the file
          */
         @Override
         public boolean isDirectory() {
@@ -99,7 +100,7 @@ public class VirtualFileSystemHelper {
          * For our scope this method will always returns <code>true</code>.
          *
          * @return <code>true</code> if and only if the file or directory denoted by this abstract pathname exists; <code>false</code> otherwise
-         * @throws SecurityException If a security manager exists and its <code>{@link java.lang.SecurityManager#checkRead(java.lang.String)}</code> method denies read access to the file or directory
+         * @throws SecurityException If a security manager exists it denies read access to the file or directory
          */
         @Override
         public boolean exists() {
@@ -112,6 +113,7 @@ public class VirtualFileSystemHelper {
          * @return The name of the file or directory denoted by this abstract pathname, or the empty string if this pathname's name sequence is empty
          */
         @Override
+        @NotNull
         public String getName() {
             String name = super.getName();
             if (name.isEmpty()) {
@@ -126,6 +128,7 @@ public class VirtualFileSystemHelper {
          * @return The string form of this abstract pathname
          */
         @Override
+        @NotNull
         public String getPath() {
             return super.getPath();
         }
