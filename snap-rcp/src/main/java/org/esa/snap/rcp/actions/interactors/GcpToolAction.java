@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.actions.interactors;
 
 import org.esa.snap.rcp.placemark.InsertGcpInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -27,10 +28,22 @@ import org.openide.util.NbBundle.Messages;
 
 import javax.swing.*;
 
-@ActionID(category = "Interactors", id = "org.esa.snap.rcp.action.interactors.GcpToolAction")
-@ActionRegistration(displayName = "#CTL_GcpToolActionText", lazy = false)
-@ActionReference(path = "Toolbars/Tools", position = 140)
-@Messages({"CTL_GcpToolActionText=GCP Tool", "CTL_GcpToolActionDescription=GCP placing tool"})
+@ActionID(
+        category = "Interactors",
+        id = "org.esa.snap.rcp.action.interactors.GcpToolAction"
+)
+@ActionRegistration(
+        displayName = "#CTL_GcpToolActionText",
+        lazy = false
+)
+@ActionReference(
+        path = "Toolbars/" + PackageDefaults.GCP_TOOL_ACTION_TOOLBAR,
+        position = 140
+)
+@Messages({
+                  "CTL_GcpToolActionText=GCP Tool",
+                  "CTL_GcpToolActionDescription=GCP placing tool"
+          })
 public class GcpToolAction extends ToolAction {
 
     @SuppressWarnings("UnusedDeclaration")
@@ -42,7 +55,7 @@ public class GcpToolAction extends ToolAction {
         super(lookup, new InsertGcpInteractor());
         putValue(NAME, Bundle.CTL_GcpToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_GcpToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/GcpTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.GCP_TOOL_ACTION_ICON, false));
     }
 
     @Override

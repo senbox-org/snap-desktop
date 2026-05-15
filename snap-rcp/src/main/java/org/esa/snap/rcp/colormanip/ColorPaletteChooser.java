@@ -1,22 +1,23 @@
 package org.esa.snap.rcp.colormanip;
 
+import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.math.Range;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.GridBagUtils;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.*;
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.util.List;
 import java.util.Vector;
+
+import static java.awt.Font.ITALIC;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
 
 
 /**
@@ -34,15 +35,22 @@ import java.util.Vector;
 
 class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrapper> {
 
-    private final String DERIVED_FROM = "derived from";
-    private final String UNNAMED = "unnamed";
+    private final String DERIVED_FROM = "Derived from";
+    private final String UNNAMED = "Unnamed";
     private boolean discreteDisplay;
     private boolean log10Display;
+
+
+
+
 
     public ColorPaletteChooser() {
         super(getPalettes());
         setRenderer(createPaletteRenderer());
         setEditable(false);
+//        setSelectedIndex(1);
+//        setPreferredSize(getPreferredSize());
+//        setMinimumSize(getMinimumSize());;
     }
 
     public void removeUserDefinedPalette() {
@@ -83,25 +91,77 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
     private void setUserDefinedPalette(ColorPaletteDef userPalette) {
         final String suffix = userPalette.getFirstPoint().getLabel();
         final String name;
+
         if (suffix != null && suffix.trim().length() > 0) {
-                name = DERIVED_FROM + " " + suffix.trim();
+            if (suffix.startsWith(DERIVED_FROM)) {
+                name = suffix.trim();
+            } else {
+                    name = DERIVED_FROM + " " + suffix.trim();
+            }
         } else {
             name = UNNAMED;
         }
+
         final ColorPaletteWrapper item = new ColorPaletteWrapper(name, userPalette);
         insertItemAt(item, 0);
         setSelectedIndex(0);
     }
 
     private static Vector<ColorPaletteWrapper> getPalettes() {
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        PropertyMap configuration = view.getSceneImage().getConfiguration();
+
+        boolean categorizePalettes = configuration.getPropertyBool(PROPERTY_PALETTE_CATEGORIZE_DISPLAY_KEY, PROPERTY_PALETTE_CATEGORIZE_DISPLAY_DEFAULT);
+        boolean removePaletteNameExtension = configuration.getPropertyBool(PROPERTY_PALETTE_REMOVE_EXTENSION_KEY, PROPERTY_PALETTE_REMOVE_EXTENSION_DEFAULT);
+
         final List<ColorPaletteDef> defList = ColorPaletteManager.getDefault().getColorPaletteDefList();
         final Vector<ColorPaletteWrapper> paletteWrappers = new Vector<>();
-        for (ColorPaletteDef colorPaletteDef : defList) {
-            final String nameFor = getNameForWithoutExtension(colorPaletteDef);
-            paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+        final ColorPaletteDef paletteDummy = new ColorPaletteDef(new ColorPaletteDef.Point[]{
+                new ColorPaletteDef.Point(.001, Color.WHITE),
+                new ColorPaletteDef.Point(1.0, Color.WHITE)
+        });
+
+        if (categorizePalettes) {
+
+            for (String currCategory : ColorPaletteManager.getDefault().getCategories()) {
+
+                int matches = 0;
+                for (ColorPaletteDef colorPaletteDef : defList) {
+                    if (ColorPaletteManager.getDefault().matchesCategory(colorPaletteDef, currCategory)) {
+                        matches++;
+                    }
+                }
+
+                if (matches > 0) {
+                    paletteWrappers.add(new ColorPaletteWrapper(ColorPaletteManager.getCategoryDisplay(currCategory), paletteDummy));
+
+                    for (ColorPaletteDef colorPaletteDef : defList) {
+                        final String nameFor = getNameForColorPalette(colorPaletteDef, removePaletteNameExtension);
+
+                        if (ColorPaletteManager.getDefault().matchesCategory(colorPaletteDef, currCategory)) {
+                            paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+                        }
+                    }
+                }
+
+            }
+        } else {
+            for (ColorPaletteDef colorPaletteDef : defList) {
+                final String nameFor = getNameForColorPalette(colorPaletteDef, removePaletteNameExtension);
+                paletteWrappers.add(new ColorPaletteWrapper(nameFor, colorPaletteDef));
+            }
         }
         return paletteWrappers;
     }
+
+    private static String getNameForColorPalette(ColorPaletteDef colorPaletteDef, boolean removeExtension) {
+        if (removeExtension) {
+            return getNameForWithoutExtension(colorPaletteDef);
+        } else {
+            return ColorPaletteManager.getDefault().getNameFor(colorPaletteDef);
+        }
+    }
+
 
     private static String getNameForWithoutExtension(ColorPaletteDef colorPaletteDef) {
         final String nameFor = ColorPaletteManager.getDefault().getNameFor(colorPaletteDef);
@@ -112,15 +172,34 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
         }
     }
 
+
+    public JLabel getPaletteImage() {
+
+        ColorPaletteDef cpd = getSelectedColorPaletteDefinition();
+        final JLabel rampComp = new JLabel(" ") {
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+                drawPalette((Graphics2D) g, cpd, g.getClipBounds().getSize(), 0, true);
+            }
+        };
+
+        return rampComp;
+    }
+
     private ListCellRenderer<ColorPaletteWrapper> createPaletteRenderer() {
+
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        PropertyMap configuration = view.getSceneImage().getConfiguration();
+
+
+        boolean includePaletteImage = configuration.getPropertyBool(PROPERTY_PALETTE_INCLUDE_IMAGE_KEY, PROPERTY_PALETTE_INCLUDE_IMAGE_DEFAULT);
+
         return new ListCellRenderer<ColorPaletteWrapper>() {
             @Override
             public Component getListCellRendererComponent(JList<? extends ColorPaletteWrapper> list, ColorPaletteWrapper value, int index, boolean isSelected, boolean cellHasFocus) {
-                final Font font = getFont();
-                final Font smaller = font.deriveFont(font.getSize() * 0.85f);
 
                 final JLabel nameComp = new JLabel(value.name);
-                nameComp.setFont(smaller);
 
                 final ColorPaletteDef cpd = value.cpd;
                 final JLabel rampComp = new JLabel(" ") {
@@ -131,15 +210,89 @@ class ColorPaletteChooser extends JComboBox<ColorPaletteChooser.ColorPaletteWrap
                     }
                 };
 
-                final JPanel palettePanel = new JPanel(new BorderLayout(0, 2));
-                palettePanel.add(nameComp, BorderLayout.NORTH);
-                palettePanel.add(rampComp, BorderLayout.CENTER);
+
+
+                final JPanel panel = GridBagUtils.createPanel();
+                GridBagConstraints gbc = new GridBagConstraints();
+
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.anchor = GridBagConstraints.WEST;
+                gbc.fill = GridBagConstraints.NONE;
+                gbc.weightx = 1;
+                gbc.weighty = 1;
+
+                gbc.insets.left = 10;
+                gbc.insets.right = 10;
+                gbc.insets.bottom = 3;
+                gbc.insets.top = 3;
+
+
+
+                boolean isCategory = false;
+                for (String category : ColorPaletteManager.getDefault().getCategories()) {
+                    if (value.name.contains(ColorPaletteManager.getCategoryDisplay(category))) {
+                        isCategory = true;
+                        break;
+                    }
+                }
+
+
+                if (value.name.length() == 0) {
+                    panel.add(new JLabel("Default"), gbc);
+                } else if (value.name.contains(DERIVED_FROM) || value.name.contains(UNNAMED)) {
+
+                    panel.add(nameComp, gbc);
+
+//                    if (includePaletteImage) {
+//                        gbc.fill = GridBagConstraints.HORIZONTAL;
+//                        gbc.gridy += 1;
+//                        panel.add(rampComp, gbc);
+//                        gbc.fill = GridBagConstraints.NONE;
+//                    }
+
+                } else {
+                    if (isCategory) {
+                        nameComp.setOpaque(true);
+                        nameComp.setFocusable(false);
+                        Font currFont = nameComp.getFont();
+                        int newFontSize = (int) Math.floor(currFont.getSize() * 1.1);
+                        int newFontStyle = currFont.getStyle() | ITALIC;
+                        Font newFont = new Font(currFont.getName(), newFontStyle, newFontSize);
+                        nameComp.setFont(newFont);
+
+                        gbc.insets.top = 10;
+                        gbc.fill = GridBagConstraints.HORIZONTAL;
+                        panel.add(nameComp, gbc);
+                        gbc.fill = GridBagConstraints.NONE;
+                        gbc.insets.top = 3;
+
+                    } else {
+                        if (includePaletteImage) {
+
+                            gbc.insets.top = 10;
+                            panel.add(nameComp, gbc);
+                            gbc.insets.top = 3;
+
+                            gbc.gridy += 1;
+                            gbc.fill = GridBagConstraints.HORIZONTAL;
+                            panel.add(rampComp, gbc);
+                            gbc.fill = GridBagConstraints.NONE;
+
+                        } else {
+                            gbc.insets.top = 3;
+                            gbc.insets.bottom = 3;
+
+                            panel.add(nameComp, gbc);
+                        }
+                    }
+                }
 
                 if (isSelected) {
                     list.setToolTipText(value.name);
                 }
 
-                return palettePanel;
+                return panel;
             }
         };
     }

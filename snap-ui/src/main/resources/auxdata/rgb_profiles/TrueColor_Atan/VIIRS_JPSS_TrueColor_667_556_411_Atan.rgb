@@ -1,0 +1,11 @@
+# RGB-Image Configuration Profile
+# VIIRS_TrueColor_(667,556,411)_Atan_20_0.015
+#
+# A true color RGB configuration profile which uses a red, green and blue band for the
+# respective RGB color model channels
+#
+name=VIIRS_JPSS_TrueColor_Atan(667,556,411)
+red=0.160889387810531 + 0.552017969245693 * atan( 20 * (rhos_667 - 0.015))
+green=0.160889387810531 + 0.552017969245693 * atan( 20 * (rhos_556 - 0.015))
+blue=0.160889387810531 + 0.552017969245693 * atan( 20 * (rhos_411 - 0.015))
+valid_pixel_expression=\!nan(rhos_667) and \!nan(rhos_556) and \!nan(rhos_411) and LAT >= -90 and LAT <= 90

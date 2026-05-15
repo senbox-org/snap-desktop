@@ -24,7 +24,7 @@ import eu.esa.snap.netbeans.javahelp.api.Help;
 public class HelpDisplayer {
 
     /** URl for the online help. */
-    private static final String DEFAULT_ONLINE_HELP_URL = "https://step.esa.int/main/doc/online-help";
+    private static final String DEFAULT_ONLINE_HELP_URL = "https://seadas.gsfc.nasa.gov/help/";
 	
     /** Relative URL for the version.json and toc.json files */
     private static final String VERSION_TOC_JSON_URL = "../../wp-content/help/versions/";

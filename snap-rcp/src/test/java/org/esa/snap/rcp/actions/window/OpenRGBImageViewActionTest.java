@@ -15,6 +15,7 @@ public class OpenRGBImageViewActionTest {
         final RGBImageProfile imageProfile = new RGBImageProfile("whatever",
                 new String[]{"r", "g", "b"},
                 null,
+                null,
                 new Range[]{new Range(1, 2), new Range(3, 4), new Range(5, 6)});
         final Band[] bands = new Band[3];
         bands[0] = mock(Band.class);
@@ -34,6 +35,7 @@ public class OpenRGBImageViewActionTest {
     public void testMergeChannelDefs_someValuesFromBandChannelDef() {
         final RGBImageProfile imageProfile = new RGBImageProfile("whatever",
                 new String[]{"r", "g", "b"},
+                null,
                 null,
                 new Range[]{new Range(1, 2), new Range(Double.NaN, 4), new Range(5, Double.NaN)});
         final Band[] bands = new Band[3];
@@ -62,6 +64,7 @@ public class OpenRGBImageViewActionTest {
     public void testMergeChannelDefs_someValuesFromColorPalette() {
         final RGBImageProfile imageProfile = new RGBImageProfile("whatever",
                 new String[]{"r", "g", "b"},
+                null,
                 null,
                 new Range[]{new Range(1, Double.NaN), new Range(3, 4), new Range(Double.NaN, 6)});
         final Band[] bands = new Band[3];

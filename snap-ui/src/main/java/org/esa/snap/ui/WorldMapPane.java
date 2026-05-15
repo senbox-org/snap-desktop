@@ -22,7 +22,9 @@ import com.bc.ceres.glayer.swing.WakefulComponent;
 import com.bc.ceres.grender.Viewport;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.GeoUtils;
+import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.tango.TangoIcons;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.openide.util.ImageUtilities;
 
@@ -65,6 +67,7 @@ public class WorldMapPane extends JPanel {
     private PanSupport panSupport;
     private MouseHandler mouseHandler;
     private Set<ZoomListener> zoomListeners;
+    private PropertyMap preferences = null;
 
     public WorldMapPane(WorldMapPaneDataModel dataModel) {
         this(dataModel, null);
@@ -136,6 +139,10 @@ public class WorldMapPane extends JPanel {
                 }
             }
         });
+    }
+
+    public void setPreferences(PropertyMap preferences) {
+        this.preferences = preferences;
     }
 
     @Override
@@ -366,7 +373,13 @@ public class WorldMapPane extends JPanel {
                 return;
             }
             double oldFactor = layerCanvas.getViewport().getZoomFactor();
-            final int wheelRotation = e.getWheelRotation();
+
+            boolean invertWheelRotation = ProductSceneView.PREFERENCE_KEY_INVERT_ZOOMING_DEFAULT;
+            if (preferences != null) {
+                invertWheelRotation = preferences.getPropertyBool(ProductSceneView.PREFERENCE_KEY_INVERT_ZOOMING, ProductSceneView.PREFERENCE_KEY_INVERT_ZOOMING_DEFAULT);
+            }
+
+            final int wheelRotation =  (invertWheelRotation) ? - e.getWheelRotation(): e.getWheelRotation();
             final double newZoomFactor = layerCanvas.getViewport().getZoomFactor() * Math.pow(1.1, wheelRotation);
             final Rectangle viewBounds = layerCanvas.getViewport().getViewBounds();
             final Rectangle2D modelBounds = worldMapLayer.getModelBounds();

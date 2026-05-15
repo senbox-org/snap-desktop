@@ -22,6 +22,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.image.ImageManager;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;
@@ -45,7 +46,7 @@ import java.awt.Component;
 )
 @TopComponent.Registration(
         mode = "navigator",
-        openAtStartup = true,
+        openAtStartup = PackageDefaults.UNCERTAINTY_TOOL_OPEN,
         position = 30
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.colormanip.UncertaintyVisualisationTopComponent")
