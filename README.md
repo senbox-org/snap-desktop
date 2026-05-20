@@ -1,8 +1,8 @@
 snap-desktop
 ============
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20284489.svg)](https://doi.org/10.5281/zenodo.20284489)
-[![Build Status](https://travis-ci.org/senbox-org/snap-desktop.svg?branch=master)](https://travis-ci.org/senbox-org/snap-desktop)
-[![Coverity Scan Status](https://scan.coverity.com/projects/7220/badge.svg)](https://scan.coverity.com/projects/senbox-org-snap-desktop)
+[![Build Status](https://gitlab.com/senbox-org/snap-desktop/badges/master/pipeline.svg)](https://gitlab.com/senbox-org/snap-desktop)
+[![Coverity Scan Status](https://gitlab.com/senbox-org/snap-desktop/badges/master/coverage.svg)](https://gitlab.com/senbox-org/snap-desktop)
 
 SNAP is the common software platform for the three Toolboxes which are developed by the European Space Agency (ESA)
 for the scientific exploitation of optical and microwave missions.
