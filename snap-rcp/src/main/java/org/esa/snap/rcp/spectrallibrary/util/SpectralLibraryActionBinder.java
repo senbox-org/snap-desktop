@@ -473,27 +473,31 @@ public class SpectralLibraryActionBinder {
             }
 
             UUID firstId = panel.getLibraryTableModel().getIdAt(panel.getLibraryTable().convertRowIndexToModel(viewRows[0]));
-            Color initial = vm.getProfileColors(libId).get(firstId);
+            Color initial = (Color) panel.getLibraryTableModel().getValueAt(
+                    panel.getLibraryTable().convertRowIndexToModel(viewRows[0]),
+                    panel.getLibraryTableModel().getColorColumnIndex());
             if (initial == null) {
                 initial = Color.BLUE;
             }
 
-            Color chosen = JColorChooser.showDialog(panel, "Choose Preview Color", initial);
+            Color chosen = JColorChooser.showDialog(panel, "Choose Profile Color", initial);
             if (chosen == null) {
                 return;
             }
 
-            Map<UUID, Color> updates = new HashMap<>();
+            String hex = ColorUtils.toHex(chosen);
+            AttributeValue colorAttr = AttributeValue.ofString(hex);
+            int updated = 0;
             for (int vr : viewRows) {
                 int mr = panel.getLibraryTable().convertRowIndexToModel(vr);
                 UUID pid = panel.getLibraryTableModel().getIdAt(mr);
                 if (pid != null) {
-                    updates.put(pid, chosen);
+                    controller.setAttributeInActiveLibrary(pid, SpectralProfileTableModel.ATTR_DISPLAY_COLOR, colorAttr);
+                    updated++;
                 }
             }
 
-            vm.setProfileColors(libId, updates);
-            vm.setStatus(UiStatus.info("Preview color set (" + updates.size() + ")"));
+            vm.setStatus(UiStatus.info("Profile color set (" + updated + ")"));
         });
     }
 
@@ -905,10 +909,36 @@ public class SpectralLibraryActionBinder {
 
         final File file = fileChooser.getSelectedFile();
         if (!EngineAccess.libraryIO().canRead(file.toPath())) {
+            Optional<File> companion = resolveEnviCompanion(file);
+            if (companion.isPresent()) {
+                controller.importLibraryFromFile(companion.get());
+                vm.setStatus(UiStatus.info("Detected ENVI sidecar CSV — imported from companion " + companion.get().getName()));
+                return;
+            }
             vm.setStatus(UiStatus.warn("Unsupported file format: " + file.getName()));
             return;
         }
         controller.importLibraryFromFile(file);
+    }
+
+    private Optional<File> resolveEnviCompanion(File file) {
+        if (file == null) {
+            return Optional.empty();
+        }
+        String name = file.getName();
+        if (!name.toLowerCase(Locale.ROOT).endsWith(".csv")) {
+            return Optional.empty();
+        }
+        String base = name.substring(0, name.length() - 4);
+        File dir = file.getParentFile();
+        if (dir == null) {
+            return Optional.empty();
+        }
+        File hdr = new File(dir, base + ".hdr");
+        if (hdr.exists() && EngineAccess.libraryIO().canRead(hdr.toPath())) {
+            return Optional.of(hdr);
+        }
+        return Optional.empty();
     }
 
     private void doExport() {

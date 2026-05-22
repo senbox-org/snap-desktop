@@ -28,9 +28,6 @@ public class SpectralProfileTableModel extends AbstractTableModel {
     private AttributeSchema schema;
     private ProfileEditHandler editHandler;
 
-    private Map<UUID, Color> profileColors = Map.of();
-
-
     public void setProfiles(List<SpectralProfile> profiles) {
         this.profiles = profiles == null ? List.of() : profiles;
         fireTableDataChanged();
@@ -56,12 +53,16 @@ public class SpectralProfileTableModel extends AbstractTableModel {
         this.editHandler = h;
     }
 
+    public static final String ATTR_DISPLAY_COLOR = "display_color";
+
     public void setSchema(AttributeSchema schema) {
         this.schema = schema;
         if (schema == null || schema.asMap().isEmpty()) {
             attributeKeys = List.of();
         } else {
-            attributeKeys = List.copyOf(schema.asMap().keySet());
+            attributeKeys = schema.asMap().keySet().stream()
+                    .filter(k -> !ATTR_DISPLAY_COLOR.equals(k))
+                    .toList();
         }
         fireTableStructureChanged();
     }
@@ -91,9 +92,17 @@ public class SpectralProfileTableModel extends AbstractTableModel {
         SpectralProfile p = profiles.get(row);
 
         if (col == COL_COLOR) {
+            if (p != null) {
+                Optional<AttributeValue> av = p.getAttribute(ATTR_DISPLAY_COLOR);
+                if (av.isPresent()) {
+                    Color parsed = ColorUtils.parseCssColor(av.get().asString());
+                    if (parsed != null) {
+                        return parsed;
+                    }
+                }
+            }
             UUID id = (p != null) ? p.getId() : null;
-            Color c = (id != null) ? profileColors.get(id) : null;
-            return (c != null) ? c : ColorUtils.defaultColor(id);
+            return ColorUtils.defaultColor(id);
         }
         if (col == COL_NAME) {
             return p.getName();
@@ -163,14 +172,6 @@ public class SpectralProfileTableModel extends AbstractTableModel {
     }
 
 
-    public void setProfileColors(Map<UUID, Color> colors) {
-        this.profileColors = (colors == null) ? Map.of() : Map.copyOf(colors);
-        if (getRowCount() > 0) {
-            fireTableRowsUpdated(0, getRowCount() - 1);
-        } else {
-            fireTableDataChanged();
-        }
-    }
 
 
     @Override

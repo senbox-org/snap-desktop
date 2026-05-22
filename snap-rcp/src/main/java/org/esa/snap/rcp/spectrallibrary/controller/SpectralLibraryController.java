@@ -2,6 +2,7 @@ package org.esa.snap.rcp.spectrallibrary.controller;
 
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
+import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.AddPreviewAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
@@ -110,17 +111,14 @@ public class SpectralLibraryController {
             return;
         }
 
-        Optional<SpectralProfile> selectedOpt = findSelectedPreviewProfile();
-        if (selectedOpt.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No preview profile selected"));
-            return;
-        }
-
-        SpectralProfile sel = selectedOpt.get();
-        UUID selId = sel.getId();
-        if (selId == null) {
-            vm.setStatus(UiStatus.warn("Selected profile has no ID"));
-            return;
+        Set<UUID> selectedIds = vm.getSelectedPreviewProfileIds();
+        if (selectedIds.isEmpty()) {
+            Optional<SpectralProfile> singleOpt = findSelectedPreviewProfile();
+            if (singleOpt.isEmpty()) {
+                vm.setStatus(UiStatus.warn("No preview profile selected"));
+                return;
+            }
+            selectedIds = Set.of(singleOpt.get().getId());
         }
 
         SpectralLibrary lib = service.getLibrary(libId).orElse(null);
@@ -129,11 +127,23 @@ public class SpectralLibraryController {
             return;
         }
 
+        Set<UUID> existingIds = new HashSet<>();
         for (SpectralProfile p : lib.getProfiles()) {
-            if (p != null && selId.equals(p.getId())) {
-                vm.setStatus(UiStatus.info("Profile already exists (skipped)"));
-                return;
+            if (p != null && p.getId() != null) {
+                existingIds.add(p.getId());
             }
+        }
+
+        List<SpectralProfile> candidates = new ArrayList<>();
+        for (SpectralProfile p : vm.getPreviewProfiles()) {
+            if (p != null && p.getId() != null && selectedIds.contains(p.getId()) && !existingIds.contains(p.getId())) {
+                candidates.add(p);
+            }
+        }
+
+        if (candidates.isEmpty()) {
+            vm.setStatus(UiStatus.info("All selected profiles already exist (skipped)"));
+            return;
         }
 
         Optional<Map<String, AttributeValue>> attrsOpt = askAttributesForPreviewAdd();
@@ -141,17 +151,26 @@ public class SpectralLibraryController {
             return;
         }
 
-        SpectralProfile toAdd = SpectralLibraryUtils.applyAttributes(sel, attrsOpt.get());
+        Map<String, AttributeValue> attrs = attrsOpt.get();
+        List<SpectralProfile> toAdd = new ArrayList<>(candidates.size());
+        for (SpectralProfile p : candidates) {
+            SpectralProfile enriched = SpectralLibraryUtils.applyAttributes(p, attrs);
+            toAdd.add(enrichWithDisplayColor(enriched, libId));
+        }
 
         try {
-            SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, List.of(toAdd));
+            SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, toAdd);
             reloadLibraries();
             refreshActiveLibraryProfiles();
-            vm.setStatus(r.added() > 0 ? UiStatus.info("Profile added") : UiStatus.info("Profile already exists (skipped)"));
+            int added = r.added();
+            int skipped = r.skippedExisting();
+            vm.setStatus(added > 0
+                    ? UiStatus.info("Profiles added (" + added + ")" + (skipped > 0 ? ", skipped (" + skipped + ")" : ""))
+                    : UiStatus.info("All profiles already exist (skipped)"));
         } catch (Throwable t) {
             reloadLibraries();
             refreshActiveLibraryProfiles();
-            vm.setStatus(UiStatus.warn("Profile could not be added (skipped): " + t.getMessage()));
+            vm.setStatus(UiStatus.warn("Profiles could not be added: " + t.getMessage()));
         }
     }
 
@@ -194,7 +213,8 @@ public class SpectralLibraryController {
             if (p == null) {
                 continue;
             }
-            toAdd.add(SpectralLibraryUtils.applyAttributes(p, attrs));
+            SpectralProfile enriched = SpectralLibraryUtils.applyAttributes(p, attrs);
+            toAdd.add(enrichWithDisplayColor(enriched, libId));
         }
 
         SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, toAdd);
@@ -578,7 +598,24 @@ public class SpectralLibraryController {
         }
 
         try {
-            io.write(libOpt.get(), file.toPath());
+            SpectralLibrary lib = libOpt.get();
+            List<SpectralProfile> enriched = new ArrayList<>(lib.getProfiles().size());
+            for (SpectralProfile p : lib.getProfiles()) {
+                if (p != null && p.getId() != null
+                        && p.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR).isEmpty()) {
+                    Color c = ColorUtils.defaultColor(p.getId());
+                    if (c != null) {
+                        p = p.withAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR,
+                                AttributeValue.ofString(ColorUtils.toHex(c)));
+                    }
+                }
+                enriched.add(p);
+            }
+            SpectralLibrary toWrite = new SpectralLibrary(
+                    lib.getId(), lib.getName(), lib.getAxis(),
+                    lib.getDefaultYUnit().orElse(null),
+                    enriched, lib.getSchema());
+            io.write(toWrite, file.toPath());
             vm.setStatus(UiStatus.info("Exported: " + file.getName()));
             return true;
         } catch (Exception ex) {
@@ -600,7 +637,19 @@ public class SpectralLibraryController {
                     yUnit
             );
 
-            List<SpectralProfile> toAdd = SpectralLibraryUtils.safeCopyWithoutNulls(imported.getProfiles());
+            List<SpectralProfile> raw = SpectralLibraryUtils.safeCopyWithoutNulls(imported.getProfiles());
+            List<SpectralProfile> toAdd = new ArrayList<>(raw.size());
+            for (SpectralProfile p : raw) {
+                if (p.getId() != null
+                        && p.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR).isEmpty()) {
+                    Color c = ColorUtils.defaultColor(p.getId());
+                    if (c != null) {
+                        p = p.withAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR,
+                                AttributeValue.ofString(ColorUtils.toHex(c)));
+                    }
+                }
+                toAdd.add(p);
+            }
             SpectralLibraryService.BulkAddResult r = service.addProfiles(persisted.getId(), toAdd);
             int added = r.added();
 
@@ -892,6 +941,24 @@ public class SpectralLibraryController {
         return candidate;
     }
 
+
+    private SpectralProfile enrichWithDisplayColor(SpectralProfile profile, UUID libId) {
+        if (profile == null || profile.getId() == null || libId == null) {
+            return profile;
+        }
+        if (profile.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR).isPresent()) {
+            return profile;
+        }
+        Color c = vm.getProfileColors(libId).get(profile.getId());
+        if (c == null) {
+            c = ColorUtils.defaultColor(profile.getId());
+        }
+        if (c == null) {
+            return profile;
+        }
+        return profile.withAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR,
+                AttributeValue.ofString(ColorUtils.toHex(c)));
+    }
 
     private void startExtractAsync(Supplier<ExtractResult> job, String busyMsg) {
         if (currentExtractWorker != null && !currentExtractWorker.isDone()) {
