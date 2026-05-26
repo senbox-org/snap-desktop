@@ -1,6 +1,9 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
+# New in SNAP 14.0.0
+    [SNAP-4085] Throw exception when zip cannot be extracted due to full disk
+
 # New in SNAP 13.0.1
     [SNAP-4189] Subset GUI issue resetting outside product geo-coordinates
     [SNAP-4188] The preview subset-rectangle is not updated when importing a polygon
