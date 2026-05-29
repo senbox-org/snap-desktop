@@ -2,6 +2,7 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 14.0.0
+    [SNAP-4164] Unable to open any band of a ENVISAT MERIS MER_RRC_2P product in SNAP 13
     [SNAP-4085] Throw exception when zip cannot be extracted due to full disk
 
 # New in SNAP 13.0.1
