@@ -34,7 +34,7 @@ import java.awt.event.ActionEvent;
         popupText = "#CTL_ShowOnlineHelpAction_MenuText")
 @ActionReference(path = "Menu/Help", position = 205)
 @NbBundle.Messages({
-        "CTL_ShowOnlineHelpAction_MenuText=Online Help",
+        "CTL_ShowOnlineHelpAction_MenuText=SNAP O&nline Help",
         "CTL_ShowOnlineHelpAction_ShortDescription=Browse the SNAP Toolboxes online help"
 })
 public class ShowOnlineHelpAction extends AbstractAction {
