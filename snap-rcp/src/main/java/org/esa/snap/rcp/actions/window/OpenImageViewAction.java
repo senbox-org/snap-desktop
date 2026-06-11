@@ -25,6 +25,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.dataop.downloadable.DownloadStatusManager;
 import org.esa.snap.core.util.Debug;
 import org.esa.snap.core.util.PreferencesPropertyMap;
+import eu.esa.snap.core.util.ProgressMonitorContext;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.ui.UIUtils;
@@ -39,6 +40,8 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
@@ -202,6 +205,18 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
                     ProductSceneView view = new ProductSceneView(sceneImage, undoManager);
                     openDocumentWindow(view);
 
+                } catch (CancellationException e) {
+                    rasterDataNode.unloadRasterData();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    rasterDataNode.unloadRasterData();
+                } catch (ExecutionException e) {
+                    Throwable cause = e.getCause();
+                    if (isCancellation(cause)) {
+                        rasterDataNode.unloadRasterData();
+                    } else {
+                        snapApp.handleError(MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);
+                    }
                 } catch (Exception e) {
                     snapApp.handleError(MessageFormat.format("Failed to open image view.\n\n{0}", e.getMessage()), e);
                 }
@@ -250,11 +265,21 @@ public class OpenImageViewAction extends AbstractAction implements ContextAwareA
         productSceneViewWindow.requestSelected();
     }
 
+    private static boolean isCancellation(Throwable throwable) {
+        while (throwable != null) {
+            if (throwable instanceof CancellationException) {
+                return true;
+            }
+            throwable = throwable.getCause();
+        }
+        return false;
+    }
+
     private ProductSceneImage createProductSceneImage(final RasterDataNode raster, ProductSceneView existingView, com.bc.ceres.core.ProgressMonitor pm) {
         Debug.assertNotNull(raster);
         Debug.assertNotNull(pm);
 
-        try {
+        try (ProgressMonitorContext.Scope ignored = ProgressMonitorContext.use(pm)) {
             pm.beginTask(OPEN_IMAGE_VIEW_MESSAGE, 1);
 
             ProductSceneImage sceneImage;
