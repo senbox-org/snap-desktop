@@ -40,7 +40,6 @@ import org.esa.snap.core.dataop.resamp.Resampling;
 import org.esa.snap.core.dataop.resamp.ResamplingFactory;
 import org.esa.snap.core.image.RasterDataNodeSampleOpImage;
 import org.esa.snap.core.image.ResolutionLevel;
-import eu.esa.snap.core.util.ProgressMonitorContext;
 import org.esa.snap.dem.dataio.DEMFactory;
 import org.esa.snap.engine_utilities.datamodel.Unit;
 import org.esa.snap.rcp.SnapApp;
@@ -464,7 +463,6 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         @Override
         protected double computeSample(int sourceX, int sourceY) {
             try {
-                ProgressMonitorContext.checkCanceled();
                 return dem.getElevation(geoCoding.getGeoPos(new PixelPos(sourceX, sourceY), null));
             } catch (CancellationException e) {
                 throw e;
