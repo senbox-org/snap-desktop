@@ -24,7 +24,9 @@
             <folder name="Import">
                 <folder name="Optical Sensors">
                     <folder name="SeaDAS">
+                        <attr name="position" intvalue="22"/>
                         <file name="org-esa-snap-binning-ImportBinnedProduct.shadow">
+                            <attr name="position" intvalue="1"/>
                             <attr name="originalFile"
                                   stringvalue="Actions/Readers/org-esa-snap-binning-ImportBinnedProduct.instance"/>
                         </file>
