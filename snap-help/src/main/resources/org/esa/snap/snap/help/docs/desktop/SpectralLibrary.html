@@ -75,9 +75,11 @@
         <li>
             <b>Create a vector layer from stored profile coordinates</b><br>
             Select one or more profiles in the table and use <b>Add Selected Profiles as Vector Layer</b> to create a
-            vector layer in the currently selected product. Only profiles with a <code>wkt</code> attribute are used; profiles
-            without valid <code>wkt</code> are skipped. The resulting vector layer can be used as input geometry,
-            e.g. in supervised classification operators.
+            vector layer in the currently selected product. The layer appears in the Product Explorer under
+            <b>Vector Data</b>; it is not added to the spectral library itself. Each valid selected profile becomes
+            one point feature in the vector layer. Only profiles with a <code>wkt</code> attribute are used; profiles
+            without valid <code>wkt</code> are skipped. This option is mainly a bridge to downstream SNAP operators
+            that consume product vector data, e.g. <b>Raster --> Classification --> Supervised Classification</b>.
         </li>
         <li>
             <b>Configure extraction (requires an open Product Scene View)</b><br> To configure band filters
@@ -159,8 +161,9 @@
                     <code>wkt</code> (point geometry for the pixel)<br />
                     Profiles containing a <code>wkt</code> attribute can be transferred to the currently
                     selected product as a vector layer via <b>Add Selected Profiles as Vector Layer</b>.
-                    This is useful when stored sample locations shall be reused in downstream processing,
-                    e.g. supervised classification operators.
+                    The created layer appears in the Product Explorer under <b>Vector Data</b>, with one point
+                    feature per valid selected profile. This is useful when stored sample locations shall be
+                    reused in downstream processing, e.g. supervised classification operators.
                 </li>
                 <li>
                     <code>product_name</code> (source product name)

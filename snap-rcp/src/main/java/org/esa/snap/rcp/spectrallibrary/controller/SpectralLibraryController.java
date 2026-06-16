@@ -710,7 +710,7 @@ public class SpectralLibraryController {
         }
 
         if (added == 0) {
-            vm.setStatus(UiStatus.warn("No valid WKT geometry could be added to the vector layer"));
+            vm.setStatus(UiStatus.warn("No vector layer created: selected profiles have no valid 'wkt' geometry"));
             return;
         }
 
@@ -721,9 +721,11 @@ public class SpectralLibraryController {
 
         if (product.getVectorDataGroup().get(layerName) == null) {
             product.getVectorDataGroup().add(vectorDataNode);
-            vm.setStatus(UiStatus.info("Vector layer added (" + added + " features)"));
+            vm.setStatus(UiStatus.info("Vector layer '" + layerName +
+                    "' added under Product Explorer > Vector Data (" + added + " features)"));
         } else {
-            vm.setStatus(UiStatus.warn("Vector layer '" + layerName + "' already exists."));
+            vm.setStatus(UiStatus.warn("Vector layer '" + layerName +
+                    "' already exists under Product Explorer > Vector Data."));
         }
     }
 
