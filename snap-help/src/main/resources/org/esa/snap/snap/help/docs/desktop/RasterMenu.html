@@ -1,0 +1,302 @@
+<!--
+  ~ Copyright (C) 2026 CS GROUP ROMANIA
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Raster Menu</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Raster Menu
+        </td>
+
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border="0"></a></td>
+    </tr>
+</table>
+
+
+<h3>Raster Menu</h3>
+
+<img src="images/RasterMenu.png" alt="Raster menu">
+
+<h4>Band Maths...</h4>
+
+<p> The <b><code><a href="BandMaths.html">Band Maths</a></code></b> option allows the user to create new image sample values derived from existing bands, tie-point grids and flags.</p>
+
+<h4>Filtered Band...</h4>
+
+<p> The <b><code><a href="CreateFilteredBand.html">Filtered Band</a></code></b> option allows the user to apply a filter to the currently selected band and create a new band from the result.</p>
+
+<h4>Convert Band</h4>
+
+<p> The <b><code><a href="ConvertComputedBand.html">Convert Band</a></code></b> tool converts a virtual band or a filtered band into a "real" band.</p>
+
+<h4>Propagate Uncertainty...</h4>
+
+<p> This tool perform Gaussian uncertainty propagation from virtual band according to GUM 1995, chapter 5</p>
+
+<h4>Geo-Coding Displacement Bands...</h4>
+
+<p> The <b><code><a href="CreateGCDisplacementBands.html">Geo-Coding Displacement Bands</a></code></b> tool lets users add a number of bands that can be used to assess the performance/accuracy of the current geo-coding. </p>
+
+<h4>Subset...</h4>
+
+<p> The <b><code><a href="nbdocs://org.esa.snap.snap.gpf.ui/org/esa/snap/core/gpf/docs/gpf/org_esa_snap_core_gpf_common_SubsetOp.html">Subset</a></code></b> operator creates a spatial and/or spectral subset of a data product.</p>
+
+<h4>DEM Tools</h4>
+
+<img src="images/DEMToolsSubMenu.png" alt="DEM Tools">
+
+<h4 style="margin-left: 30px">Add Elevation Band</h4>
+
+<p style="margin-left: 30px">This command allows the user to create a new elevation band from a DEM. </p>
+
+<h4 style="margin-left: 30px">Fill DEM Hole</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.dem.ui/org/esa/snap/dem/docs/operators/FillHoleOp.html">Fill DEM Hole</a></code></b> operator fills holes in DEM product with linear interpolations in both row and column directions. </p>
+
+<h4 style="margin-left: 30px">Compute Slope and Aspect</h4>
+
+<p style="margin-left: 30px"> The <b><code><a href="nbdocs://org.esa.snap.snap.gpf.u/org/esa/snap/core/gpf/docs/gpf/org_esa_snap_dem_gpf_ComputeSlopeAspectOp.html">Computes Slope and Aspect</a></code></b> operator computes slope and aspect from DEM for a given source product.</p>
+
+<h4>Geometric</h4>
+
+<img src="images/GeometricSubMenu.png" alt="Geometric">
+
+<h4 style="margin-left: 30px">Reprojection</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="Reprojection.html">Reprojection</a></code></b> operator reprojects a source product to a target Coordinate Reference System.</p>
+
+<h4 style="margin-left: 30px">Resampling</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="Resample.html">Resampling</a></code></b> operator resamples a multi-size source product to a single-size target product.</p>
+
+<h4 style="margin-left: 30px">Mosaicking</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="Mosaic.html">Mosaic</a></code></b> operator creates a mosaic out of a set of source products.</p>
+
+<h4 style="margin-left: 30px">Multi-size Mosaic</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.mosaic.ui/eu/esa/opt/mosaic/docs/Multi-sizeMosaic.html">Multi-size Mosaic</a></code></b> operator generates Mosaic Image for Multi-size Products.</p>
+
+<h4 style="margin-left: 30px">Level-3 Binning</h4>
+
+<p style="margin-left: 30px">This command performs a spatial and temporal aggregation of a number of input (Level-2) products using the NASA SeaDAS binning scheme.</p>
+
+<h4 style="margin-left: 30px">Collocation</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.collocation.ui/org/esa/snap/collocation/docs/collocation/CollocationTool.html">Collocation</a></code></b> operator collocates two products based on their geo-codings.</p>
+
+<h4 style="margin-left: 30px">GeFolki Co-registration</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.coregistration.ui/eu/esa/opt/coregistration/docs/CoregistrationProcessor.html">SNAP GeFolki Co-registration</a></code></b> processor co-registers two rasters, not considering their location.</p>
+
+<h4>Masks</h4>
+
+<img src="images/MasksSubMenu.png" alt="Masks">
+
+<h4 style="margin-left: 30px">Land/Sea Mask</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.raster.ui/org/esa/snap/raster/docs/operators/CreateLandMask.html">Land-Sea-Mask</a></code></b> operator creates a bitmask defining land vs ocean.</p>
+
+<h4 style="margin-left: 30px">Terrain Mask</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.gpf.ui/org/esa/snap/core/gpf/docs/gpf/org_esa_snap_raster_gpf_masks_TerrainMaskOp.html">Terrain-Mask</a></code></b> operator detects mountain area using DEM and generates a terrain mask for given SAR image.</p>
+
+<h4 style="margin-left: 30px">Mask Area...</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="ComputeMaskArea.html">Mask Area</a></code></b> command computes the area of a selected mask.</p>
+
+<h4 style="margin-left: 30px">Fractional Land/Water Mask</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.watermask.ui/org/esa/snap/processor/watermask/docs/watermask/WatermaskTool.html">LandWaterMask</a></code></b> operator creates an accurate, fractional, shapefile-based land-water mask.</p>
+
+<h4 style="margin-left: 30px">Land Cover Mask</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.land.cover.ui/org/esa/snap/landcover/docs/operators/LandCoverMask.html">Land-Cover-Mask</a></code></b> operator uses a land cover band to mask an image based on the classes in the land cover.</p>
+
+<h4>Data Conversion</h4>
+
+<img src="images/DataConversionSubMenu.png" alt="Data Conversion">
+
+<h4 style="margin-left: 30px">Convert Datatype</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.raster.ui/org/esa/snap/raster/docs/operators/ConvertDatatypeOp.html">Convert-Datatype</a></code></b> operator changes the datatype of the product</p>
+
+<h4 style="margin-left: 30px">Converts bands to/from dB</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.gpf.ui/org/esa/snap/core/gpf/docs/gpf/org_esa_snap_raster_gpf_LinearTodBOp.html">LinearToFromdB</a></code></b> operator Converts bands to and from dB</p>
+
+<h4 style="margin-left: 30px">Amplitude to/from Intensity</h4>
+
+<p style="margin-left: 30px">This command creates a virtual band from an Amplitude or Intensity band</p>
+
+<h4 style="margin-left: 30px">Linear to/from dB</h4>
+
+<p style="margin-left: 30px">This command creates a dB or linear virtual band from a linear or dB band</p>
+
+<h4 style="margin-left: 30px">Complex i and q to Intensity</h4>
+
+<p style="margin-left: 30px">This command creates a virtual intensity band from i and q complex bands.</p>
+
+<h4 style="margin-left: 30px">Set No-Data Value</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.utilities.ui/eu/esa/sar/utilities/docs/operators/SetNoDataValueOp.html">SetNoDataValue</a></code></b> operator sets the no-data value and the <i>NoDataValueUsed</i> flag on every band of the source product.</p>
+
+<h4>Image Analysis</h4>
+
+<img src="images/ImageAnalysisSubMenu.png" alt="Image Analysis">
+
+<h4 style="margin-left: 30px">Principal Component Analysis</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/PCAOp.html">RPCA-Change-Detection</a></code></b> operator generates the principal component images from a stack of co-registered detected images.</p>
+
+<h4 style="margin-left: 30px">Texture Analysis</h4>
+<img style="margin-left: 30px" src="images/TextureAnalysisSubSubMenu.png" alt="Texture Analysis">
+
+<h4 style="margin-left: 60px">Grey Level Co-occurrence Matrix</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.esa.snap.snap.raster.ui/org/esa/snap/raster/docs/operators/GLCM.html">GLCM</a></code></b> operator extracts the texture features of the image.</p>
+
+<h4>Classification</h4>
+
+<img src="images/ClassificationSubMenu.png" alt="Classification">
+
+<h4 style="margin-left: 30px">Unsupervised Classification</h4>
+<img style="margin-left: 30px" src="images/UnsupervisedClassificationSubSubMenu.png" alt="Unsupervised Classification">
+
+<h4 style="margin-left: 60px">EM Cluster Analysis</h4>
+
+<p style="margin-left: 60px">The <b><code>EMClusterAnalysis</code></b> operator performs an expectation-maximization (EM) cluster analysis.</p>
+
+<h4 style="margin-left: 60px">K-Means Cluster Analysis</h4>
+
+<p style="margin-left: 60px">The <b><code>KMeansClusterAnalysis</code></b> operator performs a K-Means cluster analysis.</p>
+
+<h4 style="margin-left: 30px">Supervised Classification</h4>
+<img style="margin-left: 30px" src="images/SupervisedClassificationSubSubMenu.png" alt="Supervised Classification">
+
+<h4 style="margin-left: 60px">Random Forest Classifier</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.esa.snap.snap.classification.ui/org/esa/snap/classification/docs/operators/RandomForestClassifierOp.html">Random-Forest-Classifier</a></code></b> operator performs a Random Forest based classification.</p>
+
+<h4 style="margin-left: 60px">KNN Classifier</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.esa.snap.snap.classification.ui/org/esa/snap/classification/docs/operators/KNNClassifierOp.html">KNN-Classifier</a></code></b> operator performs a K-Nearest Neighbour based classification.</p>
+
+<h4 style="margin-left: 60px">KDTree KNN Classifier</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.esa.snap.snap.classification.ui/org/esa/snap/classification/docs/operators/KDTreeKNNClassifierOp.html">KDTree-KNN-Classifier</a></code></b> operator performs a KDTree KNN based classification.</p>
+
+<h4 style="margin-left: 60px">Maximum Likelihood Classifier</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.esa.snap.snap.classification.ui/org/esa/snap/classification/docs/operators/MaximumLikelihoodClassifierOp.html">Maximum-Likelihood-Classifier</a></code></b> operator performs a Maximum Likelihood based classification.</p>
+
+<h4 style="margin-left: 60px">Minimum Distance Classifier</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.esa.snap.snap.classification.ui/org/esa/snap/classification/docs/operators/MinimumDistanceClassifierOp.html">Minimum-Distance-Classifier</a></code></b> operator performs a Minimum Distance based classification.</p>
+
+<h4 style="margin-left: 60px">Naive Bayes Classifier</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.esa.snap.snap.classification.ui/org/esa/snap/classification/docs/operators/NaiveBayesClassifierOp.html">Naive-Bayes-Classifier</a></code></b> operator performs a Naive Bayes based classification.</p>
+
+<h4 style="margin-left: 60px">Spectral Angle Mapper Processor</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.spectral.angle.mapper.ui/eu/esa/opt/mapper/docs/sam/SAMProcessor.html">SpectralAngleMapperOp</a></code></b> operator classifies a product using the spectral angle mapper algorithm.</p>
+
+<h4 style="margin-left: 30px">Decision Tree</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.feature.extraction.ui/eu/esa/sar/fex/docs/operators/DecisionTreeOp.html">DecisionTree</a></code></b> operator performs a decision tree classification.</p>
+
+<h4>Segmentation</h4>
+
+<img src="images/SegmentationSubMenu.png" alt="Segmentation">
+
+<h4 style="margin-left: 30px">Generic region merging processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.grm.ui/eu/esa/opt/grm/docs/GenericRegionMergingProcessor.html">GenericRegionMergingOp</a></code></b> operator allows the segmentation of images of arbitrary size. </p>
+
+<h4>Change Detection</h4>
+
+<img src="images/ChangeDetectionSubMenu.png" alt="Change Detection">
+`
+<h4 style="margin-left: 30px">Change Vector Analysis</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="/org/esa/snap/change/detection/docs/operators/ChangeVectorAnalysisOp.html">ChangeVectorAnalysisOp</a></code></b> operator is used to identify spectral changes between two identical scenes which were acquired at different times.</p>
+
+<h4 style="margin-left: 30px">Log Ratio Change Detection</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.change.detection.ui/eu/esa/sar/fex/docs/operators/ChangeDetection.html">Change-Detection</a></code></b> operator performs change detection by computing the difference, ratio, log ratio and normalized ratio of given image pair.</p>
+
+<h4 style="margin-left: 30px">REACTIV Change Detection</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.feature.extraction.ui/eu/esa/sar/fex/docs/operators/REACTIVChangeDetectionOp.html">REACTIV-Change-Detection</a></code></b> operator implements the "Rapid and EAsy Change detection in radar TIme-series by Variation coefficient (REACTIV)" algorithm.</p>
+
+<h4 style="margin-left: 30px">RPCA Change Detection</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.feature.extraction.ui/eu/esa/sar/fex/docs/operators/RPCAChangeDetectionOp.html">RPCA-Change-Detection</a></code></b> operator performs change detection on a time series of SAR amplitude images based on Robust Principal Component Analysis (RPCA).</p>
+
+<h4>Export</h4>
+
+<img src="images/Raster_ExportSubMenu.png" alt="Export">
+
+<h4 style="margin-left: 30px">Extract Pixel Values</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.pixel.extraction.ui/org/esa/snap/pixex/docs/pixelExtraction/PixelExtraction.html">PixEx</a></code></b> operator extracts pixel values given a list of geographical points from one or more data products.</p>
+
+<h4 style="margin-left: 30px">Mask Pixels</h4>
+
+<p style="margin-left: 30px">The <b><code><a href=nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/desktop/ExportMaskPixels.html">Mask Pixels</a></code></b> command allows the export of pixel values as tab-separated values.</p>
+
+<h4 style="margin-left: 30px">Transect Pixels</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/desktop/ExportTransectPixels.html">Transect Pixels</a></code></b> command allows the export of pixel values along the current transect as tab-separated values.</p>
+
+<h4 style="margin-left: 30px">Pixel-Info to Clipboard</h4>
+
+<p style="margin-left: 30px">Allows the user to copy Pixel-Info to Clipboard.</p>
+
+<h4>ECOSTRESS Swath to Grid</h4>
+
+<p> The <b><code>EcostressSwath2GridOp</code></b> operator performs ECOSTRESS Swath to Grid conversion to a specified CRS and radiance to brightness temperature conversion, using the algorithm from 'ECOSTRESS Swath to Grid Conversion Script' by LP DAAC (https://git.earthdata.nasa.gov/projects/LPDUR/repos/ecostress_swath2grid/).</p>
+
+<h4>Band Select</h4>
+
+<p> The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.utilities.ui/eu/esa/sar/utilities/docs/operators/BandSelectOp.html">BandSelect</a></code></b> operator creates a new product with only selected bands.</p>
+
+<h4>Raster to Vector</h4>
+
+<img src="images/RasterToVectorSubMenu.png" alt="Raster to Vector">
+
+<h4 style="margin-left: 30px">Quantization</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/desktop/Quantization.html">Quantization</a></code></b> operator converts all pixels with values within given intervals to fixed, integer values.</p>
+
+<h4 style="margin-left: 30px">Raster to Vector</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/desktop/RasterToVector.html">Raster-To-Vector</a></code></b> operator converts all adjacent pixels with the same value from a raster band (with integer values) to a vector.</p>
+<hr>
+</body>
+</html>

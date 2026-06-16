@@ -8,7 +8,7 @@
 	<mapID target="RandomForestClassifierOp" url="operators/RandomForestClassifierOp.html"/>
 	<mapID target="MaximumLikelihoodClassifierOp" url="operators/MaximumLikelihoodClassifierOp.html"/>
 	<mapID target="MinimumDistanceClassifierOp" url="operators/MinimumDistanceClassifierOp.html"/>
-	<mapID target="KNNClassifierOp" url="operators/KNNClassifierOp.html"/>
+	<mapID target="KNNClassifierOp" url="operators/"/>
 	<mapID target="KDTreeKNNClassifierOp" url="operators/KDTreeKNNClassifierOp.html"/>
 	<mapID target="NaiveBayesClassifierOp" url="operators/NaiveBayesClassifierOp.html"/>
 	<mapID target="SupervisedClassifiers" url="operators/SupervisedClassification.html"/>

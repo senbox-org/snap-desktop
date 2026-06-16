@@ -1,0 +1,223 @@
+<!--
+  ~ Copyright (C) 2026 CS GROUP ROMANIA
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Optical Menu</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Optical Menu
+        </td>
+
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border="0"></a></td>
+    </tr>
+</table>
+
+
+<h3>Optical Menu</h3>
+
+<img src="images/OpticalMenu.png" alt="Optical menu">
+
+<h4>Spectrum View</h4>
+
+<p> The <b><code><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/desktop/SpectrumWindow.html">Spectrum View</a></code></b> component allows the user to inspect the spectra for a given pixel position.</p>
+
+<h4>Spectral Unmixing</h4>
+
+<p> The <b><code><a href="nbdocs://eu.esa.opt.opttbx.unmix.ui/eu/esa/opt/opttbx/unmix/ui/docs/unmixing/SpectralUnmixingTool.html">Spectral Unmixing</a></code></b> tool is used to decompose a reflectance (or corrected radiance) source spectrum into a set of given <i>endmember</i> spectra. </p>
+
+<h4>Geometric</h4>
+
+<img src="images/OpticalGeometricSubMenu.png" alt="Geometric">
+
+<h4 style="margin-left: 30px">S2 Resampling Processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.s2msi.resampler.ui/eu/esa/opt/opttbx/s2msi/resampler/ui/docs/s2resampler.html">S2Resampling</a></code></b> operator allows the user to resample Sentinel-2 products (in SAFE or MUSCATE format) using a specific S2 resample algorithm.</p>
+
+<h4 style="margin-left: 30px">AATSR Ungridding</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.slstr.regrid/eu/esa/opt/opttbx/slstr/regrid/docs/AatsrRegriddingProcessorDescription.html">AATSR.Ungrid</a></code></b> operator ungrids (A)ATSR L1B products and extracts geolocation and pixel field of view data.</p>
+
+<h4 style="margin-left: 30px">SLSTR L1B Stitching</h4>
+
+<p style="margin-left: 30px">The <b><code>PduStitching</code></b> operator stitches multiple SLSTR L1B product dissemination units (PDUs) of the same orbit to a single product.</p>
+
+<h4 style="margin-left: 30px">Orthorectification</h4>
+
+<p style="margin-left: 30px">The <b><a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/desktop/Orthorectification.html">orthorectification</a></b> command applies a selected map projection to a Coordinate Reference System and an <a href="nbdocs://org.esa.snap.snap.help/org/esa/snap/snap/help/docs/desktop/OrthorectificationAlgo.html">orthorectification algorithm</a> to the selected source product and creates a new target product.</p>
+
+
+<h4>Preprocessing</h4>
+
+<img src="images/OpticalPreprocessingSubMenu.png" alt="Preprocessing">
+
+<h4 style="margin-left: 30px">OLCI Sensor Harmonisation</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.olci.preprocessing/eu/esa/opt/opttbx/olci/preprocessing/docs/harmonisation/OlciSensorHarmonisationTool.html">OlciSensorHarmonisation</a></code></b> operator performs sensor harmonisation on OLCI L1b product. Implements algorithm described in 'OLCI A/B Tandem Phase Analysis'.</p>
+
+<h4 style="margin-left: 30px">OLCI O2A Harmonisation</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.olci.preprocessing/eu/esa/opt/opttbx/olci/preprocessing/docs/o2aharm/OlciO2aHarmonisationTool.html">OlciO2aHarmonisation</a></code></b> operator performs O2A band harmonisation on OLCI L1b product.</p>
+
+<h4 style="margin-left: 30px">OLCI PPE Filtering</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.olci.preprocessing/eu/esa/opt/opttbx/olci/preprocessing/docs/ppe/PpeOp.html">PpeFiltering</a></code></b> operator performs Prompt Particle Event (PPE) filtering on OLCI L1B.</p>
+
+<h4 style="margin-left: 30px">Rayleigh Correction</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.olci.preprocessing/eu/esa/opt/opttbx/olci/preprocessing/docs/radiometry/RayleighCorrectionOverview.html">RayleighCorrection</a></code></b> operator performs radiometric corrections on OLCI, MERIS L1B and S2 MSI L1C data products.</p>
+
+<h4 style="margin-left: 30px">L1C SYN Tool</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.olci.preprocessing/eu/esa/opt/opttbx/olci/preprocessing/docs/l1csyn/Intro.html">L1CSYN</a></code></b> operator combines Sentinel-3 OLCI and SLSTR Level-1B products to generate a Sentinel-3 Level-1C Synergy (SYN) product.</p>
+
+<h4 style="margin-left: 30px">Masking</h4>
+
+<img  style="margin-left: 30px" src="images/OpticalPreprocessingMaskingSubSubMenu.png" alt="Masking">
+
+<h4 style="margin-left: 60px">OLCI Anomaly Flagging</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.olci.preprocessing/eu/esa/opt/opttbx/olci/preprocessing/docs/anomaly/OlciAnomalyFlaggingProcessorDescription.html">OlciAnomalyFlagging</a></code></b> operator adds a flagging band indicating saturated pixels and altitude data overflows.</p>
+
+<h4 style="margin-left: 60px">MERIS Cloud Probability Processor</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.meris.operators.ui/eu/esa/opt/opttbx/meris/operators/ui/docs/cloud/CloudTool.html">CloudProb</a></code></b> operator implements the detection of clouds in a MERIS L1b product.</p>
+
+<h4 style="margin-left: 30px">Dark Object Subtraction</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.dos/eu/esa/opt/opttbx/dos/docs/dos/DosIntro.html">DarkObjectSubtraction</a></code></b> operator performs dark object subtraction for spectral bands in source product.</p>
+
+<h4 style="margin-left: 30px">MERIS Reprocessing Adaptation</h4>
+
+<img style="margin-left: 30px" src="images/OpticalPreprocessingMerisRepAdSubSubMenu.png" alt="MERIS Reprocessing Adaptation">
+
+<h4 style="margin-left: 60px">4th--> 3rd</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.sentinel3.reader/eu/esa/opt/opttbx/sentinel3/reader/docs/merisReproOp/FourthToThirdReprocessingAdaptationTool.html">Meris.Adapt.4To3</a></code></b> operator provides the adaptation of MERIS L1b products from 4th to 3rd reprocessing.</p>
+
+<h4 style="margin-left: 30px">MERIS Radiometric Correction</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.meris.operators.ui/eu/esa/opt/opttbx/meris/operators/ui/docs/radiometry/MerisRadiometryProcessor.html">Meris.CorrectRadiometry</a></code></b> operator performs radiometric corrections on MERIS L1b data products.</p>
+
+<h4 style="margin-left: 30px">Radiance-to-Reflectance Processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.rad2refl.ui/eu/esa/opt/processor/rad2refl/docs/rad2refl/Rad2ReflTool.html">Rad2Refl</a></code></b> operator provides a conversion from top-of-atmosphere radiance to top-of-atmosphere reflectance values or vice versa for MERIS, OLCI and SLSTR.</p>
+
+<h4 style="margin-left: 30px">Reflectance to Radiance</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.reflectance.to.radiance.ui/eu/esa/opt/reflectance2radiance/docs/ReflectanceToRadianceTool.html">ReflectanceToRadianceOp</a></code></b> operator converts the Top Of Atmosphere (TOA) reflectance to radiance from a given product.</p>
+
+
+<h4>Thematic Land Processing</h4>
+
+<img src="images/OpticalThematicLandSubMenu.png" alt="Thematic Land Processing">
+
+<h4 style="margin-left: 30px">Biophysical Processor (LAI, fAPAR...)</h4>
+
+<img  style="margin-left: 30px" src="images/OpticalThematicLandBiophysicalSubSubMenu.png" alt="Biophysical Processor">
+
+<p style="margin-left: 30px">The <b><a href="nbdocs://eu.esa.opt.opttbx.biophysical/eu/esa/opt/opttbx/biophysical/docs/BiophysicalOpOverview.html">Biophysical Processor</a></b> computes Level-2B Biophysical products from Sentinel-2 or LANDSAT 8 reflectances.</p>
+
+<h4 style="margin-left: 30px">Burn Radiometric Indices</h4>
+
+<img  style="margin-left: 30px" src="images/OpticalThematicLandBurnIdx.png" alt="Burn Radiometric Indices">
+
+<p style="margin-left: 30px">The <b><a href="nbdocs://eu.esa.opt.opttbx.radiometric.indices.ui/eu/esa/opt/radiometry/docs/OperatorsIndexList.html#BurnIndexList">Burn Radiometric Indices</a></b> are mathematical combinations of satellite spectral bands designed to measure fire effects on the ground, such as charring, soil exposure, vegetation loss, and burn severity.</p>
+
+<h4 style="margin-left: 30px">Soil Radiometric Indices</h4>
+
+<img  style="margin-left: 30px" src="images/OpticalThematicLandSoilIdx.png" alt="Soil Radiometric Indices">
+
+<p style="margin-left: 30px">The <b><a href="nbdocs://eu.esa.opt.opttbx.radiometric.indices.ui/eu/esa/opt/radiometry/docs/OperatorsIndexList.html#SoilIndexList">Soil Radiometric Indices</a></b> are mathematical combinations of satellite spectral bands designed to measure, map, and evaluate soil properties, moisture conditions, and land degradation.</p>
+
+<h4 style="margin-left: 30px">Urban Radiometric Indices</h4>
+
+<img  style="margin-left: 30px" src="images/OpticalThematicLandUrbanIdx.png" alt="Urban Radiometric Indices">
+
+<p style="margin-left: 30px">The <b><a href="nbdocs://eu.esa.opt.opttbx.radiometric.indices.ui/eu/esa/opt/radiometry/docs/OperatorsIndexList.html#UrbanIndexList">Urban Radiometric Indices</a></b> are mathematical combinations of satellite spectral bands used to identify and monitor built-up areas, urban growth, and impervious surfaces, while distinguishing urban features from natural land cover.</p>
+
+<h4 style="margin-left: 30px">Vegetation Radiometric Indices</h4>
+
+<img  style="margin-left: 30px" src="images/OpticalThematicLandVegetationIdx.png" alt="Vegetation Radiometric Indices">
+
+<p style="margin-left: 30px">The <b><a href="nbdocs://eu.esa.opt.opttbx.radiometric.indices.ui/eu/esa/opt/radiometry/docs/OperatorsIndexList.html#VegetationIdxList">Vegetation Radiometric Indices</a></b> are mathematical combinations of satellite spectral bands used to quantify vegetation health, vigor, density, and crop conditions from satellite imagery.</p>
+
+<h4 style="margin-left: 30px">Forest Cover Change Processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.forest.cover.change.ui/eu/esa/opt/fcc/docs/ForestCoverChangeProcessor.html">ForestCoverChangeOp</a></code></b> processor is a multi-steps iterative process that transform two date images into one forest change product.</p>
+
+<h4>Thematic Water Processing</h4>
+
+<img src="images/OpticalThematicWaterSubMenu.png" alt="Thematic Water Processing">
+
+<h4 style="margin-left: 30px">Water Radiometric Indices</h4>
+
+<img  style="margin-left: 30px" src="images/OpticalThematicWaterWaterIdx.png" alt="Water Radiometric Indices">
+
+<p style="margin-left: 30px">The <b><a href="nbdocs://eu.esa.opt.opttbx.radiometric.indices.ui/eu/esa/opt/radiometry/docs/OperatorsIndexList.html#WaterIndexList">Water Radiometric Indices</a></b> are mathematical combinations of satellite spectral bands used to detect, map, and monitor surface water bodies, moisture conditions, water quality, and flood extent.</p>
+
+<h4 style="margin-left: 30px">(A)ATSR SST Processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.aatsr.sst.ui/eu/esa/opt/aatsr/sst/docs/sst/SstTool.html">Aatsr.SST</a></code></b> operator enables the user to calculate the sea-surface temperature from (A)ATSR brightness temperatures.</p>
+
+<h4 style="margin-left: 30px">ARC SST Processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.arc.ui/eu/esa/opt/arc/docs/arc/ArcSstTool.html">Arc.SST</a></code></b> operator computes sea surface temperature (SST) and Saharan Dust Index from (A)ATSR and SLSTR brightness temperatures.</p>
+
+<h4 style="margin-left: 30px">FLH/MCI Processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.flhmci.ui/eu/esa/opt/processor/flh_mci/docs/flh_mci/FlhMciTool.html">FlhMci</a></code></b> operator generates florescence line height (FLH) / maximum chlorophyll index (MCI) from spectral bands..</p>
+
+<h4 style="margin-left: 30px">C2RCC Processors</h4>
+
+<img  style="margin-left: 30px" src="images/OpticalThematicWaterC2RCCSubSubMenu.png" alt="C2RCC Processors">
+
+<p style="margin-left: 30px"><b><code><a href="nbdocs://eu.esa.opt.opttbx.c2rcc/eu/esa/opt/opttbx/c2rcc/docs/c2rcc/C2RCCTool.html">C2RCC</a></code></b> is a processor for atmospheric correction and retrieval of water constituents from optical satellite imagery acquired by a variety of sensors.</p>
+
+<h4 style="margin-left: 30px">S2 MCI Processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.s2msi.mci.ui/eu/esa/opt/processor/mci/docs/mci/MciTool.html">Mci.s2</a></code></b> operator generates the Maximum Chlorophyll Index (MCI) by exploiting the height of a measurement over a specific baseline.</p>
+
+<h4 style="margin-left: 30px">MERIS FUB-CSIRO Coastal Water Processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.fub.wew.ui/eu/esa/opt/fub/wew/docs/fub_wew/FubWeWTool.html">FUB.Water</a></code></b> operator makes use of MERIS Level-1b TOA radiances in the bands 1-7, 9-10 and 12-14 to retrieve the following case II water properties and atmospheric properties above case II waters.</p>
+
+<h4 style="margin-left: 30px">MPH/CHL Processor</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.mphchl/eu/esa/opt/opttbx/mphchl/docs/MphChlTool.html">MphChl</a></code></b> operator .</p>
+
+<h4 style="margin-left: 30px">FU Classification</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.fu.operator/eu/esa/opt/opttbx/fu/operator/docs/FuTool.html">FuClassification</a></code></b> operator is used to derive the hue angle and FU (Forel-Ule) value from OLCI, SeaWiFS, MODIS and other sensors.</p>
+
+<h4 style="margin-left: 30px">OWT Classification</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.opt.opttbx.owt.classification/eu/esa/opt/opttbx/owt/classification/docs/OwtOverview.html">OWTClassification</a></code></b> operator performs an Optical Water Type classification based on atmospherically corrected reflectances.</p>
+
+
+<hr>
+</body>
+</html>

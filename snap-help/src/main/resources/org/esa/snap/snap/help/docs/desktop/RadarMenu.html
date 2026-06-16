@@ -1,0 +1,639 @@
+<!--
+  ~ Copyright (C) 2026 CS GROUP ROMANIA
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along
+  ~ with this program; if not, see http://www.gnu.org/licenses/
+  -->
+
+
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Radar Menu</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;
+            Radar Menu
+        </td>
+
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
+                src="../images/snap_header.jpg"
+                border="0"></a></td>
+    </tr>
+</table>
+
+
+<h3>Radar Menu</h3>
+
+<img src="images/RadarMenu.png" alt="Radar menu">
+
+<h4>Apply Orbit File</h4>
+
+<p> The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.io.ephemeris.ui/eu/esa/sar/orbits/docs/operators/ApplyOrbitFileOp.html">Apply-Orbit-File</a></code></b> operator refines the orbit state vectors with the precise orbit files which are available days-to-weeks after the generation of the product.</p>
+
+<h4>Radiometric</h4>
+
+<img src="images/RadarRadiometricSubMenu.png" alt="Radiometric">
+
+<h4 style="margin-left: 30px">Calibrate</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.calibration.ui/eu/esa/sar/calibration/docs/operators/CalibrationOp.html">Calibration</a></code></b> operator performs different calibrations for ASAR, ERS, ALOS and Radarsat-2 products deriving the sigma nought images.</p>
+
+<h4 style="margin-left: 30px">Radiometric Terrain Flattening</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/TerrainFlatteningOp.html">Terrain-Flattening</a></code></b> operator removes the radiometric variability associated with topography using the Radiometric Terrain Correction algorithm proposed by Small [1] while leaving the radiometric variability associated with land cover..</p>
+
+<h4 style="margin-left: 30px">Multitemporal Compositing</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/MultitemporalCompositingOp.html">Multitemporal-Compositing</a></code></b> operator computes composite image from multi-temporal RTCs.</p>
+
+<h4 style="margin-left: 30px">Remove Antenna Pattern</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.calibration.ui/eu/esa/sar/calibration/docs/operators/RemoveAntennaPatternOp.html">RemoveAntennaPattern</a></code></b> operator removes antenna pattern and range spreading loss corrections applied to the original ASAR and ERS products.</p>
+
+<h4 style="margin-left: 30px">S-1 Thermal Noise Removal</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.calibration.ui/eu/esa/sar/calibration/docs/operators/ThermalNoiseRemoval.html">ThermalNoiseRemoval</a></code></b> operator removes additive thermal noise from SAR products.</p>
+
+<h4 style="margin-left: 30px">Convert Sigma0 to Beta0</h4>
+
+<p style="margin-left: 30px">This option creates a Beta0 virtual band from a Sigma0 band.</p>
+
+<h4 style="margin-left: 30px">Convert Sigma0 to Gamma0</h4>
+
+<p style="margin-left: 30px">This option creates a Gamma0 virtual band from a Sigma0 band.</p>
+
+<h4 style="margin-left: 30px">Create Calibration LUT TPG</h4>
+
+<p style="margin-left: 30px">This option creates a tie point grid from calibration and noise vectors.</p>
+
+<h4>Speckle Filtering</h4>
+
+<img src="images/SpeckleFilteringSubMenu.png" alt="Speckle Filtering">
+
+<h4 style="margin-left: 30px">Single Product Speckle Filter</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/SpeckleFilterOp.html">Speckle-Filter</a></code></b> operator reduces speckle noise in SAR images.</p>
+
+<h4 style="margin-left: 30px">Multi-temporal Speckle Filter</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/MultiTemporalSpeckleFilterOp.html">Multi-Temporal-Speckle-Filter</a></code></b> operator reduces speckle noise in co-registered SAR image time series by combining information from multiple acquisitions.</p>
+
+<h4>Coregistration</h4>
+
+<img src="images/RadarCoregistrationSubMenu.png" alt="Coregistration">
+
+<h4 style="margin-left: 30px">Coregistration</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/Coregistration.html">Coregistration</a></code></b> option performs Automatic Cross-Correlation based Coregistration.</p>
+
+<h4 style="margin-left: 30px">S1 TOPS Coregistration </h4>
+
+<img style="margin-left: 30px" src="images/RadarS1TOPSCoregistrationSubSubMenu.png" alt="S1-TOPS Coregistration">
+
+<h4 style="margin-left: 60px">S-1 TOPS Coregistration</h4>
+
+<p style="margin-left: 60px">This option performs S-1 TOPS Coregistration.</p>
+
+<h4 style="margin-left: 60px">S-1 TOPS Coregistration with ESD</h4>
+
+<p style="margin-left: 60px">This option performs S1 TOPS Coregistration with Enhanced Spectral Diversity.</p>
+
+<h4 style="margin-left: 60px">S-1 TOPS Joint Coregistration (write shifts to file) </h4>
+
+<p style="margin-left: 60px">Computes and exports range and azimuth coregistration shifts for a Sentinel-1 TOPS image stack.</p>
+
+<h4 style="margin-left: 60px">S-1 TOPS Split Apply Orbit</h4>
+
+<p style="margin-left: 60px">This option performs S1 TOPS preprocessing before backgeocoding.</p>
+
+<h4 style="margin-left: 60px">S-1 Back Geocoding</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/BackGeocodingOp.html">Back-Geocoding</a></code></b> operator co-registers two S-1 SLC split products (reference and secondary) of the same sub-swath using the orbits of the two products and a Digital Elevation Model (DEM).</p>
+
+<h4 style="margin-left: 60px">S-1 Enhanced Spectral Diversity</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/SpectralDiversityOp.html">Enhanced-Spectral-Diversity</a></code></b> operator estimates constant range and azimuth offsets for a stack of images.</p>
+
+<h4 style="margin-left: 60px">S-1 Azimuth Shift Estimation</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/AzimuthShiftEstimationUsingESDOp.html">Azimuth-Shift-Estimation-ESD</a></code></b> operator estimates a constant azimuth offset for the whole sub-swath using a Enhanced Spectral Diversity (ESD) method.</p>
+
+<h4 style="margin-left: 60px">S-1 Double Difference Estimation</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/DoubleDifferenceInterferogramOp.html">Double-Difference-Interferogram</a></code></b> operator computes the double difference interferogram for co-registered Sentinel-1 TOPS product for overlapped area between adjacent bursts.</p>
+
+
+<h4 style="margin-left: 30px">DEM-Assisted Coregistration</h4>
+<img style="margin-left: 30px" src="images/DEMAssistedCoregistrationSubSubMenu.png" alt="DEM-Assisted Coregistration">
+
+<h4 style="margin-left: 60px">DEM-Assisted Coregistration</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/DEMAssistedCoregistrationOp.html">DEM-Assisted-Coregistration</a></code></b> operator co-registers two or more products using the orbits of the products and a Digital Elevation Model.</p>
+
+<h4 style="margin-left: 60px">DEM-Assisted Coregistration with XCorr</h4>
+
+<p style="margin-left: 60px">This option performs a DEM-Assisted Coregistration with Cross-Correlation.</p>
+
+<h4 style="margin-left: 30px">Stack Tools</h4>
+
+<img  style="margin-left: 30px" src="images/RadarStackToolsSubSubMenu.png" alt="Stack Tools">
+
+<h4 style="margin-left: 60px">Create Stack</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/CreateStackOp.html">CreateStack</a></code></b> operator collocates two or more products based on their geo-codings.</p>
+
+<h4 style="margin-left: 60px">Stack Averaging</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/StackAveragingOp.html">Stack-Averaging</a></code></b> operator computes statistics for the corresponding bands in the given stack product.</p>
+
+<h4 style="margin-left: 60px">Stack Split</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/StackSplitOp.html">Stack-Split</a></code></b> operator separates a given stack product into each individual reference and secondary products.</p>
+
+<h4 style="margin-left: 60px">Split stack into multiple references</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/MultiReference.html">MultiMasterStackGenerator</a></code></b> operator takes a single coregistered SLC stack (one reference acquisition + N&minus;1 secondary acquisitions, as produced by <b>Coregistration</b> or <b>DEM-Assisted Coregistration</b>) and splits it into a set of products, one per acquisition acting as the reference.</p>
+
+<h4 style="margin-left: 30px">Cross InSAR resampling</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/CrossResamplingOp.html">CrossResampling</a></code></b> operator prepares input, ERS1/2 and Envisat, data for cross interferometric processing.</p>
+
+
+<h4>Interferometric</h4>
+
+<img src="images/RadarInterferometricSubMenu.png" alt="Interferometric">
+
+<h4 style="margin-left: 30px">Products</h4>
+
+<img  style="margin-left: 30px" src="images/RadarInterferometricProductsSubSubMenu.png" alt="Products">
+
+<h4 style="margin-left: 60px">Interferogram Formation</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/InterferogramOp.html">Interferogram</a></code></b> operator computes interferograms from stack of coregistered S-1 images.</p>
+
+<h4 style="margin-left: 60px">Coherence Estimation</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/CoherenceOp.html">Coherence</a></code></b> operator estimates coherence from stack of coregistered images.</p>
+
+<h4 style="margin-left: 60px">Topographic Phase Removal</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/SubtRefDemOp.html">TopoPhaseRemoval</a></code></b> operator estimates and subtracts topographic phase from the interferogram.</p>
+
+<h4 style="margin-left: 60px">Three-pass Differential InSAR</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/DInSAROp.html">Three-passDInSAR</a></code></b> operator removes the topographic induced phase from an interferogram that contains topographic, deformation, and atmospheric components.</p>
+
+<h4 style="margin-left: 60px">Phase to Height</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/Slant2HeightOp.html">PhaseToHeight</a></code></b> operator converts the unwrapped interferometric phase to the heights in the radar coded system.</p>
+
+<h4 style="margin-left: 60px">Phase to Displacement</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/PhaseToDisplacementOp.html">PhaseToDisplacement</a></code></b> operator converts interferometric phase to displacement map.</p>
+
+<h4 style="margin-left: 60px">Phase to Elevation</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/PhaseToElevationOp.html">PhaseToElevation</a></code></b> operator converts interferometric phase to digital elevation map.</p>
+
+<h4 style="margin-left: 60px">Integer Interferogram Combination</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/IntegerInterferogramOp.html">IntegerInterferogram</a></code></b> operator creates integer interferogram.</p>
+
+<h4 style="margin-left: 60px">Multi-Reference InSAR</h4>
+
+<p style="margin-left: 60px">Given a coregistered stack product, the <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/MultiReferenceInSAROp.html">MultiMasterInSAR</a></code></b> operator allows for computing the interferometric phase as well as estimating the interferometric coherence for arbitrary image pairs.</p>
+
+<h4 style="margin-left: 60px">Horizontal/Vertical Motion</h4>
+
+<p style="margin-left: 60px">Given two (collocated) ascending and descending interferograms, the <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/HorizontalVerticalMotionOp.html">HorizontalVerticalMotion</a></code></b> operator computes the horizontal (East-West) and vertical motion.</p>
+
+<h4 style="margin-left: 60px">Ionospheric Correction</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/IonosphericCorrectionOp.html">IonosphericCorrection</a></code></b> operator uses three interferometric products (each of which with an unwrapped interferometric phase band) to estimate and correct for ionospheric phase screens.</p>
+
+
+<h4 style="margin-left: 30px">Filtering</h4>
+
+<img  style="margin-left: 30px" src="images/RadarInterferometricFilteringSubSubMenu.png" alt="Filtering">
+
+<h4 style="margin-left: 60px">Spectral Filtering</h4>
+<img  style="margin-left: 60px" src="images/RadarInterferometricSpectralFilteringSubSubSubMenu.png" alt="Spectral Filtering">
+
+<h4 style="margin-left: 90px">Range Filtering</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/RangeFilterOp.html">RangeFilter</a></code></b> operator filters the spectras, of stack of SLC images, in the range direction.</p>
+
+<h4 style="margin-left: 90px">Azimuth Filtering</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/AzimuthFilterOp.html">AzimuthFilter</a></code></b> operator filters the spectras, of stack of SLC images, in the azimuth direction.</p>
+
+<h4 style="margin-left: 60px">Goldstein Phase Filtering</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/GoldsteinFilterOp.html">GoldsteinPhaseFiltering</a></code></b> operator applies adaptive Goldstein filtering to reduce the residues in the later on  phase unwrapping step and enhances the phase unwrapping accuracy.</p>
+
+
+<h4 style="margin-left: 30px">Unwrapping</h4>
+
+<img style="margin-left: 30px" src="images/RadarInterferometricUnwrappingSubSubMenu.png" alt="Unwrapping">
+
+<h4 style="margin-left: 60px">Snaphu Export</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/SnaphuExportOp.html">SnaphuExport</a></code></b> operator exports data and prepare conf file for SNAPHU processing.</p>
+
+<h4 style="margin-left: 60px">Snaphu Import</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.jlinda.jlinda.nest.ui/org/jlinda/nest/docs/operators/SnaphuImportOp.html">SnaphuImport</a></code></b> operator ingests SNAPHU results into InSAR product.</p>
+
+<h4 style="margin-left: 60px">Batch Snaphu Unwrap</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/BatchSnaphuUnwrapOp.html">BatchSnaphuUnwrapOp</a></code></b> operator downloads and executes SNAPHU on a set of two or more interferograms.</p>
+
+
+<h4 style="margin-left: 30px">PSI\SBAS</h4>
+
+<img  style="margin-left: 30px" src="images/InterferometricPSISBASSubSubMenu.png" alt="Unwrapping">
+
+<h4 style="margin-left: 60px">StaMPS Export</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/StampsExportOp.html">StampsExport</a></code></b> operator exports data for StaMPS processing.</p>
+
+<h4 style="margin-left: 60px">Export to Pyrate</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/PyRateExportOp.html">PyrateExport</a></code></b> operator exports a stack of wrapped interferograms for PyRate processing.</p>
+
+<h4 style="margin-left: 30px">InSAR Stack Overview</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/InSARStackOverview.html">InSAR-Overview</a></code></b> function gives general information about the interferometric stack.</p>
+
+
+<h4>Polarimetric</h4>
+
+<img src="images/RadarPolarimetricSubMenu.png" alt="Polarimetric">
+
+<h4 style="margin-left: 30px">Compact Polarimetry</h4>
+
+<img  style="margin-left: 30px" src="images/RasterCompactPolarimetrySubSubMenu.png" alt="Compact Polarimetry">
+
+<h4 style="margin-left: 60px">CP Simulation</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/CompactPolDataSimulationOp.html">CP-Simulation</a></code></b> operator simulates compact pol data from quad pol data.</p>
+
+<h4 style="margin-left: 60px">CP Stokes Parameters</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/CompactPolStokesParametersOp.html">CP-Stokes-Parameters</a></code></b> operator generates compact polarimetric Stokes child parameters.</p>
+
+<h4 style="margin-left: 60px">CP Decomposition</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/CompactPolDecompositionOp.html">CP-Decomposition</a></code></b> operator performs Compact Polarimetric decomposition of a given product.</p>
+
+
+<h4 style="margin-left: 30px">Polarimetric Classification</h4>
+
+<img  style="margin-left: 30px" src="images/RadarPolarimetricClassificationSubSubMenu.png" alt="Polarimetric Classification">
+
+<p style="margin-left: 30px"> The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.classification.ui/org/csa/rstb/classification/docs/operators/PolarimetricClassificationOp.html">Polarimetric-Classification</a></code></b> operator performs the following polarimetric classification for a full polarimetric SAR product:</p>
+    <ul style="margin-left: 30px" >
+        <li>Unsupervised Cloude-Pottier Classification</li>
+        <li>Unsupervised Whishart Classification</li>
+    </ul>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.classification.ui/org/csa/rstb/classification/docs/operators/SupervisedWishartClassificationOp.html">Supervised-Wishart-Classification</a></code></b> operator performs supervised Wishart classification. It consists of two major processing steps:</p>
+    <ul style="margin-left: 30px" >
+            <li>Supervised Training</li>
+            <li>Wishart Classification</li>
+    </ul>
+
+
+<h4 style="margin-left: 30px">Radar Vegetation Index</h4>
+
+<img  style="margin-left: 30px" src="images/RadarVegetationIndexSubSubMenu.png" alt="Radar Vegetation Index">
+
+<h4 style="margin-left: 60px">Dual-pol Radar Vegetation Index</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/RVIOp.html">Radar-Vegetation-Index</a></code></b> operator computes the Radar Vegetation Index (RVI) from polarimetric SAR data.</p>
+
+<h4 style="margin-left: 60px">Compact-pol Radar Vegetation Index</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/CPRVIOp.html">Compactpol-Radar-Vegetation-Index</a></code></b> operator computes the Compact Polarimetric Radar Vegetation Index (CpRVI) from compact-pol SAR data.</p>
+
+<h4 style="margin-left: 60px">Generalized Radar Vegetation Index</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/GRVIOp.html">Generalized-Radar-Vegetation-Index</a></code></b> operator computes the Generalized Radar Vegetation Index (GRVI) from full-polarimetric SAR data.</p>
+
+
+<h4 style="margin-left: 30px">Polarimetric Matrix Generation</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/PolarimetricMatricesOp.html">Polarimetric-Matrices</a></code></b> operator generates covariance or coherency matrix for given product.</p>
+
+<h4 style="margin-left: 30px">Polarimetric Speckle Filter</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/PolarimetricSpeckleFilterOp.html">Polarimetric-Speckle-Filter</a></code></b> operator applies a Polarimetric Speckle Filter to the data (covariance/coherency matrix data).</p>
+
+<h4 style="margin-left: 30px">Polarimetric Orientation Angle Correction</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/OrientationAngleCorrectionOp.html">Orientation-Angle-Correction</a></code></b> operator performs polarization orientation angle correction for given coherency matrix.</p>
+
+<h4 style="margin-left: 30px">Polarimetric Decomposition</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/PolarimetricDecompositionOp.html">Polarimetric-Decomposition</a></code></b> operator performs Polarimetric decomposition of a given product.</p>
+
+<h4 style="margin-left: 30px">Polarimetric Parameters</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/PolarimetricParametersOp.html">Polarimetric-Parameters</a></code></b> operator computes a configurable bank of general-purpose polarimetric scalar parameters and channel-algebra outputs from a quad-pol, dual-pol or compact-pol SAR product.</p>
+
+<h4 style="margin-left: 30px">Cross Channel SNR Correction</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/CrossChannelSNRCorrectionOp.html">Cross-Channel-SNR-Correction</a></code></b> operator estimates and removes the cross-channel noise floor in a quad-polarimetric SAR product by exploiting the reciprocity assumption S<sub>HV</sub> = S<sub>VH</sub>.</p>
+
+<h4 style="margin-left: 30px">Faraday Rotation Correction</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.polarimetric.tools.ui/org/csa/rstb/polarimetric/docs/operators/FaradayRotationCorrectionOp.html">Faraday-Rotation-Correction</a></code></b> operator removes the ionospheric Faraday-rotation signature from a quad-polarimetric SAR product.</p>
+
+<!-- -->
+<h4>Geometric</h4>
+
+<img src="images/RadarGeometricSubMenu.png" alt="Geometric">
+
+<h4 style="margin-left: 30px">Terrain Correction</h4>
+
+<img  style="margin-left: 30px" src="images/RadarTerrainCorrectionSubSubMenu.png" alt="Terrain Correction">
+
+<h4 style="margin-left: 60px">Range-Doppler Terrain Correction</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/RangeDopplerGeocodingOp.html">Terrain-Correction</a></code></b> operator corrects the topographic distortion in the raw image caused by this factor. It  implements the Range-Doppler (RD) geocoding method.</p>
+
+<h4 style="margin-left: 60px">SAR Simulation</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/SARSimulationOp.html">SAR-Simulation</a></code></b> operator generates simulated SAR image using DEM, the Geocoding and orbit state vectors from a given SAR image, and mathematical modeling of SAR imaging geometry.</p>
+
+<h4 style="margin-left: 60px">SAR Simulation Terrain Correction</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/SARSimTerrainCorrectionOp.html">SARSim-Terrain-Correction</a></code></b> operator generates orthorectified image using rigorous SAR simulation.</p>
+
+
+<h4 style="margin-left: 30px">Ellipsoid Correction</h4>
+
+<img  style="margin-left: 30px" src="images/RadarEllipsoidCorrectionSubSubMenu.png" alt="Ellipsoid Correction">
+
+<h4 style="margin-left: 60px">Average Height Range-Doppler</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/EllipsoidCorrectionRDOp.html">Ellipsoid-Correction-RD</a></code></b> operator implements the Range Doppler orthorectification method and average scene height.</p>
+
+<h4 style="margin-left: 60px">Geolocation-Grid</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/GeolocationGridGeocodingOp.html">Ellipsoid-Correction-GG</a></code></b> operator implements the Geolocation-Grid (GG) method.</p>
+
+
+<h4 style="margin-left: 30px">SAR-Mosaic</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/MosaicOp.html">SAR-Mosaic</a></code></b> operator combines overlapping products into a single composite product.</p>
+
+<h4 style="margin-left: 30px">ALOS Deskewing</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/ALOSDeskewingOp.html">ALOS-Deskewing</a></code></b> operator removes skew distortions from ALOS images.</p>
+
+<h4 style="margin-left: 30px">Slant Range to Ground Range</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/SRGROp.html">SRGR</a></code></b> operator re-projects images from slant range (range spacing proportional to echo delay) to ground range (range spacing proportional to distance from nadir along a predetermined ellipsoid).</p>
+
+<h4 style="margin-left: 30px">Update Geo Reference</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/UpdateGeoRefOp.html">Update-Geo-Reference</a></code></b> operator updates the Geo reference of the source product.</p>
+
+
+<!-- -->
+<h4>Sentinel-1 TOPS</h4>
+
+<img src="images/RadarSentinel1TOPSSubMenu.png" alt="Sentinel-1 TOPS">
+
+<h4 style="margin-left: 30px">Utilities</h4>
+
+<img  style="margin-left: 30px" src="images/RadarTerrainCorrectionUtilitiesSubSubSubMenu.png" alt="Utilities">
+
+<h4 style="margin-left: 60px">S-1 ETAD Deburst</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/ETADDeburstOp.html">ETAD-Deburst</a></code></b> operator allow the user to deburst ETAD products.</p>
+
+<h4 style="margin-left: 30px">S-1 SLC to GRD</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/Sentinel1SLCtoGRD.html">S-1 SLC to GRD</a></code></b> graph converts a Sentinel1 SLC product to a detected ground range product.</p>
+
+<h4 style="margin-left: 30px">S-1 Slice Assembly</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/SliceAssemblyOp.html">SliceAssembly</a></code></b> operator merges Sentinel-1 slice products.</p>
+
+<h4 style="margin-left: 30px">S-1 TOPS Split</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/TOPSARSplitOp.html">TOPSAR-Split</a></code></b> operator provides a convenient way to split each subswath with selected bursts into a separate product.</p>
+
+<h4 style="margin-left: 30px">S-1 TOPS Deburst</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/TOPSARDeburstOp.html">TOPSAR-Deburst</a></code></b> operator debursts a Sentinel-1 TOPSAR product.</p>
+
+<h4 style="margin-left: 30px">S-1 TOPS Merge</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/TOPSARMergeOp.html">TOPSAR-Merge</a></code></b> operator merges the debursted split product of different sub-swaths into on complete product.</p>
+
+<h4 style="margin-left: 30px">S-1 Remove GRD Border Noise</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.calibration.ui/eu/esa/sar/calibration/docs/operators/RemoveGRDBorderNoise.html">Remove-GRD-Border-Noise</a></code></b> operator masks no-value pixels for GRD product.</p>
+
+<h4 style="margin-left: 30px">S-1 TOPS DerampDemod</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/TOPSARDerampDemodOp.html">TOPSAR-DerampDemod</a></code></b> operator performs deramp and demodulation to the input S-1 TOPS SLC product.</p>
+
+<h4 style="margin-left: 30px">S-1 EAP Phase Correction</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/EAPPhaseCorrection.html">EAP-Phase-Correction</a></code></b> operator performs Elevation Antenna Phase correction for S-1 SLC product with IPF version < v2.43.</p>
+
+<h4 style="margin-left: 30px">S-1 ETAD Correction</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sentinel1.ui/eu/esa/sar/sentinel1/docs/operators/S1ETADCorrectionOp.html">S1-ETAD-Correction</a></code></b> operator performs ETAD correction for S-1 TOPS SLC / Stripmap SLC / GRD products.</p>
+
+
+<!-- -->
+<h4>ENVISAT ASAR</h4>
+
+<img src="images/RadarENVISATASARSubMenu.png" alt="ENVISAT ASAR">
+
+<h4 style="margin-left: 30px">ASAR WSS Deburst</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/WSSDeburstOp.html">DeburstWSS</a></code></b> operator debursts an ASAR WSS product.</p>
+
+<h4 style="margin-left: 30px">WSS Deburst, Calibrate and Detect</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/WSSMosaicOp.html">WSS Deburst, Calibrate and Detect</a></code></b> graph allows the users to deburst and detect a WSS product.</p>
+
+
+<!-- -->
+<h4>SAR Applications</h4>
+
+<img src="images/RadarSARApplicationsSubMenu.png" alt="SAR Applications">
+
+<h4 style="margin-left: 30px">Ice</h4>
+
+<img  style="margin-left: 30px" src="images/RadarSARAppIceSubSubMenu.png" alt="Ice">
+
+<h4 style="margin-left: 60px">Offset Tracking</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.insar.ui/eu/esa/sar/insar/docs/operators/OffsetTrackingOp.html">Offset-Tracking</a></code></b> operator performs cross-correlation on selected GCP-patches in reference and secondary images, and computes glacier velocities based on the shift computed for each GCP.</p>
+
+<h4 style="margin-left: 30px">Ocean</h4>
+
+<img  style="margin-left: 30px" src="images/RadarSARAppOceanSubSubMenu.png" alt="Ocean">
+
+<h4 style="margin-left: 60px">Ocean Object Detection</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.feature.extraction.ui/eu/esa/sar/fex/docs/operators/ObjectDetection.html">Ocean Object Detection</a></code></b> operator detects object such as ships on sea surface from SAR imagery.</p>
+
+<h4 style="margin-left: 60px">Oil Split Detection</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.feature.extraction.ui/eu/esa/sar/fex/docs/operators/OilSpillDetectionOp.html">Oil-Spill-Detection</a></code></b> operator detects dark spot such as oil spill on sea surface from SAR imagery.</p>
+
+<h4 style="margin-left: 60px">Wind Field Estimation</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.feature.extraction.ui/eu/esa/sar/fex/docs/operators/WindFieldEstimationOp.html">Wind-Field-Estimation</a></code></b> operator retrieves wind speed and direction from C-band SAR imagery.</p>
+
+<h4 style="margin-left: 30px">Urban</h4>
+
+<img  style="margin-left: 30px" src="images/RadarSARAppUrbanSubSubMenu.png" alt="Urban">
+
+<h4 style="margin-left: 60px">Speckle Divergence</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.feature.extraction.ui/eu/esa/sar/fex/docs/operators/SpeckleDivergence.html">Speckle-Divergence</a></code></b> operator detects urban area.</p>
+
+
+<h4 style="margin-left: 30px">Soil Moisture</h4>
+
+<img  style="margin-left: 30px" src="images/RadarSARAppSoilMoistureSubSubMenu.png" alt="Soil Moisture">
+
+<h4 style="margin-left: 60px">Pre-Processing</h4>
+
+<img  style="margin-left: 60px" src="images/RadarSoilMoisturePreProcSubSubSubMenu.png" alt="Pre-Processing">
+
+<h4 style="margin-left: 90px">Multi-Angle/Hybrid Pre-Processing</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.soil.moisture.ui/org/csa/rstb/soilmoisture/docs/operators/MultiAnglePreProcessing.html">Multi-Angle pre-processing</a></code></b> takes a two C-band Quad Pol SLC products as input - a morning acquistion and an evening acquisition for the same date over the same area. .</p>
+
+<h4 style="margin-left: 90px">Multi-Polarisation Pre-Processing</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.soil.moisture.ui/org/csa/rstb/soilmoisture/docs/operators/MultiPolPreProcessing.html">Multi-Pol pre-processing</a></code></b> takes a single C-band Quad Pol SLC product as input.</p>
+
+
+<h4 style="margin-left: 60px">Modeling Operators</h4>
+
+<img  style="margin-left: 60px" src="images/RadarSoilMoistureModelingSubSubSubMenu.png" alt="Modeling Operators">
+
+<h4 style="margin-left: 90px">IEM Multi-Angle Inversion</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.soil.moisture.ui/org/csa/rstb/soilmoisture/docs/operators/IEMMultiAngle.html">IEM-Multi-Angle-Inversion</a></code></b> operator performs IEM inversion using Multi-angle approach.</p>
+
+<h4 style="margin-left: 90px">IEM Multi-Pol Inversion</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.soil.moisture.ui/org/csa/rstb/soilmoisture/docs/operators/IEMMultiPol.html">IEM-Multi-Pol-Inversion</a></code></b> operator performs IEM inversion using Multi-polarization approach.</p>
+
+<h4 style="margin-left: 90px">IEM Hybrid Inversion</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.soil.moisture.ui/org/csa/rstb/soilmoisture/docs/operators/IEMHybrid.html">IEM-Hybrid-Inversion</a></code></b> operator performs IEM inversion using Hybrid approach.</p>
+
+<h4 style="margin-left: 90px">SM Dielectric Mixture Modeling</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.soil.moisture.ui/org/csa/rstb/soilmoisture/docs/operators/SMDielectricModel.html">SM-Dielectric-Modeling</a></code></b> operator performs SM inversion using dielectric model.</p>
+
+
+<h4 style="margin-left: 60px">Soil Moisture Retrieval </h4>
+
+<img  style="margin-left: 60px" src="images/RadarSoilMoistureRetrSubSubSubMenu.png" alt="Soil Moisture Retrieval">
+
+<h4 style="margin-left: 90px">Multi-Angle IEM SM Retrieval</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.soil.moisture.ui/org/csa/rstb/soilmoisture/docs/operators/MultiAngleSoilMoisture.html">Multi-Angle IEM SM Retrieval</a></code></b> graph retrieves soil moisture (SM) from radar backscatter coefficients.</p>
+
+<h4 style="margin-left: 90px">Multi-Pol IEM SM Retrieval</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.soil.moisture.ui/org/csa/rstb/soilmoisture/docs/operators/MultiPolSoilMoisture.html">Multi-Pol IEM SM Retrieval</a></code></b> graph retrieves soil moisture (SM) from radar backscatter coefficients.</p>
+
+<h4 style="margin-left: 90px">Hybrid IEM Soil Moisture Retrieval</h4>
+
+<p style="margin-left: 90px">The <b><code><a href="nbdocs://org.csa.rstb.rstb.op.soil.moisture.ui/org/csa/rstb/soilmoisture/docs/operators/HybridSoilMoisture.html">Hybrid IEM Soil Moisture Retrieval</a></code></b> graph retrieves soil moisture (SM) from radar backscatter coefficients.</p>
+
+<h4 style="margin-left: 60px">End-to-End Graphs</h4>
+
+<img  style="margin-left: 60px" src="images/RadarSoilMoistureGraphsSubSubSubMenu.png" alt="End-to-End Graphs">
+
+<p style="margin-left: 60px">The <b>End-to-End Graphs</b> option provides complete processing workflows for: </p>
+    <ul style="margin-left: 60px">
+        <li>Pre-Processing and IEM Soil Moisture Retrieval</li>
+        <li>Multi-Pol Pre-Processing and IEM Soil Moisture Retrieval</li>
+        <li>Hybrid Pre-Processing and IEM Soil Moisture Retrieval</li>
+    </ul>
+
+
+<!-- -->
+<h4>SAR Utilities</h4>
+
+<img src="images/RadarSARUtilitiesSubMenu.png" alt="SAR Utilities">
+
+<h4 style="margin-left: 30px">Resampling</h4>
+
+<img  style="margin-left: 30px" src="images/RadarSARUtilResamplSubSubMenu.png" alt="Resampling">
+
+<h4 style="margin-left: 60px">Oversample</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.utilities.ui/eu/esa/sar/utilities/docs/operators/OverSampleOp.html">Oversample</a></code></b> operator upsamples a real or complex image through frequency domain zero-padding.</p>
+
+<h4 style="margin-left: 60px">Undersample</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.utilities.ui/eu/esa/sar/utilities/docs/operators/UnderSampleOp.html">Undersample</a></code></b> operator  downsamples a real or complex image using sub-sampling method or lowpass filtering method.</p>
+
+<h4 style="margin-left: 60px">Demodulate</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.utilities.ui/eu/esa/sar/insar/docs/operators/DemodulateOp.html">Demodulate</a></code></b> operator demodulates (and deramps if applicable) SLC so that its spectrum is in baseband.</p>
+
+<h4 style="margin-left: 60px">Remodulate</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.utilities.ui/eu/esa/sar/insar/docs/operators/RemodulateOp.html">Remodulate</a></code></b> operator remodulates (and reramps if applicable) a previously demodulated (and deramped if applicable) SLC.</p>
+
+
+<h4 style="margin-left: 30px">Auxiliary Files</h4>
+
+<img  style="margin-left: 30px" src="images/RadarSARUtilAuxFileSubSubMenu.png" alt="Auxiliary Files">
+
+<h4 style="margin-left: 60px">View ASAR XCA Product</h4>
+
+<p style="margin-left: 60px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.calibration.ui/eu/esa/sar/calibration/docs/operators/importXCAProduct.html">View ASAR XCA Product</a></code></b> option ppens an ENVISAT ASAR <i>XCA</i> (External Calibration) auxiliary file in SNAP for inspection.</p>
+
+<h4 style="margin-left: 60px">View S1 Auxiliary File</h4>
+
+<p style="margin-left: 60px">This option opens Sentinel-1 orbit file or calibration auxiliary file.</p>
+
+
+<h4 style="margin-left: 30px">Complex to Detected GR</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/SLCtoPRI.html">Complex to Detected GR</a></code></b> tool converts a SLC product to a detected ground range product.</p>
+
+<h4 style="margin-left: 30px">Multilooking</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/MultilookOp.html">Multilook</a></code></b> operator averages the power across a number of lines in both the azimuth and range directions.</p>
+
+<h4 style="margin-left: 30px">Band-pass Filter</h4>
+
+<p style="margin-left: 30px">The <b><code><a href="nbdocs://eu.esa.microwavetbx.sar.op.sar.processing.ui/eu/esa/sar/sar/docs/operators/BandPassFilterOp.html">BandPassFilter</a></code></b> operator applies a band-pass filter (in range) to an SLC such that the result has 1/3 the original bandwidth.</p>
+<hr>
+</body>
+</html>
