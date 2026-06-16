@@ -274,7 +274,9 @@ public class ProductSceneView extends BasicView
             return;
         }
 
-        setMaskOverlayEnabled(true);
+        if (hasOverlayMasks()) {
+            setMaskOverlayEnabled(true);
+        }
         setName(sceneImage.getName());
 
         appyLayerProperties(sceneImage.getConfiguration());
@@ -618,6 +620,10 @@ public class ProductSceneView extends BasicView
         if (isMaskOverlayEnabled() != enabled) {
             getMaskCollectionLayer(true).setVisible(enabled);
         }
+    }
+
+    private boolean hasOverlayMasks() {
+        return getRaster().getOverlayMaskGroup().getNodeCount() > 0;
     }
 
     /**
