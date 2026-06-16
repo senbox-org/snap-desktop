@@ -78,6 +78,7 @@ import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 
 @ActionID(
         category = "Tools",
@@ -463,6 +464,8 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         protected double computeSample(int sourceX, int sourceY) {
             try {
                 return dem.getElevation(geoCoding.getGeoPos(new PixelPos(sourceX, sourceY), null));
+            } catch (CancellationException e) {
+                throw e;
             } catch (Exception e) {
                 return noDataValue;
             }
