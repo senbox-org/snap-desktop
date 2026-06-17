@@ -22,6 +22,7 @@ import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.Validator;
 import com.bc.ceres.binding.ValueSet;
+import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.multilevel.support.AbstractMultiLevelSource;
 import com.bc.ceres.multilevel.support.DefaultMultiLevelImage;
 import com.bc.ceres.swing.TableLayout;
@@ -29,6 +30,7 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.ComponentAdapter;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
@@ -38,10 +40,12 @@ import org.esa.snap.core.dataop.dem.ElevationModelDescriptor;
 import org.esa.snap.core.dataop.dem.ElevationModelRegistry;
 import org.esa.snap.core.dataop.resamp.Resampling;
 import org.esa.snap.core.dataop.resamp.ResamplingFactory;
-import org.esa.snap.core.image.RasterDataNodeSampleOpImage;
+import org.esa.snap.core.image.RasterDataNodeOpImage;
 import org.esa.snap.core.image.ResolutionLevel;
 import org.esa.snap.dem.dataio.DEMFactory;
 import org.esa.snap.engine_utilities.datamodel.Unit;
+import org.esa.snap.engine_utilities.gpf.TileGeoreferencing;
+import eu.esa.snap.core.util.ProgressMonitorContext;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
@@ -72,9 +76,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Rectangle;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -448,7 +454,7 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         }
     }
 
-    private static class ElevationSourceImage extends RasterDataNodeSampleOpImage {
+    private static class ElevationSourceImage extends RasterDataNodeOpImage {
         private final ElevationModel dem;
         private final GeoCoding geoCoding;
         private double noDataValue;
@@ -461,13 +467,46 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
         }
 
         @Override
-        protected double computeSample(int sourceX, int sourceY) {
-            try {
-                return dem.getElevation(geoCoding.getGeoPos(new PixelPos(sourceX, sourceY), null));
-            } catch (CancellationException e) {
-                throw e;
-            } catch (Exception e) {
-                return noDataValue;
+        protected void computeProductData(ProductData productData, Rectangle destRect) throws IOException {
+            if (getLevel() == 0) {
+                final TileGeoreferencing tileGeoRef = new TileGeoreferencing(geoCoding, destRect.x, destRect.y,
+                                                                             destRect.width, destRect.height);
+                try {
+                    DEMFactory.fillElevationData(dem, noDataValue, tileGeoRef, destRect, productData, true,
+                                                 ProgressMonitor.NULL);
+                } catch (CancellationException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new IOException(e);
+                }
+                return;
+            }
+
+            final int sourceWidth = getRasterDataNode().getRasterWidth();
+            final int sourceHeight = getRasterDataNode().getRasterHeight();
+            final int sourceX0 = getSourceX(destRect.x);
+            final int sourceY0 = getSourceY(destRect.y);
+            final int[] sourceXs = getSourceCoords(sourceWidth, destRect.width);
+            final int[] sourceYs = getSourceCoords(sourceHeight, destRect.height);
+            final GeoPos geoPos = new GeoPos();
+            int elemIndex = 0;
+            for (int j = 0; j < destRect.height; j++) {
+                ProgressMonitorContext.checkCanceled();
+                final int sourceY = sourceY0 + sourceYs[j];
+                for (int i = 0; i < destRect.width; i++) {
+                    if ((i & 63) == 0) {
+                        ProgressMonitorContext.checkCanceled();
+                    }
+                    try {
+                        productData.setElemDoubleAt(elemIndex,
+                                dem.getElevation(geoCoding.getGeoPos(new PixelPos(sourceX0 + sourceXs[i], sourceY), geoPos)));
+                    } catch (CancellationException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        productData.setElemDoubleAt(elemIndex, noDataValue);
+                    }
+                    elemIndex++;
+                }
             }
         }
     }
