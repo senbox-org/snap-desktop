@@ -19,6 +19,7 @@ public class SpectralLibraryViewModel {
     public static final String PROP_PREVIEW_PROFILES = "previewProfiles";
     public static final String PROP_SELECTED_LIBRARY_PROFILE_ID = "selectedLibraryProfileId";
     public static final String PROP_SELECTED_PREVIEW_PROFILE_ID = "selectedPreviewProfileId";
+    public static final String PROP_SELECTED_PREVIEW_PROFILE_IDS = "selectedPreviewProfileIds";
     public static final String PROP_STATUS = "status";
     public static final String PROP_PROFILE_COLORS = "profileColors";
 
@@ -32,6 +33,7 @@ public class SpectralLibraryViewModel {
 
     private UUID selectedLibraryProfileId;
     private UUID selectedPreviewProfileId;
+    private Set<UUID> selectedPreviewProfileIds = Set.of();
 
     private UiStatus status = UiStatus.idle();
 
@@ -100,6 +102,16 @@ public class SpectralLibraryViewModel {
         UUID old = this.selectedPreviewProfileId;
         this.selectedPreviewProfileId = id;
         pcs.firePropertyChange(PROP_SELECTED_PREVIEW_PROFILE_ID, old, id);
+    }
+
+    public Set<UUID> getSelectedPreviewProfileIds() {
+        return selectedPreviewProfileIds;
+    }
+
+    public void setSelectedPreviewProfileIds(Set<UUID> ids) {
+        Set<UUID> old = this.selectedPreviewProfileIds;
+        this.selectedPreviewProfileIds = (ids == null || ids.isEmpty()) ? Set.of() : Set.copyOf(ids);
+        pcs.firePropertyChange(PROP_SELECTED_PREVIEW_PROFILE_IDS, old, this.selectedPreviewProfileIds);
     }
 
     public UiStatus getStatus() {
