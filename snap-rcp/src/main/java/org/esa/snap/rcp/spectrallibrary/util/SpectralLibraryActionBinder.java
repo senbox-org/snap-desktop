@@ -5,6 +5,7 @@ import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController;
+import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController.GeometryPreviewSource;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
@@ -27,7 +28,9 @@ import org.esa.snap.ui.product.spectrum.SpectrumBand;
 import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.product.spectrum.SpectrumShapeProvider;
 import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
+import org.geotools.feature.FeatureIterator;
 import org.locationtech.jts.geom.*;
+import org.opengis.feature.simple.SimpleFeature;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -691,27 +694,63 @@ public class SpectralLibraryActionBinder {
             return;
         }
 
+        Product product = view.getProduct();
         SimpleFeatureFigure[] geometries = view.getFeatureFigures(true);
         if (geometries == null || geometries.length == 0) {
             vm.setStatus(UiStatus.warn("No Geometry selected in ProductSceneView."));
             return;
         }
 
-        List<PixelPos> allPixels = new ArrayList<>();
+        List<GeometryPreviewSource> geometrySources = new ArrayList<>();
+        int pixelCount = 0;
         for (SimpleFeatureFigure f : geometries) {
-            Geometry geometry = (Geometry) f.getSimpleFeature().getDefaultGeometry();
+            SimpleFeature feature = f.getSimpleFeature();
+            Geometry geometry = (Geometry) feature.getDefaultGeometry();
             List<PixelPos> pixels = SpectralLibraryUtils.pixelsFromGeometry(view, geometry);
-            allPixels.addAll(pixels);
+            pixelCount += pixels.size();
+            String vectorDataNodeName = findVectorDataNodeName(product, feature);
+            geometrySources.add(new GeometryPreviewSource(vectorDataNodeName, feature.getID(), geometryWktOf(geometry), pixels));
         }
 
-        if (allPixels.isEmpty()) {
+        if (pixelCount == 0) {
             vm.setStatus(UiStatus.warn("No pixels found in geometries."));
+            return;
         }
 
         int level = 0;
         final String prefix = panel.getProfileNamePrefix();
         withResolvedBandSelection(view, lib, (p, axis, unit, bands, selectedNames)
-                -> controller.extractPreviewFromPixels(p, axis, unit, bands, allPixels, level, selectedNames, prefix));
+                -> controller.extractPreviewFromGeometrySources(p, axis, unit, bands, geometrySources, level, selectedNames, prefix));
+    }
+
+    private static String findVectorDataNodeName(Product product, SimpleFeature feature) {
+        if (product == null || feature == null || feature.getID() == null) {
+            return null;
+        }
+        ProductNodeGroup<VectorDataNode> vectorDataGroup = product.getVectorDataGroup();
+        for (int i = 0; i < vectorDataGroup.getNodeCount(); i++) {
+            VectorDataNode vectorDataNode = vectorDataGroup.get(i);
+            if (containsFeature(vectorDataNode, feature)) {
+                return vectorDataNode.getName();
+            }
+        }
+        return null;
+    }
+
+    private static boolean containsFeature(VectorDataNode vectorDataNode, SimpleFeature targetFeature) {
+        try (FeatureIterator<SimpleFeature> iterator = vectorDataNode.getFeatureCollection().features()) {
+            while (iterator.hasNext()) {
+                SimpleFeature feature = iterator.next();
+                if (feature == targetFeature || Objects.equals(feature.getID(), targetFeature.getID())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static String geometryWktOf(Geometry geometry) {
+        return geometry == null ? null : geometry.toText();
     }
 
     private void extractCursorOnce() {
