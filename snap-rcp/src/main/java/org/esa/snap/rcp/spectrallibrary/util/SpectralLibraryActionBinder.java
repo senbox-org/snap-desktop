@@ -25,6 +25,7 @@ import org.esa.snap.ui.product.SimpleFeatureFigure;
 import org.esa.snap.ui.product.spectrum.DisplayableSpectrum;
 import org.esa.snap.ui.product.spectrum.SpectrumBand;
 import org.esa.snap.ui.product.spectrum.SpectrumChooser;
+import org.esa.snap.ui.product.spectrum.SpectrumShapeProvider;
 import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 import org.locationtech.jts.geom.*;
 
@@ -246,6 +247,11 @@ public class SpectralLibraryActionBinder {
             }
             Product product = view.getProduct();
 
+            ProductSpectralAxis spectralAxis = chooseSpectralAxis(product, view.getRaster());
+            if (spectralAxis == null) {
+                return;
+            }
+
             String name = JOptionPane.showInputDialog(panel, "Library name:", "Library");
             if (name == null) {
                 return;
@@ -257,14 +263,17 @@ public class SpectralLibraryActionBinder {
 
             saveFilterState(lastActiveLibraryId != null ? lastActiveLibraryId : vm.getActiveLibraryId().orElse(null));
 
-            List<Band> orderedCandidates = SpectralLibraryUtils.collectBandsInAutoGroupingOrder(product);
-            defaultAxisBandNames = SpectralLibraryUtils.selectAxisBandsUniqueByWavelength(orderedCandidates).bandNames();
+            Set<String> chosenAxisBandNames = new LinkedHashSet<>(spectralAxis.getBandNames());
+            defaultAxisBandNames = new LinkedHashSet<>(chosenAxisBandNames);
             selectedBandsBySpectrum = null;
 
+            List<Band> orderedCandidates = collectBandsForAxis(product, defaultAxisBandNames);
             SpectralLibrary created = controller.createLibraryFromBands(name, orderedCandidates);
             UUID newId = created != null ? created.getId() : vm.getActiveLibraryId().orElse(null);
 
-            saveFilterState(newId);
+            defaultAxisBandNames = new LinkedHashSet<>(chosenAxisBandNames);
+            selectedBandsBySpectrum = null;
+            saveFilterState(newId, null, chosenAxisBandNames);
             lastActiveLibraryId = newId;
         });
 
@@ -726,11 +735,60 @@ public class SpectralLibraryActionBinder {
         return (sel instanceof SpectralLibrary lib) ? lib : null;
     }
 
+    private ProductSpectralAxis chooseSpectralAxis(Product product, RasterDataNode raster) {
+        List<ProductSpectralAxis> axes = product.getSpectralAxes();
+        if (axes == null || axes.isEmpty()) {
+            vm.setStatus(UiStatus.warn("No spectral axes available"));
+            return null;
+        }
+        if (axes.size() == 1) {
+            return axes.get(0);
+        }
+
+        ProductSpectralAxis preferred = findPreferredSpectralAxis(axes, raster);
+        Object selected = JOptionPane.showInputDialog(
+                panel,
+                "Spectral axis:",
+                "Select Spectral Axis",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                axes.toArray(new ProductSpectralAxis[0]),
+                preferred != null ? preferred : axes.get(0));
+        return selected instanceof ProductSpectralAxis axis ? axis : null;
+    }
+
+    private static ProductSpectralAxis findPreferredSpectralAxis(List<ProductSpectralAxis> axes, RasterDataNode raster) {
+        if (raster == null || raster.getName() == null) {
+            return null;
+        }
+        String rasterName = raster.getName();
+        for (ProductSpectralAxis axis : axes) {
+            if (axis != null && axis.getBandNames().contains(rasterName)) {
+                return axis;
+            }
+        }
+        return null;
+    }
+
+    private static List<Band> collectBandsForAxis(Product product, Set<String> axisBandNames) {
+        List<Band> ordered = new ArrayList<>();
+        for (Band band : SpectralLibraryUtils.collectBandsInAutoGroupingOrder(product)) {
+            if (band != null && axisBandNames.contains(band.getName())) {
+                ordered.add(band);
+            }
+        }
+        return ordered;
+    }
+
     private DisplayableSpectrum[] buildSpectraForChooser(Product product, RasterDataNode raster, Set<String> allowedBandNames) {
         List<Band> spectralBands = new ArrayList<>();
+        boolean filterByAxis = allowedBandNames != null && !allowedBandNames.isEmpty();
 
         for (Band b : product.getBands()) {
             if (b == null || b.isFlagBand() || b.getSpectralWavelength() <= 0.0f) {
+                continue;
+            }
+            if (filterByAxis && !allowedBandNames.contains(b.getName())) {
                 continue;
             }
             spectralBands.add(b);
@@ -742,6 +800,7 @@ public class SpectralLibraryActionBinder {
         Map<String, Set<String>> preSel = selectedBandsBySpectrum;
         List<DisplayableSpectrum> spectra = new ArrayList<>();
         Set<String> usedBandNames = new HashSet<>();
+        int displayIndex = 0;
 
 
         BandGroupsManager bgm = getBandGroupsManagerOrNull();
@@ -752,13 +811,15 @@ public class SpectralLibraryActionBinder {
                 if (g == null) {
                     continue;
                 }
-                DisplayableSpectrum s = new DisplayableSpectrum(g.getName(), gi);
-                s.setLineStyle(SpectrumStrokeProvider.getStroke(gi));
+                DisplayableSpectrum s = new DisplayableSpectrum(g.getName(), 1);
                 Set<String> wanted = preSel != null ? preSel.get(s.getName()) : null;
 
                 for (String bandName : g.getMatchingBandNames(product)) {
                     Band b = product.getBand(bandName);
                     if (b == null || b.isFlagBand() || b.getSpectralWavelength() <= 0.0f) {
+                        continue;
+                    }
+                    if (filterByAxis && !allowedBandNames.contains(b.getName())) {
                         continue;
                     }
 
@@ -776,6 +837,9 @@ public class SpectralLibraryActionBinder {
                 }
 
                 if (s.getSpectralBands().length > 0) {
+                    s.setSymbolIndex(SpectrumShapeProvider.getValidIndex(displayIndex, false));
+                    s.setLineStyle(SpectrumStrokeProvider.getStroke(displayIndex));
+                    displayIndex++;
                     spectra.add(s);
                 }
             }
@@ -784,14 +848,12 @@ public class SpectralLibraryActionBinder {
         var auto = product.getAutoGrouping();
         List<DisplayableSpectrum> autoSpectra = new ArrayList<>();
         if (auto != null) {
-            int base = spectra.size();
             int i = 0;
             Iterator<String[]> it = auto.iterator();
 
             while (it.hasNext()) {
                 String name = String.join("_", it.next());
-                DisplayableSpectrum s = new DisplayableSpectrum(name, base + i);
-                s.setLineStyle(SpectrumStrokeProvider.getStroke(base + i));
+                DisplayableSpectrum s = new DisplayableSpectrum(name, 1);
                 s.setSelected((false));
 
                 autoSpectra.add(s);
@@ -823,11 +885,19 @@ public class SpectralLibraryActionBinder {
                 }
             }
 
-            spectra.addAll(autoSpectra);
+            for (DisplayableSpectrum s : autoSpectra) {
+                if (s.getSpectralBands().length > 0) {
+                    s.setSymbolIndex(SpectrumShapeProvider.getValidIndex(displayIndex, false));
+                    s.setLineStyle(SpectrumStrokeProvider.getStroke(displayIndex));
+                    displayIndex++;
+                    spectra.add(s);
+                }
+            }
         }
 
-        DisplayableSpectrum rest = new DisplayableSpectrum("Ungrouped spectral bands", spectra.size());
-        rest.setLineStyle(SpectrumStrokeProvider.getStroke(spectra.size()));
+        DisplayableSpectrum rest = new DisplayableSpectrum("Ungrouped spectral bands",
+                SpectrumShapeProvider.getValidIndex(displayIndex, false));
+        rest.setLineStyle(SpectrumStrokeProvider.getStroke(displayIndex));
         Set<String> wantedRest = preSel != null ? preSel.get(rest.getName()) : null;
 
         for (Band b : spectralBands) {
@@ -1058,10 +1128,14 @@ public class SpectralLibraryActionBinder {
     }
 
     private void saveFilterState(UUID libraryId) {
+        saveFilterState(libraryId, selectedBandsBySpectrum, defaultAxisBandNames);
+    }
+
+    private void saveFilterState(UUID libraryId, Map<String, Set<String>> selectedBands, Set<String> axisBandNames) {
         if (libraryId == null) {
             return;
         }
-        filterStateByLibrary.put(libraryId, new FilterState(SpectralLibraryUtils.copyMapOfSets(selectedBandsBySpectrum), SpectralLibraryUtils.copySet(defaultAxisBandNames)));
+        filterStateByLibrary.put(libraryId, new FilterState(SpectralLibraryUtils.copyMapOfSets(selectedBands), SpectralLibraryUtils.copySet(axisBandNames)));
     }
 
     private void restoreOrInitFilterState(UUID libraryId, Product product) {
