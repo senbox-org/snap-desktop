@@ -60,6 +60,32 @@ public class AddElevationActionTest {
                      raster.getSampleDouble(2, 3, 0), 1.0e-4);
     }
 
+    @Test
+    @STTM("SNAP-4213")
+    public void elevationSourceImageComputesHigherLevelsFromTileGeoreferencing() throws Exception {
+        Product product = new Product("test", "type", 1024, 768);
+        product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84,
+                                                   product.getSceneRasterWidth(),
+                                                   product.getSceneRasterHeight(),
+                                                   10.0, 50.0,
+                                                   0.1, -0.1,
+                                                   0.0, 0.0));
+
+        addElevationBand(product, new FakeElevationModel(-999.0f), "elevation");
+
+        Band elevationBand = product.getBand("elevation");
+        RenderedImage levelImage = elevationBand.getSourceImage().getImage(1);
+
+        Rectangle rectangle = new Rectangle(1, 1, 3, 2);
+        Raster raster = levelImage.getData(rectangle);
+
+        TileGeoreferencing tileGeoRef = new TileGeoreferencing(product.getSceneGeoCoding(), 2, 2, 6, 4);
+        GeoPos expectedGeoPos = new GeoPos();
+        tileGeoRef.getGeoPos(2, 2, expectedGeoPos);
+        assertEquals(elevationFor(expectedGeoPos),
+                     raster.getSampleDouble(1, 1, 0), 1.0e-4);
+    }
+
     private static void addElevationBand(Product product, ElevationModel dem, String elevationBandName) throws Exception {
         Method method = AddElevationAction.class.getDeclaredMethod("addElevationBand", Product.class,
                                                                    ElevationModel.class, String.class);

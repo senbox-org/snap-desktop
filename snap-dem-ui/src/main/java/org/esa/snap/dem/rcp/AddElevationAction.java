@@ -30,8 +30,6 @@ import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.ComponentAdapter;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
 import org.esa.snap.core.datamodel.ProductNode;
@@ -486,27 +484,22 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
             final int sourceHeight = getRasterDataNode().getRasterHeight();
             final int sourceX0 = getSourceX(destRect.x);
             final int sourceY0 = getSourceY(destRect.y);
-            final int[] sourceXs = getSourceCoords(sourceWidth, destRect.width);
-            final int[] sourceYs = getSourceCoords(sourceHeight, destRect.height);
-            final GeoPos geoPos = new GeoPos();
-            int elemIndex = 0;
-            for (int j = 0; j < destRect.height; j++) {
-                ProgressMonitorContext.checkCanceled();
-                final int sourceY = sourceY0 + sourceYs[j];
-                for (int i = 0; i < destRect.width; i++) {
-                    if ((i & 63) == 0) {
-                        ProgressMonitorContext.checkCanceled();
-                    }
-                    try {
-                        productData.setElemDoubleAt(elemIndex,
-                                dem.getElevation(geoCoding.getGeoPos(new PixelPos(sourceX0 + sourceXs[i], sourceY), geoPos)));
-                    } catch (CancellationException e) {
-                        throw e;
-                    } catch (Exception e) {
-                        productData.setElemDoubleAt(elemIndex, noDataValue);
-                    }
-                    elemIndex++;
-                }
+            final int sourceTileWidth = Math.min(sourceWidth - sourceX0, getSourceWidth(destRect.width));
+            final int sourceTileHeight = Math.min(sourceHeight - sourceY0, getSourceHeight(destRect.height));
+            final int[] sourceXs = getSourceCoords(sourceTileWidth, destRect.width);
+            final int[] sourceYs = getSourceCoords(sourceTileHeight, destRect.height);
+            final TileGeoreferencing tileGeoRef = new TileGeoreferencing(geoCoding, sourceX0, sourceY0,
+                                                                         sourceTileWidth, sourceTileHeight);
+            try {
+                DEMFactory.fillElevationData(dem, noDataValue, (x, y, geoPos) -> {
+                    final int targetX = x - destRect.x;
+                    final int targetY = y - destRect.y;
+                    tileGeoRef.getGeoPos(sourceX0 + sourceXs[targetX], sourceY0 + sourceYs[targetY], geoPos);
+                }, destRect, productData, true, ProgressMonitor.NULL);
+            } catch (CancellationException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new IOException(e);
             }
         }
     }
