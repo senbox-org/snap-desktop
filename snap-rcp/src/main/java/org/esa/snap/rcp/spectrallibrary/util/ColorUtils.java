@@ -68,7 +68,14 @@ public class ColorUtils {
         return m.find() ? m.group(1).trim() : null;
     }
 
-    private static Color parseCssColor(String v) {
+    public static String toHex(Color c) {
+        if (c == null) {
+            return null;
+        }
+        return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
+    }
+
+    public static Color parseCssColor(String v) {
         if (v == null) {
             return null;
         }

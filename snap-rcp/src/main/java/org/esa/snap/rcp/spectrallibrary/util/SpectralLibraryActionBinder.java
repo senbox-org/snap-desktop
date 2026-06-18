@@ -5,6 +5,7 @@ import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupsManager;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController;
+import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController.GeometryPreviewSource;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
@@ -27,7 +28,9 @@ import org.esa.snap.ui.product.spectrum.SpectrumBand;
 import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.product.spectrum.SpectrumShapeProvider;
 import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
+import org.geotools.feature.FeatureIterator;
 import org.locationtech.jts.geom.*;
+import org.opengis.feature.simple.SimpleFeature;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -482,27 +485,31 @@ public class SpectralLibraryActionBinder {
             }
 
             UUID firstId = panel.getLibraryTableModel().getIdAt(panel.getLibraryTable().convertRowIndexToModel(viewRows[0]));
-            Color initial = vm.getProfileColors(libId).get(firstId);
+            Color initial = (Color) panel.getLibraryTableModel().getValueAt(
+                    panel.getLibraryTable().convertRowIndexToModel(viewRows[0]),
+                    panel.getLibraryTableModel().getColorColumnIndex());
             if (initial == null) {
                 initial = Color.BLUE;
             }
 
-            Color chosen = JColorChooser.showDialog(panel, "Choose Preview Color", initial);
+            Color chosen = JColorChooser.showDialog(panel, "Choose Profile Color", initial);
             if (chosen == null) {
                 return;
             }
 
-            Map<UUID, Color> updates = new HashMap<>();
+            String hex = ColorUtils.toHex(chosen);
+            AttributeValue colorAttr = AttributeValue.ofString(hex);
+            int updated = 0;
             for (int vr : viewRows) {
                 int mr = panel.getLibraryTable().convertRowIndexToModel(vr);
                 UUID pid = panel.getLibraryTableModel().getIdAt(mr);
                 if (pid != null) {
-                    updates.put(pid, chosen);
+                    controller.setAttributeInActiveLibrary(pid, SpectralProfileTableModel.ATTR_DISPLAY_COLOR, colorAttr);
+                    updated++;
                 }
             }
 
-            vm.setProfileColors(libId, updates);
-            vm.setStatus(UiStatus.info("Preview color set (" + updates.size() + ")"));
+            vm.setStatus(UiStatus.info("Profile color set (" + updated + ")"));
         });
     }
 
@@ -687,27 +694,63 @@ public class SpectralLibraryActionBinder {
             return;
         }
 
+        Product product = view.getProduct();
         SimpleFeatureFigure[] geometries = view.getFeatureFigures(true);
         if (geometries == null || geometries.length == 0) {
             vm.setStatus(UiStatus.warn("No Geometry selected in ProductSceneView."));
             return;
         }
 
-        List<PixelPos> allPixels = new ArrayList<>();
+        List<GeometryPreviewSource> geometrySources = new ArrayList<>();
+        int pixelCount = 0;
         for (SimpleFeatureFigure f : geometries) {
-            Geometry geometry = (Geometry) f.getSimpleFeature().getDefaultGeometry();
+            SimpleFeature feature = f.getSimpleFeature();
+            Geometry geometry = (Geometry) feature.getDefaultGeometry();
             List<PixelPos> pixels = SpectralLibraryUtils.pixelsFromGeometry(view, geometry);
-            allPixels.addAll(pixels);
+            pixelCount += pixels.size();
+            String vectorDataNodeName = findVectorDataNodeName(product, feature);
+            geometrySources.add(new GeometryPreviewSource(vectorDataNodeName, feature.getID(), geometryWktOf(geometry), pixels));
         }
 
-        if (allPixels.isEmpty()) {
+        if (pixelCount == 0) {
             vm.setStatus(UiStatus.warn("No pixels found in geometries."));
+            return;
         }
 
         int level = 0;
         final String prefix = panel.getProfileNamePrefix();
         withResolvedBandSelection(view, lib, (p, axis, unit, bands, selectedNames)
-                -> controller.extractPreviewFromPixels(p, axis, unit, bands, allPixels, level, selectedNames, prefix));
+                -> controller.extractPreviewFromGeometrySources(p, axis, unit, bands, geometrySources, level, selectedNames, prefix));
+    }
+
+    private static String findVectorDataNodeName(Product product, SimpleFeature feature) {
+        if (product == null || feature == null || feature.getID() == null) {
+            return null;
+        }
+        ProductNodeGroup<VectorDataNode> vectorDataGroup = product.getVectorDataGroup();
+        for (int i = 0; i < vectorDataGroup.getNodeCount(); i++) {
+            VectorDataNode vectorDataNode = vectorDataGroup.get(i);
+            if (containsFeature(vectorDataNode, feature)) {
+                return vectorDataNode.getName();
+            }
+        }
+        return null;
+    }
+
+    private static boolean containsFeature(VectorDataNode vectorDataNode, SimpleFeature targetFeature) {
+        try (FeatureIterator<SimpleFeature> iterator = vectorDataNode.getFeatureCollection().features()) {
+            while (iterator.hasNext()) {
+                SimpleFeature feature = iterator.next();
+                if (feature == targetFeature || Objects.equals(feature.getID(), targetFeature.getID())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static String geometryWktOf(Geometry geometry) {
+        return geometry == null ? null : geometry.toText();
     }
 
     private void extractCursorOnce() {
@@ -975,10 +1018,36 @@ public class SpectralLibraryActionBinder {
 
         final File file = fileChooser.getSelectedFile();
         if (!EngineAccess.libraryIO().canRead(file.toPath())) {
+            Optional<File> companion = resolveEnviCompanion(file);
+            if (companion.isPresent()) {
+                controller.importLibraryFromFile(companion.get());
+                vm.setStatus(UiStatus.info("Detected ENVI sidecar CSV — imported from companion " + companion.get().getName()));
+                return;
+            }
             vm.setStatus(UiStatus.warn("Unsupported file format: " + file.getName()));
             return;
         }
         controller.importLibraryFromFile(file);
+    }
+
+    private Optional<File> resolveEnviCompanion(File file) {
+        if (file == null) {
+            return Optional.empty();
+        }
+        String name = file.getName();
+        if (!name.toLowerCase(Locale.ROOT).endsWith(".csv")) {
+            return Optional.empty();
+        }
+        String base = name.substring(0, name.length() - 4);
+        File dir = file.getParentFile();
+        if (dir == null) {
+            return Optional.empty();
+        }
+        File hdr = new File(dir, base + ".hdr");
+        if (hdr.exists() && EngineAccess.libraryIO().canRead(hdr.toPath())) {
+            return Optional.of(hdr);
+        }
+        return Optional.empty();
     }
 
     private void doExport() {

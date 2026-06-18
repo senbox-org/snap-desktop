@@ -44,6 +44,7 @@ public class PreviewPanel extends JPanel {
 
     private double[] xAxisOrNull;
     private Consumer<UUID> selectionListener;
+    private Consumer<Set<UUID>> multiSelectionListener;
 
     private final Stroke normalStroke = new BasicStroke(1.8f);
     private final Stroke selectedStroke = new BasicStroke(3.2f);
@@ -94,16 +95,32 @@ public class PreviewPanel extends JPanel {
             return l;
         });
 
+        legendList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         legendList.addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) {
                 return;
             }
-            LegendEntry le = legendList.getSelectedValue();
-            if (le != null) {
-                setSelectedProfileId(le.id());
-                if (selectionListener != null) {
-                    selectionListener.accept(le.id());
+            int[] indices = legendList.getSelectedIndices();
+            if (indices == null || indices.length == 0) {
+                return;
+            }
+            Set<UUID> selected = new LinkedHashSet<>();
+            UUID last = null;
+            for (int idx : indices) {
+                LegendEntry le = legendModel.get(idx);
+                if (le != null) {
+                    selected.add(le.id());
+                    last = le.id();
                 }
+            }
+            if (last != null) {
+                setSelectedProfileId(last);
+                if (selectionListener != null) {
+                    selectionListener.accept(last);
+                }
+            }
+            if (multiSelectionListener != null && !selected.isEmpty()) {
+                multiSelectionListener.accept(Collections.unmodifiableSet(selected));
             }
         });
     }
@@ -120,6 +137,25 @@ public class PreviewPanel extends JPanel {
 
     public void setSelectionListener(Consumer<UUID> selectionListener) {
         this.selectionListener = selectionListener;
+    }
+
+    public void setMultiSelectionListener(Consumer<Set<UUID>> listener) {
+        this.multiSelectionListener = listener;
+    }
+
+    public Set<UUID> getSelectedProfileIds() {
+        int[] indices = legendList.getSelectedIndices();
+        if (indices == null || indices.length == 0) {
+            return Set.of();
+        }
+        Set<UUID> ids = new LinkedHashSet<>();
+        for (int idx : indices) {
+            LegendEntry le = legendModel.get(idx);
+            if (le != null) {
+                ids.add(le.id());
+            }
+        }
+        return Collections.unmodifiableSet(ids);
     }
 
     public void setProfiles(List<SpectralProfile> profiles) {
