@@ -73,6 +73,9 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.media.jai.JAI;
+import javax.media.jai.TileCache;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.Rectangle;
 import java.awt.image.RenderedImage;
@@ -214,12 +217,24 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     }
 
     private static RenderedImage createElevationSourceImage(final ElevationModel dem, final GeoCoding geoCoding, final Band band) {
+        final TileCache elevationTileCache = createElevationBandTileCache();
+        final Dimension levelZeroChunkSize = DEMFactory.getAddElevationTileSize(band.getProduct());
+        final Dimension overviewSourceChunkSize = DEMFactory.getAddElevationOverviewTileSize(band.getProduct());
         return new DefaultMultiLevelImage(new AbstractMultiLevelSource(band.createMultiLevelModel()) {
             @Override
             protected RenderedImage createImage(final int level) {
-                return new ElevationSourceImage(dem, geoCoding, band, ResolutionLevel.create(getModel(), level));
+                return new ElevationSourceImage(dem, geoCoding, band, ResolutionLevel.create(getModel(), level),
+                                                elevationTileCache, levelZeroChunkSize, overviewSourceChunkSize);
             }
         });
+    }
+
+    private static TileCache createElevationBandTileCache() {
+        final long cacheSize = DEMFactory.getElevationBandTileCacheSizeBytes();
+        if (cacheSize <= 0L) {
+            return null;
+        }
+        return JAI.createTileCache(cacheSize);
     }
 
     private static boolean isOrtorectifiable(Product product) {
@@ -455,31 +470,50 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
     private static class ElevationSourceImage extends RasterDataNodeOpImage {
         private final ElevationModel dem;
         private final GeoCoding geoCoding;
-        private double noDataValue;
+        private final double noDataValue;
+        private final Dimension levelZeroChunkSize;
+        private final Dimension overviewSourceChunkSize;
 
-        public ElevationSourceImage(ElevationModel dem, GeoCoding geoCoding, Band band, ResolutionLevel level) {
+        public ElevationSourceImage(ElevationModel dem, GeoCoding geoCoding, Band band, ResolutionLevel level,
+                                    TileCache tileCache, Dimension levelZeroChunkSize,
+                                    Dimension overviewSourceChunkSize) {
             super(band, level);
             this.dem = dem;
             this.geoCoding = geoCoding;
             noDataValue = band.getNoDataValue();
+            this.levelZeroChunkSize = new Dimension(levelZeroChunkSize);
+            this.overviewSourceChunkSize = new Dimension(overviewSourceChunkSize);
+            if (tileCache != null) {
+                setTileCache(tileCache);
+            }
         }
 
         @Override
         protected void computeProductData(ProductData productData, Rectangle destRect) throws IOException {
-            if (getLevel() == 0) {
-                final TileGeoreferencing tileGeoRef = new TileGeoreferencing(geoCoding, destRect.x, destRect.y,
-                                                                             destRect.width, destRect.height);
-                try {
-                    DEMFactory.fillElevationData(dem, noDataValue, tileGeoRef, destRect, productData, true,
-                                                 ProgressMonitor.NULL);
-                } catch (CancellationException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new IOException(e);
+            try {
+                if (getLevel() == 0) {
+                    fillLevelZero(productData, destRect);
+                    return;
                 }
-                return;
-            }
 
+                fillOverview(productData, destRect);
+            } catch (CancellationException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+        }
+
+        private void fillLevelZero(ProductData productData, Rectangle destRect) throws Exception {
+            final TileGeoreferencing tileGeoRef = new TileGeoreferencing(geoCoding, destRect.x, destRect.y,
+                                                                         destRect.width, destRect.height);
+            fillChunks(destRect, levelZeroChunkSize,
+                       computeRectangle -> DEMFactory.fillElevationData(dem, noDataValue, tileGeoRef, destRect,
+                                                                        computeRectangle, productData, true,
+                                                                        ProgressMonitor.NULL));
+        }
+
+        private void fillOverview(ProductData productData, Rectangle destRect) throws Exception {
             final int sourceWidth = getRasterDataNode().getRasterWidth();
             final int sourceHeight = getRasterDataNode().getRasterHeight();
             final int sourceX0 = getSourceX(destRect.x);
@@ -490,17 +524,39 @@ public class AddElevationAction extends AbstractAction implements ContextAwareAc
             final int[] sourceYs = getSourceCoords(sourceTileHeight, destRect.height);
             final TileGeoreferencing tileGeoRef = new TileGeoreferencing(geoCoding, sourceX0, sourceY0,
                                                                          sourceTileWidth, sourceTileHeight);
-            try {
-                DEMFactory.fillElevationData(dem, noDataValue, (x, y, geoPos) -> {
-                    final int targetX = x - destRect.x;
-                    final int targetY = y - destRect.y;
-                    tileGeoRef.getGeoPos(sourceX0 + sourceXs[targetX], sourceY0 + sourceYs[targetY], geoPos);
-                }, destRect, productData, true, ProgressMonitor.NULL);
-            } catch (CancellationException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new IOException(e);
+            final Dimension targetChunkSize = getOverviewTargetChunkSize(destRect);
+            fillChunks(destRect, targetChunkSize,
+                       computeRectangle -> DEMFactory.fillElevationData(dem, noDataValue, (x, y, geoPos) -> {
+                           final int targetX = x - destRect.x;
+                           final int targetY = y - destRect.y;
+                           tileGeoRef.getGeoPos(sourceX0 + sourceXs[targetX], sourceY0 + sourceYs[targetY], geoPos);
+                       }, destRect, computeRectangle, productData, true, ProgressMonitor.NULL));
+        }
+
+        private Dimension getOverviewTargetChunkSize(Rectangle destRect) {
+            final double scale = getScale();
+            final int chunkWidth = Math.max(1, (int) Math.floor(overviewSourceChunkSize.width / scale));
+            final int chunkHeight = Math.max(1, (int) Math.floor(overviewSourceChunkSize.height / scale));
+            return new Dimension(Math.min(destRect.width, chunkWidth), Math.min(destRect.height, chunkHeight));
+        }
+
+        private void fillChunks(Rectangle dataRectangle, Dimension chunkSize, ChunkFill chunkFill) throws Exception {
+            final int chunkWidth = Math.max(1, chunkSize.width);
+            final int chunkHeight = Math.max(1, chunkSize.height);
+            final int maxY = dataRectangle.y + dataRectangle.height;
+            final int maxX = dataRectangle.x + dataRectangle.width;
+            for (int y = dataRectangle.y; y < maxY; y += chunkHeight) {
+                final int height = Math.min(chunkHeight, maxY - y);
+                for (int x = dataRectangle.x; x < maxX; x += chunkWidth) {
+                    final int width = Math.min(chunkWidth, maxX - x);
+                    chunkFill.fill(new Rectangle(x, y, width, height));
+                }
             }
+        }
+
+        @FunctionalInterface
+        private interface ChunkFill {
+            void fill(Rectangle computeRectangle) throws Exception;
         }
     }
 

@@ -12,34 +12,41 @@ import org.esa.snap.core.dataop.resamp.Resampling;
 import org.esa.snap.core.image.RasterDataNodeOpImage;
 import org.esa.snap.core.image.RasterDataNodeSampleOpImage;
 import org.esa.snap.engine_utilities.gpf.TileGeoreferencing;
+import org.esa.snap.runtime.Config;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 
+import javax.media.jai.TileCache;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.prefs.Preferences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 
 public class AddElevationActionTest {
 
 
+    private static final String ADD_ELEVATION_TILE_SIZE_KEY = "snap.dem.addElevationTileSize";
+    private static final String MAX_DEGREES_PER_ELEVATION_OVERVIEW_TILE_KEY = "snap.dem.maxDegreesPerElevationOverviewTile";
+    private static final String ELEVATION_BAND_TILE_CACHE_SIZE_KEY = "snap.dem.elevationBandTileCacheSizeBytes";
+
+
     @Test
     @STTM("SNAP-4213")
     public void elevationSourceImageComputesTilesInsteadOfSamples() throws Exception {
-        Product product = new Product("test", "type", 16, 12);
-        product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84,
-                                                   product.getSceneRasterWidth(),
-                                                   product.getSceneRasterHeight(),
-                                                   10.0, 50.0,
-                                                   0.1, -0.1,
-                                                   0.0, 0.0));
+        Product product = createProduct(16, 12);
 
         addElevationBand(product, new FakeElevationModel(-999.0f), "elevation");
 
@@ -63,13 +70,7 @@ public class AddElevationActionTest {
     @Test
     @STTM("SNAP-4213")
     public void elevationSourceImageComputesHigherLevelsFromTileGeoreferencing() throws Exception {
-        Product product = new Product("test", "type", 1024, 768);
-        product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84,
-                                                   product.getSceneRasterWidth(),
-                                                   product.getSceneRasterHeight(),
-                                                   10.0, 50.0,
-                                                   0.1, -0.1,
-                                                   0.0, 0.0));
+        Product product = createProduct(1024, 768);
 
         addElevationBand(product, new FakeElevationModel(-999.0f), "elevation");
 
@@ -86,6 +87,91 @@ public class AddElevationActionTest {
                      raster.getSampleDouble(1, 1, 0), 1.0e-4);
     }
 
+    @Test
+    @STTM("SNAP-4213")
+    public void elevationSourceImageComputesHigherLevelsInConfiguredChunks() throws Exception {
+        Preferences preferences = Config.instance().preferences();
+        String previousTileSize = preferences.get(ADD_ELEVATION_TILE_SIZE_KEY, null);
+        String previousMaxDegrees = preferences.get(MAX_DEGREES_PER_ELEVATION_OVERVIEW_TILE_KEY, null);
+        try {
+            preferences.putInt(ADD_ELEVATION_TILE_SIZE_KEY, 4);
+            preferences.putDouble(MAX_DEGREES_PER_ELEVATION_OVERVIEW_TILE_KEY, 24.0);
+
+            Product product = createProduct(1024, 1024);
+            RecordingElevationModel dem = new RecordingElevationModel(-999.0f);
+            addElevationBand(product, dem, "elevation");
+
+            Band elevationBand = product.getBand("elevation");
+            RenderedImage levelImage = elevationBand.getSourceImage().getImage(1);
+
+            levelImage.getData(new Rectangle(0, 0, 4, 4));
+
+            TileGeoreferencing tileGeoRef = new TileGeoreferencing(product.getSceneGeoCoding(), 0, 0, 8, 8);
+            assertGeoPosEquals(geoPosFor(tileGeoRef, 0, 0), dem.requestedGeoPositions.get(0));
+            assertGeoPosEquals(geoPosFor(tileGeoRef, 2, 0), dem.requestedGeoPositions.get(1));
+            assertGeoPosEquals(geoPosFor(tileGeoRef, 0, 2), dem.requestedGeoPositions.get(2));
+            assertGeoPosEquals(geoPosFor(tileGeoRef, 2, 2), dem.requestedGeoPositions.get(3));
+        } finally {
+            restorePreference(preferences, ADD_ELEVATION_TILE_SIZE_KEY, previousTileSize);
+            restorePreference(preferences, MAX_DEGREES_PER_ELEVATION_OVERVIEW_TILE_KEY, previousMaxDegrees);
+        }
+    }
+
+    @Test
+    @STTM("SNAP-4213")
+    public void elevationSourceImagesUseConfiguredPrivateSharedTileCache() throws Exception {
+        Preferences preferences = Config.instance().preferences();
+        String previousCacheSize = preferences.get(ELEVATION_BAND_TILE_CACHE_SIZE_KEY, null);
+        try {
+            long cacheSize = 1_234_567L;
+            preferences.putLong(ELEVATION_BAND_TILE_CACHE_SIZE_KEY, cacheSize);
+
+            Product product = createProduct(1024, 1024);
+            addElevationBand(product, new FakeElevationModel(-999.0f), "elevation");
+
+            Band elevationBand = product.getBand("elevation");
+            RasterDataNodeOpImage levelZeroImage = (RasterDataNodeOpImage) elevationBand.getSourceImage().getImage(0);
+            RasterDataNodeOpImage overviewImage = (RasterDataNodeOpImage) elevationBand.getSourceImage().getImage(1);
+
+            TileCache tileCache = levelZeroImage.getTileCache();
+            assertNotNull(tileCache);
+            assertEquals(cacheSize, tileCache.getMemoryCapacity());
+            assertSame(tileCache, overviewImage.getTileCache());
+        } finally {
+            restorePreference(preferences, ELEVATION_BAND_TILE_CACHE_SIZE_KEY, previousCacheSize);
+        }
+    }
+
+    @Test
+    @STTM("SNAP-4213")
+    public void elevationSourceImageReusesCachedTilesForRepeatedReads() throws Exception {
+        Product product = createProduct(16, 16);
+        product.setPreferredTileSize(new Dimension(4, 4));
+        CountingElevationModel dem = new CountingElevationModel(-999.0f);
+        addElevationBand(product, dem, "elevation");
+
+        RenderedImage levelImage = product.getBand("elevation").getSourceImage().getImage(0);
+
+        levelImage.getTile(levelImage.getMinTileX(), levelImage.getMinTileY());
+        int callCountAfterFirstRead = dem.getElevationCallCount();
+
+        levelImage.getTile(levelImage.getMinTileX(), levelImage.getMinTileY());
+
+        assertTrue(callCountAfterFirstRead > 0);
+        assertEquals(callCountAfterFirstRead, dem.getElevationCallCount());
+    }
+
+    private static Product createProduct(int width, int height) throws Exception {
+        Product product = new Product("test", "type", width, height);
+        product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84,
+                                                   product.getSceneRasterWidth(),
+                                                   product.getSceneRasterHeight(),
+                                                   10.0, 50.0,
+                                                   0.1, -0.1,
+                                                   0.0, 0.0));
+        return product;
+    }
+
     private static void addElevationBand(Product product, ElevationModel dem, String elevationBandName) throws Exception {
         Method method = AddElevationAction.class.getDeclaredMethod("addElevationBand", Product.class,
                                                                    ElevationModel.class, String.class);
@@ -97,7 +183,26 @@ public class AddElevationActionTest {
         return geoPos.lat * 10.0 + geoPos.lon;
     }
 
-    private static final class FakeElevationModel implements ElevationModel {
+    private static GeoPos geoPosFor(TileGeoreferencing tileGeoRef, int x, int y) {
+        GeoPos geoPos = new GeoPos();
+        tileGeoRef.getGeoPos(x, y, geoPos);
+        return geoPos;
+    }
+
+    private static void assertGeoPosEquals(GeoPos expected, GeoPos actual) {
+        assertEquals(expected.lat, actual.lat, 1.0e-6);
+        assertEquals(expected.lon, actual.lon, 1.0e-6);
+    }
+
+    private static void restorePreference(Preferences preferences, String key, String value) {
+        if (value == null) {
+            preferences.remove(key);
+        } else {
+            preferences.put(key, value);
+        }
+    }
+
+    private static class FakeElevationModel implements ElevationModel {
         private final ElevationModelDescriptor descriptor;
 
         private FakeElevationModel(float noDataValue) {
@@ -146,6 +251,38 @@ public class AddElevationActionTest {
 
         @Override
         public void dispose() {
+        }
+    }
+
+    private static final class RecordingElevationModel extends FakeElevationModel {
+        private final List<GeoPos> requestedGeoPositions = new ArrayList<>();
+
+        private RecordingElevationModel(float noDataValue) {
+            super(noDataValue);
+        }
+
+        @Override
+        public double getElevation(GeoPos geoPos) {
+            requestedGeoPositions.add(new GeoPos(geoPos.lat, geoPos.lon));
+            return super.getElevation(geoPos);
+        }
+    }
+
+    private static final class CountingElevationModel extends FakeElevationModel {
+        private final AtomicInteger elevationCallCount = new AtomicInteger();
+
+        private CountingElevationModel(float noDataValue) {
+            super(noDataValue);
+        }
+
+        @Override
+        public double getElevation(GeoPos geoPos) {
+            elevationCallCount.incrementAndGet();
+            return super.getElevation(geoPos);
+        }
+
+        private int getElevationCallCount() {
+            return elevationCallCount.get();
         }
     }
 
