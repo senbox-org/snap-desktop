@@ -2,8 +2,12 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 14.0.0
+    [SNAP-4213] Add elevation band leads to out-ofmemory exception
     [SNAP-4212] DIMAP ProductReader does not handle subsetDef.isIgnoreMetadata()
+    [SNAP-4209] Copernicus DEM download does not react on cancel
+    [SNAP-4206] Fix Spectral library bugs
     [SNAP-4201] NetCDF CF reader creates duplicate latitude/longitude bands (latitude_, longitude_)
+    [SNAP-4199] Implement ReaderCache in NetCDF reader
     [SNAP-4164] Unable to open any band of a ENVISAT MERIS MER_RRC_2P product in SNAP 13
     [SNAP-4085] Throw exception when zip cannot be extracted due to full disk
 
