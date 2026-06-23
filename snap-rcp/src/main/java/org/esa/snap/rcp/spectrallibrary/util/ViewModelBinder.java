@@ -34,6 +34,7 @@ public class ViewModelBinder {
         vm.addPropertyChangeListener(new VmListener());
 
         panel.getPreviewPanel().setSelectionListener(vm::setSelectedPreviewProfileId);
+        panel.getPreviewPanel().setMultiSelectionListener(vm::setSelectedPreviewProfileIds);
 
         panel.getLibraryTable().getSelectionModel().addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) {
@@ -75,7 +76,6 @@ public class ViewModelBinder {
                     case SpectralLibraryViewModel.PROP_ACTIVE_LIBRARY_ID -> {
                         updateActiveLibrarySelection(vm.getActiveLibraryId());
                         applyActiveLibraryToTable();
-                        panel.getLibraryTableModel().setProfileColors(vm.getActiveLibraryProfileColors());
                         panel.getPreviewPanel().setProfilePaints(vm.getActiveLibraryProfileColors());
                         updatePreviewAxisFromActiveLibrary();
                     }
@@ -90,7 +90,6 @@ public class ViewModelBinder {
                             }
                         }
                         panel.getLibraryTableModel().setProfiles(ps);
-                        panel.getLibraryTableModel().setProfileColors(vm.getActiveLibraryProfileColors());
                         panel.getPreviewPanel().setProfilePaints(vm.getActiveLibraryProfileColors());
                     }
                     case SpectralLibraryViewModel.PROP_PREVIEW_PROFILES ->
@@ -99,10 +98,8 @@ public class ViewModelBinder {
                             panel.getPreviewPanel().setSelectedProfileId(vm.getSelectedPreviewProfileId().orElse(null));
                     case SpectralLibraryViewModel.PROP_STATUS ->
                             updateStatus(vm.getStatus());
-                    case SpectralLibraryViewModel.PROP_PROFILE_COLORS -> {
-                        panel.getLibraryTableModel().setProfileColors(vm.getActiveLibraryProfileColors());
+                    case SpectralLibraryViewModel.PROP_PROFILE_COLORS ->
                         panel.getPreviewPanel().setProfilePaints(vm.getActiveLibraryProfileColors());
-                    }
                     default -> {}
                 }
             };

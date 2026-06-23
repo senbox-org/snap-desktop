@@ -2,6 +2,7 @@ package org.esa.snap.rcp.spectrallibrary.controller;
 
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
+import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.AddPreviewAttributeDialog;
 import org.esa.snap.rcp.spectrallibrary.ui.PreviewPanel;
@@ -25,6 +26,7 @@ import org.esa.snap.speclib.util.noise.SpectralNoiseKernelFactory;
 import org.esa.snap.speclib.util.resampling.SpectralResamplingSensor;
 import org.esa.snap.speclib.util.resampling.SpectralResponseFunction;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeature;
@@ -37,6 +39,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.IntSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 
@@ -44,6 +50,7 @@ public class SpectralLibraryController {
 
 
     private List<SpectralProfile> lastExtractedAllProfiles = List.of();
+    private final Map<UUID, PreviewOrigin> previewOriginsByProfileId = new HashMap<>();
 
     private final SpectralLibraryService service;
     private final SpectralLibraryIO io;
@@ -51,6 +58,71 @@ public class SpectralLibraryController {
 
     private final PreviewPanel previewPanel;
     private SwingWorker<ExtractResult, Void> currentExtractWorker;
+    private volatile Set<PreviewSourceKey> currentExtractSourceKeys = Set.of();
+
+
+    public record GeometryPreviewSource(String vectorDataNodeName, String featureId, String geometryWkt, List<PixelPos> pixels) {
+        public GeometryPreviewSource {
+            if (pixels == null || pixels.isEmpty()) {
+                pixels = List.of();
+            } else {
+                List<PixelPos> copy = new ArrayList<>(pixels.size());
+                for (PixelPos pixel : pixels) {
+                    if (pixel != null) {
+                        copy.add(pixel);
+                    }
+                }
+                pixels = List.copyOf(copy);
+            }
+        }
+    }
+
+    private enum PreviewOriginKind {
+        PRODUCT,
+        GEOMETRY,
+        PIN
+    }
+
+    private record PreviewOrigin(Product product,
+                                 PreviewOriginKind kind,
+                                 String vectorDataNodeName,
+                                 String featureId,
+                                 String geometryWkt,
+                                 String placemarkName) {
+        static PreviewOrigin product(Product product) {
+            return new PreviewOrigin(product, PreviewOriginKind.PRODUCT, null, null, null, null);
+        }
+
+        static PreviewOrigin geometry(Product product, String vectorDataNodeName, String featureId, String geometryWkt) {
+            return new PreviewOrigin(product, PreviewOriginKind.GEOMETRY, vectorDataNodeName, featureId, geometryWkt, null);
+        }
+
+        static PreviewOrigin pin(Product product, String placemarkName) {
+            return new PreviewOrigin(product, PreviewOriginKind.PIN, null, null, null, placemarkName);
+        }
+    }
+
+    private record PreviewSourceKey(Product product,
+                                    PreviewOriginKind kind,
+                                    String vectorDataNodeName,
+                                    String featureId,
+                                    String geometryWkt,
+                                    String placemarkName) {
+        static PreviewSourceKey product(Product product) {
+            return new PreviewSourceKey(product, PreviewOriginKind.PRODUCT, null, null, null, null);
+        }
+
+        static PreviewSourceKey geometry(Product product, String vectorDataNodeName, String featureId, String geometryWkt) {
+            return new PreviewSourceKey(product, PreviewOriginKind.GEOMETRY, vectorDataNodeName, featureId, geometryWkt, null);
+        }
+
+        static PreviewSourceKey pin(Product product, String placemarkName) {
+            return new PreviewSourceKey(product, PreviewOriginKind.PIN, null, null, null, placemarkName);
+        }
+    }
+
+    private record PixelKey(int x, int y) {
+    }
 
 
     public SpectralLibraryController(SpectralLibraryViewModel vm, PreviewPanel previewPanel) {
@@ -110,17 +182,14 @@ public class SpectralLibraryController {
             return;
         }
 
-        Optional<SpectralProfile> selectedOpt = findSelectedPreviewProfile();
-        if (selectedOpt.isEmpty()) {
-            vm.setStatus(UiStatus.warn("No preview profile selected"));
-            return;
-        }
-
-        SpectralProfile sel = selectedOpt.get();
-        UUID selId = sel.getId();
-        if (selId == null) {
-            vm.setStatus(UiStatus.warn("Selected profile has no ID"));
-            return;
+        Set<UUID> selectedIds = vm.getSelectedPreviewProfileIds();
+        if (selectedIds.isEmpty()) {
+            Optional<SpectralProfile> singleOpt = findSelectedPreviewProfile();
+            if (singleOpt.isEmpty()) {
+                vm.setStatus(UiStatus.warn("No preview profile selected"));
+                return;
+            }
+            selectedIds = Set.of(singleOpt.get().getId());
         }
 
         SpectralLibrary lib = service.getLibrary(libId).orElse(null);
@@ -129,11 +198,23 @@ public class SpectralLibraryController {
             return;
         }
 
+        Set<UUID> existingIds = new HashSet<>();
         for (SpectralProfile p : lib.getProfiles()) {
-            if (p != null && selId.equals(p.getId())) {
-                vm.setStatus(UiStatus.info("Profile already exists (skipped)"));
-                return;
+            if (p != null && p.getId() != null) {
+                existingIds.add(p.getId());
             }
+        }
+
+        List<SpectralProfile> candidates = new ArrayList<>();
+        for (SpectralProfile p : vm.getPreviewProfiles()) {
+            if (p != null && p.getId() != null && selectedIds.contains(p.getId()) && !existingIds.contains(p.getId())) {
+                candidates.add(p);
+            }
+        }
+
+        if (candidates.isEmpty()) {
+            vm.setStatus(UiStatus.info("All selected profiles already exist (skipped)"));
+            return;
         }
 
         Optional<Map<String, AttributeValue>> attrsOpt = askAttributesForPreviewAdd();
@@ -141,17 +222,26 @@ public class SpectralLibraryController {
             return;
         }
 
-        SpectralProfile toAdd = SpectralLibraryUtils.applyAttributes(sel, attrsOpt.get());
+        Map<String, AttributeValue> attrs = attrsOpt.get();
+        List<SpectralProfile> toAdd = new ArrayList<>(candidates.size());
+        for (SpectralProfile p : candidates) {
+            SpectralProfile enriched = SpectralLibraryUtils.applyAttributes(p, attrs);
+            toAdd.add(enrichWithDisplayColor(enriched, libId));
+        }
 
         try {
-            SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, List.of(toAdd));
+            SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, toAdd);
             reloadLibraries();
             refreshActiveLibraryProfiles();
-            vm.setStatus(r.added() > 0 ? UiStatus.info("Profile added") : UiStatus.info("Profile already exists (skipped)"));
+            int added = r.added();
+            int skipped = r.skippedExisting();
+            vm.setStatus(added > 0
+                    ? UiStatus.info("Profiles added (" + added + ")" + (skipped > 0 ? ", skipped (" + skipped + ")" : ""))
+                    : UiStatus.info("All profiles already exist (skipped)"));
         } catch (Throwable t) {
             reloadLibraries();
             refreshActiveLibraryProfiles();
-            vm.setStatus(UiStatus.warn("Profile could not be added (skipped): " + t.getMessage()));
+            vm.setStatus(UiStatus.warn("Profiles could not be added: " + t.getMessage()));
         }
     }
 
@@ -161,9 +251,7 @@ public class SpectralLibraryController {
             return;
         }
 
-        List<SpectralProfile> preview = !lastExtractedAllProfiles.isEmpty()
-                ? lastExtractedAllProfiles
-                : vm.getPreviewProfiles();
+        List<SpectralProfile> preview = getAllPreviewProfilesForAdd();
         if (preview.isEmpty()) {
             vm.setStatus(UiStatus.warn("No preview profiles"));
             return;
@@ -194,7 +282,8 @@ public class SpectralLibraryController {
             if (p == null) {
                 continue;
             }
-            toAdd.add(SpectralLibraryUtils.applyAttributes(p, attrs));
+            SpectralProfile enriched = SpectralLibraryUtils.applyAttributes(p, attrs);
+            toAdd.add(enrichWithDisplayColor(enriched, libId));
         }
 
         SpectralLibraryService.BulkAddResult r = service.addProfiles(libId, toAdd);
@@ -337,6 +426,7 @@ public class SpectralLibraryController {
 
     public void setPreviewProfilesLimited(List<SpectralProfile> allProfiles) {
         lastExtractedAllProfiles = SpectralLibraryUtils.safeCopyWithoutNulls(allProfiles);
+        previewOriginsByProfileId.clear();
         List<SpectralProfile> display = SpectralLibraryUtils.limitForDisplay(lastExtractedAllProfiles);
 
         vm.setPreviewProfiles(display);
@@ -435,9 +525,266 @@ public class SpectralLibraryController {
 
     public void clearPreview() {
         lastExtractedAllProfiles = List.of();
+        previewOriginsByProfileId.clear();
         vm.setPreviewProfiles(List.of());
         vm.setSelectedPreviewProfileId(null);
         vm.setStatus(UiStatus.idle());
+    }
+
+    List<SpectralProfile> getAllPreviewProfilesForAdd() {
+        return !lastExtractedAllProfiles.isEmpty()
+                ? lastExtractedAllProfiles
+                : vm.getPreviewProfiles();
+    }
+
+    void trackProductPreviewOrigins(Product product, List<SpectralProfile> profiles) {
+        trackPreviewOrigins(profiles, PreviewOrigin.product(product));
+    }
+
+    void trackGeometryPreviewOrigins(Product product, String vectorDataNodeName, String featureId, List<SpectralProfile> profiles) {
+        trackGeometryPreviewOrigins(product, vectorDataNodeName, featureId, null, profiles);
+    }
+
+    void trackGeometryPreviewOrigins(Product product, String vectorDataNodeName, String featureId, String geometryWkt, List<SpectralProfile> profiles) {
+        trackPreviewOrigins(profiles, PreviewOrigin.geometry(product, vectorDataNodeName, featureId, geometryWkt));
+    }
+
+    void trackPinPreviewOrigins(Product product, String placemarkName, List<SpectralProfile> profiles) {
+        trackPreviewOrigins(profiles, PreviewOrigin.pin(product, placemarkName));
+    }
+
+    public int removePreviewProfilesForProduct(Product product) {
+        if (product == null) {
+            return 0;
+        }
+        return removePreviewProfiles(
+                origin -> origin.product == product,
+                key -> key.product == product,
+                removed -> UiStatus.info("Preview updated: removed " + removed +
+                        " profiles for closed product '" + product.getName() + "'")
+        );
+    }
+
+    public int removePreviewProfilesForGeometryFeatures(Product product, String vectorDataNodeName, Set<String> featureIds) {
+        if (product == null || vectorDataNodeName == null || featureIds == null || featureIds.isEmpty()) {
+            return 0;
+        }
+        Set<String> ids = Set.copyOf(featureIds);
+        return removePreviewProfiles(
+                origin -> origin.product == product
+                        && origin.kind == PreviewOriginKind.GEOMETRY
+                        && Objects.equals(origin.vectorDataNodeName, vectorDataNodeName)
+                        && ids.contains(origin.featureId),
+                key -> key.product == product
+                        && key.kind == PreviewOriginKind.GEOMETRY
+                        && Objects.equals(key.vectorDataNodeName, vectorDataNodeName)
+                        && ids.contains(key.featureId),
+                removed -> UiStatus.info("Preview updated: removed " + removed +
+                        " profiles for deleted or changed geometry")
+        );
+    }
+
+    public int removePreviewProfilesForChangedGeometryFeatures(Product product, String vectorDataNodeName, Map<String, String> currentGeometryWktsByFeatureId) {
+        if (product == null || vectorDataNodeName == null || currentGeometryWktsByFeatureId == null || currentGeometryWktsByFeatureId.isEmpty()) {
+            return 0;
+        }
+        Map<String, String> currentWkts = new HashMap<>(currentGeometryWktsByFeatureId);
+        return removePreviewProfiles(
+                origin -> origin.product == product
+                        && origin.kind == PreviewOriginKind.GEOMETRY
+                        && Objects.equals(origin.vectorDataNodeName, vectorDataNodeName)
+                        && geometryChanged(origin.featureId, origin.geometryWkt, currentWkts),
+                key -> key.product == product
+                        && key.kind == PreviewOriginKind.GEOMETRY
+                        && Objects.equals(key.vectorDataNodeName, vectorDataNodeName)
+                        && geometryChanged(key.featureId, key.geometryWkt, currentWkts),
+                removed -> UiStatus.info("Preview updated: removed " + removed +
+                        " profiles for deleted or changed geometry")
+        );
+    }
+
+    public int removePreviewProfilesForVectorDataNode(Product product, VectorDataNode vectorDataNode) {
+        if (product == null || vectorDataNode == null) {
+            return 0;
+        }
+        Set<String> featureIds = collectFeatureIds(vectorDataNode);
+        if (!featureIds.isEmpty()) {
+            return removePreviewProfilesForGeometryFeatures(product, vectorDataNode.getName(), featureIds);
+        }
+        String vectorDataNodeName = vectorDataNode.getName();
+        return removePreviewProfiles(
+                origin -> origin.product == product
+                        && origin.kind == PreviewOriginKind.GEOMETRY
+                        && Objects.equals(origin.vectorDataNodeName, vectorDataNodeName),
+                key -> key.product == product
+                        && key.kind == PreviewOriginKind.GEOMETRY
+                        && Objects.equals(key.vectorDataNodeName, vectorDataNodeName),
+                removed -> UiStatus.info("Preview updated: removed " + removed +
+                        " profiles for deleted or changed geometry")
+        );
+    }
+
+    public int removePreviewProfilesForPin(Product product, String placemarkName) {
+        if (product == null || placemarkName == null) {
+            return 0;
+        }
+        return removePreviewProfiles(
+                origin -> origin.product == product
+                        && origin.kind == PreviewOriginKind.PIN
+                        && Objects.equals(origin.placemarkName, placemarkName),
+                key -> key.product == product
+                        && key.kind == PreviewOriginKind.PIN
+                        && Objects.equals(key.placemarkName, placemarkName),
+                removed -> UiStatus.info("Preview updated: removed " + removed +
+                        " profiles for deleted pin '" + placemarkName + "'")
+        );
+    }
+
+    private int removePreviewProfiles(Predicate<PreviewOrigin> originPredicate,
+                                      Predicate<PreviewSourceKey> sourceKeyPredicate,
+                                      Function<Integer, UiStatus> statusFactory) {
+        return runOnEdt(() -> removePreviewProfilesOnEdt(originPredicate, sourceKeyPredicate, statusFactory));
+    }
+
+    private int removePreviewProfilesOnEdt(Predicate<PreviewOrigin> originPredicate,
+                                           Predicate<PreviewSourceKey> sourceKeyPredicate,
+                                           Function<Integer, UiStatus> statusFactory) {
+        cancelRunningExtractionIf(sourceKeyPredicate);
+
+        Set<UUID> removeIds = new HashSet<>();
+        for (Map.Entry<UUID, PreviewOrigin> entry : previewOriginsByProfileId.entrySet()) {
+            if (originPredicate.test(entry.getValue())) {
+                removeIds.add(entry.getKey());
+            }
+        }
+
+        if (removeIds.isEmpty()) {
+            return 0;
+        }
+
+        List<SpectralProfile> remaining = new ArrayList<>();
+        for (SpectralProfile profile : getAllPreviewProfilesForAdd()) {
+            if (profile != null && profile.getId() != null && !removeIds.contains(profile.getId())) {
+                remaining.add(profile);
+            }
+        }
+
+        updatePreviewAfterInvalidation(remaining);
+        vm.setStatus(statusFactory.apply(removeIds.size()));
+        return removeIds.size();
+    }
+
+    private static int runOnEdt(IntSupplier action) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            return action.getAsInt();
+        }
+        AtomicInteger result = new AtomicInteger();
+        try {
+            SwingUtilities.invokeAndWait(() -> result.set(action.getAsInt()));
+        } catch (Exception ex) {
+            throw new IllegalStateException("Preview invalidation failed", ex);
+        }
+        return result.get();
+    }
+
+    private void updatePreviewAfterInvalidation(List<SpectralProfile> remainingProfiles) {
+        lastExtractedAllProfiles = SpectralLibraryUtils.safeCopyWithoutNulls(remainingProfiles);
+        Set<UUID> remainingIds = profileIds(lastExtractedAllProfiles);
+        previewOriginsByProfileId.keySet().retainAll(remainingIds);
+
+        List<SpectralProfile> display = SpectralLibraryUtils.limitForDisplay(lastExtractedAllProfiles);
+        vm.setPreviewProfiles(display);
+
+        UUID selectedId = vm.getSelectedPreviewProfileId().orElse(null);
+        if (!SpectralLibraryUtils.containsId(display, selectedId)) {
+            selectedId = display.isEmpty() ? null : display.get(display.size() - 1).getId();
+        }
+        vm.setSelectedPreviewProfileId(selectedId);
+    }
+
+    private void trackPreviewOrigins(List<SpectralProfile> profiles, PreviewOrigin origin) {
+        if (origin.product == null || profiles == null || profiles.isEmpty()) {
+            return;
+        }
+        for (SpectralProfile profile : profiles) {
+            if (profile != null && profile.getId() != null) {
+                previewOriginsByProfileId.put(profile.getId(), origin);
+            }
+        }
+    }
+
+    private void cancelRunningExtractionIf(Predicate<PreviewSourceKey> sourceKeyPredicate) {
+        SwingWorker<ExtractResult, Void> worker = currentExtractWorker;
+        if (worker == null || worker.isDone() || sourceKeyPredicate == null) {
+            return;
+        }
+        for (PreviewSourceKey sourceKey : currentExtractSourceKeys) {
+            if (sourceKeyPredicate.test(sourceKey)) {
+                worker.cancel(true);
+                return;
+            }
+        }
+    }
+
+    private static Set<UUID> profileIds(List<SpectralProfile> profiles) {
+        if (profiles == null || profiles.isEmpty()) {
+            return Set.of();
+        }
+        Set<UUID> ids = new HashSet<>();
+        for (SpectralProfile profile : profiles) {
+            if (profile != null && profile.getId() != null) {
+                ids.add(profile.getId());
+            }
+        }
+        return ids;
+    }
+
+    private static Set<String> collectFeatureIds(VectorDataNode vectorDataNode) {
+        if (vectorDataNode == null) {
+            return Set.of();
+        }
+        Set<String> featureIds = new HashSet<>();
+        try (FeatureIterator<SimpleFeature> iterator = vectorDataNode.getFeatureCollection().features()) {
+            while (iterator.hasNext()) {
+                SimpleFeature feature = iterator.next();
+                if (feature != null && feature.getID() != null) {
+                    featureIds.add(feature.getID());
+                }
+            }
+        }
+        return featureIds;
+    }
+
+    private static boolean geometryChanged(String featureId, String originalGeometryWkt, Map<String, String> currentGeometryWktsByFeatureId) {
+        if (featureId == null || originalGeometryWkt == null || currentGeometryWktsByFeatureId == null) {
+            return false;
+        }
+        if (!currentGeometryWktsByFeatureId.containsKey(featureId)) {
+            return false;
+        }
+        return !Objects.equals(originalGeometryWkt, currentGeometryWktsByFeatureId.get(featureId));
+    }
+
+    private static PixelKey pixelKeyOf(SpectralProfile profile, PixelPos fallback) {
+        if (profile != null && profile.getSourceRef().isPresent()) {
+            SpectralProfile.SourceRef sourceRef = profile.getSourceRef().get();
+            return new PixelKey(sourceRef.getX(), sourceRef.getY());
+        }
+        if (fallback != null) {
+            return new PixelKey((int) fallback.x, (int) fallback.y);
+        }
+        return new PixelKey(0, 0);
+    }
+
+    private static PreviewOrigin pollOriginForPixel(PixelKey pixel, Map<PixelKey, Deque<PreviewOrigin>> originsByPixel) {
+        if (pixel == null || originsByPixel == null) {
+            return null;
+        }
+        Deque<PreviewOrigin> origins = originsByPixel.get(pixel);
+        if (origins == null || origins.isEmpty()) {
+            return null;
+        }
+        return origins.removeFirst();
     }
 
 
@@ -449,9 +796,18 @@ public class SpectralLibraryController {
             return;
         }
 
+        Set<PreviewSourceKey> sourceKeys = new HashSet<>();
+        sourceKeys.add(PreviewSourceKey.product(product));
+        for (Placemark pin : pins) {
+            if (pin != null && pin.getName() != null) {
+                sourceKeys.add(PreviewSourceKey.pin(product, pin.getName()));
+            }
+        }
+
         startExtractAsync(() -> {
             List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
             int added = 0;
+            Map<UUID, PreviewOrigin> origins = new HashMap<>();
 
             UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
             if (libId == null) {
@@ -480,14 +836,15 @@ public class SpectralLibraryController {
                     masked = SpectralLibraryUtils.withDefaultAttributesIfPossible(product, px, py, masked);
 
                     out.add(masked);
+                    origins.put(masked.getId(), PreviewOrigin.pin(product, pin.getName()));
                     overrides.put(masked.getId(), ColorUtils.colorFromPlacemark(pin));
                     added++;
                 }
             }
 
             UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
-            return ExtractResult.bulk(SpectralLibraryUtils.safeCopyWithoutNulls(out), selectId, added, overrides);
-        }, "Extracting spectra from pins...");
+            return ExtractResult.bulk(SpectralLibraryUtils.safeCopyWithoutNulls(out), selectId, added, overrides, origins);
+        }, "Extracting spectra from pins...", sourceKeys);
     }
 
     public void extractPreviewAtCursor(Product product, SpectralAxis axis, String yUnit, List<Band> bands, int x, int y, int level, Set<String> selectedBandNames, String namePrefix) {
@@ -522,8 +879,9 @@ public class SpectralLibraryController {
             List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
             out.add(masked);
 
-            return ExtractResult.success(SpectralLibraryUtils.safeCopyWithoutNulls(out), masked.getId(), overrides);
-        }, "Extracting spectrum...");
+            return ExtractResult.success(SpectralLibraryUtils.safeCopyWithoutNulls(out), masked.getId(), overrides,
+                    Map.of(masked.getId(), PreviewOrigin.product(product)));
+        }, "Extracting spectrum...", Set.of(PreviewSourceKey.product(product)));
     }
 
     public void extractPreviewFromPixels(Product product, SpectralAxis axis, String yUnit, List<Band> bands, List<PixelPos> pixels, int level, Set<String> selectedBandNames, String namePrefix) {
@@ -537,6 +895,7 @@ public class SpectralLibraryController {
         startExtractAsync(() -> {
             List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
             int added = 0;
+            Map<UUID, PreviewOrigin> origins = new HashMap<>();
 
             UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
             if (libId == null) {
@@ -553,16 +912,92 @@ public class SpectralLibraryController {
             if (!extractedProfiles.isEmpty()) {
                 for (int ii = 0; ii < extractedProfiles.size(); ii++) {
                     SpectralProfile masked = SpectralLibraryUtils.maskUnselectedToNaN(extractedProfiles.get(ii), bands, selectedBandNames);
-                    masked = SpectralLibraryUtils.withDefaultAttributesIfPossible(product, (int) pixels.get(ii).x, (int) pixels.get(ii).y, masked);
+                    PixelKey pixel = pixelKeyOf(masked, ii < pixels.size() ? pixels.get(ii) : null);
+                    masked = SpectralLibraryUtils.withDefaultAttributesIfPossible(product, pixel.x(), pixel.y(), masked);
 
                     out.add(masked);
+                    origins.put(masked.getId(), PreviewOrigin.product(product));
                     added++;
                 }
             }
 
             UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
-            return ExtractResult.bulk(SpectralLibraryUtils.safeCopyWithoutNulls(out), selectId, added, Collections.emptyMap());
-        }, "Extracting spectra from geometry...");
+            return ExtractResult.bulk(SpectralLibraryUtils.safeCopyWithoutNulls(out), selectId, added, Collections.emptyMap(), origins);
+        }, "Extracting spectra from geometry...", Set.of(PreviewSourceKey.product(product)));
+    }
+
+    public void extractPreviewFromGeometrySources(Product product, SpectralAxis axis, String yUnit, List<Band> bands, List<GeometryPreviewSource> sources, int level, Set<String> selectedBandNames, String namePrefix) {
+        if (product == null || axis == null || bands == null || sources == null) {
+            return;
+        }
+        if (bands.isEmpty() || sources.isEmpty()) {
+            return;
+        }
+
+        List<PixelPos> pixels = new ArrayList<>();
+        Map<PixelKey, Deque<PreviewOrigin>> originsByPixel = new HashMap<>();
+        Set<PreviewSourceKey> sourceKeys = new HashSet<>();
+        sourceKeys.add(PreviewSourceKey.product(product));
+
+        for (GeometryPreviewSource source : sources) {
+            if (source == null) {
+                continue;
+            }
+            PreviewOrigin origin;
+            if (source.featureId() != null && source.vectorDataNodeName() != null) {
+                origin = PreviewOrigin.geometry(product, source.vectorDataNodeName(), source.featureId(), source.geometryWkt());
+                sourceKeys.add(PreviewSourceKey.geometry(product, source.vectorDataNodeName(), source.featureId(), source.geometryWkt()));
+            } else {
+                origin = PreviewOrigin.product(product);
+            }
+            for (PixelPos pixel : source.pixels()) {
+                if (pixel == null) {
+                    continue;
+                }
+                pixels.add(pixel);
+                originsByPixel.computeIfAbsent(new PixelKey((int) pixel.x, (int) pixel.y), k -> new ArrayDeque<>()).add(origin);
+            }
+        }
+
+        if (pixels.isEmpty()) {
+            return;
+        }
+
+        startExtractAsync(() -> {
+            List<SpectralProfile> out = new ArrayList<>(vm.getPreviewProfiles());
+            int added = 0;
+            Map<UUID, PreviewOrigin> origins = new HashMap<>();
+
+            UUID libId = requireActiveLibraryIdOrWarn().orElse(null);
+            if (libId == null) {
+                return ExtractResult.error("No active library");
+            }
+
+            String unit = SpectralLibraryUtils.normalizeUnit(yUnit);
+            Set<String> used = new HashSet<>();
+
+            String prefix = SpectralLibraryUtils.normalizePrefix(namePrefix);
+            String baseName = nextAutoProfileName(prefix, libId, out, used, true);
+            List<SpectralProfile> extractedProfiles = service.extractProfiles(baseName, axis, bands, pixels, level, unit, product.getName());
+
+            if (!extractedProfiles.isEmpty()) {
+                for (SpectralProfile extractedProfile : extractedProfiles) {
+                    SpectralProfile masked = SpectralLibraryUtils.maskUnselectedToNaN(extractedProfile, bands, selectedBandNames);
+                    PixelKey pixel = pixelKeyOf(masked, null);
+                    masked = SpectralLibraryUtils.withDefaultAttributesIfPossible(product, pixel.x(), pixel.y(), masked);
+
+                    out.add(masked);
+                    PreviewOrigin origin = pollOriginForPixel(pixel, originsByPixel);
+                    if (origin != null) {
+                        origins.put(masked.getId(), origin);
+                    }
+                    added++;
+                }
+            }
+
+            UUID selectId = (added > 0) ? out.get(out.size() - 1).getId() : null;
+            return ExtractResult.bulk(SpectralLibraryUtils.safeCopyWithoutNulls(out), selectId, added, Collections.emptyMap(), origins);
+        }, "Extracting spectra from geometry...", sourceKeys);
     }
 
     public boolean exportActiveLibraryToFile(File file) {
@@ -578,7 +1013,24 @@ public class SpectralLibraryController {
         }
 
         try {
-            io.write(libOpt.get(), file.toPath());
+            SpectralLibrary lib = libOpt.get();
+            List<SpectralProfile> enriched = new ArrayList<>(lib.getProfiles().size());
+            for (SpectralProfile p : lib.getProfiles()) {
+                if (p != null && p.getId() != null
+                        && p.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR).isEmpty()) {
+                    Color c = ColorUtils.defaultColor(p.getId());
+                    if (c != null) {
+                        p = p.withAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR,
+                                AttributeValue.ofString(ColorUtils.toHex(c)));
+                    }
+                }
+                enriched.add(p);
+            }
+            SpectralLibrary toWrite = new SpectralLibrary(
+                    lib.getId(), lib.getName(), lib.getAxis(),
+                    lib.getDefaultYUnit().orElse(null),
+                    enriched, lib.getSchema());
+            io.write(toWrite, file.toPath());
             vm.setStatus(UiStatus.info("Exported: " + file.getName()));
             return true;
         } catch (Exception ex) {
@@ -600,7 +1052,19 @@ public class SpectralLibraryController {
                     yUnit
             );
 
-            List<SpectralProfile> toAdd = SpectralLibraryUtils.safeCopyWithoutNulls(imported.getProfiles());
+            List<SpectralProfile> raw = SpectralLibraryUtils.safeCopyWithoutNulls(imported.getProfiles());
+            List<SpectralProfile> toAdd = new ArrayList<>(raw.size());
+            for (SpectralProfile p : raw) {
+                if (p.getId() != null
+                        && p.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR).isEmpty()) {
+                    Color c = ColorUtils.defaultColor(p.getId());
+                    if (c != null) {
+                        p = p.withAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR,
+                                AttributeValue.ofString(ColorUtils.toHex(c)));
+                    }
+                }
+                toAdd.add(p);
+            }
             SpectralLibraryService.BulkAddResult r = service.addProfiles(persisted.getId(), toAdd);
             int added = r.added();
 
@@ -661,7 +1125,7 @@ public class SpectralLibraryController {
         }
 
         if (added == 0) {
-            vm.setStatus(UiStatus.warn("No valid WKT geometry could be added to the vector layer"));
+            vm.setStatus(UiStatus.warn("No vector layer created: selected profiles have no valid 'wkt' geometry"));
             return;
         }
 
@@ -672,9 +1136,11 @@ public class SpectralLibraryController {
 
         if (product.getVectorDataGroup().get(layerName) == null) {
             product.getVectorDataGroup().add(vectorDataNode);
-            vm.setStatus(UiStatus.info("Vector layer added (" + added + " features)"));
+            vm.setStatus(UiStatus.info("Vector layer '" + layerName +
+                    "' added under Product Explorer > Vector Data (" + added + " features)"));
         } else {
-            vm.setStatus(UiStatus.warn("Vector layer '" + layerName + "' already exists."));
+            vm.setStatus(UiStatus.warn("Vector layer '" + layerName +
+                    "' already exists under Product Explorer > Vector Data."));
         }
     }
 
@@ -893,14 +1359,37 @@ public class SpectralLibraryController {
     }
 
 
+    private SpectralProfile enrichWithDisplayColor(SpectralProfile profile, UUID libId) {
+        if (profile == null || profile.getId() == null || libId == null) {
+            return profile;
+        }
+        if (profile.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR).isPresent()) {
+            return profile;
+        }
+        Color c = vm.getProfileColors(libId).get(profile.getId());
+        if (c == null) {
+            c = ColorUtils.defaultColor(profile.getId());
+        }
+        if (c == null) {
+            return profile;
+        }
+        return profile.withAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR,
+                AttributeValue.ofString(ColorUtils.toHex(c)));
+    }
+
     private void startExtractAsync(Supplier<ExtractResult> job, String busyMsg) {
+        startExtractAsync(job, busyMsg, Set.of());
+    }
+
+    private void startExtractAsync(Supplier<ExtractResult> job, String busyMsg, Set<PreviewSourceKey> sourceKeys) {
         if (currentExtractWorker != null && !currentExtractWorker.isDone()) {
             currentExtractWorker.cancel(true);
         }
 
+        currentExtractSourceKeys = sourceKeys == null || sourceKeys.isEmpty() ? Set.of() : Set.copyOf(sourceKeys);
         previewPanel.showBusyMessage(busyMsg);
 
-        currentExtractWorker = new SwingWorker<>() {
+        SwingWorker<ExtractResult, Void> worker = new SwingWorker<>() {
             @Override
             protected ExtractResult doInBackground() {
                 try {
@@ -921,6 +1410,10 @@ public class SpectralLibraryController {
 
                     if (r.profiles != null) {
                         lastExtractedAllProfiles = r.profiles;
+                        previewOriginsByProfileId.keySet().retainAll(profileIds(lastExtractedAllProfiles));
+                        if (r.previewOrigins != null && !r.previewOrigins.isEmpty()) {
+                            previewOriginsByProfileId.putAll(r.previewOrigins);
+                        }
                         List<SpectralProfile> display = SpectralLibraryUtils.limitForDisplay(r.profiles);
 
                         if (r.paintOverrides != null && !r.paintOverrides.isEmpty()) {
@@ -942,12 +1435,16 @@ public class SpectralLibraryController {
                 } catch (Exception ex) {
                     vm.setStatus(UiStatus.error("Extract failed: " + ex.getMessage()));
                 } finally {
+                    if (currentExtractWorker == this) {
+                        currentExtractSourceKeys = Set.of();
+                    }
                     previewPanel.clearBusyMessage();
                 }
             }
         };
 
-        currentExtractWorker.execute();
+        currentExtractWorker = worker;
+        worker.execute();
     }
 
 
@@ -967,29 +1464,42 @@ public class SpectralLibraryController {
         final UUID selectedId;
         final UiStatus status;
         final Map<UUID, Color> paintOverrides;
+        final Map<UUID, PreviewOrigin> previewOrigins;
 
-        private ExtractResult(List<SpectralProfile> profiles, UUID selectedId, UiStatus status, Map<UUID, Color> paintOverrides) {
+        private ExtractResult(List<SpectralProfile> profiles,
+                              UUID selectedId,
+                              UiStatus status,
+                              Map<UUID, Color> paintOverrides,
+                              Map<UUID, PreviewOrigin> previewOrigins) {
             this.profiles = profiles;
             this.selectedId = selectedId;
             this.status = status;
             this.paintOverrides = paintOverrides;
+            this.previewOrigins = previewOrigins;
         }
 
-        static ExtractResult success(List<SpectralProfile> profiles, UUID selectedId, Map<UUID, Color> paintOverrides) {
-            return new ExtractResult(profiles, selectedId, UiStatus.info("Preview added"), paintOverrides);
+        static ExtractResult success(List<SpectralProfile> profiles,
+                                     UUID selectedId,
+                                     Map<UUID, Color> paintOverrides,
+                                     Map<UUID, PreviewOrigin> previewOrigins) {
+            return new ExtractResult(profiles, selectedId, UiStatus.info("Preview added"), paintOverrides, previewOrigins);
         }
 
-        static ExtractResult bulk(List<SpectralProfile> profiles, UUID selectedId, int added, Map<UUID, Color> paintOverrides) {
+        static ExtractResult bulk(List<SpectralProfile> profiles,
+                                  UUID selectedId,
+                                  int added,
+                                  Map<UUID, Color> paintOverrides,
+                                  Map<UUID, PreviewOrigin> previewOrigins) {
             UiStatus st = added > 0 ? UiStatus.info("Preview extracted (" + added + ")") : UiStatus.warn("No spectra extracted");
-            return new ExtractResult(profiles, selectedId, st, paintOverrides);
+            return new ExtractResult(profiles, selectedId, st, paintOverrides, previewOrigins);
         }
 
         static ExtractResult noSpectrum() {
-            return new ExtractResult(null, null, UiStatus.warn("No spectrum extracted"), Collections.emptyMap());
+            return new ExtractResult(null, null, UiStatus.warn("No spectrum extracted"), Collections.emptyMap(), Collections.emptyMap());
         }
 
         static ExtractResult error(String msg) {
-            return new ExtractResult(null, null, UiStatus.error(msg), Collections.emptyMap());
+            return new ExtractResult(null, null, UiStatus.error(msg), Collections.emptyMap(), Collections.emptyMap());
         }
     }
 }
