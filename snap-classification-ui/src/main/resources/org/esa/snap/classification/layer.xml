@@ -31,7 +31,7 @@
                 <attr name="dialogTitle" stringvalue="KNN Classifier"/>
                 <attr name="targetProductNameSuffix"  stringvalue="_KNNClass"/>
                 <attr name="ShortDescription" stringvalue="KNN based classifier"/>
-                <attr name="helpId" stringvalue="KNNClassifierOp"/>
+                    <attr name="helpId" stringvalue="KNNClassifierOp"/>
             </file>
             <file name="org-esa-snap-classification-gpf-KDTree-KNN-Classifier-Action.instance">
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>

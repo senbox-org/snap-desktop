@@ -145,7 +145,7 @@
             </tocitem>
         </tocitem>
         <tocitem text="Optical">
-            <tocitem text="Product Spectrum" target="showSpectrumWnd"/>
+            <tocitem text="Product Spectrum View" target="showSpectrumWnd"/>
             <tocitem text="Product Spectrum Library" target="showSpectralLibraryTool"/>
             <tocitem text="Product Angular View" target="showAngularViewWnd"/>
             <tocitem text="Geometric">
