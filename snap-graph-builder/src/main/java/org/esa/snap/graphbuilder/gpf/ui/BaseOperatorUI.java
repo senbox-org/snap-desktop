@@ -251,6 +251,22 @@ public abstract class BaseOperatorUI implements OperatorUI {
         return bandNames.toArray(new String[0]);
     }
 
+    protected String[] getTiePointGridNames(){
+        final ArrayList<String> tiePointGridNames = new ArrayList<>(3);
+        if (sourceProducts != null) {
+            for (Product prod : sourceProducts) {
+                if (sourceProducts.length > 1) {
+                    for (String name : prod.getTiePointGridNames()) {
+                        tiePointGridNames.add(name + "::" + prod.getName());
+                    }
+                } else {
+                    tiePointGridNames.addAll(Arrays.asList(prod.getTiePointGridNames()));
+                }
+            }
+        }
+        return tiePointGridNames.toArray(new String[tiePointGridNames.size()]);
+    }
+
     protected String[] getGeometries() {
         final ArrayList<String> geometryNames = new ArrayList<>(5);
         if (sourceProducts != null) {
