@@ -22,6 +22,8 @@ import java.util.logging.Level;
  *
  * @author Norman
  */
+// JAN2019 - Daniel Knowles - Added link to new Straylight filters
+
 public class CreateFilteredBandDialog extends ModalDialog implements FilterSetForm.Listener {
 
     public static final String TITLE = "Create Filtered Band"; /*I18N*/
@@ -41,6 +43,7 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
         systemFilterSet.addFilter("Detect Lines", StandardFilters.LINE_DETECTION_FILTERS);
         systemFilterSet.addFilter("Detect Gradients (Emboss)", StandardFilters.GRADIENT_DETECTION_FILTERS);
         systemFilterSet.addFilter("Smooth and Blurr", StandardFilters.SMOOTHING_FILTERS);
+        systemFilterSet.addFilter("Straylight", StandardFilters.STRAYLIGHT_FILTERS);
         systemFilterSet.addFilter("Sharpen", StandardFilters.SHARPENING_FILTERS);
         systemFilterSet.addFilter("Enhance Discontinuities", StandardFilters.LAPLACIAN_FILTERS);
         systemFilterSet.addFilter("Non-Linear Filters", StandardFilters.NON_LINEAR_FILTERS);
