@@ -177,54 +177,54 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>mac-intel</id>
-            <activation>
-                <os>
-                    <name>Mac OS X</name>
-                    <arch>x86_64</arch>
-                </os>
-            </activation>
-            <dependencies>
-                        <dependency>
-                            <groupId>org.jogamp.gluegen</groupId>
-                            <artifactId>gluegen-rt</artifactId>
-                            <classifier>natives-macosx-universal</classifier>
-                            <version>2.4.0</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.jogamp.jogl</groupId>
-                            <artifactId>jogl-all</artifactId>
-                            <classifier>natives-macosx-universal</classifier>
-                            <version>2.4.0</version>
-                        </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>mac-arm</id>
-            <activation>
-                <os>
-                    <name>Mac OS X</name>
-                    <arch>aarch64</arch>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jogamp.gluegen</groupId>
-                    <artifactId>gluegen-rt</artifactId>
-                    <classifier>natives-linux-aarch64</classifier>
-                    <version>2.5.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.jogamp.jogl</groupId>
-                    <artifactId>jogl-all</artifactId>
-                    <classifier>natives-linux-aarch64</classifier>
-                    <version>2.5.0</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            <id>mac-intel</id>-->
+<!--            <activation>-->
+<!--                <os>-->
+<!--                    <name>Mac OS X</name>-->
+<!--                    <arch>x86_64</arch>-->
+<!--                </os>-->
+<!--            </activation>-->
+<!--            <dependencies>-->
+<!--                        <dependency>-->
+<!--                            <groupId>org.jogamp.gluegen</groupId>-->
+<!--                            <artifactId>gluegen-rt</artifactId>-->
+<!--                            <classifier>natives-macosx-universal</classifier>-->
+<!--                            <version>2.4.0</version>-->
+<!--                        </dependency>-->
+<!--                        <dependency>-->
+<!--                            <groupId>org.jogamp.jogl</groupId>-->
+<!--                            <artifactId>jogl-all</artifactId>-->
+<!--                            <classifier>natives-macosx-universal</classifier>-->
+<!--                            <version>2.4.0</version>-->
+<!--                        </dependency>-->
+<!--            </dependencies>-->
+<!--        </profile>-->
+<!--        <profile>-->
+<!--            <id>mac-arm</id>-->
+<!--            <activation>-->
+<!--                <os>-->
+<!--                    <name>Mac OS X</name>-->
+<!--                    <arch>aarch64</arch>-->
+<!--                </os>-->
+<!--            </activation>-->
+<!--            <dependencies>-->
+<!--                <dependency>-->
+<!--                    <groupId>org.jogamp.gluegen</groupId>-->
+<!--                    <artifactId>gluegen-rt</artifactId>-->
+<!--                    <classifier>natives-linux-aarch64</classifier>-->
+<!--                    <version>2.5.0</version>-->
+<!--                </dependency>-->
+<!--                <dependency>-->
+<!--                    <groupId>org.jogamp.jogl</groupId>-->
+<!--                    <artifactId>jogl-all</artifactId>-->
+<!--                    <classifier>natives-linux-aarch64</classifier>-->
+<!--                    <version>2.5.0</version>-->
+<!--                </dependency>-->
+<!--            </dependencies>-->
+<!--        </profile>-->
+<!--    </profiles>-->
 
     <build>
         <plugins>
