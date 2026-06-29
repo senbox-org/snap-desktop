@@ -346,10 +346,10 @@ public class SourceUI extends BaseOperatorUI {
         contentPanel.add(formatNameComboBox, gbc);
         gbc = SwingUtils.buildConstraints(0, 2, GridBagConstraints.NONE, GridBagConstraints.WEST, 1, 1, gapBetweenRows, 0);
         contentPanel.add(advancedOptionsBtn, gbc);
-        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 0, 0);
+        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 0, 0);
         advancedOptionsPanel.setVisible(false);
         contentPanel.add(advancedOptionsPanel, gbc);
-        gbc = SwingUtils.buildConstraints(0, 4, GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 0, 0);
+        gbc = SwingUtils.buildConstraints(0, 3, GridBagConstraints.BOTH, GridBagConstraints.WEST, 2, 1, 0, 0);
         contentPanel.add(new JPanel(), gbc);
 
         gbc = SwingUtils.buildConstraints(0, 0, GridBagConstraints.NONE, GridBagConstraints.CENTER, 1, 1, gapBetweenRows, 0);
