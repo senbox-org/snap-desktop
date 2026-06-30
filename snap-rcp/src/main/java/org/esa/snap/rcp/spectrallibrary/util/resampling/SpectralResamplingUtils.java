@@ -1,21 +1,15 @@
 package org.esa.snap.rcp.spectrallibrary.util.resampling;
 
 import org.esa.snap.speclib.io.csv.util.CsvTable;
-import org.esa.snap.speclib.io.csv.util.CsvUtils;
 import org.esa.snap.speclib.model.SpectralProfile;
 import org.esa.snap.speclib.model.SpectralSignature;
 import org.esa.snap.speclib.util.resampling.SpectralResampling;
 import org.esa.snap.speclib.util.resampling.SpectralResponseFunction;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-
-import static org.esa.snap.core.util.Debug.assertNotNull;
 
 
 /**
@@ -85,9 +79,6 @@ public class SpectralResamplingUtils {
      * @throws URISyntaxException -
      */
     public static CsvTable readFwhmFromCsv(String targetSensorName) throws IOException, URISyntaxException {
-        final URL resource = SpectralResponseFunction.class.getResource("fwhm_" + targetSensorName + ".csv");
-        assertNotNull(resource);
-        final File csvFile = new File(Objects.requireNonNull(resource).toURI());
-        return CsvUtils.read(csvFile.toPath());
+        return SpectralResponseFunction.readBundledFwhmFromCsv(targetSensorName);
     }
 }

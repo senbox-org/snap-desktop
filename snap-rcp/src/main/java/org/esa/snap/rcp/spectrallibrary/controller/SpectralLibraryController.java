@@ -173,7 +173,9 @@ public class SpectralLibraryController {
             return;
         }
         Optional<SpectralLibrary> libOpt = service.getLibrary(idOpt.get());
-        vm.setLibraryProfiles(libOpt.map(SpectralLibrary::getProfiles).orElse(List.of()));
+        List<SpectralProfile> profiles = libOpt.map(SpectralLibrary::getProfiles).orElse(List.of());
+        vm.setLibraryProfiles(profiles);
+        vm.replaceProfileColors(idOpt.get(), SpectralLibraryUtils.profileDisplayColors(profiles));
     }
 
     public void addSelectedPreviewToLibrary() {

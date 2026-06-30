@@ -5,7 +5,6 @@ import org.esa.snap.speclib.io.csv.util.CsvTable;
 import org.esa.snap.speclib.model.AttributeValue;
 import org.esa.snap.speclib.model.SpectralProfile;
 import org.esa.snap.speclib.model.SpectralSignature;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -25,9 +24,7 @@ public class SpectralResamplingUtilsTest {
 
     @Test
     @STTM("SNAP-4174")
-    @Ignore
     public void test_createResampledSpectralProfile() throws IOException, URISyntaxException {
-        // ignored for the moment, works in IDEA but not with maven. TODO: check
         Map<String, AttributeValue> attrs = new LinkedHashMap<>();
         attrs.put("material", AttributeValue.ofString("vegetation"));
 
@@ -66,6 +63,16 @@ public class SpectralResamplingUtilsTest {
         assertEquals(34, resampled.getSourceRef().get().getY());
         assertEquals(0, resampled.getSourceRef().get().getLevel());
         assertEquals("prodA", resampled.getSourceRef().get().getProductId().orElse(null));
+    }
+
+    @Test
+    @STTM("SNAP-4174")
+    public void test_readFwhmFromCsv_acceptsUppercaseSensorName() throws IOException, URISyntaxException {
+        CsvTable fwhmTable = SpectralResamplingUtils.readFwhmFromCsv("ENMAP");
+
+        assertEquals(java.util.List.of("wavelength", "fwhm"), fwhmTable.header());
+        assertEquals(224, fwhmTable.rows().size());
+        assertEquals(java.util.List.of("418.24", "6.99561"), fwhmTable.rows().getFirst());
     }
 
 }

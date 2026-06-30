@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.spectrallibrary.ui;
 
 import org.esa.snap.rcp.spectrallibrary.util.ColorUtils;
+import org.esa.snap.rcp.spectrallibrary.util.SpectralLibraryUtils;
 import org.esa.snap.speclib.model.SpectralProfile;
 import org.jfree.chart.*;
 import org.jfree.chart.annotations.XYTitleAnnotation;
@@ -441,7 +442,25 @@ public class PreviewPanel extends JPanel {
         if (p != null) {
             return p;
         }
-        return ColorUtils.DEFAULT_PALETTE[(id.hashCode() & 0x7fffffff) % ColorUtils.DEFAULT_PALETTE.length];
+
+        Color profileColor = profileDisplayColor(id);
+        if (profileColor != null) {
+            return profileColor;
+        }
+        return ColorUtils.defaultColor(id);
+    }
+
+    private Color profileDisplayColor(UUID id) {
+        if (id == null || profiles == null || profiles.isEmpty()) {
+            return null;
+        }
+
+        for (SpectralProfile profile : profiles) {
+            if (profile != null && id.equals(profile.getId())) {
+                return SpectralLibraryUtils.profileDisplayColor(profile);
+            }
+        }
+        return null;
     }
 
 

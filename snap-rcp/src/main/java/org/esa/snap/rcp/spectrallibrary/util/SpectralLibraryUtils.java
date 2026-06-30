@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.spectrallibrary.util;
 
 import org.esa.snap.core.datamodel.*;
+import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.speclib.model.AttributeValue;
 import org.esa.snap.speclib.model.SpectralAxis;
 import org.esa.snap.speclib.model.SpectralProfile;
@@ -9,6 +10,7 @@ import org.esa.snap.ui.product.ProductSceneView;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.AffineTransformation;
 
+import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.time.Instant;
 import java.util.*;
@@ -313,6 +315,41 @@ public class SpectralLibraryUtils {
             out = out.withAttribute(e.getKey().trim(), e.getValue());
         }
         return out;
+    }
+
+    public static Color profileDisplayColor(SpectralProfile profile) {
+        if (profile == null) {
+            return null;
+        }
+
+        Optional<AttributeValue> colorAttribute = profile.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR);
+        if (colorAttribute.isPresent()) {
+            Color parsed = ColorUtils.parseCssColor(colorAttribute.get().asString());
+            if (parsed != null) {
+                return parsed;
+            }
+        }
+
+        return ColorUtils.defaultColor(profile.getId());
+    }
+
+    public static Map<UUID, Color> profileDisplayColors(List<SpectralProfile> profiles) {
+        if (profiles == null || profiles.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<UUID, Color> colors = new LinkedHashMap<>();
+        for (SpectralProfile profile : profiles) {
+            if (profile == null || profile.getId() == null) {
+                continue;
+            }
+
+            Color color = profileDisplayColor(profile);
+            if (color != null) {
+                colors.put(profile.getId(), color);
+            }
+        }
+        return Map.copyOf(colors);
     }
 
     public static String normalizeUnit(String yUnit) {

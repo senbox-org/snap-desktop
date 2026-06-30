@@ -38,6 +38,7 @@ public class SpectralLibraryViewModel {
     private UiStatus status = UiStatus.idle();
 
     private final Map<UUID, Map<UUID, Color>> profileColorsByLibrary = new HashMap<>();
+    private final Map<UUID, Map<UUID, Color>> profilePaintOverridesByLibrary = new HashMap<>();
 
 
     public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -129,19 +130,64 @@ public class SpectralLibraryViewModel {
         if (libraryId == null) {
             return Map.of();
         }
-        Map<UUID, Color> m = profileColorsByLibrary.get(libraryId);
-        return (m == null) ? Map.of() : Map.copyOf(m);
+        Map<UUID, Color> profileColors = profileColorsByLibrary.get(libraryId);
+        Map<UUID, Color> paintOverrides = profilePaintOverridesByLibrary.get(libraryId);
+
+        if ((profileColors == null || profileColors.isEmpty()) && (paintOverrides == null || paintOverrides.isEmpty())) {
+            return Map.of();
+        }
+
+        Map<UUID, Color> combined = new HashMap<>();
+        if (paintOverrides != null) {
+            combined.putAll(paintOverrides);
+        }
+        if (profileColors != null) {
+            combined.putAll(profileColors);
+        }
+        return Map.copyOf(combined);
     }
 
     public Map<UUID, Color> getActiveLibraryProfileColors() {
         return getActiveLibraryId().map(this::getProfileColors).orElse(Map.of());
     }
 
+    public void replaceProfileColors(UUID libraryId, Map<UUID, Color> colors) {
+        if (libraryId == null) {
+            return;
+        }
+
+        Map<UUID, Color> replacement = new HashMap<>();
+        if (colors != null && !colors.isEmpty()) {
+            for (var e : colors.entrySet()) {
+                if (e.getKey() != null && e.getValue() != null) {
+                    replacement.put(e.getKey(), e.getValue());
+                }
+            }
+        }
+
+        Map<UUID, Color> current = profileColorsByLibrary.get(libraryId);
+        if (replacement.isEmpty()) {
+            if (current == null || current.isEmpty()) {
+                return;
+            }
+            profileColorsByLibrary.remove(libraryId);
+            pcs.firePropertyChange(PROP_PROFILE_COLORS, null, null);
+            return;
+        }
+
+        if (replacement.equals(current)) {
+            return;
+        }
+
+        profileColorsByLibrary.put(libraryId, replacement);
+        pcs.firePropertyChange(PROP_PROFILE_COLORS, null, null);
+    }
+
     public void setProfileColors(UUID libraryId, Map<UUID, Color> updates) {
         if (libraryId == null || updates == null || updates.isEmpty()) {
             return;
         }
-        Map<UUID, Color> m = profileColorsByLibrary.computeIfAbsent(libraryId, k -> new HashMap<>());
+        Map<UUID, Color> m = profilePaintOverridesByLibrary.computeIfAbsent(libraryId, k -> new HashMap<>());
         boolean changed = false;
 
         for (var e : updates.entrySet()) {
@@ -163,6 +209,9 @@ public class SpectralLibraryViewModel {
         }
 
         if (changed) {
+            if (m.isEmpty()) {
+                profilePaintOverridesByLibrary.remove(libraryId);
+            }
             pcs.firePropertyChange(PROP_PROFILE_COLORS, null, null);
         }
     }
