@@ -52,9 +52,16 @@ public class PinToolSplitButton extends JPanel {
         toggleButton.setText(null);
         toggleButton.setHorizontalAlignment(SwingConstants.LEFT);
         toggleButton.setBorderPainted(false);
+        add(toggleButton, BorderLayout.CENTER);
 
         // Create the color button with initial color
+        // todo this is where default preferences could be set
         colorComboBox = new ColorComboBox(Color.BLUE);
+
+        // disabling this for SeaDAS as it is too many default buttons
+        // todo this could be added to Preferences if desired
+        boolean includePinColorButton = false;
+        if (includePinColorButton) {
         // enforce the size
         Dimension comboxBoxSize = new Dimension(25, toggleButton.getPreferredSize().height - 10);
         colorComboBox.setPreferredSize(comboxBoxSize);
@@ -71,8 +78,8 @@ public class PinToolSplitButton extends JPanel {
             propertyChangeSupport.firePropertyChange(COLOR_PROPERTY, oldColor, newColor);
         });
 
-        add(toggleButton, BorderLayout.CENTER);
         add(colorComboBox, BorderLayout.EAST);
+    }
     }
 
     /**
