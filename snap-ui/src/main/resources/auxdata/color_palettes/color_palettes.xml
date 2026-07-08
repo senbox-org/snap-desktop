@@ -1,0 +1,74 @@
+<paletteList>
+    <Palette name="oceancolor_standard.cpd">
+        <CAT>STANDARD</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="oceancolor_sss.cpd">
+        <CAT>STANDARD</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="oceancolor_ndvi.cpd">
+        <CAT>STANDARD</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="sm.cpd">
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="gray_scale.cpd">
+        <CAT>MONOCHROME</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="standard_red.cpd">
+        <CAT>MONOCHROME</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="standard_blue.cpd">
+        <CAT>MONOCHROME</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="standard_green.cpd">
+        <CAT>MONOCHROME</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="oceancolor_zphotic.cpd">
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="smooth_inv_blue.cpd">
+        <CAT>MONOCHROME</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="smooth_green.cpd">
+        <CAT>MONOCHROME</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="topography.cpd">
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="chlor_blue_green.cpd">
+        <CAT>STANDARD</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="universal_bluered.cpd">
+        <CAT>STANDARD</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="universal_bluegreen.cpd">
+        <CAT>STANDARD</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="deep.cpt">
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="anomalies1_universal.cpd">
+        <CAT>ANOMALIES</CAT>
+        <UNIVERSAL>true</UNIVERSAL>
+    </Palette>
+    <Palette name="anomalies2_universal.cpd">
+        <CAT>ANOMALIES</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="gradient_red_white_blue.cpd">
+        <CAT>ANOMALIES</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+</paletteList>

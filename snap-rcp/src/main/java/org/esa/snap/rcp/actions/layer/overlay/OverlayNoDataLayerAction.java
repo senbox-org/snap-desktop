@@ -28,6 +28,9 @@ import org.openide.util.NbBundle;
         "CTL_OverlayNoDataLayerActionToolTip=Show/hide no-data overlay for the selected image"
 })
 public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
+
+    boolean isSetByThisTool = false;
+
     @Override
     protected void initActionProperties() {
         putValue(NAME, Bundle.CTL_OverlayNoDataLayerActionName());
@@ -38,16 +41,26 @@ public final class OverlayNoDataLayerAction extends AbstractOverlayAction {
 
     @Override
     protected boolean getActionSelectionState(ProductSceneView view) {
+        if (isSetByThisTool) {
+            isSetByThisTool = false;
         return view.isNoDataOverlayEnabled();
+        } else {
+            return false;
+        }
     }
 
     @Override
     protected boolean getActionEnabledState(ProductSceneView view) {
-        return view.getRaster().isValidMaskUsed();
+        if (view.getRaster() != null && view.getRaster().isValidMaskUsed()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     protected void setOverlayEnableState(ProductSceneView view) {
+        isSetByThisTool = true;
         view.setNoDataOverlayEnabled(!getActionSelectionState(view));
     }
 

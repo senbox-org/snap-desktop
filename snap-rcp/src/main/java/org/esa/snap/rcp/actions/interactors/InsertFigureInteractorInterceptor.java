@@ -44,12 +44,34 @@ public class InsertFigureInteractorInterceptor extends AbstractInteractorInterce
     @Override
     public boolean interactionAboutToStart(Interactor interactor, InputEvent inputEvent) {
         final ProductSceneView productSceneView = getProductSceneView(inputEvent);
+
+        if (!productSceneView.isVectorOverlayEnabled()) {
+            productSceneView.setVectorOverlayEnabled(true);
+        }
+//        if (productSceneView != null) {
+//            List<Layer> childLayers = getGeometryLayers(productSceneView);
+////                    childLayers.stream().forEach(layer -> layer.setVisible(isSelected()));
+//            childLayers.stream().forEach(layer -> layer.setVisible(true));
+//        }
+
         return getActiveVectorDataLayer(productSceneView) != null;
+
+
+    }
+
+    private List<Layer> getGeometryLayers(ProductSceneView sceneView) {
+        final LayerFilter geometryFilter = VectorDataLayerFilterFactory.createGeometryFilter();
+
+        return LayerUtils.getChildLayers(sceneView.getRootLayer(), LayerUtils.SEARCH_DEEP, geometryFilter);
     }
 
     public static VectorDataLayer getActiveVectorDataLayer(ProductSceneView productSceneView) {
         if (productSceneView == null) {
             return null;
+        }
+
+        if (!productSceneView.isVectorOverlayEnabled()) {
+            productSceneView.setVectorOverlayEnabled(true);
         }
 
         final LayerFilter geometryFilter = VectorDataLayerFilterFactory.createGeometryFilter();
