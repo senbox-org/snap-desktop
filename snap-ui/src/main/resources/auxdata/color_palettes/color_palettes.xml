@@ -71,4 +71,149 @@
         <CAT>ANOMALIES</CAT>
         <UNIVERSAL>false</UNIVERSAL>
     </Palette>
+
+
+
+
+    <Palette name="cc_chl.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="cc_general.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="cc_iop_quality.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="cc_tsm.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="cc_yellowsubstance.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="cc_z90.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="meris_algal.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="meris_case2.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="meris_cloud.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="meris_pressure.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="meris_veg_index.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="meris_wind_direction.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="terrain.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="tree_cover_percent.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="wew_water_chl.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="wew_water_tau.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="wew_water_tsm.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="wew_water_wlr.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="wew_water_yel.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+
+    <Palette name="5_colors.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="7_colors.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="AlosAV2_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="AlosPRI_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="CHL_SeaWiFS.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="Deimos_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="Ikonos_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="JET.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="Kompsat_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="Pleiades_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="RapidEye_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="Spot6_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="Spot_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="WorldView2ESA_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+    <Palette name="WorldView_color_palette.cpd">
+        <CAT>DISABLE</CAT>
+        <UNIVERSAL>false</UNIVERSAL>
+    </Palette>
+
+    forel-ule.cpd
+
+
 </paletteList>
