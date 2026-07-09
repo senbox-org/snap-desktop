@@ -17,6 +17,7 @@ package org.esa.snap.graphbuilder.rcp.actions;
 
 import org.esa.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -39,7 +40,7 @@ import java.io.InputStream;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Tools",position = 310, separatorBefore = 300),
-        @ActionReference(path = "Toolbars/Processing", position = 10)
+        @ActionReference(path = "Toolbars/" + PackageDefaults.GPT_GRAPH_BUILDER_TOOLBAR, position = 10)
 })
 @NbBundle.Messages({
         "CTL_GraphBuilderAction_MenuText=GraphBuilder",

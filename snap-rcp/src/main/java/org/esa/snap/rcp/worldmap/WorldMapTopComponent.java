@@ -22,6 +22,7 @@ import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.WorldMapPane;
 import org.esa.snap.ui.WorldMapPaneDataModel;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -45,9 +46,9 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
-        mode = "navigator",
-        openAtStartup = false,
-        position = 40
+        mode = PackageDefaults.WORLD_MAP_MODE,
+        openAtStartup = PackageDefaults.WORLD_MAP_OPEN,
+        position = PackageDefaults.WORLD_MAP_POSITION
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.worldmap.WorldMapTopComponent")
 @ActionReferences({
