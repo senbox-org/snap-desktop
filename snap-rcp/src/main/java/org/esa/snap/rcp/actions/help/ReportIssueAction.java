@@ -15,6 +15,7 @@
  */
 package org.esa.snap.rcp.actions.help;
 
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.runtime.Config;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -39,7 +40,6 @@ import java.awt.event.ActionEvent;
 })
 public class ReportIssueAction extends AbstractAction {
 
-    private static final String DEFAULT_REPORT_ISSUE_PAGE_URL = "https://step.esa.int/main/community/issue-reporting/";
 
     /**
      * Launches the default browser to display the web page.
@@ -49,6 +49,9 @@ public class ReportIssueAction extends AbstractAction {
      */
     @Override
     public void actionPerformed(ActionEvent event) {
-        DesktopHelper.browse(Config.instance().preferences().get("snap.reportIssuePageUrl", DEFAULT_REPORT_ISSUE_PAGE_URL));
+
+        String reportIssueUrl = SystemUtils.getReportAnIssueUrl();
+
+        DesktopHelper.browse(reportIssueUrl);
     }
 }
