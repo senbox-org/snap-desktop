@@ -1,0 +1,19 @@
+# RGB-Image Profile
+# A true color RGB configuration profile for PACE OCI
+# which uses two band each for red, green and blue
+#
+name=OCI_TC_2Bands_640_670_540_560_420_460
+red=log(((rhos_640 + rhos_670)/2)/0.01)/log(1/0.01)
+green=log(((rhos_540 + rhos_560)/2)/0.01)/log(1/0.01)
+blue=log(((rhos_420 + rhos_460)/2)/0.01)/log(1/0.01)
+valid_pixel_expression=\!nan(rhos_640) and \!nan(rhos_670) and \!nan(rhos_540) and \!nan(rhos_560) and \!nan(rhos_420) and \!nan(rhos_460)
+
+red_min=0.0
+red_max=1.1
+green_min=0.0
+green_max=1.1
+blue_min=0.0
+blue_max=1.1
+
+
+

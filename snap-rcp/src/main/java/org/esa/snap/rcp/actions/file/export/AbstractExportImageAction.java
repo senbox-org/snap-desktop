@@ -116,9 +116,9 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
 
         Dimension fileChooserSize = fileChooser.getPreferredSize();
         if (fileChooserSize != null) {
-            fileChooser.setPreferredSize(new Dimension(fileChooserSize.width + 120, fileChooserSize.height));
+            fileChooser.setPreferredSize(new Dimension(fileChooserSize.width + 120, fileChooserSize.height + 300));
         } else {
-            fileChooser.setPreferredSize(new Dimension(512, 256));
+            fileChooser.setPreferredSize(new Dimension(512, 700));
         }
 
         int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());

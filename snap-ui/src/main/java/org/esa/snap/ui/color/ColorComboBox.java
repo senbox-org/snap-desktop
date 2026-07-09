@@ -63,6 +63,10 @@ public class ColorComboBox extends JComponent {
         return selectedColor;
     }
 
+    public void setEnabled(boolean enabled) {
+        colorLabel.setEnabled(enabled);
+    }
+
     public void setSelectedColor(Color selectedColor) {
         Color oldValue = this.selectedColor;
         this.selectedColor = selectedColor;

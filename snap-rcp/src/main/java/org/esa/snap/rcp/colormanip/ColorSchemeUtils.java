@@ -307,9 +307,19 @@ public class ColorSchemeUtils {
         switch (schemeCpdOption) {
             case ColorManipulationDefaults.OPTION_COLOR_STANDARD_SCHEME:
                 cpdFileName = colorSchemeInfo.getCpdFilename(false);
+                if (cpdFileName == null) {
+                    cpdFileName = configuration.getPropertyString(
+                            ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_KEY,
+                            ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_STANDARD_DEFAULT);
+                }
                 break;
             case ColorManipulationDefaults.OPTION_COLOR_UNIVERSAL_SCHEME:
                 cpdFileName = colorSchemeInfo.getCpdFilename(true);
+                if (cpdFileName == null) {
+                    cpdFileName = configuration.getPropertyString(
+                            ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_KEY,
+                            ColorManipulationDefaults.PROPERTY_PALETTE_DEFAULT_UNIVERSAL_DEFAULT);
+                }
                 break;
             case ColorManipulationDefaults.OPTION_COLOR_GRAY_SCALE:
                 cpdFileName = configuration.getPropertyString(
