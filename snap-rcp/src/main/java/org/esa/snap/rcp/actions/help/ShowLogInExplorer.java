@@ -18,19 +18,21 @@
 
 package org.esa.snap.rcp.actions.help;
 
-import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.modules.Places;
 import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 /**
  * @author muhammad.bc.
@@ -41,30 +43,25 @@ import java.nio.file.Path;
 @NbBundle.Messages({"CTL_ShowLogFileInExplorerAction_MenuText=Show Log Directory"})
 public class ShowLogInExplorer extends AbstractAction {
 
+    private static final Logger LOG = Logger.getLogger(ShowLogInExplorer.class.getName());
+
     @Override
     public void actionPerformed(ActionEvent e) {
         openLogFile();
     }
 
     private void openLogFile() {
-        String os = System.getProperty("os.name").toLowerCase();
-        Path userHomeDir = SystemUtils.getUserHomeDir().toPath();
-        Path logDir = null;
-        if (isLinuxOrMac(os)) {
-            logDir = userHomeDir.resolve(".snap/system/var/log");
-        } else if (os.startsWith("windows")) {
-            logDir = userHomeDir.resolve("AppData/Roaming/SNAP/var/log");
-        }
+        File userDir = Places.getUserDirectory();
+        Path logDir = userDir != null ? userDir.toPath().resolve("var").resolve("log") : null;
         if (logDir != null && Files.exists(logDir)) {
             try {
                 Desktop.getDesktop().open(logDir.toFile());
+                LOG.info("Opened log directory: " + logDir);
             } catch (IOException e) {
                 Dialogs.showError("Could not open log directory!");
             }
+        } else {
+            Dialogs.showError("Log directory does not exist: " + logDir);
         }
-    }
-
-    private boolean isLinuxOrMac(String os) {
-        return os.startsWith("darwin") || os.startsWith("mac") || os.startsWith("linux");
     }
 }
