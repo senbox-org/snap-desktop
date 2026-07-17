@@ -2,6 +2,8 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 14.0.0
+    [SNAP-4228] SNAP uninstaller should to consider snap.conf when deleting user data
+    [SNAP-4225] Update launcher file in windows installer
     [SNAP-4218] Progressbar does not move when exporting to DIMAP
     [SNAP-4213] Add elevation band leads to out-ofmemory exception
     [SNAP-4212] DIMAP ProductReader does not handle subsetDef.isIgnoreMetadata()
