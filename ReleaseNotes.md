@@ -2,6 +2,7 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 14.0.0
+    [SNAP-4231] Load Project: Reopening the current project fails with ConcurrentModificationException
     [SNAP-4229] Pixel Alignment Bug in Zoomed Image View (mac)
     [SNAP-4228] SNAP uninstaller should to consider snap.conf when deleting user data
     [SNAP-4225] Update launcher file in windows installer
