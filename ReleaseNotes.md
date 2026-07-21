@@ -7,6 +7,7 @@ Release Notes - Sentinel Application Platform
     [SNAP-4228] SNAP uninstaller should to consider snap.conf when deleting user data
     [SNAP-4225] Update launcher file in windows installer
     [SNAP-4218] Progressbar does not move when exporting to DIMAP
+    [SNAP-4214] Resampling EnMap L1C data fails with strange error message
     [SNAP-4213] Add elevation band leads to out-ofmemory exception
     [SNAP-4212] DIMAP ProductReader does not handle subsetDef.isIgnoreMetadata()
     [SNAP-4209] Copernicus DEM download does not react on cancel
