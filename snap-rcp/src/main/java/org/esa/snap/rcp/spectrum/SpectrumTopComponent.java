@@ -194,10 +194,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
         return productToSpectraMap;
     }
 
-    Map<Product, List<SpectrumBand>> getProductToSpectralBandsMap() {
-        return productToSpectralBandsMap;
-    }
-
     ChartHandler getChartHandler() {
         return chartHandler;
     }
@@ -319,6 +315,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     }
 
     private SpectrumBand[] getAvailableSpectralBands(Product product) {
+        System.out.println("getAvailableSpectralBands for productNr: " + product.getRefNo());
         if (product == null) {
             return new SpectrumBand[0];
         }
@@ -570,23 +567,35 @@ public class SpectrumTopComponent extends ToolTopComponent {
         secondaryProducts.addAll(Arrays.asList(selectedProducts));
         for (Product selectedProduct : selectedProducts) {
             selectedProduct.addProductNodeListener(productNodeHandler);
-            setUpSpectra(selectedProduct);
-            selectSpectralBands(selectedProduct);
         }
+        setUpSpectra();
         recreateChart();
-//        setUpSpectra();
     }
 
     private void selectSpectralBands() {
-        selectSpectralBands(currentProduct);
-    }
-
-    private void selectSpectralBands(Product product) {
-        final DisplayableSpectrum[] allSpectra = productToSpectraMap.get(product);
-        final SpectrumChooser spectrumChooser = new SpectrumChooser(SwingUtilities.getWindowAncestor(this), allSpectra);
+//        selectSpectralBands(currentProduct);
+        final List<Product> spectraToBeDisplayed = new ArrayList<>();
+        spectraToBeDisplayed.add(currentProduct);
+        spectraToBeDisplayed.addAll(getSecondaryProducts());
+        final List<DisplayableSpectrum> allSpectraList = new ArrayList<>();
+        for (Product product : spectraToBeDisplayed) {
+            allSpectraList.addAll(Arrays.asList(productToSpectraMap.get(product)));
+        }
+        final DisplayableSpectrum[] allSpectra = allSpectraList.toArray(new DisplayableSpectrum[0]);
+        SpectrumChooser spectrumChooser = new SpectrumChooser(SwingUtilities.getWindowAncestor(this), allSpectra);
         if (spectrumChooser.show() == AbstractDialog.ID_OK) {
             final DisplayableSpectrum[] spectra = spectrumChooser.getSpectra();
-            productToSpectraMap.put(product, spectra);
+            final Map<Product, List<DisplayableSpectrum>> productSpectra = new HashMap<>();
+            for (DisplayableSpectrum displayableSpectrum : spectra) {
+                Product product = displayableSpectrum.getSpectralBands()[0].getProduct();
+                if (!productSpectra.containsKey(product)) {
+                    productSpectra.put(product, new ArrayList<>());
+                }
+                productSpectra.get(product).add(displayableSpectrum);
+            }
+            for (Product product : productSpectra.keySet()) {
+                productToSpectraMap.put(product, productSpectra.get(product).toArray(new DisplayableSpectrum[0]));
+            }
         }
     }
 
