@@ -14,7 +14,7 @@ class WorkerChain {
     private boolean workerIsRunning = false;
 
     WorkerChain() {
-        synchronizedWorkerChain = Collections.synchronizedList(new ArrayList<SwingWorker>());
+        synchronizedWorkerChain = Collections.synchronizedList(new ArrayList<>());
     }
 
     synchronized void setOrExecuteNextWorker(SwingWorker w, boolean chained) {

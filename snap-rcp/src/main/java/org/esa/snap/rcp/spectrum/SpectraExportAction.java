@@ -51,7 +51,7 @@ class SpectraExportAction extends AbstractAction {
         final List<DisplayableSpectrum> selectedSpectra = spectrumTopComponent.getSelectedSpectra();
         final Placemark[] pins = spectrumTopComponent.getDisplayedPins();
 
-        final List<SpectrumGraph> spectrumGraphList = new ArrayList<SpectrumGraph>();
+        final List<SpectrumGraph> spectrumGraphList = new ArrayList<>();
         final Map<Placemark, Map<Band, Double>> energiesMap = spectrumTopComponent.getPinToEnergies();
 
         for (Placemark pin : pins) {
