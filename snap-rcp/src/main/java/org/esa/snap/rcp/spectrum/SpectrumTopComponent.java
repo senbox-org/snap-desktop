@@ -98,6 +98,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
     private boolean isCodeInducedAxisChange;
     private boolean automaticAdjustment;
     private ProductManager productManager;
+    private boolean pixelPosNotAvailable;
 
     public SpectrumTopComponent() {
         productNodeHandler = new ProductNodeHandler(this);
@@ -394,14 +395,6 @@ public class SpectrumTopComponent extends ToolTopComponent {
         showSpectrumForCursorButton.setSelected(true);
         showSpectrumForCursorButton.setToolTipText("Show spectrum at cursor position.");
 
-        showSecondaryProductSpectrumButton = ToolButtonFactory.createButton(
-                UIUtils.loadImageIcon("icons/SelectSecondaryProductSpectra24.gif"), true);
-        showSecondaryProductSpectrumButton.addActionListener(e -> selectSecondaryProduct());
-        showSecondaryProductSpectrumButton.setName("showSecondaryProductSpectrumButton");
-        showSecondaryProductSpectrumButton.setSelected(false);
-        showSecondaryProductSpectrumButton.setEnabled(false);
-        showSecondaryProductSpectrumButton.setToolTipText("Show spectrum at cursor position of secondary product.");
-
         showSpectraForSelectedPinsButton = ToolButtonFactory.createButton(
                 UIUtils.loadImageIcon("icons/SelectedPinSpectra24.gif"), true);
         showSpectraForSelectedPinsButton.addActionListener(e -> {
@@ -432,6 +425,14 @@ public class SpectrumTopComponent extends ToolTopComponent {
         showGridButton.addActionListener(e -> chartHandler.setGridVisible(showGridButton.isSelected()));
         showGridButton.setName("showGridButton");
         showGridButton.setToolTipText("Show diagram grid.");
+
+        showSecondaryProductSpectrumButton = ToolButtonFactory.createButton(
+                UIUtils.loadImageIcon("icons/SelectSecondaryProductSpectra24.gif"), true);
+        showSecondaryProductSpectrumButton.addActionListener(e -> selectSecondaryProduct());
+        showSecondaryProductSpectrumButton.setName("showSecondaryProductSpectrumButton");
+        showSecondaryProductSpectrumButton.setSelected(false);
+        showSecondaryProductSpectrumButton.setEnabled(false);
+        showSecondaryProductSpectrumButton.setToolTipText("Show spectrum at cursor position of secondary product.");
 
         AbstractButton exportSpectraButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Export24.gif"),
                 false);
@@ -582,7 +583,8 @@ public class SpectrumTopComponent extends ToolTopComponent {
             allSpectraList.addAll(Arrays.asList(productToSpectraMap.get(product)));
         }
         final DisplayableSpectrum[] allSpectra = allSpectraList.toArray(new DisplayableSpectrum[0]);
-        SpectrumChooser spectrumChooser = new SpectrumChooser(SwingUtilities.getWindowAncestor(this), allSpectra);
+        boolean alsoChooseColor = true;
+        SpectrumChooser spectrumChooser = new SpectrumChooser(SwingUtilities.getWindowAncestor(this), allSpectra, alsoChooseColor);
         if (spectrumChooser.show() == AbstractDialog.ID_OK) {
             final DisplayableSpectrum[] spectra = spectrumChooser.getSpectra();
             final Map<Product, List<DisplayableSpectrum>> productSpectra = new HashMap<>();
@@ -823,5 +825,13 @@ public class SpectrumTopComponent extends ToolTopComponent {
 
     Map<Placemark, Map<Band, Double>> getPinToEnergies() {
         return chartHandler.getPinToEnergies();
+    }
+
+    public void setPixelPosNotAvailable(boolean pixelPosNotAvailable) {
+        this.pixelPosNotAvailable = pixelPosNotAvailable;
+    }
+
+    public boolean isPixelPosNotAvailable() {
+        return pixelPosNotAvailable;
     }
 }

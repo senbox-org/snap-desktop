@@ -4,6 +4,8 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ProductData;
 import org.junit.Test;
 
+import java.awt.Color;
+
 import static org.junit.Assert.*;
 
 /**
@@ -18,6 +20,7 @@ public class DisplayableSpectrumTest {
 
         assertEquals(spectrumName, displayableSpectrum.getName());
         assertEquals(DisplayableSpectrum.NO_UNIT, displayableSpectrum.getUnit());
+        assertEquals(Color.BLACK, displayableSpectrum.getColor());
         assertNull(displayableSpectrum.getLineStyle());
         assertEquals(SpectrumShapeProvider.DEFAULT_SCALE_GRADE, displayableSpectrum.getSymbolSize());
         assertEquals(SpectrumShapeProvider.getScaledShape(1, SpectrumShapeProvider.DEFAULT_SCALE_GRADE),
@@ -75,6 +78,14 @@ public class DisplayableSpectrumTest {
         assertTrue(displayableSpectrum.isBandSelected(0));
         assertFalse(displayableSpectrum.isBandSelected(1));
         assertTrue(displayableSpectrum.isBandSelected(2));
+    }
+
+    @Test
+    public void testColor() {
+        DisplayableSpectrum displayableSpectrum = new DisplayableSpectrum("name", 1);
+        assertEquals(Color.BLACK, displayableSpectrum.getColor());
+        displayableSpectrum.setColor(Color.RED);
+        assertEquals(Color.RED, displayableSpectrum.getColor());
     }
 
     private Band createBand(int number) {

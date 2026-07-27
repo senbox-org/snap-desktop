@@ -30,12 +30,14 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
                                 int currentLevel,
                                 boolean pixelPosValid,
                                 MouseEvent e) {
+        topComponent.setPixelPosNotAvailable(false);
         CursorSpectraUpdater worker = new CursorSpectraUpdater(pixelPosValid, pixelX, pixelY, currentLevel, e.isShiftDown(), support);
         workerChain.setOrExecuteNextWorker(worker, false);
     }
 
     @Override
     public void pixelPosNotAvailable() {
+        topComponent.setPixelPosNotAvailable(true);
         CursorSpectraRemover worker = new CursorSpectraRemover(support);
         workerChain.setOrExecuteNextWorker(worker, false);
     }
@@ -95,11 +97,12 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
         @Override
         protected Void doInBackground() throws Exception {
             if (shouldUpdateCursorPosition()) {
+                topComponent.setPrepareForUpdateMessage();
                 Waiter waiter = new Waiter();
                 waiter.execute();
                 topComponent.updateData(pixelX, pixelY, currentLevel, pixelPosValid);
                 waiter.cancel(true);
-                waiter.clearMessage();
+                topComponent.clearPrepareForUpdateMessage();
             }
             return null;
         }
@@ -125,11 +128,9 @@ public class CursorSpectrumPixelPositionListener implements PixelPositionListene
 
         @Override
         protected void done() {
-            topComponent.setPrepareForUpdateMessage();
         }
 
         void clearMessage() {
-            topComponent.clearPrepareForUpdateMessage();
         }
     }
 }

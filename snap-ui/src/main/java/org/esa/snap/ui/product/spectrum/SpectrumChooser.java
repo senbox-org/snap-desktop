@@ -7,6 +7,7 @@ import org.esa.snap.core.util.ArrayUtils;
 import org.esa.snap.ui.DecimalTableCellRenderer;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
+import org.esa.snap.ui.color.ColorComboBox;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsComponent;
 import org.esa.snap.ui.product.LoadSaveRasterDataNodesConfigurationsProvider;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -63,6 +64,7 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
     private static SpectrumSelectionAdmin selectionAdmin;
     private static boolean selectionChangeLock;
 
+    private final boolean alsoChooseColor;
     private JPanel spectraPanel;
     private final JPanel[] bandTablePanels;
     private final JTable[] bandTables;
@@ -71,7 +73,12 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
     private TableLayout spectraPanelLayout;
 
     public SpectrumChooser(Window parent, DisplayableSpectrum[] originalSpectra) {
+        this(parent, originalSpectra, false);
+    }
+
+    public SpectrumChooser(Window parent, DisplayableSpectrum[] originalSpectra, boolean alsoChooseColor) {
         super(parent, "Available Spectra", ModalDialog.ID_OK_CANCEL_HELP, "spectrumChooser");
+        this.alsoChooseColor = alsoChooseColor;
         if (originalSpectra != null) {
             this.originalSpectra = originalSpectra;
             List<DisplayableSpectrum> spectraWithBands = new ArrayList<>();
@@ -119,7 +126,11 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
     }
 
     private void initSpectraPanel() {
-        spectraPanelLayout = new TableLayout(7);
+        if (alsoChooseColor) {
+            spectraPanelLayout = new TableLayout(8);
+        } else {
+            spectraPanelLayout = new TableLayout(7);
+        }
         spectraPanelLayout.setTableFill(TableLayout.Fill.HORIZONTAL);
         spectraPanelLayout.setTableWeightY(0.0);
         spectraPanelLayout.setTableWeightX(1.0);
@@ -132,6 +143,9 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
         spectraPanel.add(new JLabel(""));
         spectraPanel.add(new JLabel("Spectrum Name"));
         spectraPanel.add(new JLabel("Unit"));
+        if (alsoChooseColor) {
+            spectraPanel.add(new JLabel("Color"));
+        }
         spectraPanel.add(new JLabel("Line Style"));
         spectraPanel.add(new JLabel("Symbol"));
         spectraPanel.add(new JLabel("Symbol Size"));
@@ -139,7 +153,11 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
         for (int i = 0; i < spectra.length; i++) {
             selectionAdmin.evaluateSpectrumSelections(spectra[i]);
             addSpectrumComponentsToSpectraPanel(i);
-            spectraPanelLayout.setCellColspan((i * 2) + 2, 1, 6);
+            if (alsoChooseColor) {
+                spectraPanelLayout.setCellColspan((i * 2) + 2, 1, 7);
+            } else {
+                spectraPanelLayout.setCellColspan((i * 2) + 2, 1, 6);
+            }
             spectraPanel.add(new JLabel());
             bandTablePanels[i] = new JPanel(new BorderLayout());
             bandTablePanels[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -173,6 +191,14 @@ public class SpectrumChooser extends ModalDialog implements LoadSaveRasterDataNo
         spectrumNameLabel.setFont(font);
         spectraPanel.add(spectrumNameLabel);
         spectraPanel.add(new JLabel(spectrum.getUnit()));
+        if (alsoChooseColor) {
+            ColorComboBox colorComboBox = new ColorComboBox(spectrum.getColor());
+            colorComboBox.addPropertyChangeListener(ColorComboBox.SELECTED_COLOR_PROPERTY, evt -> {
+                spectrum.setColor(colorComboBox.getSelectedColor());
+            });
+            colorComboBox.setPreferredSize(new Dimension(30, 20));
+            spectraPanel.add(colorComboBox);
+        }
         JComboBox<ImageIcon> strokeComboBox;
         if (spectrum.isDefaultOrRemainingBandsSpectrum()) {
             strokeComboBox = new JComboBox<>(new ImageIcon[]{strokeIcon});

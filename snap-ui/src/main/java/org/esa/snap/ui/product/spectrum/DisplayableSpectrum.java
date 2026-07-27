@@ -2,7 +2,7 @@ package org.esa.snap.ui.product.spectrum;
 
 import com.bc.ceres.core.Assert;
 import org.esa.snap.core.datamodel.Band;
-
+import java.awt.Color;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ public class DisplayableSpectrum implements Spectrum {
     private List<SpectrumBand> bands;
     private String name;
     private Stroke lineStyle;
+    private Color color;
     private int symbolIndex;
     private int symbolSize;
     private boolean isSelected;
@@ -31,6 +32,7 @@ public class DisplayableSpectrum implements Spectrum {
         this.name = spectrumName;
         bands = new ArrayList<SpectrumBand>(spectralBands.length);
         this.symbolIndex = symbolIndex;
+        this.color = Color.BLACK;
         symbolSize = SpectrumShapeProvider.DEFAULT_SCALE_GRADE;
         unit = NO_UNIT;
         for (SpectrumBand spectralBand : spectralBands) {
@@ -118,6 +120,14 @@ public class DisplayableSpectrum implements Spectrum {
 
     public void setLineStyle(Stroke lineStyle) {
         this.lineStyle = lineStyle;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     public void setSelected(boolean selected) {

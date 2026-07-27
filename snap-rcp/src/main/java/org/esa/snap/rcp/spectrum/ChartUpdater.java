@@ -183,7 +183,7 @@ class ChartUpdater {
                         }
                     }
                 }
-                updateRenderer(dataset.getSeriesCount(), Color.BLACK, spectrum, chart);
+                updateRenderer(dataset.getSeriesCount(), spectrum.getColor(), spectrum, chart);
                 dataset.addSeries(series);
             }
         }

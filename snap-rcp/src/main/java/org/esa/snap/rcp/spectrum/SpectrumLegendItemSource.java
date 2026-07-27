@@ -32,10 +32,11 @@ class SpectrumLegendItemSource implements LegendItemSource {
                 itemCollection.add(item);
             });
         }
-        if (spectrumTopComponent.isShowingCursorSpectrum() && spectrumTopComponent.showsValidCursorSpectra()) {
+        if (spectrumTopComponent.isShowingCursorSpectrum()
+                && spectrumTopComponent.showsValidCursorSpectra()
+                && !spectrumTopComponent.isPixelPosNotAvailable()) {
             spectra.stream().filter(DisplayableSpectrum::hasSelectedBands).forEach(spectrum -> {
-                Paint defaultPaint = Color.BLACK;
-                LegendItem item = createLegendItem(spectrum, defaultPaint, spectrum.getName());
+                LegendItem item = createLegendItem(spectrum, spectrum.getColor(), spectrum.getName());
                 itemCollection.add(item);
             });
         }
