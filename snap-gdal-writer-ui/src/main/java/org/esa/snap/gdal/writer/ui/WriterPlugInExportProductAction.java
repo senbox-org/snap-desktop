@@ -6,6 +6,7 @@ import org.esa.snap.core.dataio.ProductWriterPlugIn;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.dataio.gdal.GDALLoader;
 import org.esa.snap.dataio.gdal.drivers.GDAL;
 import org.esa.snap.dataio.gdal.writer.plugins.AbstractDriverProductWriterPlugIn;
@@ -70,14 +71,9 @@ public class WriterPlugInExportProductAction extends ExportProductAction {
             ExportDriversFileFilter selectedFileFilter = (ExportDriversFileFilter) fileChooser.getFileFilter();
             String fileName = this.enteredFileName;
             if (StringUtils.isNullOrEmpty(fileName)) {
-                fileName = selectedFileFilter.getDriverInfo().getDriverDisplayName();
-            } else {
-                int index = fileName.lastIndexOf(".");
-                if (index >= 0) {
-                    fileName = fileName.substring(0, index);
-                }
+                fileName = product.getName();
             }
-            fileName += selectedFileFilter.getDriverInfo().getExtensionName();
+            fileName = FileUtils.exchangeExtension(fileName, selectedFileFilter.getDriverInfo().getExtensionName());
             fileChooser.setCurrentFilename(fileName);
         });
 
