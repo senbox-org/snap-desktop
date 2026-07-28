@@ -1,14 +1,15 @@
 package org.esa.snap.gdal.writer.ui;
 
 import org.esa.lib.gdal.activator.GDALDriverInfo;
-import org.esa.snap.dataio.gdal.GDALLoader;
-import org.esa.snap.dataio.gdal.drivers.GDAL;
-import org.esa.snap.dataio.gdal.writer.plugins.AbstractDriverProductWriterPlugIn;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
 import org.esa.snap.core.dataio.ProductWriterPlugIn;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.StringUtils;
+import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.dataio.gdal.GDALLoader;
+import org.esa.snap.dataio.gdal.drivers.GDAL;
+import org.esa.snap.dataio.gdal.writer.plugins.AbstractDriverProductWriterPlugIn;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.ExportProductAction;
 import org.esa.snap.rcp.actions.file.ProductFileChooser;
@@ -17,13 +18,15 @@ import org.esa.snap.rcp.actions.file.WriteProductOperation;
 import org.esa.snap.rcp.util.Dialogs;
 import org.netbeans.api.progress.ProgressUtils;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.lang.reflect.Method;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
@@ -68,30 +71,15 @@ public class WriterPlugInExportProductAction extends ExportProductAction {
             ExportDriversFileFilter selectedFileFilter = (ExportDriversFileFilter) fileChooser.getFileFilter();
             String fileName = this.enteredFileName;
             if (StringUtils.isNullOrEmpty(fileName)) {
-                fileName = selectedFileFilter.getDriverInfo().getDriverDisplayName();
-            } else {
-                int index = fileName.lastIndexOf(".");
-                if (index >= 0) {
-                    fileName = fileName.substring(0, index);
-                }
+                fileName = product.getName();
             }
-            fileName += selectedFileFilter.getDriverInfo().getExtensionName();
-            try {
-                Method setFileNameMethod = fileChooser.getUI().getClass().getMethod("setFileName", String.class);
-                setFileNameMethod.invoke(fileChooser.getUI(), fileName);
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
-            }
+            fileName = FileUtils.exchangeExtension(fileName, selectedFileFilter.getDriverInfo().getExtensionName());
+            fileChooser.setCurrentFilename(fileName);
         });
 
         fileChooser.addPropertyChangeListener(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY, event -> {
             if (event.getOldValue() != null && event.getNewValue() == null) {
-                try {
-                    Method getFileName = fileChooser.getUI().getClass().getMethod("getFileName");
-                    this.enteredFileName = (String) getFileName.invoke(fileChooser.getUI());
-                } catch (Exception e) {
-                    throw new IllegalStateException(e);
-                }
+                this.enteredFileName = (String) event.getNewValue();
             }
         });
 
