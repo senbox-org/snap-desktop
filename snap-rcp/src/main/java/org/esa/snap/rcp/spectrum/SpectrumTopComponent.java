@@ -171,9 +171,10 @@ public class SpectrumTopComponent extends ToolTopComponent {
                 setCurrentProduct(currentView.getProduct());
                 if (!productToSpectraMap.containsKey(currentProduct)) {
                     setUpSpectra();
+                } else {
+                    atLeastSelectOneSpectrum();
                 }
                 recreateChart();
-
             }
             updateUIState();
         }
@@ -641,9 +642,21 @@ public class SpectrumTopComponent extends ToolTopComponent {
         }
 
         setUpSpectra(currentProduct);
+        atLeastSelectOneSpectrum();
+
         for (Product secondaryProduct : secondaryProducts) {
             setUpSpectra(secondaryProduct);
         }
+    }
+
+    private void atLeastSelectOneSpectrum() {
+        DisplayableSpectrum[] displayableSpectra = productToSpectraMap.get(currentProduct);
+        for (DisplayableSpectrum displayableSpectrum : displayableSpectra) {
+            if (displayableSpectrum.isSelected()) {
+                return;
+            }
+        }
+        displayableSpectra[0].setSelected(true);
     }
 
     private void setUpSpectra(Product product) {
@@ -652,12 +665,7 @@ public class SpectrumTopComponent extends ToolTopComponent {
             productToSpectraMap.put(product, new DisplayableSpectrum[0]);
             return;
         }
-        final String namePrefix;
-        if ( showSecondaryProductSpectra()) {
-            namePrefix = "[" + product.getRefNo() + "]";
-        } else {
-            namePrefix = "";
-        }
+        final String namePrefix = "[" + product.getRefNo() + "]";
         int displayIndex = 0;
         final List<DisplayableSpectrum> spectra = new ArrayList<>();
         final BandGroup[] userBandGroups = bandGroupsManager.getGroupsMatchingProduct(product);

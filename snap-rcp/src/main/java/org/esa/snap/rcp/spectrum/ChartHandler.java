@@ -23,7 +23,7 @@ import java.util.Map;
 class ChartHandler {
 
     private static final String MESSAGE_NO_SPECTRAL_BANDS = "No spectral bands available";   /*I18N*/
-    private static final String MESSAGE_NO_PRODUCT_SELECTED = "No product selected";
+    private static final String MESSAGE_NO_PRODUCT_SCENE_VIEW_SELECTED = "No product scene view selected";
     private static final String MESSAGE_NO_SPECTRA_SELECTED = "No spectra selected";
     private static final String MESSAGE_COLLECTING_SPECTRAL_INFORMATION = "Collecting spectral information...";
 
@@ -40,7 +40,7 @@ class ChartHandler {
         final XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
         renderer.setDefaultLinesVisible(true);
         renderer.setDefaultShapesFilled(false);
-        setPlotMessage(MESSAGE_NO_PRODUCT_SELECTED);
+        setPlotMessage(MESSAGE_NO_PRODUCT_SCENE_VIEW_SELECTED);
     }
 
     void setAutomaticRangeAdjustments(boolean automaticRangeAdjustment) {
@@ -118,8 +118,8 @@ class ChartHandler {
 
     void setEmptyPlot() {
         chart.getXYPlot().setDataset(null);
-        if (spectrumTopComponent.getCurrentProduct() == null) {
-            setPlotMessage(MESSAGE_NO_PRODUCT_SELECTED);
+        if (spectrumTopComponent.getCurrentView() == null) {
+            setPlotMessage(MESSAGE_NO_PRODUCT_SCENE_VIEW_SELECTED);
         } else if (!chartUpdater.showsValidCursorSpectra()) {
         } else if (spectrumTopComponent.getAllSpectra().length == 0) {
             setPlotMessage(MESSAGE_NO_SPECTRA_SELECTED);
@@ -143,14 +143,16 @@ class ChartHandler {
 
     void setPlotMessage(String messageText) {
         chart.getXYPlot().clearAnnotations();
-        TextTitle tt = new TextTitle(messageText);
-        tt.setTextAlignment(HorizontalAlignment.RIGHT);
-        tt.setFont(chart.getLegend().getItemFont());
-        tt.setBackgroundPaint(new Color(200, 200, 255, 50));
-        tt.setFrame(new BlockBorder(Color.white));
-        tt.setPosition(RectangleEdge.BOTTOM);
-        XYTitleAnnotation message = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
-        chart.getXYPlot().addAnnotation(message);
+        if (messageText != null && !messageText.trim().isEmpty()) {
+            TextTitle tt = new TextTitle(messageText);
+            tt.setTextAlignment(HorizontalAlignment.RIGHT);
+            tt.setFont(chart.getLegend().getItemFont());
+            tt.setBackgroundPaint(new Color(200, 200, 255, 50));
+            tt.setFrame(new BlockBorder(Color.white));
+            tt.setPosition(RectangleEdge.BOTTOM);
+            XYTitleAnnotation message = new XYTitleAnnotation(0.5, 0.5, tt, RectangleAnchor.CENTER);
+            chart.getXYPlot().addAnnotation(message);
+        }
     }
 
     public boolean showsValidCursorSpectra() {
