@@ -2,6 +2,8 @@ Release Notes - Sentinel Application Platform
 =============================================
 
 # New in SNAP 14.0.0
+    [SNAP-4241] ProductCache memory accounting and scale cache budget to the heap
+    [SNAP-4240] DIMAP image input tiled band reads O(n²) on large products
     [SNAP-4213] Add elevation band leads to out-ofmemory exception
     [SNAP-4212] DIMAP ProductReader does not handle subsetDef.isIgnoreMetadata()
     [SNAP-4209] Copernicus DEM download does not react on cancel
