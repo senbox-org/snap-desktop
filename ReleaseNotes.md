@@ -3,12 +3,12 @@ Release Notes - Sentinel Application Platform
 
 # New in SNAP 14.0.0
     [SNAP-4241] ProductCache memory accounting and scale cache budget to the heap
+    [SNAP-4240] DIMAP image input tiled band reads O(n²) on large products
     [SNAP-4231] Load Project: Reopening the current project fails with ConcurrentModificationException
     [SNAP-4229] Pixel Alignment Bug in Zoomed Image View (mac)
     [SNAP-4228] SNAP uninstaller should to consider snap.conf when deleting user data
     [SNAP-4225] Update launcher file in windows installer
     [SNAP-4218] Progressbar does not move when exporting to DIMAP
-    [SNAP-4214] Resampling EnMap L1C data fails with strange error message
     [SNAP-4213] Add elevation band leads to out-ofmemory exception
     [SNAP-4212] DIMAP ProductReader does not handle subsetDef.isIgnoreMetadata()
     [SNAP-4209] Copernicus DEM download does not react on cancel
