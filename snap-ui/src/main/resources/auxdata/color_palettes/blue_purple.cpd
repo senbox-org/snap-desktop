@@ -1,0 +1,41 @@
+# SeaDAS Color Palette Definition File
+# created by Daniel Knowles, 2016
+# SeaDAS Standard Universal Palette
+# Color blind compliant
+# Version 3: darkens center of palette more to help distinguish from white (nodata, clouds, etc.)
+#
+isLogScaled=false
+numPoints=14
+autoDistribute=false
+shortDescription=Color blind compliant
+
+color0=233,240,243
+color1=208,227,232
+color2=183,213,225
+color3=163,198,224
+color4=145,184,224
+color5=130,166,223
+color6=123,150,223
+color7=120,130,217
+color8=118,113,206
+color9=116,94,190
+color10=113,78,172
+color11=110,63,150
+color12=102,48,126
+color13=93,38,103
+sample0=0.00001
+sample1=0.0625
+sample2=0.125
+sample3=0.1875
+sample4=0.25
+sample5=0.3125
+sample6=0.375
+sample7=0.4375
+sample8=0.5
+sample9=0.5625
+sample10=0.625
+sample11=0.6875
+sample12=0.75
+sample13=0.8125
+
+

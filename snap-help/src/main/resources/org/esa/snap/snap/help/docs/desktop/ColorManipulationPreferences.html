@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Sentinel Toolbox Help - Color Manipulation / Colour Manipulation Preferences</title>
+    <title>Sentinel Toolbox Help - Color Manager Preferences</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" href="../style.css">
 </head>
@@ -9,7 +9,7 @@
 <table class="header">
     <tr class="header">
         <td class="header">&nbsp;
-            Color / Colour Manipulation Preferences
+            Color Manager Preferences
         </td>
 
         <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img
@@ -18,25 +18,22 @@
     </tr>
 </table>
 
-<p>Note: this help page in general uses the spelling "color".  Depending on the branding of your
-    SNAP application, elsewhere in your application the spelling may be "colour"</p>
-
 <h3>Overview</h3>
 
-<p>This page enables the user to modify the default settings for the Color Manipulation tool. Note: any changes made to
+<p>This page enables the user to modify the default settings for the Color Manager tool. Note: any changes made to
     the
     preferences will not be automatically updated until the application is either restarted or a new view window is
     opened.
 </p>
 
-<p>To open the color manipulation preferences window select /Tools/Options/Color Manipulation </b>
+<p>To open the color manager preferences window select /Tools/Options/Color Manager </b>
     from the main menu (Note: this may be located instead in File/Preferences on the Mac).
 </p>
 
 
 <br>
 <hr>
-<h4>Default Palettes</h4><br>
+<h4>Palettes (Default)</h4><br>
 
 <div align="center">
     <table>
@@ -54,11 +51,12 @@
 <br>
 <ul>
     <li>
-        <b>GRAY SCALE:</b> The color palette to use if the field "GRAY SCALE" is selected.
+        <b>GRAY-SCALE:</b> The color palette to use if the field "GRAY-SCALE" is selected.
     </li>
 
     <li>
-        <b>STANDARD:</b> The color palette to use if the field "STANDARD" is selected.  This by default is a rainbow spectrum type of palette.
+        <b>STANDARD:</b> The color palette to use if the field "STANDARD" is selected. This by default is a rainbow
+        spectrum type of palette.
     </li>
 
     <li>
@@ -67,17 +65,17 @@
     </li>
 
     <li>
-        <b>ANOMALIES:</b> The color palette to use if the field "ANOMALIES" is selected.  This is intended but not limited to an anomaly
+        <b>ANOMALIES:</b> The color palette to use if the field "ANOMALIES" is selected. This is intended but not
+        limited to an anomaly
         type of palette.
     </li>
 
 </ul>
 
 
-
 <br>
 <hr>
-<h4>Standard Options</h4>
+<h4>Scheme (Default)</h4>
 <br>
 <div align="center">
     <table>
@@ -89,19 +87,22 @@
 
 <br>
 
-<p>This is the default behavior when opening a new band or clicking on the reset button and a color scheme is not being applied.
+<p>This is the default behavior when opening a new band or clicking on the reset button and a color scheme is not being
+    applied.
 </p>
 
 <ul>
-    <li><b>Use Standard Options as Default</b> - Use following "Standard Options" as default
-        when opening a band, otherwise use settings from the file reader.
+    <li><b>Enable</b> - Use the following parameters as a default scheme
+        when opening a band, otherwise use settings from the file reader. Note: this can be preempted by "Band Lookup
+        Schemes" if
+        "Use Band Lookup Schemes" is selected.
     </li>
     <li>
         <b>Palette:</b> - The palette to use for the scheme.
 
         <ul>
             <li>
-                <b>GRAY SCALE:</b> Uses the scheme as defined in the preferences field "GRAY SCALE".
+                <b>GRAY-SCALE:</b> Uses the scheme as defined in the preferences field "GRAY-SCALE".
             </li>
 
             <li>
@@ -146,7 +147,8 @@
             </li>
 
             <li>
-                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not contain this field.)
+                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not
+                contain this field.)
             </li>
         </ul>
     </li>
@@ -154,12 +156,9 @@
 </ul>
 
 
-
-
-
 <br>
 <hr>
-<h4>Scheme Options</h4><br>
+<h4>Scheme (Band Lookup)</h4><br>
 <div align="center">
     <table>
         <tr>
@@ -170,16 +169,17 @@
 <br>
 
 <p>This is the behavior regarding applying color schemes when opening a new band or clicking on the reset button. If
-    the "Apply Color Schemes Automatically" button is clicked and the bandname matches a regular expression scheme
-    lookup (defined in the configuration file ~/.snap/auxdata/color_schemes/color_palette_schemes_lookup.xml) then a
-    color scheme is applied (palette, range, log scaling).
+    the "Apply Color Schemes Automatically" checkbox is checked and the bandname matches a regular expression scheme
+    lookup (defined in the configuration file ~/.seadas/auxdata/color_schemes/color_palette_schemes_lookup.xml) then a
+    color scheme is applied (palette, range, log scaling).  A user editable configuration file is additionally available
+    (~/.seadas/auxdata/color_schemes/color_palette_schemes_lookup_user.xml or
+    ~/.seadas/auxdata/color_schemes/color_palette_schemes_lookup_user.xml)
 </p>
-
 
 
 <ul>
     <li>
-        <b>Apply Color Schemes Automatically:</b> Automatically apply the color schemes when a band is opened or reset
+        <b>Auto-apply:</b> Automatically apply the band lookup color schemes when a band is opened or reset
         button is clicked.
     </li>
 
@@ -199,7 +199,7 @@
             </li>
 
             <li>
-                <b>GRAY SCALE:</b> Uses the scheme as defined in the preferences field "GRAY SCALE".
+                <b>GRAY-SCALE:</b> Uses the scheme as defined in the preferences field "GRAY-SCALE".
             </li>
 
             <li>
@@ -243,11 +243,13 @@
 
         <ul>
             <li>
-                <b>From Scheme:</b> Uses the log scaling from the configuration file defined by the parameter "LOG_SCALE".
+                <b>From Scheme:</b> Uses the log scaling from the configuration file defined by the parameter
+                "LOG_SCALE".
             </li>
 
             <li>
-                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not contain this field.)
+                <b>From Palette File :</b> Uses the range as defined in the palette file. (Note cpt format files do not
+                contain this field.)
             </li>
 
             <li>
@@ -264,18 +266,16 @@
 </ul>
 
 
-
-
 <br>
 <hr>
-<h4>Percentile Range</h4><br>
+<h4>Percentile Options</h4><br>
 
 <div align="center">
-<table>
-    <tr>
-        <td align="center" style="border-width:0"><img src="images/ColorManipPref04.png"/></td>
-    </tr>
-</table>
+    <table>
+        <tr>
+            <td align="center" style="border-width:0"><img src="images/ColorManipPref04.png"/></td>
+        </tr>
+    </table>
 </div>
 
 <br>
@@ -285,8 +285,8 @@
 
 <ul>
     <li>
-        <b>Percentile Range Default: </b> Default palette range based on percentage of pixels in a band. This
-        is used when scheme is disabled or when "From Data" is the specified behavior.  This is also used with
+        <b>Percentile Default: </b> Default palette range based on percentage of pixels in a band. This
+        is used when scheme is disabled or when "From Data" is the specified behavior. This is also used with
         the "From Data" button.
     </li>
 
@@ -324,10 +324,6 @@
 </ul>
 
 
-
-
-
-
 <br>
 <hr>
 <h4>Scheme Selector Options</h4><br>
@@ -343,7 +339,7 @@
 <br>
 <p>These are options to how and what is displayed in the color scheme selector in the "Basic editor". The pre-defined
     color schemes which appear in this selector are configured in the file:
-    ~/.snap/auxdata/color_schemes/color_palette_schemes.xml.
+    ~/.seadas/auxdata/color_schemes/color_palette_schemes.xml.
 </p>
 
 <ul>
@@ -372,8 +368,6 @@
         indicate why the scheme is disabled.
     </li>
 </ul>
-
-
 
 
 <br>
@@ -413,8 +407,6 @@
     </li>
 
 </ul>
-
-
 
 
 <br>
@@ -459,8 +451,98 @@
 
 <br>
 
-<p>Restores all parameters within the Color Manipulation Preferences to the original default values.</p>
+<p>Restores all parameters within the Color Manager Preferences to the original default values.</p>
 
+<br>
+<hr>
+<h4>Configuration of Preference Defaults</h4>
+
+<p>Many of the default values to the Color Manager Preferences are initialized internally to preset
+    SNAP defaults. However, the above parameters may be initialized either for convenience of
+    package defaults branding or for ease of presetting certain preference parameters without using the GUI to
+    set the parameters.
+
+    This is done within the snap.properties file which is in your home directory. The following are the
+    property keys listed in the same order as the GUI preferences display with the SNAP default values.</p>
+
+<p>
+<pre>
+# snap.color.manipulation.palette.default.gray.scale=gray_scale.cpd
+# snap.color.manipulation.palette.default.standard=oceancolor_standard.cpd
+# snap.color.manipulation.palette.default.universal=universal_bluered.cpd
+# snap.color.manipulation.palette.default.anomalies=gradient_red_white_blue.cpd
+# snap.color.manipulation.scheme.default.enable=false
+# snap.color.manipulation.scheme.default.palette=GRAY-SCALE
+# snap.color.manipulation.scheme.default.range=From Data
+# snap.color.manipulation.scheme.default.log=FALSE
+# snap.color.manipulation.scheme.band.lookup.auto.apply=false
+# snap.color.manipulation.scheme.band.lookup.palette=From Scheme STANDARD
+# snap.color.manipulation.scheme.band.lookup.range=From Scheme
+# snap.color.manipulation.scheme.band.lookup.log=From Scheme
+# snap.color.manipulation.percentile.value=92.0
+# snap.color.manipulation.percentile.1.sigma.enable.button=false
+# snap.color.manipulation.percentile.2.sigma.enable.button=true
+# snap.color.manipulation.percentile.3.sigma.enable.button=true
+# snap.color.manipulation.percentile.95.percent.enable.button=false
+# snap.color.manipulation.percentile.100.percent.enable.button=true
+# snap.color.manipulation.scheme.selector.verbose=false
+# snap.color.manipulation.scheme.selector.sort=true
+# snap.color.manipulation.scheme.selector.split=true
+# snap.color.manipulation.scheme.selector.show.disabled=false
+# snap.color.manipulation.sliders.zoom.in=true
+# snap.color.manipulation.sliders.extra.info=true
+# snap.color.manipulation.sliders.zoom.vertical.enable.buttons=true
+# snap.color.manipulation.sliders.extra.info.enable.button=true
+# snap.color.manipulation.rgb.button.min=0.0
+# snap.color.manipulation.rgb.button.max=1.0
+</pre>
+
+<p>For SeaDAS these parameters are set as follows:
+
+<pre>
+snap.context=seadas
+
+seadas.color.manipulation.palette.default.standard=oceancolor_standard.cpd
+seadas.color.manipulation.palette.default.universal=universal_bluered.cpd
+seadas.color.manipulation.palette.default.gray.scale=gray_scale.cpd
+seadas.color.manipulation.palette.default.anomalies=gradient_red_white_blue.cpd
+seadas.color.manipulation.scheme.default.enable=true
+seadas.color.manipulation.scheme.default.palette=GRAY-SCALE
+seadas.color.manipulation.scheme.default.range=From Data
+seadas.color.manipulation.scheme.default.log=FALSE
+seadas.color.manipulation.scheme.band.lookup.auto.apply=true
+seadas.color.manipulation.scheme.band.lookup.palette=STANDARD
+seadas.color.manipulation.scheme.band.lookup.range=From Scheme
+seadas.color.manipulation.scheme.band.lookup.log=From Scheme
+seadas.color.manipulation.percentile.value=92.0
+seadas.color.manipulation.percentile.100.percent.enable.button=true
+seadas.color.manipulation.percentile.95.percent.enable.button=false
+seadas.color.manipulation.percentile.1.sigma.enable.button=false
+seadas.color.manipulation.percentile.2.sigma.enable.button=true
+seadas.color.manipulation.percentile.3.sigma.enable.button=true
+seadas.color.manipulation.scheme.selector.verbose=true
+seadas.color.manipulation.scheme.selector.sort=true
+seadas.color.manipulation.scheme.selector.split=true
+seadas.color.manipulation.scheme.selector.show.disabled=false
+seadas.color.manipulation.sliders.zoom.in=true
+seadas.color.manipulation.sliders.extra.info=true
+seadas.color.manipulation.sliders.zoom.vertical.enable.buttons=true
+seadas.color.manipulation.sliders.extra.info.enable.button=true
+seadas.color.manipulation.rgb.button.min=0.0
+seadas.color.manipulation.rgb.button.max=1.0
+</pre>
+</p>
+<p>
+    If the above parameters do not exist in snap.properties or are commented out, then the SNAP package internal default
+    values are used. Note that these are only default preference values, so if you set some of these
+    parameters within the Preferences GUI, these values from the snap.properties file will be overridden by your GUI
+    preferences. If you have modified the GUI preferences and wish to restore the values to the snap.properties file
+    values then click "Reset To Defaults" in the Color Manager Preferences GUI.
+</p>
+
+<p>
+
+</p>
 
 </body>
 </html>

@@ -3,17 +3,34 @@
         "http://www.netbeans.org/dtds/toolbar1_1.dtd">
 <Configuration>
     <Row>
-        <Toolbar name="File" visible="true" />
-        <Toolbar name="Clipboard" visible="true" />
-        <Toolbar name="UndoRedo" visible="true" />
-
+        <Toolbar name="File Open" visible="true"/>
+        <Toolbar name="File" visible="false"/>
+        <Toolbar name="Raster" visible="true"/>
+        <Toolbar name="SeaDAS Toolbox" visible="true"/>
+        <Toolbar name="Overlay" visible="true"/>
+        <Toolbar name="Interactors" visible="true"/>
+        <Toolbar name="Geometry Container" visible="false"/>
+        <Toolbar name="Geometry Shapes" visible="true"/>
+        <!--        <Toolbar name="Geometry Lines" visible="true"/>-->
+        <Toolbar name="Pins" visible="true"/>
+        <Toolbar name="GPT Processing" visible="false"/>
+        <Toolbar name="Ground Control Points" visible="false"/>
+        <!--<Toolbar name="Tools" visible="false"/>-->
         <Toolbar name="Analysis" visible="true"/>
-        <Toolbar name="Overlay" visible="true" />
-        <Toolbar name="Processing" visible="true" />
-        <Toolbar name="Tools" visible="true"/>
-        <Toolbar name="Tool Windows" visible="true"/>
-        <Toolbar name="Window Arrangement" visible="true" />
-
-        <Toolbar name="Memory" visible="true" align="right"/>
+        <Toolbar name="Spectrum View" visible="true"/>
+        <Toolbar name="Angular View" visible="true"/>
+        <Toolbar name="Range Finder" visible="false"/>
+        <Toolbar name="Image" visible="true"/>
+        <Toolbar name="Soft Button" visible="true"/>
+        <Toolbar name="Info" visible="false"/>
+        <Toolbar name="Memory" visible="false" align="right"/>
+        <Toolbar name="Miscellaneous" visible="false"/>
+        <!--        <Toolbar name="Projects" visible="false"/>-->
+        <!--        <Toolbar name="Radar Tool Windows" visible="false"/>-->
+        <Toolbar name="Tool Windows" visible="false"/>
+        <Toolbar name="Time Series" visible="false"/>
+        <Toolbar name="Clipboard" visible="false"/>
+        <Toolbar name="UndoRedo" visible="false"/>
+        <Toolbar name="Window Arrangement" visible="false"/>
     </Row>
 </Configuration>

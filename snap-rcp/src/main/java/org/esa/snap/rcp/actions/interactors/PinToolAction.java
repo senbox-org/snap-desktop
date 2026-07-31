@@ -17,6 +17,7 @@
 package org.esa.snap.rcp.actions.interactors;
 
 import org.esa.snap.rcp.placemark.InsertPinInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -27,10 +28,22 @@ import org.openide.util.NbBundle.Messages;
 
 import java.awt.*;
 
-@ActionID(category = "Interactors", id = "org.esa.snap.rcp.action.interactors.PinToolAction")
-@ActionRegistration(displayName = "#CTL_PinToolActionText", lazy = false)
-@ActionReference(path = "Toolbars/Tools", position = 130)
-@Messages({"CTL_PinToolActionText=Pin Tool", "CTL_PinToolActionDescription=Pin placing tool"})
+@ActionID(
+        category = "Interactors",
+        id = "org.esa.snap.rcp.action.interactors.PinToolAction"
+)
+@ActionRegistration(
+        displayName = "#CTL_PinToolActionText",
+        lazy = false
+)
+@ActionReference(
+        path = "Toolbars/" + PackageDefaults.PIN_TOOL_TOOLBAR_NAME,
+        position = 130
+)
+@Messages({
+                  "CTL_PinToolActionText=Pin Tool",
+                  "CTL_PinToolActionDescription=Pin placing tool"
+          })
 public class PinToolAction extends ToolAction {
 
     private InsertPinInteractor pinInteractor;
@@ -45,21 +58,23 @@ public class PinToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_PinToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_PinToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/PinTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.PIN_TOOL_ICON, false));
+
 
         pinInteractor = new InsertPinInteractor();
         setInteractor(pinInteractor);
         pinToolSplitButton = new PinToolSplitButton(this);
-        
+
         // Set initial color on the pin interactor
         pinInteractor.setCurrentColor(pinToolSplitButton.getCurrentColor());
-        
+
         // Add listener for color changes
         pinToolSplitButton.addPropertyChangeListener(PinToolSplitButton.COLOR_PROPERTY, evt -> {
             Color newColor = (Color) evt.getNewValue();
             pinInteractor.setCurrentColor(newColor);
         });
     }
+
 
     @Override
     public Component getToolbarPresenter() {
