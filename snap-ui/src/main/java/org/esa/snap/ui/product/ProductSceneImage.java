@@ -343,7 +343,7 @@ public class ProductSceneImage implements ProductLayerContext {
 
         configTemplate.setValue(NoDataLayerType.PROPERTY_NAME_RASTER, getRaster());
         final Layer layer = noDataType.createLayer(this, configTemplate);
-        final double transparency = configuration.getPropertyDouble("noDataOverlay.transparency", 0.3);
+        final double transparency = configuration.getPropertyDouble("noDataOverlay.transparency", NoDataLayerType.DEFAULT_TRANSPARENCY);
         layer.setTransparency(transparency);
         return layer;
     }
@@ -387,7 +387,7 @@ public class ProductSceneImage implements ProductLayerContext {
         final Color color = configuration.getPropertyColor("noDataOverlay.color", NoDataLayerType.DEFAULT_COLOR);
         layerConfiguration.setValue(NoDataLayerType.PROPERTY_NAME_COLOR, color);
 
-        final double transparency = configuration.getPropertyDouble("noDataOverlay.transparency", 0.3);
+        final double transparency = configuration.getPropertyDouble("noDataOverlay.transparency", NoDataLayerType.DEFAULT_TRANSPARENCY);
         layer.setTransparency(transparency);
     }
 
