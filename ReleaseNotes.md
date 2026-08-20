@@ -1,7 +1,7 @@
 Release Notes - Sentinel Application Platform
 =============================================
 
-# New in SNAP 14.0.1-SNAPSHOT
+# New in SNAP 14.0.0
     [SNAP-4241] ProductCache memory accounting and scale cache budget to the heap
     [SNAP-4240] DIMAP image input tiled band reads O(n²) on large products
     [SNAP-4231] Load Project: Reopening the current project fails with ConcurrentModificationException
