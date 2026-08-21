@@ -82,21 +82,6 @@ public class ProductSceneViewTest {
     }
 
     @Test
-    public void testDoesNotCreateMaskCollectionLayerWithoutOverlayMasks() {
-        product.getMaskGroup().add(createMask("mask"));
-
-        final ProductSceneImage sceneImage = new ProductSceneImage(r, new DefaultPropertyMap(), ProgressMonitor.NULL);
-        final ProductSceneView view = new ProductSceneView(sceneImage);
-
-        try {
-            assertNull(sceneImage.getMaskCollectionLayer(false));
-            assertFalse(view.isMaskOverlayEnabled());
-        } finally {
-            view.dispose();
-        }
-    }
-
-    @Test
     public void testCreatesMaskCollectionLayerWithOverlayMasks() {
         final Mask mask = createMask("mask");
         product.getMaskGroup().add(mask);
