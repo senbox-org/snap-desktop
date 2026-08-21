@@ -1,5 +1,7 @@
 Release Notes - Sentinel Application Platform
 =============================================
+# New in SNAP 14.0.1
+    [SNAP-4252] Mask overlays not displayed
 
 # New in SNAP 14.0.0
     [SNAP-4241] ProductCache memory accounting and scale cache budget to the heap

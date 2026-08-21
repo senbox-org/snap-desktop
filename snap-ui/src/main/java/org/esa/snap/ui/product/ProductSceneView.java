@@ -28,40 +28,19 @@ import com.bc.ceres.glayer.support.ImageLayer;
 import com.bc.ceres.glayer.support.LayerUtils;
 import com.bc.ceres.glayer.swing.AdjustableViewScrollPane;
 import com.bc.ceres.glayer.swing.LayerCanvas;
-import com.bc.ceres.multilevel.MultiLevelSource;
 import com.bc.ceres.grender.Rendering;
 import com.bc.ceres.grender.Viewport;
 import com.bc.ceres.grender.ViewportAware;
 import com.bc.ceres.grender.support.DefaultViewport;
-import com.bc.ceres.swing.figure.Figure;
-import com.bc.ceres.swing.figure.FigureChangeListener;
-import com.bc.ceres.swing.figure.FigureCollection;
-import com.bc.ceres.swing.figure.FigureEditor;
-import com.bc.ceres.swing.figure.FigureEditorAware;
-import com.bc.ceres.swing.figure.FigureSelection;
-import com.bc.ceres.swing.figure.FigureStyle;
-import com.bc.ceres.swing.figure.Handle;
-import com.bc.ceres.swing.figure.ShapeFigure;
+import com.bc.ceres.multilevel.MultiLevelSource;
+import com.bc.ceres.swing.figure.*;
 import com.bc.ceres.swing.selection.AbstractSelectionChangeListener;
 import com.bc.ceres.swing.selection.Selection;
 import com.bc.ceres.swing.selection.SelectionChangeEvent;
 import com.bc.ceres.swing.selection.SelectionContext;
 import com.bc.ceres.swing.undo.UndoContext;
 import com.bc.ceres.swing.undo.support.DefaultUndoContext;
-import org.esa.snap.core.datamodel.GeoCoding;
-import org.esa.snap.core.datamodel.GeoPos;
-import org.esa.snap.core.datamodel.ImageInfo;
-import org.esa.snap.core.datamodel.PixelPos;
-import org.esa.snap.core.datamodel.Placemark;
-import org.esa.snap.core.datamodel.PlacemarkGroup;
-import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductData;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.ProductNodeEvent;
-import org.esa.snap.core.datamodel.ProductNodeListener;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.core.datamodel.VirtualBand;
+import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.image.ColoredMaskImageMultiLevelSource;
 import org.esa.snap.core.jexp.ParseException;
@@ -80,40 +59,17 @@ import org.opengis.referencing.operation.TransformException;
 import org.openide.util.Utilities;
 import org.openide.util.actions.Presenter;
 
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import javax.swing.undo.UndoManager;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
 import java.awt.image.RenderedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * The class {@code ProductSceneView} is a high-level image display component for color index/RGB images created
@@ -168,9 +124,9 @@ public class ProductSceneView extends BasicView
 
 
     private ProductSceneImage sceneImage;
-    private LayerCanvas layerCanvas;
+    private final LayerCanvas layerCanvas;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Properties corresponding to the base image displaying the raster data returned by #getRaster()
     //
     // layer which displays the base image
@@ -186,22 +142,22 @@ public class ProductSceneView extends BasicView
     // current pixel Y (from mouse cursor) at highest resolution level of the base image
     private int currentPixelY = -1;
     // display properties for the current pixel (from mouse cursor)
-    private boolean pixelBorderShown; // can it be shown?
+    private final boolean pixelBorderShown; // can it be shown?
     private boolean pixelBorderDrawn; // has it been drawn?
-    private double pixelBorderViewScale;
+    private final double pixelBorderViewScale;
     //
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private final Vector<PixelPositionListener> pixelPositionListeners;
 
     private Layer selectedLayer;
     private ComponentAdapter layerCanvasComponentHandler;
     private LayerCanvasMouseHandler layerCanvasMouseHandler;
-    private RasterChangeHandler rasterChangeHandler;
+    private final RasterChangeHandler rasterChangeHandler;
     private boolean scrollBarsShown;
 
     private AdjustableViewScrollPane scrollPane;
-    private UndoContext undoContext;
+    private final UndoContext undoContext;
     private VectorDataFigureEditor figureEditor;
 
     public ProductSceneView(ProductSceneImage sceneImage) {
@@ -256,7 +212,7 @@ public class ProductSceneView extends BasicView
         figureEditor.addSelectionChangeListener(new PinSelectionChangeListener());
 
         this.scrollBarsShown = sceneImage.getConfiguration().getPropertyBool(PREFERENCE_KEY_IMAGE_SCROLL_BARS_SHOWN,
-                                                                             false);
+                false);
         if (scrollBarsShown) {
             this.scrollPane = createScrollPane();
             add(scrollPane, BorderLayout.CENTER);
@@ -274,9 +230,7 @@ public class ProductSceneView extends BasicView
             return;
         }
 
-        if (hasOverlayMasks()) {
-            setMaskOverlayEnabled(true);
-        }
+        setMaskOverlayEnabled(true);
         setName(sceneImage.getName());
 
         appyLayerProperties(sceneImage.getConfiguration());
@@ -336,7 +290,7 @@ public class ProductSceneView extends BasicView
 
     private AdjustableViewScrollPane createScrollPane() {
         AbstractButton zoomAllButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/ZoomAll13.gif"),
-                                                                      false);
+                false);
         zoomAllButton.setFocusable(false);
         zoomAllButton.setFocusPainted(false);
         zoomAllButton.addActionListener(e -> getLayerCanvas().zoomAll());
@@ -432,9 +386,9 @@ public class ProductSceneView extends BasicView
         JPopupMenu popupMenu = new JPopupMenu();
         List<? extends Action> viewActions = Utilities.actionsForPath("Context/ProductSceneView");
         for (Action action : viewActions) {
-            if(action instanceof Presenter.Popup) {
+            if (action instanceof Presenter.Popup) {
                 popupMenu.add(((Presenter.Popup) action).getPopupPresenter());
-            }else {
+            } else {
                 JMenuItem menuItem = popupMenu.add(action);
                 String popupText = (String) action.getValue("popupText");
                 if (StringUtils.isNotNullAndNotEmpty(popupText)) {
@@ -634,8 +588,8 @@ public class ProductSceneView extends BasicView
         for (VectorDataNode vectorDataNode : vectorDataNodes) {
             final LayerFilter nodeFilter = VectorDataLayerFilterFactory.createNodeFilter(vectorDataNode);
             Layer vectorDataLayer = LayerUtils.getChildLayer(getRootLayer(),
-                                                             LayerUtils.SEARCH_DEEP,
-                                                             nodeFilter);
+                    LayerUtils.SEARCH_DEEP,
+                    nodeFilter);
             if (vectorDataLayer != null) {
                 vectorDataLayer.setVisible(true);
             }
@@ -664,7 +618,7 @@ public class ProductSceneView extends BasicView
 
             if (layer == null) {
                 layer = LayerUtils.getChildLayer(getRootLayer(), LayerUtils.SearchMode.DEEP,
-                                                 VectorDataLayerFilterFactory.createGeometryFilter());
+                        VectorDataLayerFilterFactory.createGeometryFilter());
             }
             if (layer != null) {
                 final VectorDataLayer vectorDataLayer = (VectorDataLayer) layer;
@@ -780,8 +734,8 @@ public class ProductSceneView extends BasicView
     public VectorDataLayer selectVectorDataLayer(VectorDataNode vectorDataNode) {
         LayerFilter layerFilter = new VectorDataLayerFilter(vectorDataNode);
         VectorDataLayer layer = (VectorDataLayer) LayerUtils.getChildLayer(getRootLayer(),
-                                                                           LayerUtils.SEARCH_DEEP,
-                                                                           layerFilter);
+                LayerUtils.SEARCH_DEEP,
+                layerFilter);
         if (layer != null) {
             setSelectedLayer(layer);
         }
@@ -865,7 +819,7 @@ public class ProductSceneView extends BasicView
         return null;
     }
 
-   /**
+    /**
      * Gets either the selected figures, or all the figures of the currently selected layer.
      *
      * @param selectedOnly If {@code true}, only selected figures are returned.
@@ -1102,8 +1056,8 @@ public class ProductSceneView extends BasicView
                 final Color color = noDataLayer.getConfiguration().getValue(
                         NoDataLayerType.PROPERTY_NAME_COLOR);
                 final MultiLevelSource multiLevelSource = ColoredMaskImageMultiLevelSource.create(getRaster().getProduct(),
-                                                                                                  color, expression, true,
-                                                                                                  getBaseImageLayer().getImageToModelTransform());
+                        color, expression, true,
+                        getBaseImageLayer().getImageToModelTransform());
                 noDataLayer.setMultiLevelSource(multiLevelSource);
             } else {
                 noDataLayer.setMultiLevelSource(MultiLevelSource.NULL);
@@ -1135,10 +1089,10 @@ public class ProductSceneView extends BasicView
          */
         public RGBChannel(final Product product, final int width, final int height, final String name, final String expression, Product[] products) {
             super(name,
-                  ProductData.TYPE_FLOAT32,
-                  width,
-                  height,
-                  expression);
+                    ProductData.TYPE_FLOAT32,
+                    width,
+                    height,
+                    expression);
             if (products == null || products.length == 0) {
                 deriveRasterPropertiesFromExpression(expression, product);
             } else {
@@ -1354,8 +1308,7 @@ public class ProductSceneView extends BasicView
     }
 
     private void drawPixelBorder(final Graphics g, final int x, final int y, final int l) {
-        if (g instanceof Graphics2D) {
-            Graphics2D g2d = (Graphics2D) g;
+        if (g instanceof Graphics2D g2d) {
             AffineTransform i2m = getBaseImageLayer().getImageToModelTransform(l);
             AffineTransform m2v = getLayerCanvas().getViewport().getModelToViewTransform();
             Rectangle imageRect = new Rectangle(x, y, 1, 1);
@@ -1676,8 +1629,7 @@ public class ProductSceneView extends BasicView
                 }
             } else {
                 Object selectedValue = selection.getSelectedValue();
-                if (selectedValue instanceof SimpleFeatureFigure) {
-                    SimpleFeatureFigure featureFigure = (SimpleFeatureFigure) selectedValue;
+                if (selectedValue instanceof SimpleFeatureFigure featureFigure) {
                     PlacemarkGroup pinGroup = getProduct().getPinGroup();
                     Placemark pin = pinGroup.getPlacemark(featureFigure.getSimpleFeature());
                     if (pin != null) {
