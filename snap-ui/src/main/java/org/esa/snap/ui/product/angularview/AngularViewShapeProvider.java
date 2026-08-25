@@ -38,6 +38,7 @@ public class AngularViewShapeProvider {
     private static final ImageIcon[] shapeIcons = convertShapesToIcons();
     public static final int DEFAULT_SCALE_GRADE = 3;
     public static final int EMPTY_SHAPE_INDEX = 0;
+    // todo TESTING
     private static final Integer[] scale_grades = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9};
     private static final double[] scaleFactors = new double[]{0.6, 0.8, 1, 1.5, 2, 2.5, 3, 3.5, 4};
 

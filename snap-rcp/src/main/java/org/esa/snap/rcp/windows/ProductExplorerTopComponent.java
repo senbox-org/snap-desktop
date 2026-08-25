@@ -12,6 +12,7 @@ import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.actions.file.OpenProductAction;
 import org.esa.snap.rcp.nodes.ProductGroupNode;
 import org.esa.snap.runtime.Config;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
@@ -53,9 +54,9 @@ import java.util.logging.Level;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(
-        mode = "explorer",
+        mode = PackageDefaults.PRODUCT_EXPLORER_MODE,
         openAtStartup = true,
-        position = 10)
+        position = PackageDefaults.PRODUCT_EXPLORER_POSITION)
 @ActionID(category = "Window", id = "org.esa.snap.rcp.window.ProductExplorerTopComponent")
 @ActionReference(path = "Menu/View/Tool Windows", position = 0)
 @TopComponent.OpenActionRegistration(
@@ -63,7 +64,7 @@ import java.util.logging.Level;
         preferredID = "ProductExplorerTopComponent"
 )
 @NbBundle.Messages({
-        "CTL_ProductExplorerTopComponentName=Product Explorer",
+        "CTL_ProductExplorerTopComponentName=" + PackageDefaults.PRODUCT_EXPLORER_NAME,
         "CTL_ProductExplorerTopComponentDescription=Lists all open products",
 })
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {

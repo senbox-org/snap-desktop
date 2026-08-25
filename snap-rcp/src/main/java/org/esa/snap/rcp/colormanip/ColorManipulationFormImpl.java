@@ -22,6 +22,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.ColorSchemeInfo;
+import org.esa.snap.core.datamodel.ColorSchemeManager;
 import org.esa.snap.core.datamodel.ImageInfo;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
@@ -925,12 +926,23 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 Path sourceDirPath = getColorPalettesAuxDataSourceDir();
 
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
+                final ResourceInstaller resourceInstallerKeepExisting = new ResourceInstaller(sourceDirPath, auxdataDir, false);
+
 
                 resourceInstaller.install(".*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
                 resourceInstaller.install(".*." + FILE_EXTENSION_CPT, ProgressMonitor.NULL);
 
+
                 // these file get overwritten as we do not encourage that these standard files to be altered
-                resourceInstaller.install(".*oceancolor_.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*oceancolor_.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*universal_bluered.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*universal_bluegreen.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*anomalies1_universal.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+                resourceInstallerKeepExisting.install(".*anomalies2_universal.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
+
+
+                resourceInstaller.install(".*." + ColorManipulationDefaults.COLOR_PALETTE_LIST_FILENAME, ProgressMonitor.NULL);
+
 
                 colorPalettesAuxFilesInstalled = true;
             } catch (IOException e) {
@@ -955,7 +967,12 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 final ResourceInstaller resourceInstaller = new ResourceInstaller(sourceDirPath, auxdataDir);
 
                 resourceInstaller.install(".*." + ColorManipulationDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL);
-                resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME, ProgressMonitor.NULL);
+                resourceInstaller.install(".*." + ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME, ProgressMonitor.NULL);
+
+                final ResourceInstaller resourceInstallerKeep = new ResourceInstaller(sourceDirPath, auxdataDir, false);
+
+                resourceInstallerKeep.install(".*." + ColorManipulationDefaults.COLOR_SCHEMES_USER_FILENAME, ProgressMonitor.NULL);
+                resourceInstallerKeep.install(".*." + ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_USER_FILENAME, ProgressMonitor.NULL);
 
                 colorSchemesAuxFilesInstalled = true;
             } catch (IOException e) {

@@ -26,6 +26,7 @@ import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.rcp.placemark.PlacemarkManagerTopComponent;
 import org.esa.snap.rcp.placemark.TableModelFactory;
 import org.esa.snap.ui.DecimalTableCellRenderer;
+import org.esa.snap.ui.PackageDefaults;
 import org.esa.snap.ui.product.AbstractPlacemarkTableModel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -40,7 +41,7 @@ import java.text.DecimalFormat;
 
 @TopComponent.Description(
         preferredID = "GcpManagerTopComponent",
-        iconBase = "org/esa/snap/rcp/icons/GcpManager.gif",
+        iconBase = "org/esa/snap/rcp/icons/" + PackageDefaults.GCP_MANAGER_ICON,
         persistenceType = TopComponent.PERSISTENCE_ALWAYS //todo define
 )
 @TopComponent.Registration(
@@ -50,8 +51,8 @@ import java.text.DecimalFormat;
 )
 @ActionID(category = "Window", id = "org.esa.snap.rcp.placemark.gcp.GcpManagerTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/View/Tool Windows", position = 31),
-        @ActionReference(path = "Toolbars/Tool Windows")
+        @ActionReference(path = "Menu/View/Tool Windows"),
+        @ActionReference(path = "Toolbars/" + PackageDefaults.GCP_MANAGER_TOOLBAR)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_GcpManagerTopComponent_Name",

@@ -18,6 +18,7 @@ package org.esa.snap.rcp.actions.interactors;
 
 import com.bc.ceres.swing.figure.Interactor;
 import com.bc.ceres.swing.figure.interactions.InsertRectangleFigureInteractor;
+import org.esa.snap.ui.PackageDefaults;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
@@ -35,7 +36,7 @@ import org.openide.util.NbBundle.Messages;
         lazy = false
 )
 @ActionReference(
-        path = "Toolbars/Tools",
+        path = "Toolbars/" + PackageDefaults.DRAW_RECTANGLE_TOOLBAR,
         position = 170
 )
 @Messages({
@@ -52,7 +53,7 @@ public class DrawRectangleToolAction extends ToolAction {
         super(lookup);
         putValue(NAME, Bundle.CTL_DrawRectangleToolActionText());
         putValue(SHORT_DESCRIPTION, Bundle.CTL_DrawRectangleToolActionDescription());
-        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/DrawRectangleTool24.gif", false));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon("org/esa/snap/rcp/icons/" + PackageDefaults.DRAW_RECTANGLE_ICON, false));
         Interactor interactor = new InsertRectangleFigureInteractor();
         interactor.addListener(new InsertFigureInteractorInterceptor());
         setInteractor(interactor);
