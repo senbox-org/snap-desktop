@@ -53,7 +53,7 @@ import java.util.prefs.Preferences;
 )
 @ActionReferences({
         @ActionReference(path = "Menu/Window", position = 115),
-        @ActionReference(path = "Context/Product/Product", position = 50, separatorAfter = 55),
+        @ActionReference(path = "Context/Product/Product", position = 50),
 })
 @NbBundle.Messages({
         "CTL_OpenHSVImageViewAction_MenuText=Open HSV Image Window",
