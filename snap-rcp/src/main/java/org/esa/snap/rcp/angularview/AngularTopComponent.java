@@ -225,9 +225,12 @@ private void setCurrentView(ProductSceneView view) {
             if (currentProduct.getProductType().contains("SPEX Level-2")) {
                 String autoGroupingStr ="";
                 autoGroupingStr += "Rrs1:Rrs1_*_443:Rrs1_*_548:Rrs1_*_668:Rrs1_*_748:Rrs2_*_443:Rrs2_*_548:Rrs2_*_668:Rrs2_*_748:" +
-                        "mask_dolp_*_443:mask_dolp_*_548:mask_dolp_*_668:mask_dolp_*_748:mask_ref_*_443:mask_ref_*_548:mask_ref_*_668:mask_ref_*_748:" ;
+                        "Rrs_angular:Rrs_angular_*_444:Rrs_angular_*_548:Rrs_angular_*_668:Rrs_angular_*_749:Rrs_nadir_*_444:Rrs_nadir_*_548:Rrs_nadir_*_668:Rrs_nadir_*_749:" +
+                        "aerosol_lidar_ratio:aerosol_depol_ratio:Rrs_angular_mean_*:Rrs_angular_std_*:Rrs_nadir_mean_*:Rrs_nadir_std_*:" +
+                        "mask_dolp_*_444:mask_dolp_*_548:mask_dolp_*_668:mask_dolp_*_749:mask_ref_*_444:mask_ref_*_548:mask_ref_*_668:mask_ref_*_749:" ;
                 autoGroupingStr += "angstrom:fmf:" +
                         "aot_*:aot_fine:aot_coarse:mi_:mi_fine:mi_coarse:mr:mr_fine:mr_coarse:ssa:ssa_fine:ssa_coarse:"+
+                        "Rrs_angular:Rrs_angular_mean:Rrs_angular_std:Rrs_nadir:Rrs_nadir_mean:Rrs_nadir_std:mask_dolp:mask_ref:" +
                         "Rrs1:Rrs1_mean:Rrs1_std:Rrs2:Rrs2_mean:Rrs2_std:mask_dolp:mask_ref:" ;
                 currentProduct.setAutoGrouping(autoGroupingStr);
             } else if (currentProduct.getName().contains("SPEX")) {
