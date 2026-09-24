@@ -233,7 +233,9 @@ public class SpectrumTopComponent extends ToolTopComponent {
                     String autoGroupingStr = "angstrom:fmf:" +
                             "aot_*:aot_fine:aot_coarse:mi_:mi_fine:mi_coarse:mr:mr_fine:mr_coarse:ssa:ssa_fine:ssa_coarse:"+
                             "Rrs1_-50_:Rrs1_-20_:Rrs1_0_:Rrs1_20_:Rrs1_50_:Rrs2_-50_:Rrs2_-20_:Rrs2_0_:Rrs2_20_:Rrs2_50_:" +
+                            "Rrs_angular_-50_:Rrs_angular_-20_:Rrs_angular_0_:Rrs_angular_20_:Rrs_angular_50_:Rrs_nadir_-50_:Rrs_nadir_-20_:Rrs_nadir_0_:Rrs_nadir_20_:Rrs_nadir_50_:" +
                             "Rrs1_mean:Rrs1_std:Rrs2_mean:Rrs2_std:" +
+                            "aerosol_lidar_ratio:aerosol_depol_ratio:Rrs_angular_mean_*:Rrs_angular_std_*:Rrs_nadir_mean_*:Rrs_nadir_std_*:" +
                             "mask_dolp_-50_:mask_dolp_-20_:mask_dolp_0_:mask_dolp_20_:mask_dolp_50_:mask_ref_-50_:mask_ref_-20_:mask_ref_0_:mask_ref_20_:mask_ref_50_:" ;
                     currentProduct.setAutoGrouping(autoGroupingStr);
                 } else if (currentProduct.getName().contains("SPEX")) {
