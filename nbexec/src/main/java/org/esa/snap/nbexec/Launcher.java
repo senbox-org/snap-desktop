@@ -75,6 +75,8 @@ import java.util.stream.Stream;
 public class Launcher {
 
     private static final String CLUSTERS_EXT = ".clusters";
+    // per-module/per-property INFO lines are only printed on request, printing hundreds of them slows down startup
+    private static final boolean VERBOSE = Boolean.getBoolean("snap.launcher.verbose");
 
     // Command-line arguments
     private final String[] args;
@@ -585,6 +587,9 @@ public class Launcher {
     }
 
     private void info(String msg) {
+        if (!VERBOSE) {
+            return;
+        }
         System.out.printf("INFO: %s: %s%n", getClass(), msg);
     }
 

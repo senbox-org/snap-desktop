@@ -15,11 +15,14 @@
  */
 package org.esa.snap.worldwind;
 
+import com.jogamp.opengl.GLProfile;
+import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.rcp.util.StartupTasks;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
@@ -32,13 +35,15 @@ import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
@@ -66,6 +71,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 @NbBundle.Messages({
         "CTL_WorldWindTopComponentName=World View",
         "CTL_WorldWindTopComponentDescription=WorldWind World View",
+        "CTL_WorldWindLoading=Loading World View...",
 })
 public class WWWorldViewToolView extends WWBaseToolView implements WWView {
 
@@ -73,6 +79,8 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
 
     private static final boolean includeStatusBar = true;
     private final boolean flatWorld;
+    private final JPanel mainPane = new JPanel(new BorderLayout(4, 4));
+    private final AtomicBoolean initStarted = new AtomicBoolean(false);
 
     public WWWorldViewToolView() {
         setDisplayName(Bundle.CTL_WorldWindTopComponentName());
@@ -91,76 +99,97 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
         final Window windowPane = SwingUtilities.getWindowAncestor(this);
         if (windowPane != null)
             windowPane.setSize(300, 300);
-        final JPanel mainPane = new JPanel(new BorderLayout(4, 4));
         mainPane.setSize(new Dimension(300, 300));
-
-        // world wind canvas
-        initialize(mainPane);
+        mainPane.add(new JLabel(Bundle.CTL_WorldWindLoading(), SwingConstants.CENTER), BorderLayout.CENTER);
 
         return mainPane;
     }
 
-    private void initialize(final JPanel mainPane) {
-        final WWView toolView = this;
+    // Creating the WorldWind globe costs several seconds of CPU (OpenGL setup, configuration, layers), so it is not
+    // done while SNAP starts: an opened view is initialised in the background shortly after startup, or right away
+    // once it becomes visible.
 
-        final SwingWorker<Object, Object> worker = new SwingWorker<>() {
-            @Override
-            protected Object doInBackground() {
-                // Create the WorldWindow.
-                try {
-                    createWWPanel(null, includeStatusBar, flatWorld, true);
+    @Override
+    protected void componentOpened() {
+        super.componentOpened();
+        StartupTasks.runAfterStartup("World View initialisation", this::initializeInBackground);
+    }
 
-                    // Put the pieces together.
-                    mainPane.add(wwjPanel, BorderLayout.CENTER);
+    @Override
+    protected void componentShowing() {
+        super.componentShowing();
+        StartupTasks.runAfterStartup("World View initialisation", this::initializeInBackground, 0);
+    }
 
-                    final LayerList layerList = getWwd().getModel().getLayers();
+    private void initializeInBackground() {
+        if (!initStarted.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            // model preparation does not touch Swing or OpenGL
+            GLProfile.initSingleton();
+            final Model model = AppPanel.createModel(flatWorld, true);
+            final LayerList layerList = model.getLayers();
 
-                    final Layer bingLayer = layerList.getLayerByName("Bing Imagery");
-                    bingLayer.setEnabled(true);
+            final Layer bingLayer = layerList.getLayerByName("Bing Imagery");
+            bingLayer.setEnabled(true);
 
-                    final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
-                    for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
-                        if (layerDescriptor.showInWorldMapToolView()) {
-                            final WWLayer wwLayer = layerDescriptor.createWWLayer();
-                            layerList.add(wwLayer);
+            final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
+            for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
+                if (layerDescriptor.showInWorldMapToolView()) {
+                    final WWLayer wwLayer = layerDescriptor.createWWLayer();
+                    layerList.add(wwLayer);
 
-                            wwLayer.setOpacity(1.0);
-                            wwLayer.setPickEnabled(false);
-                        }
-                    }
-
-                    // Instead of the default Place Name layer we use special implementation to replace
-                    // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
-                    final Layer placeNameLayer = layerList.getLayerByName("Place Names");
-                    layerList.remove(placeNameLayer);
-
-                    final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
-                    layerList.add(fixingPlaceNameLayer);
-                    fixingPlaceNameLayer.setEnabled(true);
-
-                    // update world map window with the information of the currently activated product scene view.
-                    final SnapApp snapApp = SnapApp.getDefault();
-                    snapApp.getProductManager().addListener(new WWProductManagerListener(toolView));
-                    snapApp.getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
-                        if (newValue != null) {
-                            setSelectedProduct(newValue.getProduct());
-                        } else {
-                            setSelectedProduct(null);
-                        }
-                    });
-
-                    snapApp.getSelectionSupport(RasterDataNode.class).addHandler((oldValue, newValue) -> {
-                        setSelectedRaster(newValue);
-                    });
-
-                    setProducts(snapApp.getProductManager().getProducts());
-                    setSelectedProduct(snapApp.getSelectedProduct(VIEW));
-                } catch (Throwable e) {
-                    SnapApp.getDefault().handleError("Unable to initialize WWWorldMapToolView: " + e.getMessage(), e);
+                    wwLayer.setOpacity(1.0);
+                    wwLayer.setPickEnabled(false);
                 }
-                return null;
             }
-        };
-        worker.execute();
+
+            // Instead of the default Place Name layer we use special implementation to replace
+            // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
+            final Layer placeNameLayer = layerList.getLayerByName("Place Names");
+            layerList.remove(placeNameLayer);
+
+            final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
+            layerList.add(fixingPlaceNameLayer);
+            fixingPlaceNameLayer.setEnabled(true);
+
+            SwingUtilities.invokeLater(() -> installWorldWindow(model));
+        } catch (Throwable e) {
+            SnapApp.getDefault().handleError("Unable to initialize WWWorldMapToolView: " + e.getMessage(), e);
+        }
+    }
+
+    private void installWorldWindow(final Model model) {
+        try {
+            createWWPanel(null, includeStatusBar, flatWorld, model);
+
+            // Put the pieces together.
+            mainPane.removeAll();
+            mainPane.add(wwjPanel, BorderLayout.CENTER);
+            mainPane.revalidate();
+            mainPane.repaint();
+
+            // update world map window with the information of the currently activated product scene view.
+            final WWView toolView = this;
+            final SnapApp snapApp = SnapApp.getDefault();
+            snapApp.getProductManager().addListener(new WWProductManagerListener(toolView));
+            snapApp.getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
+                if (newValue != null) {
+                    setSelectedProduct(newValue.getProduct());
+                } else {
+                    setSelectedProduct(null);
+                }
+            });
+
+            snapApp.getSelectionSupport(RasterDataNode.class).addHandler((oldValue, newValue) -> {
+                setSelectedRaster(newValue);
+            });
+
+            setProducts(snapApp.getProductManager().getProducts());
+            setSelectedProduct(snapApp.getSelectedProduct(VIEW));
+        } catch (Throwable e) {
+            SnapApp.getDefault().handleError("Unable to initialize WWWorldMapToolView: " + e.getMessage(), e);
+        }
     }
 }

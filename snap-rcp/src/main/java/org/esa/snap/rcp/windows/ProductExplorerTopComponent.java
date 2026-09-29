@@ -19,6 +19,7 @@ import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
+import org.openide.util.RequestProcessor;
 import org.openide.windows.IOProvider;
 import org.openide.windows.InputOutput;
 import org.openide.windows.TopComponent;
@@ -68,7 +69,11 @@ import java.util.logging.Level;
 })
 public class ProductExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
+    private static final RequestProcessor SELECTION_LOG_PROCESSOR = new RequestProcessor("Explorer Selection Log", 1);
+
     private final ExplorerManager explorerManager = new ExplorerManager();
+    // only accessed from SELECTION_LOG_PROCESSOR
+    private InputOutput selectionIO;
     private DndBeanTreeView treeView;
 
     public ProductExplorerTopComponent() {
@@ -108,7 +113,6 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
         map.put("delete", ExplorerUtils.actionDelete(explorerManager, true));
         associateLookup(ExplorerUtils.createLookup(explorerManager, map));
 
-        final InputOutput io = IOProvider.getDefault().getIO("Explorer Selection", true);
         explorerManager.addPropertyChangeListener(new PropertyChangeListener() {
 
             final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
@@ -119,10 +123,21 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
                     Node[] selectedNode = (Node[]) evt.getNewValue();
                     for (Node node : selectedNode) {
                         String timeText = timeFormat.format(System.currentTimeMillis());
-                        io.getOut().println(timeText + ": " + node.getDisplayName());
+                        logSelection(timeText + ": " + node.getDisplayName());
                     }
                 }
             }
+        });
+    }
+
+    // The output tab is created on first use and written from a background thread; creating it eagerly
+    // loads the Output window during startup.
+    private void logSelection(String line) {
+        SELECTION_LOG_PROCESSOR.post(() -> {
+            if (selectionIO == null) {
+                selectionIO = IOProvider.getDefault().getIO("Explorer Selection", true);
+            }
+            selectionIO.getOut().println(line);
         });
     }
 

@@ -11,6 +11,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.Cursor;
 
 /**
@@ -39,24 +40,32 @@ public class DesktopVersionCheck {
             if (!SnapApp.getDefault().getAppContext().getApplicationWindow().isVisible()) {
                 return;
             }
-            if (VERSION_CHECKER.mustCheck()) {
-                if (VERSION_CHECKER.checkForNewRelease()) {
+            // the remote version is fetched over the network, so keep it off the EDT and out of the startup phase
+            StartupTasks.runAfterStartup("SNAP version check", () -> {
+                final boolean newReleaseAvailable = VERSION_CHECKER.mustCheck() && VERSION_CHECKER.checkForNewRelease();
+                if (newReleaseAvailable) {
                     VERSION_CHECKER.setChecked();
-                    final JPanel panel = new JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-                    String localVersion = String.valueOf(VERSION_CHECKER.getLocalVersion());
-                    String remoteVersion = String.valueOf(VERSION_CHECKER.getRemoteVersion());
-                    panel.add(new JLabel(String.format(MSG_UPDATE_INFO + "", localVersion, remoteVersion)));
-
-                    final JLabel LinkLabel = new JLabel("<html><a href=\"" + STEP_WEB_PAGE + "\">" + STEP_WEB_PAGE + "</a>");
-                    LinkLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                    LinkLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(STEP_WEB_PAGE));
-                    panel.add(LinkLabel);
-
-                    JOptionPane.showMessageDialog(null, panel);
-                    return;
                 }
+                SwingUtilities.invokeLater(() -> showResult(newReleaseAvailable));
+            });
+        }
+
+        private static void showResult(boolean newReleaseAvailable) {
+            if (newReleaseAvailable) {
+                final JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+                String localVersion = String.valueOf(VERSION_CHECKER.getLocalVersion());
+                String remoteVersion = String.valueOf(VERSION_CHECKER.getRemoteVersion());
+                panel.add(new JLabel(String.format(MSG_UPDATE_INFO + "", localVersion, remoteVersion)));
+
+                final JLabel LinkLabel = new JLabel("<html><a href=\"" + STEP_WEB_PAGE + "\">" + STEP_WEB_PAGE + "</a>");
+                LinkLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                LinkLabel.addMouseListener(new BrowserUtils.URLClickAdaptor(STEP_WEB_PAGE));
+                panel.add(LinkLabel);
+
+                JOptionPane.showMessageDialog(null, panel);
+                return;
             }
             final String message =
                     "You are running the latest major version " + VERSION_CHECKER.getLocalVersion() + " of SNAP.\n" +

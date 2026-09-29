@@ -24,9 +24,11 @@ import org.esa.snap.rcp.session.OpenSessionAction;
 import org.esa.snap.rcp.util.ContextGlobalExtenderImpl;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
+import org.esa.snap.rcp.util.StartupTasks;
 import org.esa.snap.rcp.util.internal.DefaultSelectionSupport;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.runtime.Engine;
+import org.esa.snap.runtime.EngineConfig;
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.product.ProductSceneView;
@@ -395,7 +397,9 @@ public class SnapApp {
      * Overrides should call {@code super.onStart()} as a first step unless they know what they are doing.
      */
     public void onStart() {
-        engine = Engine.start(false);
+        // NetBeans waits for this @OnStart task before building the main window, so deferrable activators
+        // (native libraries, version check, ...) are started in the background once the UI is up
+        engine = Engine.start(false, task -> StartupTasks.runAfterStartup("Engine activators", task, 0));
         try {
             VirtualDir.clearTempFiles();
         } catch (IOException e) {
@@ -637,14 +641,31 @@ public class SnapApp {
     @OnStart
     public static class StartOp implements Runnable {
 
+        private static final RequestProcessor IMAGING_INIT_PROCESSOR = new RequestProcessor("SNAP Imaging Init", 1);
+
         @Override
         public void run() {
             LOG.info("Starting SNAP Desktop");
+            // NetBeans waits for this task before building the main window. The ImageIO and JAI/GeoTools setup do
+            // not depend on the engine start (only on the configuration), so they run concurrently with it; both
+            // still complete before this task returns, because readers and image views rely on them.
+            EngineConfig.instance().load();
+            final ClassLoader systemClassLoader = Lookup.getDefault().lookup(ClassLoader.class);
+            final RequestProcessor.Task imagingInit = IMAGING_INIT_PROCESSOR.post(() -> {
+                final Thread thread = Thread.currentThread();
+                final ClassLoader contextClassLoader = thread.getContextClassLoader();
+                thread.setContextClassLoader(systemClassLoader);
+                try {
+                    initImageIO();
+                    SystemUtils.init3rdPartyLibsByCl(systemClassLoader);
+                } finally {
+                    thread.setContextClassLoader(contextClassLoader);
+                }
+            });
             try {
                 SnapApp.getDefault().onStart();
             } finally {
-                initImageIO();
-                SystemUtils.init3rdPartyLibsByCl(Lookup.getDefault().lookup(ClassLoader.class));
+                imagingInit.waitFinished();
                 SnapApp.getDefault().initGPF();
             }
         }
