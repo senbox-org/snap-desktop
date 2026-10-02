@@ -27,7 +27,7 @@ import java.util.logging.Level;
 public class ContextWebSearch {
 
     private static final String DEFAULT_SEARCH = "http://www.google.com/search?q=";
-    private static final String DEFAULT_QUERY = "ESA Sentinel Toolbox";
+    private static final String DEFAULT_QUERY = "NASA SeaDAS";
     private static final String CONFIG_FILENAME = "context-search.properties";
 
     private static ContextWebSearch instance;

@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 @ActionID(category = "Help", id = "ShowLogFileInExplorerAction")
 @ActionRegistration(displayName = "#CTL_ShowLogFileInExplorerAction_MenuText")
-@ActionReference(path = "Menu/Help", position = 400)
+@ActionReference(path = "Menu/Help", position = 999)
 @NbBundle.Messages({"CTL_ShowLogFileInExplorerAction_MenuText=Show Log Directory"})
 public class ShowLogInExplorer extends AbstractAction {
 

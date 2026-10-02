@@ -33,7 +33,7 @@ import java.awt.event.ActionEvent;
         displayName = "#CTL_ReportIssueAction_MenuText",
         popupText = "#CTL_ReportIssueAction_MenuText"
 )
-@ActionReference(path = "Menu/Help", position = 305)
+@ActionReference(path = "Menu/Help", position = 60)
 @NbBundle.Messages({
         "CTL_ReportIssueAction_MenuText=Report an Issue",
         "CTL_ReportIssueAction_ShortDescription=Opens a web page explaining how to report an issue"
