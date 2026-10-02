@@ -28,15 +28,15 @@ import java.awt.event.ActionEvent;
 /**
  * This action launches the default browser to display the online help.
  */
-@ActionID(category = "Help", id = "ShowOnlineHelpAction" )
-@ActionRegistration(
-        displayName = "#CTL_ShowOnlineHelpAction_MenuText",
-        popupText = "#CTL_ShowOnlineHelpAction_MenuText")
-@ActionReference(path = "Menu/Help", position = 205)
-@NbBundle.Messages({
-        "CTL_ShowOnlineHelpAction_MenuText=SNAP O&nline Help",
-        "CTL_ShowOnlineHelpAction_ShortDescription=Browse the SNAP Toolboxes online help"
-})
+//@ActionID(category = "Help", id = "ShowOnlineHelpAction" )
+//@ActionRegistration(
+//        displayName = "#CTL_ShowOnlineHelpAction_MenuText",
+//        popupText = "#CTL_ShowOnlineHelpAction_MenuText")
+//@ActionReference(path = "Menu/Help", position = 1000)
+//@NbBundle.Messages({
+//        "CTL_ShowOnlineHelpAction_MenuText=Online Help",
+//        "CTL_ShowOnlineHelpAction_ShortDescription=Browse the SeaDAS Toolboxes online help"
+//})
 public class ShowOnlineHelpAction extends AbstractAction {
     /** URl for the online help. */
     private static final String DEFAULT_ONLINE_HELP_URL = "https://seadas.gsfc.nasa.gov/help/";
