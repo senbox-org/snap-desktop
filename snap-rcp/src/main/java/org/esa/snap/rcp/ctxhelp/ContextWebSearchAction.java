@@ -27,7 +27,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
         lazy = true
 )
 @ActionReferences({
-        @ActionReference(path = "Menu/Help", position = 210),
+        @ActionReference(path = "Menu/Help", position = 50,  separatorBefore = 45),
         @ActionReference(path = "Shortcuts", name = "D-F1")
 })
 @NbBundle.Messages({
