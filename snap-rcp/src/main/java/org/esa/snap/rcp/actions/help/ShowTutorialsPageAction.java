@@ -31,7 +31,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_ShowTutorialsPageAction_MenuText",
         popupText = "#CTL_ShowTutorialsPageAction_MenuText")
-@ActionReference(path = "Menu/Help", position = 310)
+@ActionReference(path = "Menu/Help", position = 910)
 @NbBundle.Messages({
         "CTL_ShowTutorialsPageAction_MenuText=SNAP Tutorials",
         "CTL_ShowTutorialsPageAction_ShortDescription=Browse the SNAP Toolboxes tutorials web page"
