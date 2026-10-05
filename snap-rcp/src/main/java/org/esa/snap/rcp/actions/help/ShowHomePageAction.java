@@ -31,7 +31,7 @@ import java.awt.event.ActionEvent;
 @ActionRegistration(
         displayName = "#CTL_ShowHomePageAction_MenuText",
         popupText = "#CTL_ShowHomePageAction_MenuText")
-@ActionReference(path = "Menu/Help", position = 300)
+@ActionReference(path = "Menu/Help", position = 900)
 @NbBundle.Messages({
         "CTL_ShowHomePageAction_MenuText=STEP Home Page",
         "CTL_ShowHomePageAction_ShortDescription=Browse the STEP home page"
