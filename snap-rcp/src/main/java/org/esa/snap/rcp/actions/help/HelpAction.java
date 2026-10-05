@@ -2,9 +2,6 @@ package org.esa.snap.rcp.actions.help;
 
 import org.esa.snap.tango.TangoIcons;
 import org.esa.snap.ui.help.HelpDisplayer;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle;
 
@@ -16,14 +13,8 @@ import java.awt.event.ActionEvent;
  *
  * @author Norman Fomferra
  */
-@ActionID(category = "Help", id = "HelpAction" )
-@ActionRegistration(
-        displayName = "#CTL_HelpAction_MenuText",
-        popupText = "#CTL_HelpAction_MenuText")
-@ActionReference(path = "Menu/Help", position = 1)
 @NbBundle.Messages({
         "CTL_HelpActionText=Help",
-        "CTL_HelpAction_MenuText=Help Contents",
         "CTL_HelpActionToolTip=Invokes the help system."
 })
 public class HelpAction extends AbstractAction implements HelpCtx.Provider {
