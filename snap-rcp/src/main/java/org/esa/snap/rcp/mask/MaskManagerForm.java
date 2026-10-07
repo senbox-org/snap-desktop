@@ -34,6 +34,7 @@ class MaskManagerForm extends MaskForm {
 
     private final AbstractButton helpButton;
     private final MaskFormActions actions;
+    private final RangeThresholdSliderPanel rangeThresholdSliderPanel;
 
     MaskManagerForm(ToolTopComponent maskTopComponent, ListSelectionListener selectionListener) {
         super(true, selectionListener);
@@ -41,6 +42,12 @@ class MaskManagerForm extends MaskForm {
         helpButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Help22.png"), false);
         helpButton.setName("helpButton");
         actions = new MaskFormActions(maskTopComponent, this);
+        rangeThresholdSliderPanel = new RangeThresholdSliderPanel(this);
+        getMaskTable().getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                rangeThresholdSliderPanel.updateSelection();
+            }
+        });
 
         updateState();
     }
@@ -93,6 +100,7 @@ class MaskManagerForm extends MaskForm {
 
         JPanel tablePanel = new JPanel(new BorderLayout(4, 4));
         tablePanel.add(new JScrollPane(getMaskTable()), BorderLayout.CENTER);
+        tablePanel.add(rangeThresholdSliderPanel, BorderLayout.SOUTH);
 
         JPanel contentPane1 = new JPanel(new BorderLayout(4, 4));
         contentPane1.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
