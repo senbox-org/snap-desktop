@@ -32,9 +32,12 @@ import java.io.Writer;
  * @since BEAM 4.6
  */
 public abstract class SessionIO {
-    static SessionIO instance = new XStreamSessionIO();
+    static SessionIO instance;
 
     public static SessionIO getInstance() {
+        if (instance == null) {
+            instance = new XStreamSessionIO();
+        }
         return instance;
     }
 

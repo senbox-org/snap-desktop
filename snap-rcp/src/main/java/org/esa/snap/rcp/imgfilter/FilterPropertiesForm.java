@@ -319,7 +319,7 @@ public class FilterPropertiesForm extends JPanel implements PropertyChangeListen
         }
     }
 
-    private static class TrueCondition extends Enablement.Condition {
+    public static class TrueCondition extends Enablement.Condition {
         @Override
         public boolean evaluate(BindingContext bindingContext) {
             return true;
