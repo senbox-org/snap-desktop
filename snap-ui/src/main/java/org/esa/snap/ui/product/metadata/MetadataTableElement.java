@@ -5,7 +5,7 @@ import org.openide.nodes.AbstractNode;
 /**
  * @author Tonio Fincke
  */
-interface MetadataTableElement {
+public interface MetadataTableElement {
 
     MetadataTableElement[] getMetadataTableElements();
 

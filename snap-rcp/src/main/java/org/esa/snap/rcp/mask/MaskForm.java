@@ -32,25 +32,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-abstract class MaskForm {
+public abstract class MaskForm {
 
     private final MaskTable maskTable;
 
     protected MaskForm(boolean maskManagmentMode, ListSelectionListener selectionListener) {
         maskTable = new MaskTable(maskManagmentMode);
         maskTable.getSelectionModel().addListSelectionListener(selectionListener);
-        maskTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                updateState();
-            }
-        });
-        maskTable.getModel().addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                updateState();
-            }
-        });
+        maskTable.getSelectionModel().addListSelectionListener(e -> updateState());
+        maskTable.getModel().addTableModelListener(e -> updateState());
         maskTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(final MouseEvent e) {
