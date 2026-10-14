@@ -13,6 +13,8 @@
   ~ You should have received a copy of the GNU General Public License along
   ~ with this program; if not, see http://www.gnu.org/licenses/
   -->
+<!--Revisions:-->
+<!--JAN2019 - Daniel Knowles - Updated with info about some existing and new filters-->
 
 <html>
 <head>
@@ -56,17 +58,43 @@
 
 <h4>Pre-defined Filters</h4>
 
-<p>SNAP has the following pre-defined filters:</p>
+<p>SNAP has the following categories of pre-defined filters:</p>
 
 <ul>
     <li><strong>Detect Lines</strong>: Horizontal Edges, Vertical Edges, Diagonal Edges, Compass Edge Detector, Roberts Cross</li>
     <li><strong>Detect Gradients (Emboss)</strong>: Sobel</li>
     <li><strong>Smooth and Blurr</strong>: Arithmetic Mean, Low-Pass</li>
+    <li><strong>Straylight</strong>: Straylight</li>
     <li><strong>Sharpen</strong>: High-Pass</li>
     <li><strong>Enhance Discontinuities</strong>: Laplace</li>
     <li><strong>Non-Linear Filters</strong>: Minimum, Maximum, Mean, Median, Standard Deviation</li>
     <li><strong>Morphological Filters</strong>: Erosion, Dilation, Opening, Closing</li>
 </ul>
+
+
+<p>Here is a description of a few of the pre-defined filters:</p>
+
+<ul>
+    <li><strong>Arithmetic Mean 3x3</strong> Linear filter applied to a 3x3 grid with all pixels weighted equally and centered about the target pixel</li>
+    <li><strong>Arithmetic Mean 5x5</strong> Linear filter applied to a 5x5 grid with all pixels weighted equally and centered about the target pixel</li>
+    <li><strong>Arithmetic Mean 7x7</strong> Linear filter applied to a 7x7 grid with all pixels weighted equally and centered about the target pixel</li>
+    <li><strong>Weighted Circular Mean 3x3</strong> Linear filter applied to a 3x3 grid with pixels weighted to emulate a circle of 3 pixel diameter centered about the target pixel</li>
+    <li><strong>Weighted Circular Mean 5x5</strong> Linear filter applied to a 5x5 grid with pixels weighted to emulate a circle of 5 pixel diameter centered about the target pixel</li>
+    <li><strong>Weighted Mean 2x2</strong> Linear filter applied to a 3x3 grid with pixels weighted to emulate a 2x2 square grid centered about the target pixel</li>
+    <li><strong>Weighted Mean 4x4</strong> Linear filter applied to a 5x5 grid with pixels weighted to emulate a 4x4 square grid centered about the target pixel</li>
+    <li><strong>Straylight 3x3</strong> Same as the "Arithmetic Mean 3x3" filter but with the center pixel having zero weight such that all contribution comes from straylight</li>
+    <li><strong>Straylight 5x5</strong> Same as the "Arithmetic Mean 5x5" filter but with the center pixel having zero weight such that all contribution comes from straylight</li>
+    <li><strong>Straylight 5x5 #2</strong> Similar to the "Straylight 5x5" filter but with proximity weighting</li>
+    <li><strong>Straylight Circular (3x3)</strong> Same as the "Weighted Circular Mean 3x3" filter but with the center pixel having zero weight such that all contribution comes from straylight</li>
+    <li><strong>Straylight Circular (5x5)</strong> Same as the "Weighted Circular Mean 5x5" filter but with the center pixel having zero weight such that all contribution comes from straylight</li>
+</ul>
+
+<p><strong>Note:</strong> A key difference between the linear and non-linear filter is that for the linear filter, if any of the pixels contained within the
+    source grid are NaN then the resultant target pixel will be NaN.  For the non-linear filter, if some (but not all) of the source pixels are NaN, then the
+    resultant target pixel will not be forced to be NaN.
+</p>
+
+
 
 <h4>User-defined Filters</h4>
 
