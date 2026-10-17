@@ -1,0 +1,322 @@
+# SNAP WorldWind — Review, Status and Plan
+
+Date: 2026-10-17. Branch: `worldwind-fixes` (snap-desktop and microwave-toolbox).
+
+## 0. Origin
+
+Request (2026-10-17): review all the WorldWind functionality in SNAP —
+
+1. first determine any serious bugs to fix;
+2. next determine if the WorldWind version is up to date. If so, is JOGL up to date, or can it not be
+   updated beyond what the WorldWind version allows?
+3. next determine how it could be improved, by adding functionality already available in WorldWind or by
+   adding much needed new functionality.
+
+The review report below (§1–§3) was first presented in the review session and approved for the bug-fix
+part ("yes go ahead"). It is recorded here so that the later parts are not lost. §4 records what has been
+done, §5 plans the quick wins of §3, and §6 specifies the three new features chosen for implementation.
+
+---
+
+## 1. Serious bugs to fix (review findings)
+
+None of the WorldWind units was production ready at the time of the review. Every BLOCKER and the main
+MAJOR findings were checked against the code.
+
+| # | Severity | Where | Bug |
+|---|---|---|---|
+| 1 | BLOCKER | `snap-worldwind/.../productlibrary/WorldMapPanelWrapper.java:284,287` | If 3D failed to start (remote desktop, VM, driver change) and the saved view is 3D, `worldMap3DPanel.setFlatEarth()` hits a null panel. The Product Library map never appears, on every start, because the saved setting never resets. |
+| 2 | MAJOR | `snap-product-library-ui-v2/.../thread/AbstractRunnable.java:44` | Only catches `Exception`. A JOGL `UnsatisfiedLinkError` or `NoClassDefFoundError` skips the fallback, so even the 2D map never shows. The "3D" menu items also hit a null panel when 3D is unavailable. Nothing listens for OpenGL failures at render time. |
+| 3 | BLOCKER | `WWProductManagerListener.java:36-53` | Adding a product ran later on a new thread; removing ran immediately on the caller's thread. Every GPF dialog adds and then removes its target product from a background thread: outlines left on the globe permanently, and a removed or disposed product still selected. |
+| 4 | BLOCKER | `ProductPanel.java:116` | Each checkbox constructor called `layer.setEnabled(selected)` on the whole Products layer. Untick the last product and the next selection hides every product. For outline-only products the checkbox did nothing. |
+| 5 | MAJOR | `DefaultProductLayer.java:318-322` | Outline computation blocked the UI thread with an unbounded wait, and every product add replayed all products (N²). On failure it marked the UI thread as interrupted. |
+| 6 | MAJOR | `DefaultProductLayer.java:486-490` | ENVISAT wave products never got their band-outline list set; selecting, the product panel, opacity and closing crashed on it. |
+| 7 | MAJOR | `DefaultProductLayer.java:233-244` | Quicklook area built from two corner pixels with no ordering (mirrored images); products crossing 180° stretched around the globe. |
+| 8 | MAJOR | `AppPanel.java:109-143` | The Analysis view made a blocking request to `http://www.nasa.network.com/elev` (not a NASA domain), no timeout, errors ignored, XML parser accepting external entities. |
+| 9 | MAJOR | microwave-toolbox `ocn/OWI.java:219,227` | Wind directions averaged as plain numbers (350° and 10° → 180°); arrows pointed to where the wind comes from. |
+| 10 | MAJOR | `OWI.java:93-97`, `RVL.java:114-130` | `findBands(...)[0]` before the null check (dead fallback, leaked renderables); RVL no-data trim dropped the last row and column. |
+| 11 | MAJOR | `ocn/ColorGradient.java:93,149` | OCN surface sector from two diagonal corners (inverted on one axis); values at or below the colour-scale minimum fully transparent. |
+| 12 | MAJOR | Product Library AOI code | 2D selection start not range-checked; 3D selection across 180° ~340° wide; footprints across 180° hit-tested and drawn wrongly; starting a 3D selection twice leaked a listener that swallowed every left-button release. |
+| 13 | MAJOR | `WWWorldViewToolView`, `WWAnalysisToolView` | OpenGL and Swing construction off the UI thread; listeners and GL canvas never released when closed. |
+
+Also found: Place Names force-enabled in all three globes while its server (`worldwind22.arc.nasa.gov`)
+returns 404; Political Boundaries, the OSM layer and the Analysis view's WMS server list were dead. Blue
+Marble, Landsat, elevation and the Bing proxy still respond, with no guarantee from NASA.
+
+snap-worldwind had no tests; the OCN tests only checked that objects were constructed.
+
+## 2. Versions (review findings)
+
+- **WorldWind 2.2.1 is the latest NASA release** (June 2022). SNAP's jar is byte-identical to upstream and was
+  built against JOGL 2.4.0-rc. NASA's `develop` branch has untagged fixes from 2023–24 (display-scaling/DPI
+  fixes, JOGL 2.5, EGM2008 geoid offsets). The active community fork, **WorldWindEarth v2.3.1** (Nov 2024),
+  packages those. It is not on Maven Central, so SNAP would have to build and host it, as it already does
+  for 2.2.1.
+- **JOGL can move past what WorldWind was built for.** The latest is **2.6.0** (Aug 2025), on Maven Central.
+  A check of every JOGL class and method WorldWind 2.2.1 references found nothing missing in 2.6.0 (static
+  check; needs smoke tests on Windows, Linux and macOS ARM).
+- **The real problems were in `snap-worldwind/pom.xml`:** macOS profiles chosen by the *build* machine's OS;
+  the mac-intel profile pulled 2.4.0 natives under 2.5.0 Java jars; the mac-arm profile named Linux natives;
+  32-bit Linux natives pinned to 2.3.2; redundant explicit natives; `*-main` artifacts bundling Android and
+  ARMv6 natives. Releases worked only because they were built on Windows.
+
+## 3. Improvements (review findings)
+
+**Quick wins using what WorldWind already has:**
+
+1. Clean up the endpoints: delete the `nasa.network.com` call and the dead layers; ship a SNAP layer config
+   with live sources.
+2. Bundled offline place names and borders, from Natural Earth.
+3. A live base map such as EOX Sentinel-2 cloudless (commercial use needs a licence) or NASA GIBS. WorldWind
+   has no WMTS client, so this goes through WMS or the existing Mercator tile class.
+4. Place the product image by its four corners instead of two, and let non-map-projected products use the
+   reprojection path that already exists.
+5. A scale bar, grid overlays (lat/lon, UTM, MGRS), a measure tool and a terrain profile.
+6. Load KML, shapefile and GeoJSON files onto the globe, and re-enable the WMS browser.
+7. Offline and cache settings, and a local or Copernicus DEM as the globe's terrain.
+8. Product Library: polygon AOI drawing and footprints that hit-test correctly across 180°.
+
+**New functionality worth building:**
+
+1. **Full-resolution product display (L):** tiles reprojected through each product's geocoding, with colours
+   matching SNAP's image view. Turns the globe from a footprint map into an analysis view.
+2. **Two-way sync with SNAP image views (M):** cursor, pins and GCPs.
+3. **Product vector data on the globe (M).**
+4. **Sentinel-1 acquisition geometry (M):** swaths, bursts, orbit ground track and look direction.
+5. **Time slider for stacks and InSAR time series (M–L).**
+6. **Product Library coverage map (M):** footprints coloured by date or orbit, plus a coverage heatmap.
+
+**Strategy:** WorldWind Java is in maintenance mode (NASA suspended the project in 2019) but works and needs
+no browser engine. Do the cleanup and version fixes now. Build new features on a SNAP-side model of tiles,
+geometry and time that does not depend on WorldWind, with thin WorldWind adapters on top. SNAP already has
+three world-map implementations that such a model could serve, and it keeps a later move to a web globe
+(e.g. CesiumJS) possible — not worth doing yet.
+
+---
+
+## 4. Status (2026-10-17)
+
+### Part 1 — bug fixes: done
+
+All 13 findings and the dead endpoints are fixed, with regression tests, after two adversarial review
+rounds. Local commits on `worldwind-fixes`, **not pushed**:
+
+| Repo | Commit | Content |
+|---|---|---|
+| snap-desktop | `54a440f53` | JOGL/GlueGen 2.6.0 and native packaging (§2) |
+| snap-desktop | `f167ae7f7` | #1–#8, #12, #13, dead endpoints (nasa.network.com removed, place names added disabled, dead WMS panel removed); first snap-worldwind tests |
+| microwave-toolbox | `62ff4cba4` | #9–#11 and the further OCN/ETAD findings of the review rounds |
+| microwave-toolbox | `79b629dc3` | OCN band reads moved off the EDT |
+
+Not yet done for part 1: running the fixed views in the SNAP application (only unit tests and the real IW/WV
+OCN test products through the layer code), and a third review round on the last fixes.
+
+### Part 2 — versions: partly done
+
+| Item | Status |
+|---|---|
+| JOGL/GlueGen 2.6.0, one native per platform, profiles removed | **Done** (`54a440f53`) |
+| `--add-opens` for JOGL 2.6.0 in the development launcher | **Done** (`54a440f53`) |
+| Rendering smoke test on Windows x64 | **Done** |
+| Smoke tests on Linux x64/aarch64 and macOS (universal natives) | **Open** — needs those machines |
+| Move to WorldWindEarth 2.3.1 (DPI fixes, EGM2008) | **Open decision** — SNAP would have to build and host the jar; recommended once the multi-platform JOGL tests pass, mainly for the HiDPI fixes |
+
+### Part 3 — improvements
+
+Quick wins: planned in §5, not started (items 4 and 8 were partly done as bug fixes: four-corner quicklook
+placement, antimeridian footprint hit-testing). New features 1–3: specified in §6, being implemented.
+New features 4–6: not started.
+
+---
+
+## 5. Quick-wins plan
+
+Order: cheapest, most visible first; each step is its own commit with tests where testable without OpenGL.
+Effort: S = up to a day, M = a few days.
+
+| Step | Quick win | What | How (WorldWind 2.2.1 classes, all verified present) | Effort |
+|---|---|---|---|---|
+| Q1 | Live base map (#3) | Add NASA GIBS (Blue Marble shaded relief, VIIRS true colour) and EOX Sentinel-2 cloudless as selectable base layers | `WMSTiledImageLayer` built from the GIBS `epsg4326/best` WMS and the EOX WMS (both checked live 2026-10-17); keep Bing as default until licences are settled. EOX s2cloudless 2016 is CC BY 4.0, later years CC BY-NC-SA — commercial users need a licence, so EOX layers are added disabled with the attribution in the layer name | S |
+| Q2 | SNAP layer config (#1) | One SNAP-owned layer configuration instead of WorldWind's built-in defaults, so dead NASA endpoints cannot come back | A `config/snap-worldwind-layers.xml` in the module, set via `gov.nasa.worldwind.avkey.LayersConfigurationDocument` before the first `WorldWind.createConfigurationComponent`; lists only live layers | S |
+| Q3 | Offline place names and borders (#2) | Country borders and populated places that work offline | Natural Earth (public domain) 1:50m admin-0 boundaries and populated places, bundled as shapefiles (~2 MB), loaded with `ShapefileLayerFactory`; replaces the disabled place-name layer | M |
+| Q4 | Map tools (#5) | Scale bar, lat/lon/UTM/MGRS graticules, measure tool, terrain profile | `ScalebarLayer`, `LatLonGraticuleLayer`, `UTMGraticuleLayer`, `MGRSGraticuleLayer` (off by default, toggled in the layer panel), `MeasureTool` with a toolbar toggle in the Analysis view, `TerrainProfileLayer` | M |
+| Q5 | External data (#6) | Open KML/KMZ, shapefile and GeoJSON files onto the globe; WMS browser | `KMLRoot` + `KMLController`, `ShapefileLayerFactory`, worldwindx `GeoJSONLoader`; worldwindx `WMSLayersPanel` behind an "Add WMS layer" button, with the server list in preferences (no dead defaults) | M |
+| Q6 | Reprojection of non-map-projected quicklooks (#4) | Quicklooks for SAR/swath products | Superseded by feature F1 (§6.1), which displays any geocoded product through its geocoding; the quicklook path stays for map-projected products in the World View | — |
+| Q7 | Offline/cache and terrain (#7) | Offline switch, cache location and size; local DEM as terrain | `WorldWind.setOfflineMode`, file-store location in preferences; `LocalElevationModel` fed from a SNAP DEM file (Copernicus 30 m tiles already downloaded by snap-dem), added to the globe's `CompoundElevationModel` | M |
+| Q8 | Product Library polygon AOI (#8) | Draw a polygon instead of a rectangle | Extend `Rectangle3DSelection`/`Map2DMouseHandler` with a polygon mode; the search already accepts WKT | M |
+
+Risks: Q1/Q3 add network or bundle-size dependencies (licence check for EOX; bundle size for Natural
+Earth); Q4/Q5 widgets need GL rendering, so they are tested in the application, not in unit tests.
+
+---
+
+## 6. Feature specifications
+
+The three features share the existing extension point: `WWLayer` implementations registered in
+`layer.xml` and added to the views by `WWLayerRegistry`, fed by `WWBaseToolView` with products, the selected
+product and the selected raster. They add one more input: the selected image view
+(`ProductSceneView`), passed with a new default method `WWLayer.setSelectedSceneView(ProductSceneView)`.
+All WorldWind and Swing access happens on the EDT; product data is read on background threads, as
+`DefaultProductLayer` does since `f167ae7f7`.
+
+Following the review's strategy, the geometry work (geocoding to lat/lon, tile resampling, vector data
+conversion) lives in WorldWind-independent classes that can be unit tested without OpenGL; the layers are
+thin adapters.
+
+### 6.1 F1 — Full-resolution product display
+
+**Goal.** Show the image of a product on the globe at full resolution, placed through the product's own
+geocoding (any geocoding: map-projected, tie-point, pixel/swath geocodings of SAR and other L1 products),
+with the colours of SNAP's image view.
+
+**Behaviour.**
+
+- New layer "Product Images" (`ProductImageLayer`), shown in the Analysis view (`showIn3DToolView`), not in
+  the small World View.
+- When an image view is selected, the layer shows that view's image for its product: the view's rasters
+  (one band, or three for RGB) with the view's colour settings (`ImageInfo`). Each product keeps the image
+  of its last selected view until another view of the same product is selected or the product is closed.
+- Changing the colours in the Colour Manipulation tool (the view's `imageInfo` property) refreshes the
+  image.
+- Detail follows the zoom level: tiles are generated on demand from the image pyramid level that matches the
+  tile's resolution, so zooming in shows full-resolution pixels and zooming out stays cheap.
+- No-data and areas outside the product are transparent. The layer opacity applies (layer panel).
+- While a product shows a full-resolution image, its quicklook (`DefaultProductLayer` surface image) is
+  hidden, so the two do not blend.
+
+**Design.**
+
+- `ProductTileRenderer` (WorldWind-independent): given a geographic sector and a tile size in pixels,
+  returns an ARGB `BufferedImage` or null if the tile does not touch the product.
+  - Inverse geocoding on a coarse grid (one node every 16 tile pixels, 33 × 33 nodes for a 512 tile):
+    `GeoCoding.getPixelPos` per node; pixel positions inside a grid cell are bilinearly interpolated when all
+    four nodes are valid, and computed exactly per pixel where they are not (swath edges), so edges are not
+    cut back to whole cells.
+  - Pyramid level: the source pixels per tile pixel are estimated from the node spacing; level =
+    floor(log2(ratio)), clamped to the pyramid's levels.
+  - Source image: a `ColoredBandImageMultiLevelSource` built from the view's rasters and a copy of its
+    `ImageInfo` — the same colouring code as the image view, independent of the view's lifetime. Only the
+    bounding rectangle of the needed source pixels at that level is read; nearest-neighbour sampling.
+  - Longitude handling: lat/lon of nodes are normalised; a sector crossing the antimeridian is never
+    requested because WorldWind tiles never cross it.
+  - The renderer is stateless apart from the image source, and thread-safe.
+- `ProductImageTiledLayer extends TiledImageLayer` (adapter): a `LevelSet` over the product's bounding sector,
+  512-pixel tiles on WorldWind's global tiling (36° level-zero tiles, origin -90/-180), as many levels as the
+  product's ground resolution needs plus one. `requestTexture` queues a prioritised task (nearest tiles first);
+  the task renders the tile, converts it to `TextureData`, puts the tile into WorldWind's texture-tile memory
+  cache, and marks the tile absent if it does not touch the product. Each image gets a unique cache name, so
+  a colour change never reuses old tiles.
+- Product bounding sector: from the boundary paths already computed for the outline
+  (`GeoUtils.createGeoBoundaryPaths`); products crossing the antimeridian get the full longitude range.
+- `ProductImageLayer` (`WWLayer`): one `ProductImageTiledLayer` per product, rendered from its own
+  `doRender`; listens to the selected view's `imageInfo` property; removes and disposes the image when the
+  product is removed or its view's rasters are removed.
+
+**Edge cases.** Products without geocoding, or whose geocoding cannot compute pixel positions
+(`canGetPixelPos() == false`), get no image (logged). Multi-size products: the view's raster geocoding and
+pyramid are used, not the scene's. Very large products: only visible tiles at the needed level are read.
+Rasters disposed while a tile renders: the task fails quietly and the tile is retried on the next frame only
+if the image still exists.
+
+**Tests (no OpenGL).** Renderer on synthetic products with a CRS geocoding and with a tie-point (swath-like,
+rotated) geocoding: pixel at a known lat/lon has the expected colour; north-up orientation not mirrored;
+no-data and outside are transparent; pyramid level chosen for coarse tiles; tiles outside return null; edge
+cells computed exactly. Level-set sizing from resolution. Layer: image replaced on view change, removed with
+the product, refreshed on `imageInfo` change, quicklook hidden/shown.
+
+**Out of scope.** Elevation-corrected placement (terrain-corrected display would need the DEM in the
+inverse geocoding); bilinear resampling of the coloured image; showing images of products that have never
+been opened in an image view.
+
+### 6.2 F2 — Two-way sync with SNAP image views: cursor, pins and GCPs
+
+**Goal.** Link the globe and the image views: see on the globe where the cursor is in an image view and
+vice versa, and see, select and place pins and GCPs on the globe.
+
+**Behaviour.**
+
+- New layer "Pins and Cursor" (`ImageViewSyncLayer`), in both views.
+- **View → globe cursor:** moving the mouse over an image view shows a crosshair marker on the globe at the
+  geo-position under the mouse; it disappears when the mouse leaves the view.
+- **Globe → view cursor:** moving the mouse over the globe shows a cursor overlay (crosshair) in every open
+  image view whose product covers that position; it disappears when the mouse leaves the globe. Controlled by
+  a "Sync cursor with image views" toggle in the Analysis view (on by default) — the World View only
+  receives the view → globe cursor.
+- **Pins and GCPs:** every product's pins (yellow) and GCPs (cyan) are drawn on the globe with their labels,
+  and follow additions, removals, moves and renames.
+- **Selecting:** clicking a pin or GCP on the globe selects it in the product's open image view.
+- **Placing:** in the Analysis view, "Place pin" (right-click menu) adds a pin at the clicked position to the
+  selected product, if the position is inside it.
+- **Navigating:** double-clicking on the globe centres the selected image view on that position, if the
+  product covers it.
+
+**Design.**
+
+- `ImageViewGeoUtils` (WorldWind-independent): level-pixel → geo-position for a view (image-to-model of the
+  current level, model-to-image of level 0, raster geocoding — as SNAP's `ImageCursorSynchronizer` does);
+  geo → raster pixel with an inside-raster test; placemark → geo-position (from the placemark's geo-position
+  or, failing that, its pixel position through the geocoding).
+- `ImageViewSyncLayer` (`WWLayer`): one `PointPlacemark` per pin/GCP keyed by `Placemark` identity; a
+  `ProductNodeListener` per product on its pin and GCP groups; a `PixelPositionListener` on the selected
+  view; the crosshair placemark.
+- `GlobeCursorOverlay` (`LayerCanvas.Overlay`): draws the globe cursor in an image view at the geo-position
+  converted to view coordinates; the overlays are added to the open `ProductSceneView`s (found through the
+  window registry) and removed when the cursor leaves or the view closes.
+- Globe mouse events come from the `WorldWindowGLCanvas` mouse listeners and `SelectListener`; positions from
+  `getCurrentPosition()`.
+
+**Edge cases.** Products without geocoding: no pins drawn (logged once), cursor ignored. Pins with invalid
+geo-positions are skipped. Products crossing the antimeridian: geo-positions normalised. Views of a product
+not shown on the globe still get the globe cursor. Listener leaks: all listeners removed on product removal
+and view close.
+
+**Tests (no OpenGL).** Geo/pixel conversions with levels; inside-raster test; pin add/remove/move/rename
+updates the placemarks; GCPs and pins in different colours; product removal removes the placemarks and
+listeners; pin placement adds a pin at the right pixel and rejects outside positions.
+
+**Out of scope.** Syncing the view's zoom with the globe's altitude; drawing pins as editable on the globe
+(drag to move).
+
+### 6.3 F3 — Product vector data on the globe
+
+**Goal.** Show the vector data of open products (shapefiles imported into the product, drawn geometries,
+WKT, masks defined from vectors, ...) on the globe.
+
+**Behaviour.**
+
+- New layer "Vector Data" (`VectorDataLayer`), in both views.
+- Every non-empty vector data node of every product is drawn, except the pin and GCP nodes (shown by F2):
+  polygons as filled surface polygons with holes, lines as surface paths, points as placemarks.
+- The colours and line widths come from the node's and features' SNAP style (fill colour, fill opacity,
+  stroke colour, stroke width), so the globe matches the image view.
+- The drawing follows features being added, changed or removed, and nodes being added or removed.
+- Hovering a feature in the Analysis view shows the node name and feature id.
+
+**Design.**
+
+- `VectorDataConverter` (WorldWind-independent): converts a `VectorDataNode`'s features to lat/lon rings,
+  lines and points. Feature geometries are in the product's model coordinates; they are converted to raster
+  pixels with the image-to-model transform of the scene geocoding and then to geo-positions through the
+  geocoding, so the conversion is right for map-projected and non-map-projected products alike. Lines and ring
+  edges longer than a few pixels are densified so that they follow the geocoding of curved swaths. Also
+  parses the style (`DefaultFigureStyle`).
+- `VectorDataLayer` (`WWLayer`): converts on a background executor and installs `SurfacePolygon` /
+  `SurfacePolyline` / `PointPlacemark` renderables on the EDT; a `ProductNodeListener` per product re-converts
+  a changed node; keyed by `VectorDataNode` identity.
+
+**Edge cases.** Products without geocoding: skipped. Features with null or empty geometry: skipped. Invalid
+geo-positions (outside the geocoding): the part is split at invalid vertices rather than drawn to 0/0. Very
+large nodes: capped at 100 000 vertices per node, with a warning, to keep the globe responsive.
+Geometries crossing the antimeridian are passed to the surface shapes, which handle the dateline.
+
+**Tests (no OpenGL).** Conversion for a CRS-geocoded and a tie-point-geocoded product: polygon with hole,
+line, point, multi-geometries; densification; invalid vertices split the part; style parsing; layer updates
+on feature change, node add/remove, product removal; pins and GCPs not drawn.
+
+**Out of scope.** Editing vector data on the globe; 3D (extruded) vector data.
+
+---
+
+## 7. Implementation notes
+
+(Filled in during implementation: deviations from §6 and why.)
