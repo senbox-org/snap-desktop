@@ -29,7 +29,7 @@
     <packaging>nbm</packaging>
 
     <properties>
-        <jogamp.version>2.5.0</jogamp.version>
+        <jogamp.version>2.6.0</jogamp.version>
     </properties>
 
     <dependencies>
@@ -85,38 +85,76 @@
             <artifactId>worldwindx</artifactId>
             <version>2.2.1</version>
         </dependency>
+        <!-- JogAmp: Java classes plus one native jar per supported platform, all at ${jogamp.version}.
+             JogAmp refuses mixed Java/native builds, so never pin a native classifier to another version.
+             The *-main aggregators are avoided because they also pull android/armv6/freebsd natives. -->
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt-main</artifactId>
+            <artifactId>gluegen-rt</artifactId>
             <version>${jogamp.version}</version>
+            <exclusions>
+                <!-- only needed by the GlueGen code generator, not at runtime -->
+                <exclusion>
+                    <groupId>antlr</groupId>
+                    <artifactId>antlr</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all-main</artifactId>
+            <artifactId>jogl-all</artifactId>
             <version>${jogamp.version}</version>
         </dependency>
 
         <!-- natives -->
-
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>
             <artifactId>gluegen-rt</artifactId>
             <classifier>natives-windows-amd64</classifier>
             <version>${jogamp.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>antlr</groupId>
+                    <artifactId>antlr</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>
             <artifactId>gluegen-rt</artifactId>
             <classifier>natives-linux-amd64</classifier>
             <version>${jogamp.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>antlr</groupId>
+                    <artifactId>antlr</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>
             <artifactId>gluegen-rt</artifactId>
-            <classifier>natives-linux-i586</classifier>
-            <version>2.3.2</version>
+            <classifier>natives-linux-aarch64</classifier>
+            <version>${jogamp.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>antlr</groupId>
+                    <artifactId>antlr</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt</artifactId>
+            <classifier>natives-macosx-universal</classifier>
+            <version>${jogamp.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>antlr</groupId>
+                    <artifactId>antlr</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all</artifactId>
@@ -132,8 +170,25 @@
         <dependency>
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all</artifactId>
-            <classifier>natives-linux-i586</classifier>
-            <version>2.3.2</version>
+            <classifier>natives-linux-aarch64</classifier>
+            <version>${jogamp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all</artifactId>
+            <classifier>natives-macosx-universal</classifier>
+            <version>${jogamp.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- netbeans platform -->
@@ -177,54 +232,6 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>mac-intel</id>
-            <activation>
-                <os>
-                    <name>Mac OS X</name>
-                    <arch>x86_64</arch>
-                </os>
-            </activation>
-            <dependencies>
-                        <dependency>
-                            <groupId>org.jogamp.gluegen</groupId>
-                            <artifactId>gluegen-rt</artifactId>
-                            <classifier>natives-macosx-universal</classifier>
-                            <version>2.4.0</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.jogamp.jogl</groupId>
-                            <artifactId>jogl-all</artifactId>
-                            <classifier>natives-macosx-universal</classifier>
-                            <version>2.4.0</version>
-                        </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>mac-arm</id>
-            <activation>
-                <os>
-                    <name>Mac OS X</name>
-                    <arch>aarch64</arch>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jogamp.gluegen</groupId>
-                    <artifactId>gluegen-rt</artifactId>
-                    <classifier>natives-linux-aarch64</classifier>
-                    <version>2.5.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.jogamp.jogl</groupId>
-                    <artifactId>jogl-all</artifactId>
-                    <classifier>natives-linux-aarch64</classifier>
-                    <version>2.5.0</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 
     <build>
         <plugins>
@@ -255,10 +262,4 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>jogamp</id>
-            <url>https://jogamp.org/deployment/maven/</url>
-        </repository>
-    </repositories>
 </project>
