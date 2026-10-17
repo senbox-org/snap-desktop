@@ -319,4 +319,46 @@ on feature change, node add/remove, product removal; pins and GCPs not drawn.
 
 ## 7. Implementation notes
 
-(Filled in during implementation: deviations from §6 and why.)
+### 7a. First implementation (2026-10-17)
+
+Shared:
+
+- **Addition — layer order.** `WWLayerRegistry` kept its descriptors in a `HashMap`, which discards the folder
+  order of `layer.xml`, so the drawing order of the layers was arbitrary. It is now a `LinkedHashMap`, and
+  `layer.xml` gives positions: Product Images (100) below the outlines (200), Vector Data (300) and Pins and
+  Cursor (400) on top.
+- **Addition — module dependency.** snap-worldwind now declares `ceres-jai` (image pyramids); without it the
+  NetBeans module would not see `MultiLevelSource` at runtime (the build reported "uses classes from transitive
+  module").
+- WorldWind-independent code is in `org.esa.snap.worldwind.model` (`ProductTileRenderer`, `GeoBounds`,
+  `ImageViewGeoUtils`, `VectorDataConverter`), as §6 intended.
+
+F1 — full-resolution display:
+
+- **Clarification — resolution.** The ground resolution that sizes the pyramid is measured as a great-circle
+  arc, not in degrees of longitude (0.01° of longitude at 50.5° N is 0.0064° of arc); caught by
+  `ProductTileRendererTest.testGeoBounds` failing against the first, longitude-based expectation.
+- **Addition — opacity.** The Analysis view gives the Product Images layer opacity 1.0 (the product layer keeps
+  0.8 for outlines and quicklooks); the layer panel can still change it.
+- **Note — magnification.** The pyramid has one level finer than the product's pixels; zooming in further
+  magnifies that level with WorldWind's linear texture filtering, so pixel edges are slightly soft rather than
+  the nearest-neighbour blocks of SNAP's image view.
+- **Verified on a real globe** (JOGL 2.6.0, Windows x64): a map-projected product north-up with its palette
+  and a 30°-rotated tie-point swath placed through its geo-coding, both aligned with their outlines; a zoomed
+  view at 15 km shows the expected pixel corner at the expected lat/lon.
+
+F2 — sync with image views:
+
+- **Deviation — centring the image view.** §6.2 specified a double-click on the globe. WorldWind's view input
+  handler uses mouse clicks for navigation, so centring is instead an item of the globe's context menu
+  ("Centre Image View Here"), next to "Place Pin Here". Both items are disabled when the position is outside the
+  selected product / image view.
+- **Addition — round-trip check.** A geo-position is only accepted as inside a raster if the pixel found for it
+  maps back to the position (within a degree), because tie-point geo-codings extrapolate pixel positions far
+  outside the swath.
+
+F3 — vector data:
+
+- **Addition — CRS.** Features whose CRS differs from the scene's model CRS are first transformed to the model
+  CRS with GeoTools.
+- Hover info is a screen annotation next to the mouse, shown on rollover in the Analysis view.

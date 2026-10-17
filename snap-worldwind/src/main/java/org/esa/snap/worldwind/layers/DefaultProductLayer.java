@@ -92,6 +92,8 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     private final Map<Product, String> productKeys = Collections.synchronizedMap(new IdentityHashMap<>());
     private final AtomicInteger pendingTasks = new AtomicInteger();
     private Runnable changeListener;
+    // products whose quicklook is hidden, e.g. because a full-resolution image is shown instead
+    private final Set<Product> hiddenQuicklooks = Collections.newSetFromMap(new IdentityHashMap<>());
 
     static class ProductOutline {
         Path[] productLineList = new Path[0];
@@ -180,13 +182,57 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             return;
         }
         outline.visible = visible;
+        final Product product = findProduct(name);
+        final List<SurfaceImage> hidden = product != null && hiddenQuicklooks.contains(product) ?
+                getQuicklooks(outline) : Collections.emptyList();
         for (Renderable r : getRenderables(outline)) {
+            if (hidden.contains(r)) {
+                continue;
+            }
             if (visible) {
                 addRenderable(r);
             } else {
                 removeRenderable(r);
             }
         }
+    }
+
+    /**
+     * Shows or hides the quicklook images of a product, keeping its outline.
+     */
+    public void setQuicklookVisible(final Product product, final boolean visible) {
+        final boolean changed = visible ? hiddenQuicklooks.remove(product) : hiddenQuicklooks.add(product);
+        if (!changed) {
+            return;
+        }
+        final ProductOutline outline = outlineTable.get(keyOf(product));
+        if (outline == null || !outline.visible) {
+            return;
+        }
+        for (SurfaceImage image : getQuicklooks(outline)) {
+            if (visible) {
+                addRenderable(image);
+            } else {
+                removeRenderable(image);
+            }
+        }
+    }
+
+    public boolean isQuicklookVisible(final Product product) {
+        return !hiddenQuicklooks.contains(product);
+    }
+
+    private static List<SurfaceImage> getQuicklooks(final ProductOutline outline) {
+        final List<SurfaceImage> list = new ArrayList<>();
+        if (outline.image != null) {
+            list.add(outline.image);
+        }
+        for (BandOutline bandOutline : outline.bandOutlines) {
+            if (bandOutline.bandImage != null) {
+                list.add(bandOutline.bandImage);
+            }
+        }
+        return list;
     }
 
     public boolean isProductVisible(final String name) {
@@ -241,6 +287,17 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     @Override
     public Suitability getSuitability(Product product) {
         return Suitability.SUITABLE;
+    }
+
+    private Product findProduct(final String name) {
+        synchronized (productKeys) {
+            for (Map.Entry<Product, String> entry : productKeys.entrySet()) {
+                if (entry.getValue().equals(name)) {
+                    return entry.getKey();
+                }
+            }
+        }
+        return null;
     }
 
     private String keyOf(final Product product) {
@@ -399,7 +456,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                     return;
                 }
                 outline.image = si;
-                if (outline.visible) {
+                if (outline.visible && isQuicklookVisible(product)) {
                     addRenderable(si);
                 }
                 if (wwd != null) {
@@ -652,6 +709,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         final String name = keyOf(product);
         productKeys.remove(product);
         pendingProducts.remove(name);
+        hiddenQuicklooks.remove(product);
 
         final ProductOutline productOutline = outlineTable.remove(name);
         if (productOutline != null) {

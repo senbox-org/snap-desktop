@@ -20,6 +20,7 @@ import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.layers.Layer;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.JPanel;
 
@@ -43,4 +44,9 @@ public interface WWLayer extends Layer {
     void setSelectedRaster(final RasterDataNode raster);
 
     default void updateInfoAnnotation(final SelectEvent event) {}
+
+    /**
+     * Called on the EDT when an image view is selected; null when no image view is selected.
+     */
+    default void setSelectedSceneView(final ProductSceneView view) {}
 }

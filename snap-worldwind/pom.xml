@@ -50,6 +50,11 @@
             <artifactId>ceres-glayer</artifactId>
         </dependency>
         <dependency>
+            <!-- image pyramids of the full-resolution product display -->
+            <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-jai</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.esa.snap</groupId>
             <artifactId>snap-core</artifactId>
         </dependency>

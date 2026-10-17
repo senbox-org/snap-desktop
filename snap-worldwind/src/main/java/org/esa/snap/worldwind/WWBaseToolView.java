@@ -30,6 +30,7 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ToolTopComponent;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.worldwind.layers.BaseLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.openide.windows.WindowManager;
@@ -61,6 +62,7 @@ public abstract class WWBaseToolView extends ToolTopComponent implements WWView 
     private ProductManager.Listener productManagerListener;
     private SelectionSupport.Handler<ProductNode> productNodeHandler;
     private SelectionSupport.Handler<RasterDataNode> rasterHandler;
+    private SelectionSupport.Handler<ProductSceneView> sceneViewHandler;
 
     public WWBaseToolView() {
     }
@@ -115,13 +117,16 @@ public abstract class WWBaseToolView extends ToolTopComponent implements WWView 
         productManagerListener = new WWProductManagerListener(this);
         productNodeHandler = (oldValue, newValue) -> setSelectedProduct(newValue != null ? newValue.getProduct() : null);
         rasterHandler = (oldValue, newValue) -> setSelectedRaster(newValue);
+        sceneViewHandler = (oldValue, newValue) -> setSelectedSceneView(newValue);
 
         snapApp.getProductManager().addListener(productManagerListener);
         snapApp.getSelectionSupport(ProductNode.class).addHandler(productNodeHandler);
         snapApp.getSelectionSupport(RasterDataNode.class).addHandler(rasterHandler);
+        snapApp.getSelectionSupport(ProductSceneView.class).addHandler(sceneViewHandler);
 
         setProducts(snapApp.getProductManager().getProducts());
         setSelectedProduct(snapApp.getSelectedProduct(VIEW));
+        setSelectedSceneView(snapApp.getSelectedProductSceneView());
     }
 
     protected void disconnectFromSnap() {
@@ -132,9 +137,11 @@ public abstract class WWBaseToolView extends ToolTopComponent implements WWView 
         snapApp.getProductManager().removeListener(productManagerListener);
         snapApp.getSelectionSupport(ProductNode.class).removeHandler(productNodeHandler);
         snapApp.getSelectionSupport(RasterDataNode.class).removeHandler(rasterHandler);
+        snapApp.getSelectionSupport(ProductSceneView.class).removeHandler(sceneViewHandler);
         productManagerListener = null;
         productNodeHandler = null;
         rasterHandler = null;
+        sceneViewHandler = null;
 
         setSelectedProduct(null);
         for (Product product : snapApp.getProductManager().getProducts()) {
@@ -236,6 +243,23 @@ public abstract class WWBaseToolView extends ToolTopComponent implements WWView 
             gotoRaster(raster);
             wwd.redraw();
             eyePosition = wwd.getView().getEyePosition();
+        }
+    }
+
+    public void setSelectedSceneView(final ProductSceneView view) {
+        final WorldWindowGLCanvas wwd = getWwd();
+        if (wwd == null)
+            return;
+
+        for (WWLayer wwLayer : getWWLayers()) {
+            try {
+                wwLayer.setSelectedSceneView(view);
+            } catch (Exception e) {
+                SystemUtils.LOG.log(Level.WARNING, "WorldWind unable to follow the selected image view", e);
+            }
+        }
+        if (isVisible()) {
+            wwd.redraw();
         }
     }
 

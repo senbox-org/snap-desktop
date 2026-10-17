@@ -17,22 +17,34 @@ package org.esa.snap.worldwind;
 
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
+import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
+import org.esa.snap.rcp.SnapApp;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.worldwind.layers.DefaultProductLayer;
+import org.esa.snap.worldwind.layers.ImageViewSyncLayer;
+import org.esa.snap.worldwind.layers.ProductImageLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
 import org.esa.snap.worldwind.layers.WWLayerRegistry;
+import org.esa.snap.worldwind.model.ImageViewGeoUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -40,6 +52,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Window;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 @TopComponent.Description(
@@ -73,6 +87,7 @@ import java.util.List;
 public class WWAnalysisToolView extends WWBaseToolView implements WWView {
 
     private ProductPanel productPanel = null;
+    private final GlobeCursorSync globeCursorSync = new GlobeCursorSync();
 
     private static final boolean includeStatusBar = true;
     private static final boolean includeProductPanel = true;
@@ -124,6 +139,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
             AppPanel.enableLayer(layerList, "Bing Imagery");
 
             DefaultProductLayer productLayer = null;
+            ProductImageLayer imageLayer = null;
             final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
             for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
                 if (layerDescriptor.showIn3DToolView()) {
@@ -137,11 +153,21 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                     if (wwLayer instanceof DefaultProductLayer) {
                         productLayer = (DefaultProductLayer) wwLayer;
                         productLayer.setEnableSurfaceImages(true);
+                    } else if (wwLayer instanceof ProductImageLayer) {
+                        imageLayer = (ProductImageLayer) wwLayer;
+                        // full-resolution images are opaque by default; the quicklooks keep the layer opacity
+                        imageLayer.setOpacity(1.0);
                     }
                 }
             }
 
             AppPanel.replacePlaceNameLayer(layerList);
+
+            if (productLayer != null && imageLayer != null) {
+                // a full-resolution image replaces the quicklook of its product
+                final DefaultProductLayer quicklookLayer = productLayer;
+                imageLayer.setImageShownListener((product, shown) -> quicklookLayer.setQuicklookVisible(product, !shown));
+            }
 
             // Put the pieces together.
             mainPane.add(wwjPanel, BorderLayout.CENTER);
@@ -163,7 +189,11 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                 for (WWLayer wwLayer : wwLayers) {
                     wwLayer.updateInfoAnnotation(event);
                 }
+                if (event.getEventAction().equals(SelectEvent.LEFT_CLICK)) {
+                    selectPlacemarkInView(ImageViewSyncLayer.getPlacemark(event.getTopObject()));
+                }
             });
+            installImageViewSync(wwjPanel.getWwd());
 
             // update world map window with the information of the currently activated product scene view.
             connectToSnap();
@@ -174,10 +204,89 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
         }
     }
 
+    /**
+     * Globe to image view synchronisation: the globe cursor in the image views, and a context menu to place pins
+     * and centre the image view.
+     */
+    private void installImageViewSync(final WorldWindowGLCanvas wwd) {
+        wwd.addPositionListener(event -> {
+            final Position position = event.getPosition();
+            globeCursorSync.setGlobePosition(position != null ?
+                    new GeoPos(position.getLatitude().degrees, position.getLongitude().degrees) : null);
+        });
+        wwd.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(final MouseEvent e) {
+                globeCursorSync.clear();
+            }
+
+            @Override
+            public void mousePressed(final MouseEvent e) {
+                showPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(final MouseEvent e) {
+                showPopup(e);
+            }
+
+            private void showPopup(final MouseEvent e) {
+                final Position position = wwd.getCurrentPosition();
+                if (e.isPopupTrigger() && position != null) {
+                    createPopupMenu(new GeoPos(position.getLatitude().degrees, position.getLongitude().degrees))
+                            .show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
+    }
+
+    private JPopupMenu createPopupMenu(final GeoPos geoPos) {
+        final JPopupMenu menu = new JPopupMenu();
+        final Product product = getSelectedProduct();
+        final JMenuItem placePin = new JMenuItem("Place Pin Here");
+        placePin.setEnabled(product != null && ImageViewGeoUtils.toPixel(product.getSceneGeoCoding(),
+                product.getSceneRasterWidth(), product.getSceneRasterHeight(), geoPos) != null);
+        placePin.addActionListener(e -> ImageViewSyncLayer.placePin(product, geoPos));
+        menu.add(placePin);
+
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        final JMenuItem centreView = new JMenuItem("Centre Image View Here");
+        centreView.setEnabled(view != null && view.getRaster() != null &&
+                                      ImageViewGeoUtils.toRasterPixel(view.getRaster(), geoPos) != null);
+        centreView.addActionListener(e -> ImageViewSyncLayer.centreView(view, geoPos));
+        menu.add(centreView);
+        return menu;
+    }
+
+    private void selectPlacemarkInView(final Placemark placemark) {
+        if (placemark == null || placemark.getProduct() == null) {
+            return;
+        }
+        final ProductSceneView selected = SnapApp.getDefault().getSelectedProductSceneView();
+        if (ImageViewSyncLayer.selectInView(placemark, selected)) {
+            return;
+        }
+        for (ProductSceneView view : GlobeCursorSync.findOpenViews()) {
+            if (ImageViewSyncLayer.selectInView(placemark, view)) {
+                return;
+            }
+        }
+    }
+
+    @Override
+    protected void componentClosed() {
+        globeCursorSync.clear();
+        super.componentClosed();
+    }
+
     private JPanel makeControlPanel() {
 
-        final JPanel controlPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        final JPanel controlPanel = new JPanel(new GridLayout(3, 1, 5, 5));
         controlPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+
+        final JCheckBox syncCursor = new JCheckBox("Sync cursor with image views", globeCursorSync.isEnabled());
+        syncCursor.addActionListener(e -> globeCursorSync.setEnabled(syncCursor.isSelected()));
+        controlPanel.add(syncCursor);
 
         final List<WWLayer> layerList = getWWLayers();
         for (WWLayer wwLayer : layerList) {
