@@ -19,12 +19,13 @@ import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.render.Offset;
 import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwind.render.PointPlacemarkAttributes;
+import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.SurfaceImage;
 import org.esa.snap.core.dataio.ProductSubsetDef;
 import org.esa.snap.core.datamodel.Band;
@@ -36,12 +37,11 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.util.ProductUtils;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.eo.Constants;
 import org.esa.snap.engine_utilities.eo.GeoUtils;
 import org.esa.snap.engine_utilities.gpf.InputProductValidator;
-import org.esa.snap.rcp.util.Dialogs;
-
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -52,32 +52,54 @@ import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 /**
  * Default Product Layer draws product outline
+ * <p>
+ * Boundary computation can read lat/lon rasters, so it runs on a background executor and the resulting renderables
+ * are installed on the EDT. Products are expected to be added and removed on the EDT (see WWProductManagerListener).
  */
 public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
+    // quicklooks are subsampled so that their longest side is about this many pixels
+    private static final int QUICKLOOK_SIZE = 1000;
+
+    private static final AtomicInteger threadCount = new AtomicInteger();
+    private static final ExecutorService outlineExecutor = Executors.newFixedThreadPool(
+            Math.max(1, Runtime.getRuntime().availableProcessors() / 2), r -> {
+                final Thread t = new Thread(r, "WorldWind-ProductOutline-" + threadCount.incrementAndGet());
+                t.setDaemon(true);
+                return t;
+            });
+
     private boolean enableSurfaceImages;
     private final ConcurrentHashMap<String, ProductOutline> outlineTable = new ConcurrentHashMap<>();
+    // products whose outline is being computed; removing a product cancels its pending install
+    private final Set<String> pendingProducts = ConcurrentHashMap.newKeySet();
+    // the key each product was added under, so that a product renamed while open can still be removed
+    private final Map<Product, String> productKeys = Collections.synchronizedMap(new IdentityHashMap<>());
+    private final AtomicInteger pendingTasks = new AtomicInteger();
+    private Runnable changeListener;
 
     static class ProductOutline {
-        Path[] productLineList;
-        BandOutline[] bandOutlines;
-        boolean showProductBoundary;
+        Path[] productLineList = new Path[0];
+        BandOutline[] bandOutlines = new BandOutline[0];
+        boolean showProductBoundary = true;
         PointPlacemark label;
         SurfaceImage image;
+        boolean visible = true;
     }
 
     static class BandOutline {
@@ -93,6 +115,13 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     public void setEnableSurfaceImages(final boolean enableSurfaceImages) {
         this.enableSurfaceImages = enableSurfaceImages;
+    }
+
+    /**
+     * @param listener called on the EDT whenever a product outline has been installed asynchronously
+     */
+    public void setChangeListener(final Runnable listener) {
+        this.changeListener = listener;
     }
 
     public String[] getProductNames() {
@@ -142,25 +171,48 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         return 0;
     }
 
+    /**
+     * Shows or hides everything drawn for one product: outlines, labels and image.
+     */
+    public void setProductVisible(final String name, final boolean visible) {
+        final ProductOutline outline = outlineTable.get(name);
+        if (outline == null || outline.visible == visible) {
+            return;
+        }
+        outline.visible = visible;
+        for (Renderable r : getRenderables(outline)) {
+            if (visible) {
+                addRenderable(r);
+            } else {
+                removeRenderable(r);
+            }
+        }
+    }
+
+    public boolean isProductVisible(final String name) {
+        final ProductOutline outline = outlineTable.get(name);
+        return outline != null && outline.visible;
+    }
+
     @Override
     public void setSelectedProduct(final Product product) {
         super.setSelectedProduct(product);
 
-        if (selectedProduct != null) {
-            final String selName = getUniqueName(selectedProduct);
-            for (String name : outlineTable.keySet()) {
-                final ProductOutline productOutline = outlineTable.get(name);
-                final boolean highlight = name.equals(selName);
-                if(productOutline.showProductBoundary) {
-                    for (Path line : productOutline.productLineList) {
-                        line.setHighlighted(highlight);
-                    }
-                } else {
-                    for(BandOutline bandOutline : productOutline.bandOutlines) {
-                        for (Path line : bandOutline.bandLineList) {
-                            line.setHighlighted(highlight);
-                        }
-                    }
+        final String selName = selectedProduct != null ? keyOf(selectedProduct) : null;
+        for (Map.Entry<String, ProductOutline> entry : outlineTable.entrySet()) {
+            highlight(entry.getValue(), entry.getKey().equals(selName));
+        }
+    }
+
+    private static void highlight(final ProductOutline productOutline, final boolean highlight) {
+        if (productOutline.showProductBoundary) {
+            for (Path line : productOutline.productLineList) {
+                line.setHighlighted(highlight);
+            }
+        } else {
+            for (BandOutline bandOutline : productOutline.bandOutlines) {
+                for (Path line : bandOutline.bandLineList) {
+                    line.setHighlighted(highlight);
                 }
             }
         }
@@ -171,12 +223,11 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         super.setSelectedRaster(raster);
 
         if (selectedRaster != null && selectedProduct != null) {
-            final String selName = getUniqueName(selectedProduct);
-            for (String name : outlineTable.keySet()) {
-                final ProductOutline productOutline = outlineTable.get(name);
-                final boolean isProduct = name.equals(selName);
+            final String selName = keyOf(selectedProduct);
+            for (Map.Entry<String, ProductOutline> entry : outlineTable.entrySet()) {
+                final boolean isProduct = entry.getKey().equals(selName);
 
-                for(BandOutline bandOutline : productOutline.bandOutlines) {
+                for(BandOutline bandOutline : entry.getValue().bandOutlines) {
                     boolean highlight = isProduct && bandOutline.bandName.equals(selectedRaster.getName());
                     bandOutline.bandLabel.setVisible(highlight);
                     for (Path line : bandOutline.bandLineList) {
@@ -192,247 +243,363 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         return Suitability.SUITABLE;
     }
 
+    private String keyOf(final Product product) {
+        final String key = productKeys.get(product);
+        return key != null ? key : getUniqueName(product);
+    }
+
     @Override
-    public void addProduct(final Product product, WorldWindowGLCanvas wwd) {
+    public void addProduct(final Product product, final WorldWindowGLCanvas wwd) {
 
         final String name = getUniqueName(product);
-        if (this.outlineTable.get(name) != null)
+        if (outlineTable.containsKey(name) || !pendingProducts.add(name))
             return;
+        productKeys.put(product, name);
 
         final String productType = product.getProductType();
-        if (productType.equals("ASA_WVW_2P") || productType.equals("ASA_WVS_1P") || productType.equals("ASA_WVI_1P")) {
-            addWaveProduct(product);
-        } else {
-            // add outline
-            addOutline(product);
+        if ("ASA_WVW_2P".equals(productType) || "ASA_WVS_1P".equals(productType) || "ASA_WVI_1P".equals(productType)) {
+            // cheap, from metadata only
+            installOutline(name, product, createWaveProductOutline(product), wwd);
+            return;
+        }
 
-            if (enableSurfaceImages && canAddSurfaceImage(product)) {
-                addSurfaceImage(product);
+        pendingTasks.incrementAndGet();
+        outlineExecutor.execute(() -> {
+            ProductOutline outline;
+            try {
+                outline = createOutline(product);
+            } catch (Throwable e) {
+                SystemUtils.LOG.log(Level.WARNING, "WorldWind: unable to compute the outline of " + product.getName(), e);
+                outline = new ProductOutline();
             }
+            final ProductOutline result = outline;
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    installOutline(name, product, result, wwd);
+                } finally {
+                    pendingTasks.decrementAndGet();
+                }
+            });
+        });
+    }
+
+    private void installOutline(final String name, final Product product, final ProductOutline outline,
+                                final WorldWindowGLCanvas wwd) {
+        if (!pendingProducts.remove(name)) {
+            // the product was removed while its outline was being computed
+            return;
+        }
+        for (Renderable r : getRenderables(outline)) {
+            addRenderable(r);
+        }
+        outlineTable.put(name, outline);
+        if (selectedProduct != null) {
+            highlight(outline, name.equals(keyOf(selectedProduct)));
+        }
+
+        if (enableSurfaceImages && outline.label != null && canAddSurfaceImage(product)) {
+            addSurfaceImage(product, name, wwd);
+        }
+        if (wwd != null) {
+            wwd.redraw();
+        }
+        if (changeListener != null) {
+            changeListener.run();
         }
     }
 
-    private boolean canAddSurfaceImage(final Product product) {
+    private static List<Renderable> getRenderables(final ProductOutline outline) {
+        final List<Renderable> list = new ArrayList<>();
+        if (outline.showProductBoundary) {
+            Collections.addAll(list, outline.productLineList);
+        }
+        for (BandOutline bandOutline : outline.bandOutlines) {
+            Collections.addAll(list, bandOutline.bandLineList);
+            list.add(bandOutline.bandLabel);
+            if (bandOutline.bandImage != null) {
+                list.add(bandOutline.bandImage);
+            }
+        }
+        if (outline.label != null) {
+            list.add(outline.label);
+        }
+        if (outline.image != null) {
+            list.add(outline.image);
+        }
+        return list;
+    }
+
+    /**
+     * Waits until all queued outline computations have been installed on the EDT. For tests.
+     */
+    boolean awaitPendingOutlines(final long timeoutMillis) throws Exception {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException("must not be called on the EDT");
+        }
+        final long end = System.currentTimeMillis() + timeoutMillis;
+        while (pendingTasks.get() > 0) {
+            if (System.currentTimeMillis() > end) {
+                return false;
+            }
+            SwingUtilities.invokeAndWait(() -> { });
+            TimeUnit.MILLISECONDS.sleep(10);
+        }
+        return true;
+    }
+
+    int getRenderableCount() {
+        return getNumRenderables();
+    }
+
+    private static boolean canAddSurfaceImage(final Product product) {
         return product.getSceneGeoCoding() != null && InputProductValidator.isMapProjected(product);
     }
 
-    private void addSurfaceImage(final Product product) {
-        final String name = getUniqueName(product);
+    private void addSurfaceImage(final Product product, final String name, final WorldWindowGLCanvas wwd) {
 
-        final SwingWorker worker = new SwingWorker() {
+        final SwingWorker<SurfaceImage, Object> worker = new SwingWorker<>() {
 
             @Override
-            protected SurfaceImage doInBackground() {
+            protected SurfaceImage doInBackground() throws Exception {
+                final List<LatLon> corners = getImageCorners(product.getSceneGeoCoding(),
+                                                             product.getSceneRasterWidth(),
+                                                             product.getSceneRasterHeight());
+                if (corners == null) {
+                    SystemUtils.LOG.info("WorldWind: no quicklook for " + product.getName() +
+                                                 ": invalid corner geo-positions or the image crosses the antimeridian");
+                    return null;
+                }
+                final Product newProduct = createSubsampledProduct(product);
                 try {
-                    final Product newProduct = createSubsampledProduct(product);
                     final Band band = newProduct.getBandAt(0);
                     final BufferedImage image = ProductUtils.createRgbImage(new RasterDataNode[]{band},
                                                                             band.getImageInfo(com.bc.ceres.core.ProgressMonitor.NULL),
                                                                             com.bc.ceres.core.ProgressMonitor.NULL);
 
-                    final GeoPos geoPos1 = product.getSceneGeoCoding().getGeoPos(new PixelPos(0, 0), null);
-                    final GeoPos geoPos2 = product.getSceneGeoCoding().getGeoPos(new PixelPos(product.getSceneRasterWidth() - 1,
-                                                                                         product.getSceneRasterHeight() - 1),
-                                                                            null
-                    );
-
-                    final Sector sector = new Sector(Angle.fromDegreesLatitude(geoPos1.getLat()),
-                                                     Angle.fromDegreesLatitude(geoPos2.getLat()),
-                                                     Angle.fromDegreesLongitude(geoPos1.getLon()),
-                                                     Angle.fromDegreesLongitude(geoPos2.getLon()));
-
-                    final SurfaceImage si = new SurfaceImage(image, sector);
+                    final SurfaceImage si = new SurfaceImage(image, corners);
                     si.setOpacity(getOpacity());
                     return si;
-                } catch (Exception e) {
-                    //e.printStackTrace();
+                } finally {
+                    newProduct.dispose();
                 }
-                return null;
             }
 
             @Override
             public void done() {
-
+                final SurfaceImage si;
                 try {
-                    final SurfaceImage si = (SurfaceImage) get();
-                    if (si != null) {
-                        addRenderable(si);
-
-                        ProductOutline outline = outlineTable.get(name);
-                        outline.image = si;
-                    }
+                    si = get();
                 } catch (Exception e) {
-                    Dialogs.showError(e.getMessage());
+                    SystemUtils.LOG.log(Level.WARNING, "WorldWind: unable to create the quicklook of " + name, e);
+                    return;
+                }
+                final ProductOutline outline = outlineTable.get(name);
+                if (si == null || outline == null) {
+                    // nothing to show, or the product was removed in the meantime
+                    return;
+                }
+                outline.image = si;
+                if (outline.visible) {
+                    addRenderable(si);
+                }
+                if (wwd != null) {
+                    wwd.redraw();
                 }
             }
         };
         worker.execute();
     }
 
-    private void addOutline(final Product product) {
+    /**
+     * Returns the geo-positions of the outer image corners in the order expected by
+     * {@link SurfaceImage#SurfaceImage(Object, Iterable)}: lower-left, lower-right, upper-right, upper-left,
+     * where the upper image edge is raster line 0. Returns null if a corner is invalid or the corners straddle
+     * the antimeridian, which a corner-based SurfaceImage cannot represent.
+     */
+    static List<LatLon> getImageCorners(final GeoCoding geoCoding, final int width, final int height) {
+        if (geoCoding == null) {
+            return null;
+        }
+        final PixelPos[] pixels = {
+                new PixelPos(0, height), new PixelPos(width, height), new PixelPos(width, 0), new PixelPos(0, 0)
+        };
+        final List<LatLon> corners = new ArrayList<>(4);
+        double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
+        for (PixelPos pixel : pixels) {
+            final GeoPos geoPos = geoCoding.getGeoPos(pixel, null);
+            if (geoPos == null || !geoPos.isValid()) {
+                return null;
+            }
+            geoPos.normalize();
+            minLon = Math.min(minLon, geoPos.lon);
+            maxLon = Math.max(maxLon, geoPos.lon);
+            corners.add(LatLon.fromDegrees(geoPos.lat, geoPos.lon));
+        }
+        if (maxLon - minLon > 180) {
+            return null;
+        }
+        return corners;
+    }
+
+    private ProductOutline createOutline(final Product product) {
 
         final int prodWidth = product.getSceneRasterWidth();
         final int prodHeight = product.getSceneRasterHeight();
         final int step = Math.max(50, (prodWidth + prodHeight) / 10);
 
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-        Future<List<GeneralPath>> productBoundaryPathsFuture = null;
-        if(product.getSceneGeoCoding() != null) {
-            productBoundaryPathsFuture = executor.submit(() ->
-                    List.of(org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(product, null, step, true)));
+        // the product boundary comes from the scene geo-coding or, failing that, from the first geo-coded band
+        GeneralPath[] boundaryPaths = null;
+        if (product.getSceneGeoCoding() != null) {
+            boundaryPaths = org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(product, null, step, true);
+        } else {
+            for (Band band : product.getBands()) {
+                if (band.getGeoCoding() != null) {
+                    boundaryPaths = org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(band, null, step, true);
+                    break;
+                }
+            }
         }
 
+        // bands of a different size than the scene get their own outline
         final List<BandOutline> bandOutlines = new ArrayList<>();
         for (Band band : product.getBands()) {
             if (band.getGeoCoding() != null &&
                     !(band.getRasterWidth() == prodWidth && band.getRasterHeight() == prodHeight)) {
-                executor.submit(() -> {
-                    List<GeneralPath> paths = List.of(org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(band, null, step, true));
-                    synchronized (bandOutlines) {
-                        List<Path> bandBoundaryPaths = new ArrayList<>();
-                        for (GeneralPath bandBoundaryPath : paths) {
-                            bandBoundaryPaths.add(createPolyLine(bandBoundaryPath));
-                        }
-
-                        Position centrePos = calculateBoundingSphereCenter(bandBoundaryPaths.get(0));
-                        PointPlacemark ppm = getLabelPlacemark(centrePos, band.getName());
-                        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                        ppm.setEnableDecluttering(true);
-                        ppm.setVisible(false);
-
-                        addRenderable(ppm);
-
-                        BandOutline bandOutline = new BandOutline();
-                        bandOutline.bandName = band.getName();
-                        bandOutline.bandLineList = bandBoundaryPaths.toArray(new Path[0]);
-                        bandOutline.bandLabel = ppm;
+                try {
+                    final BandOutline bandOutline = createBandOutline(band, step);
+                    if (bandOutline != null) {
                         bandOutlines.add(bandOutline);
                     }
-                });
-            }
-        }
-        executor.shutdown();
-
-        List<GeneralPath> boundaryPaths = null;
-        try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            boundaryPaths = productBoundaryPathsFuture != null ? productBoundaryPathsFuture.get() : null;
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        boolean showProductBoundary = bandOutlines.isEmpty() || bandOutlines.size() != product.getNumBands();
-
-        for (BandOutline bandOutline : bandOutlines) {
-            for(Path polyLine : bandOutline.bandLineList) {
-                addRenderable(polyLine);
-            }
-        }
-
-        Path mainPath = null;
-        final List<Path> productLineList = new ArrayList<>();
-        if(boundaryPaths != null) {
-            for (GeneralPath boundaryPath : boundaryPaths) {
-                Path polyLine = createPolyLine(boundaryPath);
-
-                if (showProductBoundary) {
-                    addRenderable(polyLine);
-                }
-                if(mainPath == null) {
-                    mainPath = polyLine;
-                }
-                productLineList.add(polyLine);
-            }
-        } else {
-            List<Position> unionPositions = new ArrayList<>();
-            for (BandOutline bandOutline : bandOutlines) {
-                for(Path polyLine : bandOutline.bandLineList) {
-                    unionPositions.addAll((Collection<? extends Position>) polyLine.getPositions());
+                } catch (Exception e) {
+                    SystemUtils.LOG.log(Level.WARNING, "WorldWind: unable to compute the outline of band " + band.getName(), e);
                 }
             }
-            Path unionPath = createPath(unionPositions, WHITE_MATERIAL, RED_MATERIAL);
-            if (showProductBoundary) {
-                addRenderable(unionPath);
-            }
-            mainPath = unionPath;
-            productLineList.add(unionPath);
         }
 
-        if(mainPath == null) {
-            return;
-        }
-
-        Position centrePos = calculateBoundingSphereCenter(mainPath);
-        PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
-        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        ppm.setEnableDecluttering(true);
-
-        addRenderable(ppm);
-
-        String name = getUniqueName(product);
-        ProductOutline productOutline = new ProductOutline();
-        productOutline.productLineList = productLineList.toArray(new Path[0]);
+        final ProductOutline productOutline = new ProductOutline();
         productOutline.bandOutlines = bandOutlines.toArray(new BandOutline[0]);
-        productOutline.label = ppm;
-        productOutline.showProductBoundary = showProductBoundary;
-        outlineTable.put(name, productOutline);
+        productOutline.showProductBoundary = bandOutlines.isEmpty() || bandOutlines.size() != product.getNumBands();
+
+        final List<Path> productLineList = new ArrayList<>();
+        final List<Position> allPositions = new ArrayList<>();
+        if (boundaryPaths != null) {
+            for (GeneralPath boundaryPath : boundaryPaths) {
+                final Path polyLine = createPolyLine(boundaryPath);
+                if (polyLine != null) {
+                    productLineList.add(polyLine);
+                    addPositions(allPositions, polyLine);
+                }
+            }
+        }
+        if (allPositions.isEmpty()) {
+            for (BandOutline bandOutline : bandOutlines) {
+                for (Path polyLine : bandOutline.bandLineList) {
+                    addPositions(allPositions, polyLine);
+                }
+            }
+        }
+        productOutline.productLineList = productLineList.toArray(new Path[0]);
+
+        final Position centrePos = calculateCentre(allPositions);
+        if (centrePos != null) {
+            final PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
+            ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+            ppm.setEnableDecluttering(true);
+            productOutline.label = ppm;
+        }
+        return productOutline;
     }
 
-    private Position calculateBoundingSphereCenter(final Path polyline) {
-
-        double minLat = Double.MAX_VALUE, maxLat = -Double.MAX_VALUE;
-        double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
-
-        for (Position pos : polyline.getPositions()) {
-            minLat = Math.min(minLat, pos.getLatitude().getRadians());
-            maxLat = Math.max(maxLat, pos.getLatitude().getRadians());
-            minLon = Math.min(minLon, pos.getLongitude().getRadians());
-            maxLon = Math.max(maxLon, pos.getLongitude().getRadians());
+    private BandOutline createBandOutline(final Band band, final int step) {
+        final GeneralPath[] paths = org.esa.snap.core.util.GeoUtils.createGeoBoundaryPaths(band, null, step, true);
+        final List<Path> bandBoundaryPaths = new ArrayList<>();
+        final List<Position> positions = new ArrayList<>();
+        for (GeneralPath bandBoundaryPath : paths) {
+            final Path polyLine = createPolyLine(bandBoundaryPath);
+            if (polyLine != null) {
+                bandBoundaryPaths.add(polyLine);
+                addPositions(positions, polyLine);
+            }
         }
+        final Position centrePos = calculateCentre(positions);
+        if (centrePos == null) {
+            return null;
+        }
+        final PointPlacemark ppm = getLabelPlacemark(centrePos, band.getName());
+        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        ppm.setEnableDecluttering(true);
+        ppm.setVisible(false);
 
-        double centerLat = (minLat + maxLat) / 2.0;
-        double centerLon = (minLon + maxLon) / 2.0;
+        final BandOutline bandOutline = new BandOutline();
+        bandOutline.bandName = band.getName();
+        bandOutline.bandLineList = bandBoundaryPaths.toArray(new Path[0]);
+        bandOutline.bandLabel = ppm;
+        return bandOutline;
+    }
 
-        return new Position(Angle.fromRadiansLatitude(centerLat),
-                Angle.fromRadiansLongitude(centerLon), 0.0);
+    private static void addPositions(final List<Position> list, final Path path) {
+        for (Position pos : path.getPositions()) {
+            list.add(pos);
+        }
+    }
+
+    /**
+     * Centre of a set of positions computed on the unit sphere, so that it is correct across the antimeridian and
+     * near the poles. Returns null for an empty set or for positions that cancel out.
+     */
+    static Position calculateCentre(final List<Position> positions) {
+        double x = 0, y = 0, z = 0;
+        int n = 0;
+        for (Position pos : positions) {
+            final double lat = pos.getLatitude().getRadians();
+            final double lon = pos.getLongitude().getRadians();
+            if (Double.isNaN(lat) || Double.isNaN(lon)) {
+                continue;
+            }
+            x += Math.cos(lat) * Math.cos(lon);
+            y += Math.cos(lat) * Math.sin(lon);
+            z += Math.sin(lat);
+            n++;
+        }
+        final double r = Math.sqrt(x * x + y * y + z * z);
+        if (n == 0 || r < 1e-9 * n) {
+            return null;
+        }
+        return new Position(Angle.fromRadiansLatitude(Math.asin(z / r)),
+                            Angle.fromRadiansLongitude(Math.atan2(y, x)), 0.0);
     }
 
     private Path createPolyLine(final GeneralPath boundaryPath) {
         final PathIterator it = boundaryPath.getPathIterator(null);
-        final float[] floats = new float[2];
+        final float[] floats = new float[6];
         final List<Position> positions = new ArrayList<>();
 
-        it.currentSegment(floats);
-        final Position firstPosition = new Position(Angle.fromDegreesLatitude(floats[1]),
-                Angle.fromDegreesLongitude(floats[0]), 0.0);
-        positions.add(firstPosition);
-        it.next();
-
         while (!it.isDone()) {
-            it.currentSegment(floats);
-            positions.add(new Position(Angle.fromDegreesLatitude(floats[1]),
-                    Angle.fromDegreesLongitude(floats[0]), 0.0));
+            final int type = it.currentSegment(floats);
+            if (type != PathIterator.SEG_CLOSE && !Float.isNaN(floats[0]) && !Float.isNaN(floats[1])) {
+                positions.add(new Position(Angle.fromDegreesLatitude(floats[1]),
+                                           Angle.fromDegreesLongitude(floats[0]), 0.0));
+            }
             it.next();
         }
+        if (positions.size() < 2) {
+            return null;
+        }
         // close the loop
-        positions.add(firstPosition);
+        positions.add(positions.get(0));
 
         return createPath(positions, WHITE_MATERIAL, RED_MATERIAL);
     }
 
-    private void addWaveProduct(final Product product) {
+    private ProductOutline createWaveProductOutline(final Product product) {
+        final ProductOutline productOutline = new ProductOutline();
         final MetadataElement root = AbstractMetadata.getOriginalProductMetadata(product);
-        final MetadataElement ggADS = root.getElement("GEOLOCATION_GRID_ADS");
-        if (ggADS == null) return;
+        final MetadataElement ggADS = root != null ? root.getElement("GEOLOCATION_GRID_ADS") : null;
+        if (ggADS == null) return productOutline;
 
         final MetadataElement[] geoElemList = ggADS.getElements();
-        final Path[] lineList = new Path[geoElemList.length];
-        int cnt = 0;
-
-        int numPoints = 0;
-        double centreLat = 0;
-        double centreLon = 0;
+        final List<Path> lineList = new ArrayList<>();
+        final List<Position> allPositions = new ArrayList<>();
 
         for (MetadataElement geoElem : geoElemList) {
             final double lat = geoElem.getAttributeDouble("center_lat", 0.0) / Constants.oneMillion;
@@ -454,40 +621,19 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
             positions.add(new Position(Angle.fromDegreesLatitude(corner3.lat), Angle.fromDegreesLongitude(corner3.lon), 0.0));
             positions.add(new Position(Angle.fromDegreesLatitude(corner1.lat), Angle.fromDegreesLongitude(corner1.lon), 0.0));
 
-            centreLat += corner1.lat;
-            centreLon += corner1.lon;
-
-            centreLat += corner2.lat;
-            centreLon += corner2.lon;
-
-            centreLat += corner3.lat;
-            centreLon += corner3.lon;
-
-            centreLat += corner4.lat;
-            centreLon += corner4.lon;
-
-            numPoints += 4;
-
-            final Path line = createPath(positions, WHITE_MATERIAL, RED_MATERIAL);
-
-            addRenderable(line);
-            lineList[cnt++] = line;
+            allPositions.addAll(positions.subList(0, 4));
+            lineList.add(createPath(positions, WHITE_MATERIAL, RED_MATERIAL));
         }
+        productOutline.productLineList = lineList.toArray(new Path[0]);
 
-        centreLat = centreLat / numPoints;
-        centreLon = centreLon / numPoints;
-        Position centrePos = new Position(Angle.fromDegreesLatitude(centreLat), Angle.fromDegreesLongitude(centreLon), 0.0);
-
-        PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
-        ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        ppm.setEnableDecluttering(true);
-        addRenderable(ppm);
-
-        String name = getUniqueName(product);
-        ProductOutline productOutline = new ProductOutline();
-        productOutline.productLineList = lineList;
-        productOutline.label = ppm;
-        outlineTable.put(name, productOutline);
+        final Position centrePos = calculateCentre(allPositions);
+        if (centrePos != null) {
+            final PointPlacemark ppm = getLabelPlacemark(centrePos, String.valueOf(product.getRefNo()));
+            ppm.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+            ppm.setEnableDecluttering(true);
+            productOutline.label = ppm;
+        }
+        return productOutline;
     }
 
     private PointPlacemark getLabelPlacemark(Position pos, String label) {
@@ -503,27 +649,19 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     @Override
     public void removeProduct(final Product product) {
-        String imagePath = getUniqueName(product);
+        final String name = keyOf(product);
+        productKeys.remove(product);
+        pendingProducts.remove(name);
 
-        final ProductOutline productOutline = this.outlineTable.get(imagePath);
+        final ProductOutline productOutline = outlineTable.remove(name);
         if (productOutline != null) {
-            for (Path line : productOutline.productLineList) {
-                removeRenderable(line);
+            for (Renderable r : getRenderables(productOutline)) {
+                removeRenderable(r);
             }
-            for(BandOutline bandOutline : productOutline.bandOutlines) {
-                for (Path line : bandOutline.bandLineList) {
-                    removeRenderable(line);
-                }
-                removeRenderable(bandOutline.bandLabel);
-                if(bandOutline.bandImage != null) {
-                    removeRenderable(bandOutline.bandImage);
-                }
-            }
-            removeRenderable(productOutline.label);
-            if(productOutline.image != null) {
-                removeRenderable(productOutline.image);
-            }
-            outlineTable.remove(imagePath);
+        }
+        if (selectedProduct == product) {
+            selectedProduct = null;
+            selectedRaster = null;
         }
     }
 
@@ -531,10 +669,8 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
         final String quicklookBandName = ProductUtils.findSuitableQuicklookBandName(product);
         final ProductSubsetDef productSubsetDef = new ProductSubsetDef("subset");
-        int scaleFactor = product.getSceneRasterWidth() / 1000;
-        if (scaleFactor < 1) {
-            scaleFactor = 1;
-        }
+        final int maxSize = Math.max(product.getSceneRasterWidth(), product.getSceneRasterHeight());
+        final int scaleFactor = Math.max(1, (int) Math.ceil(maxSize / (double) QUICKLOOK_SIZE));
         productSubsetDef.setSubSampling(scaleFactor, scaleFactor);
         productSubsetDef.setTreatVirtualBandsAsRealBands(true);
         productSubsetDef.setNodeNames(new String[]{quicklookBandName});
@@ -548,7 +684,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                 projParameters.put("crs", "WGS84(DD)");
                 productSubset = GPF.createProduct("Reproject", projParameters, projProducts);
             } catch (Exception e) {
-                e.printStackTrace();
+                SystemUtils.LOG.log(Level.WARNING, "WorldWind: unable to reproject the quicklook", e);
             }
         }
 
@@ -577,4 +713,3 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         return opacityPanel;
     }
 }
-

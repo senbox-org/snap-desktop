@@ -15,13 +15,8 @@
  */
 package org.esa.snap.worldwind;
 
-import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.RasterDataNode;
-import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.runtime.Config;
-import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
 import org.esa.snap.worldwind.layers.WWLayerRegistry;
@@ -34,13 +29,10 @@ import org.openide.windows.TopComponent;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
-
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
 /**
  * The window displaying the world map.
@@ -69,7 +61,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 })
 public class WWWorldViewToolView extends WWBaseToolView implements WWView {
 
-    public static String useFlatEarth = "snap.worldwind.useFlatEarth";
+    public static final String useFlatEarth = "snap.worldwind.useFlatEarth";
 
     private static final boolean includeStatusBar = true;
     private final boolean flatWorld;
@@ -94,73 +86,40 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
         final JPanel mainPane = new JPanel(new BorderLayout(4, 4));
         mainPane.setSize(new Dimension(300, 300));
 
-        // world wind canvas
-        initialize(mainPane);
+        // world wind canvas, created on the EDT once this component exists
+        SwingUtilities.invokeLater(() -> initialize(mainPane));
 
         return mainPane;
     }
 
     private void initialize(final JPanel mainPane) {
-        final WWView toolView = this;
+        try {
+            createWWPanel(null, includeStatusBar, flatWorld, true);
 
-        final SwingWorker<Object, Object> worker = new SwingWorker<>() {
-            @Override
-            protected Object doInBackground() {
-                // Create the WorldWindow.
-                try {
-                    createWWPanel(null, includeStatusBar, flatWorld, true);
+            final LayerList layerList = getWwd().getModel().getLayers();
+            AppPanel.enableLayer(layerList, "Bing Imagery");
 
-                    // Put the pieces together.
-                    mainPane.add(wwjPanel, BorderLayout.CENTER);
+            final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
+            for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
+                if (layerDescriptor.showInWorldMapToolView()) {
+                    final WWLayer wwLayer = layerDescriptor.createWWLayer();
+                    layerList.add(wwLayer);
 
-                    final LayerList layerList = getWwd().getModel().getLayers();
-
-                    final Layer bingLayer = layerList.getLayerByName("Bing Imagery");
-                    bingLayer.setEnabled(true);
-
-                    final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
-                    for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
-                        if (layerDescriptor.showInWorldMapToolView()) {
-                            final WWLayer wwLayer = layerDescriptor.createWWLayer();
-                            layerList.add(wwLayer);
-
-                            wwLayer.setOpacity(1.0);
-                            wwLayer.setPickEnabled(false);
-                        }
-                    }
-
-                    // Instead of the default Place Name layer we use special implementation to replace
-                    // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
-                    final Layer placeNameLayer = layerList.getLayerByName("Place Names");
-                    layerList.remove(placeNameLayer);
-
-                    final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
-                    layerList.add(fixingPlaceNameLayer);
-                    fixingPlaceNameLayer.setEnabled(true);
-
-                    // update world map window with the information of the currently activated product scene view.
-                    final SnapApp snapApp = SnapApp.getDefault();
-                    snapApp.getProductManager().addListener(new WWProductManagerListener(toolView));
-                    snapApp.getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
-                        if (newValue != null) {
-                            setSelectedProduct(newValue.getProduct());
-                        } else {
-                            setSelectedProduct(null);
-                        }
-                    });
-
-                    snapApp.getSelectionSupport(RasterDataNode.class).addHandler((oldValue, newValue) -> {
-                        setSelectedRaster(newValue);
-                    });
-
-                    setProducts(snapApp.getProductManager().getProducts());
-                    setSelectedProduct(snapApp.getSelectedProduct(VIEW));
-                } catch (Throwable e) {
-                    SnapApp.getDefault().handleError("Unable to initialize WWWorldMapToolView: " + e.getMessage(), e);
+                    wwLayer.setOpacity(1.0);
+                    wwLayer.setPickEnabled(false);
                 }
-                return null;
             }
-        };
-        worker.execute();
+
+            AppPanel.replacePlaceNameLayer(layerList);
+
+            // Put the pieces together.
+            mainPane.add(wwjPanel, BorderLayout.CENTER);
+            mainPane.revalidate();
+
+            // update world map window with the information of the currently activated product scene view.
+            connectToSnap();
+        } catch (Throwable e) {
+            showInitError(mainPane, Bundle.CTL_WorldWindTopComponentName(), e);
+        }
     }
 }

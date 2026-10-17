@@ -30,30 +30,34 @@ import java.awt.*;
  * Displays the layer list in a viewport corner.
  */
 public class LayerPanelLayer extends LayerManagerLayer {
-    private Layer virtualEarthAerialLayer = null;
-    private Layer virtualEarthRoadsLayer = null;
-    private Layer virtualEarthHybridLayer = null;
+    private static final String[] HIDDEN_LAYERS = {
+            "Atmosphere", "World Map", "Scale bar", "Compass", "Stars", "NASA Blue Marble Image"
+    };
 
     public LayerPanelLayer(WorldWindow wwd) {
         super(wwd);
+    }
+
+    private static boolean isHidden(final Layer layer) {
+        final String name = layer.getName();
+        if (name == null) {
+            return false;
+        }
+        for (String hidden : HIDDEN_LAYERS) {
+            if (name.equalsIgnoreCase(hidden)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private LayerList getValidLayers() {
         final LayerList validLayers = new LayerList();
         final LayerList allLayers = wwd.getModel().getLayers();
         for (Layer l : allLayers) {
-            if (l.getName().equalsIgnoreCase("Atmosphere") || l.getName().equalsIgnoreCase("World Map") ||
-                    l.getName().equalsIgnoreCase("Scale bar") || l.getName().equalsIgnoreCase("Compass") ||
-                    l.getName().equalsIgnoreCase("Stars") || l.getName().equalsIgnoreCase("NASA Blue Marble Image"))
-                continue;
-            if (l.getName().equalsIgnoreCase("MS Bing Aerial"))
-                virtualEarthAerialLayer = l;
-            else if (l.getName().equalsIgnoreCase("MS Bing Roads"))
-                virtualEarthRoadsLayer = l;
-            else if (l.getName().equalsIgnoreCase("MS Bing Hybrid"))
-                virtualEarthHybridLayer = l;
-
-            validLayers.add(l);
+            if (!isHidden(l)) {
+                validLayers.add(l);
+            }
         }
         return validLayers;
     }
@@ -95,7 +99,6 @@ public class LayerPanelLayer extends LayerManagerLayer {
                             final Layer layer = layers.get(i);
                             final boolean enable = !layer.isEnabled();
                             layer.setEnabled(enable);
-                            updateVirtualEarthLayers(layer, enable);
                             update = true;
                         }
                     }
@@ -136,16 +139,6 @@ public class LayerPanelLayer extends LayerManagerLayer {
         }
     }
 
-    private void updateVirtualEarthLayers(Layer layer, boolean enable) {
-        if (enable && (layer == virtualEarthAerialLayer ||
-                layer == virtualEarthRoadsLayer ||
-                layer == virtualEarthHybridLayer)) {
-            virtualEarthAerialLayer.setEnabled(layer == virtualEarthAerialLayer);
-            virtualEarthRoadsLayer.setEnabled(layer == virtualEarthRoadsLayer);
-            virtualEarthHybridLayer.setEnabled(layer == virtualEarthHybridLayer);
-        }
-    }
-
     @Override
     protected void drag(SelectEvent event) {
         if (event.getEventAction().equals(SelectEvent.DRAG)) {
@@ -169,14 +162,16 @@ public class LayerPanelLayer extends LayerManagerLayer {
                     this.draggingLayer = true;
                 }
                 if (getSelectedIndex() != -1 && this.dragRefIndex != -1 && this.dragRefIndex != getSelectedIndex()) {
-                    // Move dragged layer
-                    final LayerList layers = getValidLayers();
-                    final int insertIndex = this.dragRefIndex > getSelectedIndex() ?
-                            getSelectedIndex() : getSelectedIndex() + 1;
-                    final int removeIndex = this.dragRefIndex > getSelectedIndex() ?
-                            this.dragRefIndex + 1 : this.dragRefIndex;
-                    layers.add(insertIndex, layers.get(this.dragRefIndex));
-                    layers.remove(removeIndex);
+                    // Move dragged layer in the model; the displayed list is a filtered copy of it
+                    final LayerList validLayers = getValidLayers();
+                    if (this.dragRefIndex < validLayers.size() && getSelectedIndex() < validLayers.size()) {
+                        final LayerList modelLayers = this.wwd.getModel().getLayers();
+                        final Layer dragged = validLayers.get(this.dragRefIndex);
+                        final Layer target = validLayers.get(getSelectedIndex());
+                        modelLayers.remove(dragged);
+                        final int targetIndex = modelLayers.indexOf(target);
+                        modelLayers.add(this.dragRefIndex > getSelectedIndex() ? targetIndex : targetIndex + 1, dragged);
+                    }
                     this.dragRefIndex = getSelectedIndex();
                 }
             }

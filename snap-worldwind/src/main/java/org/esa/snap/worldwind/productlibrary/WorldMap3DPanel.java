@@ -16,18 +16,16 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
 import gov.nasa.worldwind.layers.StarsLayer;
 import gov.nasa.worldwind.layers.WorldMapLayer;
+import gov.nasa.worldwind.pick.PickedObject;
 import gov.nasa.worldwind.pick.PickedObjectList;
-import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.util.BasicGLCapabilitiesChooser;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
-import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
+import org.esa.snap.worldwind.AppPanel;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.Field;
 
 /**
  * The panel containing the 3D earth globe.
@@ -67,21 +65,15 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
         if (removeExtraLayers) {
             for (Layer layer : layerList) {
                 if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer
-                        || layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer) {
+                        || layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer
+                        || AppPanel.LANDSAT_LAYER_NAME.equals(layer.getName())) {
 
                     layerList.remove(layer);
                 }
             }
         }
 
-        // Instead of the default Place Name layer we use special implementation to replace
-        // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
-        final Layer placeNameLayer = layerList.getLayerByName("Place Names");
-        layerList.remove(placeNameLayer);
-
-        final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
-        layerList.add(fixingPlaceNameLayer);
-        fixingPlaceNameLayer.setEnabled(true);
+        AppPanel.replacePlaceNameLayer(layerList);
 
         layerList.add(this.selector.getLayer());
 
@@ -119,8 +111,9 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
         Point pickPoint = sceneController.getPickPoint();
         if (pickPoint != null && pickPoint.getX() == point.getX() && pickPoint.getY() == point.getY()) {
             PickedObjectList pickedObjectList = sceneController.getPickedObjectList();
-            if (pickedObjectList != null && pickedObjectList.size() > 0) {
-                Position position = (Position) pickedObjectList.get(0).getObject();
+            PickedObject terrainObject = (pickedObjectList != null) ? pickedObjectList.getTerrainObject() : null;
+            if (terrainObject != null && terrainObject.getPosition() != null) {
+                Position position = terrainObject.getPosition();
                 return new Point.Double(position.getLongitude().getDegrees(), position.getLatitude().getDegrees());
             }
         }
@@ -139,28 +132,5 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
 
     public boolean isGlobeEarth() {
         return (getModel().getGlobe() instanceof Earth);
-    }
-
-    void setBackgroundColor(Color backgroundColor) {
-        DrawContext drawContext = getSceneController().getDrawContext();
-        Color color = drawContext.getClearColor();
-        setValueByReflection(color, "value", backgroundColor.getRGB());
-    }
-
-    private static boolean setValueByReflection(Object object, String fieldName, Object fieldValue) {
-        Class<?> clazz = object.getClass();
-        while (clazz != null) {
-            try {
-                Field field = clazz.getDeclaredField(fieldName);
-                field.setAccessible(true);
-                field.set(object, fieldValue);
-                return true;
-            } catch (NoSuchFieldException e) {
-                clazz = clazz.getSuperclass();
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
-            }
-        }
-        return false;
     }
 }

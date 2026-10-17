@@ -15,17 +15,12 @@
  */
 package org.esa.snap.worldwind;
 
-import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.avlist.AVList;
-import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
-import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.EarthFlat;
-import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Earth.LandsatI3WMSLayer;
 import gov.nasa.worldwind.layers.Layer;
@@ -33,32 +28,25 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
 import gov.nasa.worldwind.layers.StarsLayer;
 import gov.nasa.worldwind.layers.WorldMapLayer;
-import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
-import gov.nasa.worldwind.terrain.CompoundElevationModel;
-import gov.nasa.worldwind.terrain.WMSBasicElevationModel;
-import gov.nasa.worldwind.util.Logging;
+import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import gov.nasa.worldwind.util.PlacemarkClutterFilter;
 import gov.nasa.worldwind.util.StatusBar;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
-import gov.nasa.worldwind.wms.CapabilitiesRequest;
 import gov.nasa.worldwindx.examples.ClickAndGoSelectListener;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
 
 import javax.swing.JPanel;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.BorderLayout;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * World Wind App Panel
  */
 public class AppPanel extends JPanel {
+
+    // display name of the Landsat layer in the WorldWind 2.2.1 layer configuration (LandsatI3WMSLayer2.xml)
+    public static final String LANDSAT_LAYER_NAME = "i-cubed Landsat";
+
     private WorldWindowGLCanvas wwd = null;
     private StatusBar statusBar = null;
 
@@ -83,13 +71,14 @@ public class AppPanel extends JPanel {
             final LayerList layerList = m.getLayers();
             for (Layer layer : layerList) {
                 if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer ||
-                        layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer)
+                        layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer ||
+                        LANDSAT_LAYER_NAME.equals(layer.getName()))
                     layerList.remove(layer);
             }
+        } else {
+            // Setup a select listener for the worldmap click-and-go feature
+            this.wwd.addSelectListener(new ClickAndGoSelectListener(wwd, WorldMapLayer.class));
         }
-
-        // Setup a select listener for the worldmap click-and-go feature
-        this.wwd.addSelectListener(new ClickAndGoSelectListener(wwd, WorldMapLayer.class));
 
         this.wwd.getSceneController().setClutterFilter(new PlacemarkClutterFilter());
 
@@ -106,14 +95,6 @@ public class AppPanel extends JPanel {
         wwd.getModel().getLayers().add(new LayerPanelLayer(getWwd()));
     }
 
-    public void addElevation() {
-        try {
-            final ElevationModel em = makeElevationModel();
-            wwd.getModel().getGlobe().setElevationModel(em);
-        } catch (Exception ignore) {
-        }
-    }
-
     public final WorldWindowGLCanvas getWwd() {
         return wwd;
     }
@@ -122,49 +103,31 @@ public class AppPanel extends JPanel {
         return statusBar;
     }
 
-    private static ElevationModel makeElevationModel() throws URISyntaxException, ParserConfigurationException,
-            IOException, SAXException {
-        final URI serverURI = new URI("http://www.nasa.network.com/elev");
+    /**
+     * Enables a layer of the default configuration if it exists.
+     */
+    public static void enableLayer(final LayerList layerList, final String name) {
+        final Layer layer = layerList.getLayerByName(name);
+        if (layer != null) {
+            layer.setEnabled(true);
+        }
+    }
 
-        final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        docBuilderFactory.setNamespaceAware(true);
-        if (Configuration.getJavaVersion() >= 1.6) {
-            try {
-                docBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            } catch (ParserConfigurationException e) {   // Note it and continue on. Some Java5 parsers don't support the feature.
-                String message = Logging.getMessage("XML.NonvalidatingNotSupported");
-                Logging.logger().finest(message);
+    /**
+     * Replaces the default place name layer by {@link FixingPlaceNameLayer}, which corrects some names
+     * (https://senbox.atlassian.net/browse/SNAP-1476).
+     * The layer is added disabled: the NASA place name WFS server (worldwind22.arc.nasa.gov) it relies on no longer
+     * responds, so enabling it by default only produces failing requests. Users can still enable it in the layer list.
+     */
+    public static void replacePlaceNameLayer(final LayerList layerList) {
+        for (Layer layer : layerList) {
+            if (layer instanceof PlaceNameLayer) {
+                layerList.remove(layer);
             }
         }
-        final DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-
-        // Request the capabilities document from the server.
-        final CapabilitiesRequest req = new CapabilitiesRequest(serverURI);
-        final Document doc = docBuilder.parse(req.toString());
-
-        // Parse the DOM as a capabilities document.
-        // CHANGED
-        //final Capabilities caps = Capabilities.parse(doc);
-        final WMSCapabilities caps = new WMSCapabilities(doc);
-
-        final double HEIGHT_OF_MT_EVEREST = 8850d; // meters
-        final double DEPTH_OF_MARIANAS_TRENCH = -11000d; // meters
-
-        // Set up and instantiate the elevation model
-        final AVList params = new AVListImpl();
-        params.setValue(AVKey.LAYER_NAMES, "|srtm3");
-        params.setValue(AVKey.TILE_WIDTH, 150);
-        params.setValue(AVKey.TILE_HEIGHT, 150);
-        params.setValue(AVKey.LEVEL_ZERO_TILE_DELTA, LatLon.fromDegrees(20, 20));
-        params.setValue(AVKey.NUM_LEVELS, 8);
-        params.setValue(AVKey.NUM_EMPTY_LEVELS, 0);
-        params.setValue(AVKey.ELEVATION_MIN, DEPTH_OF_MARIANAS_TRENCH);
-        params.setValue(AVKey.ELEVATION_MAX, HEIGHT_OF_MT_EVEREST);
-
-        final CompoundElevationModel cem = new CompoundElevationModel();
-        cem.addElevationModel(new WMSBasicElevationModel(caps, params));
-
-        return cem;
+        final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
+        fixingPlaceNameLayer.setEnabled(false);
+        layerList.add(fixingPlaceNameLayer);
     }
 
     private static class MinimalStatusBar extends StatusBar {

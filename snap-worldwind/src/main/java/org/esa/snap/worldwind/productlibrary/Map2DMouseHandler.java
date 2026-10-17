@@ -44,7 +44,8 @@ public class Map2DMouseHandler extends MouseAdapter {
                 this.selectionStart = new Point.Double();
                 this.selectionEnd = null;
                 viewToModelTransform.transform(mouseEvent.getPoint(), this.selectionStart);
-                this.layerCanvas.updateUI();
+                clampToWorld(this.selectionStart);
+                this.layerCanvas.repaint();
             }
             this.mousePressedPosition = mouseEvent.getPoint();
         } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
@@ -65,12 +66,10 @@ public class Map2DMouseHandler extends MouseAdapter {
                 AffineTransform viewToModelTransform = this.layerCanvas.getViewport().getViewToModelTransform();
                 Point.Double selectionPoint = new Point.Double();
                 viewToModelTransform.transform(mouseEvent.getPoint(), selectionPoint);
-                if (selectionPoint.x >= -180.0d && selectionPoint.y <= 90.0d) {
-                    if (selectionPoint.x <= 180.0d && selectionPoint.y >= -90.0d) {
-                        this.selectionEnd = selectionPoint;
-                        this.layerCanvas.updateUI();
-                    }
-                }
+                // the map can be panned beyond the world extent: keep the selection inside valid coordinates
+                clampToWorld(selectionPoint);
+                this.selectionEnd = selectionPoint;
+                this.layerCanvas.repaint();
             } else {
                 Point newMouseDraggedPosition = mouseEvent.getPoint();
                 double dx = newMouseDraggedPosition.x - this.mousePressedPosition.x;
@@ -92,21 +91,30 @@ public class Map2DMouseHandler extends MouseAdapter {
     }
 
     public Rectangle2D getSelectedArea() {
-        if (this.selectionStart != null && this.selectionEnd != null) {
-            if (this.selectionStart.x > this.selectionEnd.x || this.selectionStart.y > this.selectionEnd.y) {
-                double x = this.selectionEnd.x;
-                double y = this.selectionEnd.y;
-                double width = this.selectionStart.x - this.selectionEnd.x;
-                double height = this.selectionStart.y - this.selectionEnd.y;
-                return new Rectangle2D.Double(x, y, width, height);
-            }
-            double x = this.selectionStart.x;
-            double y = this.selectionStart.y;
-            double width = this.selectionEnd.x - this.selectionStart.x;
-            double height = this.selectionEnd.y - this.selectionStart.y;
-            return new Rectangle2D.Double(x, y, width, height);
+        return buildSelectedArea(this.selectionStart, this.selectionEnd);
+    }
+
+    /**
+     * Builds the selection rectangle spanned by two corner points dragged in any direction, or null if the
+     * selection is incomplete or has no area.
+     */
+    static Rectangle2D buildSelectedArea(Point.Double start, Point.Double end) {
+        if (start == null || end == null) {
+            return null;
         }
-        return null;
+        final double minX = Math.min(start.x, end.x);
+        final double minY = Math.min(start.y, end.y);
+        final double width = Math.abs(end.x - start.x);
+        final double height = Math.abs(end.y - start.y);
+        if (width <= 0.0d || height <= 0.0d) {
+            return null;
+        }
+        return new Rectangle2D.Double(minX, minY, width, height);
+    }
+
+    static void clampToWorld(Point.Double point) {
+        point.x = Math.max(-180.0d, Math.min(180.0d, point.x));
+        point.y = Math.max(-90.0d, Math.min(90.0d, point.y));
     }
 
     public void enable() {
@@ -117,7 +125,7 @@ public class Map2DMouseHandler extends MouseAdapter {
         setDefaultCursor();
         this.selectionStart = null;
         this.selectionEnd = null;
-        this.layerCanvas.updateUI();
+        this.layerCanvas.repaint();
     }
 
     private boolean isSelectionCursor() {

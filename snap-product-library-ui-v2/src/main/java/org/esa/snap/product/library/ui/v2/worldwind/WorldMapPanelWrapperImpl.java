@@ -38,7 +38,13 @@ public class WorldMapPanelWrapperImpl extends WorldMapPanelWrapper {
 
         @Override
         protected WorldMap3DPanel execute() throws Exception {
-            return new WorldMap3DPanel(this.flatEarth, this.removeExtraLayers, this.polygonsLayerModel);
+            try {
+                return new WorldMap3DPanel(this.flatEarth, this.removeExtraLayers, this.polygonsLayerModel);
+            } catch (Error error) {
+                // JOGL native or class loading failures (UnsatisfiedLinkError, NoClassDefFoundError, ...) are errors;
+                // report them as a failure so that the 2D world map is shown instead
+                throw new Exception("The 3D world map could not be initialised.", error);
+            }
         }
 
         @Override
