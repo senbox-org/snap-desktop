@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class LocalDemTerrainTest {
@@ -49,22 +50,49 @@ public class LocalDemTerrainTest {
         assertEquals(model.getMissingDataSignal(), elevation(model, 45.2, 10.8), 0);
     }
 
-    @Test
-    public void testAddAndRemoveFromGlobe() {
-        final Earth globe = new Earth();
-        globe.setElevationModel(new ZeroElevationModel());
+    private static LocalElevationModel constant(final double minLat, final double maxLat, final double minLon,
+                                                final double maxLon, final int size, final float height) {
+        final float[] heights = new float[size * size];
+        java.util.Arrays.fill(heights, height);
         final LocalElevationModel model = new LocalElevationModel();
+        LocalDemTerrain.addGrid(model, DemGridTestAccess.create(minLat, maxLat, minLon, maxLon, size, size, heights));
+        return model;
+    }
 
-        LocalDemTerrain.addTo(globe, model);
+    @Test
+    public void testLocalDemTakesPrecedence() {
+        // the globe's own elevations: finer than the local DEM, as WorldWind's 30 m elevations are
+        final CompoundElevationModel own = new CompoundElevationModel();
+        own.addElevationModel(constant(40, 50, 0, 20, 2001, 100));
+        final Earth globe = new Earth();
+        globe.setElevationModel(own);
+        final LocalElevationModel local = constant(45, 46, 10, 11, 11, 700);
+
+        LocalDemTerrain.addTo(globe, local);
+        assertEquals("inside the local DEM", 700, globe.getElevation(Angle.fromDegrees(45.5), Angle.fromDegrees(10.5)), 1e-3);
+        assertEquals("elsewhere the globe's own", 100, globe.getElevation(Angle.fromDegrees(48), Angle.fromDegrees(5)), 1e-3);
+
+        LocalDemTerrain.addTo(globe, local);
+        assertEquals("added once", 2, ((CompoundElevationModel) globe.getElevationModel()).getElevationModels().size());
+
+        LocalDemTerrain.removeFrom(globe, local);
+        assertSame("the original elevation model is restored", own, globe.getElevationModel());
+        assertEquals(100, globe.getElevation(Angle.fromDegrees(45.5), Angle.fromDegrees(10.5)), 1e-3);
+    }
+
+    @Test
+    public void testAddToGlobeWithoutCompoundModel() {
+        final Earth globe = new Earth();
+        final ZeroElevationModel zero = new ZeroElevationModel();
+        globe.setElevationModel(zero);
+        final LocalElevationModel local = constant(45, 46, 10, 11, 11, 700);
+
+        LocalDemTerrain.addTo(globe, local);
         assertTrue(globe.getElevationModel() instanceof CompoundElevationModel);
-        final CompoundElevationModel compound = (CompoundElevationModel) globe.getElevationModel();
-        assertTrue(compound.containsElevationModel(model));
-        assertEquals("the globe's own elevations are kept", 2, compound.getElevationModels().size());
+        assertEquals(700, globe.getElevation(Angle.fromDegrees(45.5), Angle.fromDegrees(10.5)), 1e-3);
 
-        LocalDemTerrain.addTo(globe, model);
-        assertEquals("added once", 2, compound.getElevationModels().size());
-
-        LocalDemTerrain.removeFrom(globe, model);
-        assertFalse(compound.containsElevationModel(model));
+        LocalDemTerrain.removeFrom(globe, local);
+        assertSame(zero, globe.getElevationModel());
+        assertFalse(globe.getElevationModel() instanceof CompoundElevationModel);
     }
 }

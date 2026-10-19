@@ -456,8 +456,14 @@ Q7 — offline, cache and terrain:
   back to the GeoTIFF reader directly.
 - Checked headless on the real Copernicus 90 m tile N49 E010: heights 408 m at Ansbach (map 409 m) and 680 m at the
   Hesselberg (summit 689 m, smoothed by the ~100 m sampling); about 2 s per tile after start-up, mostly DEFLATE
-  decoding. **Not yet seen on a globe:** OpenGL was unavailable on the test machine when this was built (locked
-  session), so the terrain rendering itself still needs a look in the application.
+  decoding.
+- **Fix found on the globe (2026-10-19) — local DEMs take precedence.** Added to the globe's own
+  `CompoundElevationModel`, the local DEM was never used: WorldWind sorts the models by resolution and the finest
+  wins, and WorldWind's 30 m elevations are finer than the ~100 m sampling (the globe still showed 568 m at the
+  Hesselberg). The globe's elevations are now wrapped in a compound model that always sorts local DEMs last, so they
+  win where they have data and WorldWind's elevations fill in elsewhere; removing the terrain restores the original
+  model. Checked on a globe: heights inside the Copernicus tile equal the tile's, outside them WorldWind's, with ~3 m
+  difference across the tile edge.
 
 Q8 — Product Library polygon AOI:
 
@@ -473,5 +479,6 @@ Q8 — Product Library polygon AOI:
   click adds a vertex, the outline follows the mouse, a double click closes it. Drawing clicks are consumed so that
   they do not also select footprints. Fewer than three vertices or collinear vertices do not close the polygon.
 - Tests: polygon area, database WKT and remote query polygon (snap-engine), 2D and 3D drawing with simulated mouse
-  events (snap-worldwind). **Not yet seen on screen** (OpenGL unavailable on the test machine, see Q7); polygons
-  crossing the antimeridian are not supported.
+  events (snap-worldwind). Checked on screen (2026-10-19) with mouse events dispatched to the Product Library's own
+  globe and map panels: a 4-vertex polygon drawn on the globe over the Alps, handed over to the 2D map in the same
+  place, and a new polygon drawn on the 2D map. Polygons crossing the antimeridian are not supported.

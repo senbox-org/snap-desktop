@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -44,8 +45,8 @@ import java.util.WeakHashMap;
 import java.util.logging.Level;
 
 /**
- * Local DEM files (e.g. the Copernicus tiles SNAP downloads) as terrain of the globes, on top of WorldWind's own
- * elevations where they overlap. The files are read in the background; the globes get the terrain when it is ready.
+ * Local DEM files (e.g. the Copernicus tiles SNAP downloads) as terrain of the globes, replacing WorldWind's own
+ * elevations where they have data. The files are read in the background; the globes get the terrain when it is ready.
  * All methods except {@link #load} are called on the EDT.
  */
 public final class LocalDemTerrain {
@@ -183,24 +184,56 @@ public final class LocalDemTerrain {
 
     static void addTo(final Globe globe, final ElevationModel model) {
         final ElevationModel current = globe.getElevationModel();
-        if (current instanceof CompoundElevationModel) {
-            if (!((CompoundElevationModel) current).containsElevationModel(model)) {
-                ((CompoundElevationModel) current).addElevationModel(model);
+        if (current instanceof LocalFirstElevationModel) {
+            if (!((LocalFirstElevationModel) current).containsElevationModel(model)) {
+                ((LocalFirstElevationModel) current).addElevationModel(model);
             }
-        } else {
-            final CompoundElevationModel compound = new CompoundElevationModel();
-            if (current != null) {
-                compound.addElevationModel(current);
-            }
-            compound.addElevationModel(model);
-            globe.setElevationModel(compound);
+            return;
         }
+        final LocalFirstElevationModel compound = new LocalFirstElevationModel(current);
+        compound.addElevationModel(model);
+        globe.setElevationModel(compound);
     }
 
     static void removeFrom(final Globe globe, final ElevationModel model) {
         final ElevationModel current = globe.getElevationModel();
-        if (current instanceof CompoundElevationModel) {
-            ((CompoundElevationModel) current).removeElevationModel(model);
+        if (current instanceof LocalFirstElevationModel) {
+            final LocalFirstElevationModel compound = (LocalFirstElevationModel) current;
+            compound.removeElevationModel(model);
+            if (compound.getElevationModels().size() == 1 && compound.original != null) {
+                globe.setElevationModel(compound.original);
+            }
+        }
+    }
+
+    /**
+     * The globe's own elevations plus local DEMs, the local DEMs taking precedence wherever they have data.
+     * WorldWind's compound model sorts its models by resolution and lets the finest win, so a local DEM sampled
+     * coarser than WorldWind's 30 m elevations would otherwise never be used.
+     */
+    static final class LocalFirstElevationModel extends CompoundElevationModel {
+
+        final ElevationModel original;
+
+        LocalFirstElevationModel(final ElevationModel original) {
+            this.original = original;
+            if (original != null) {
+                addElevationModel(original);
+            }
+        }
+
+        @Override
+        protected void sortElevationModels() {
+            super.sortElevationModels();
+            // the models are looked up from last to first: local DEMs last
+            final List<ElevationModel> local = new ArrayList<>();
+            for (ElevationModel model : elevationModels) {
+                if (model instanceof LocalElevationModel) {
+                    local.add(model);
+                }
+            }
+            elevationModels.removeAll(local);
+            elevationModels.addAll(local);
         }
     }
 }
