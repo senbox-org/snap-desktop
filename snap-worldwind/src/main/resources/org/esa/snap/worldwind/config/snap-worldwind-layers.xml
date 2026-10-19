@@ -247,6 +247,10 @@
     </Layer>
 
     <!-- overlays -->
+    <!-- grids, off by default -->
+    <Layer className="gov.nasa.worldwind.layers.LatLonGraticuleLayer" actuate="onRequest"/>
+    <Layer className="gov.nasa.worldwind.layers.Earth.UTMGraticuleLayer" actuate="onRequest"/>
+    <Layer className="gov.nasa.worldwind.layers.Earth.MGRSGraticuleLayer" actuate="onRequest"/>
     <Layer className="gov.nasa.worldwind.layers.WorldMapLayer"/>
     <Layer className="gov.nasa.worldwind.layers.ScalebarLayer"/>
     <Layer className="gov.nasa.worldwind.layers.CompassLayer"/>

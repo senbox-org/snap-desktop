@@ -404,3 +404,17 @@ Q3 — offline borders and place names:
   line of control, indefinite) are drawn dashed.
 - `FixingPlaceNameLayer` (renamed one sea in the dead NASA layer, SNAP-1476) is removed with that layer; Natural
   Earth's populated places contain no sea names.
+
+Q4 — map tools:
+
+- Scale bar: already in the layer list, now shown in the layer panel so it can be switched off. Lat/lon, UTM and
+  MGRS grids are in the layer configuration, off by default, drawn as overlays.
+- **Deviation — measure tool in the side panel, not a toolbar.** The Analysis view has no toolbar; a "Measure" box
+  under the product list holds the shape (line, path, polygon, circle), Measure/Clear buttons, the result (length,
+  or area and perimeter) and a "Terrain profile" switch.
+- **Addition — profile along the measured line.** The terrain profile follows the measured line or path once it has
+  two points, and the cursor otherwise. The graph is placed bottom right, above the scale bar, because the layer list
+  occupies the bottom left.
+- Verified on a globe from the GL framebuffer: UTM grid with labels, a measured line across the Alps and its profile
+  (926–2447 m). Desktop screen captures of the test window came out blank while it was covered on the screen, so
+  the smoke test reads the framebuffer instead.

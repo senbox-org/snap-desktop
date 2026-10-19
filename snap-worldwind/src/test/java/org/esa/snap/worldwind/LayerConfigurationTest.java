@@ -1,5 +1,6 @@
 package org.esa.snap.worldwind;
 
+import gov.nasa.worldwind.layers.AbstractGraticuleLayer;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
@@ -83,6 +84,20 @@ public class LayerConfigurationTest {
             }
         }
         assertEquals(2, eoxLayers);
+    }
+
+    @Test
+    public void testGridsOffByDefault() {
+        final LayerList layers = LayerConfiguration.createLayers(DATE);
+        int grids = 0;
+        for (Layer layer : layers) {
+            if (layer instanceof AbstractGraticuleLayer) {
+                grids++;
+                assertFalse(layer.getName(), layer.isEnabled());
+                assertTrue(layer.getName(), LayerConfiguration.isOverlay(layer));
+            }
+        }
+        assertEquals("lat/lon, UTM and MGRS", 3, grids);
     }
 
     @Test

@@ -38,6 +38,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -47,7 +48,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -264,22 +264,30 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
         super.componentClosed();
     }
 
+    private static void addLeftAligned(final JPanel panel, final JComponent component) {
+        component.setAlignmentX(LEFT_ALIGNMENT);
+        panel.add(component);
+    }
+
     private JPanel makeControlPanel() {
 
-        final JPanel controlPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        final JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
         controlPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         final JCheckBox syncCursor = new JCheckBox("Sync cursor with image views", globeCursorSync.isEnabled());
         syncCursor.addActionListener(e -> globeCursorSync.setEnabled(syncCursor.isSelected()));
-        controlPanel.add(syncCursor);
+        addLeftAligned(controlPanel, syncCursor);
 
         final List<WWLayer> layerList = getWWLayers();
         for (WWLayer wwLayer : layerList) {
             final JPanel layerControlPanel = wwLayer.getControlPanel(getWwd());
             if (layerControlPanel != null) {
-                controlPanel.add(layerControlPanel);
+                addLeftAligned(controlPanel, layerControlPanel);
             }
         }
+
+        addLeftAligned(controlPanel, new MeasurePanel(getWwd()));
 
         return controlPanel;
     }

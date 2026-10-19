@@ -31,7 +31,7 @@ import java.awt.*;
  */
 public class LayerPanelLayer extends LayerManagerLayer {
     private static final String[] HIDDEN_LAYERS = {
-            "Atmosphere", "World Map", "Scale bar", "Compass", "Stars", "NASA Blue Marble Image"
+            "Atmosphere", "World Map", "Compass", "Stars", "NASA Blue Marble Image", "Measure Tool"
     };
 
     public LayerPanelLayer(WorldWindow wwd) {

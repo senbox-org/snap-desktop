@@ -17,6 +17,7 @@ package org.esa.snap.worldwind;
 
 import gov.nasa.worldwind.BasicFactory;
 import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.layers.AbstractGraticuleLayer;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
@@ -38,7 +39,8 @@ import java.time.ZoneOffset;
  * ({@code config/snap-worldwind-layers.xml}) instead of WorldWind's built-in defaults, so that the views only use
  * services SNAP has checked.
  * <p>
- * The layer list has base layers first and overlays (world map, scale bar, compass, layer panel, place names) last;
+ * The layer list has base layers first and overlays (grids, world map, scale bar, compass, layer panel, place names)
+ * last;
  * SNAP's layers are inserted between them with {@link #insertBelowOverlays}.
  */
 public final class LayerConfiguration {
@@ -82,7 +84,8 @@ public final class LayerConfiguration {
             throw new IllegalStateException("WorldWind layer configuration " + RESOURCE + " contains no layer list");
         }
         for (Layer layer : layers) {
-            if (layer instanceof WorldMapLayer || layer instanceof ScalebarLayer || layer instanceof CompassLayer) {
+            if (layer instanceof WorldMapLayer || layer instanceof ScalebarLayer || layer instanceof CompassLayer ||
+                    layer instanceof AbstractGraticuleLayer) {
                 markOverlay(layer);
             }
         }
