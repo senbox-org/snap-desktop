@@ -485,3 +485,22 @@ Q8 — Product Library polygon AOI:
   events (snap-worldwind). Checked on screen (2026-10-19) with mouse events dispatched to the Product Library's own
   globe and map panels: a 4-vertex polygon drawn on the globe over the Alps, handed over to the 2D map in the same
   place, and a new polygon drawn on the 2D map. Polygons crossing the antimeridian are not supported.
+
+### 7c. Review fixes (2026-10-19)
+
+An adversarial review (five reviewers over F1–F3 and Q1–Q8) found the problems below; each was checked in the code
+before fixing.
+
+Q7 — local DEM terrain:
+
+- The globes are redrawn when the terrain arrives (before, it appeared only at the next interaction).
+- A reload interrupts a load still running for the previous settings; the loader stops between files.
+- A folder already read is not read again for every new view, also when it gave no terrain.
+- The 64-file cap counts usable DEMs, not every GeoTIFF found; files the GeoTIFF fallback fails on have their reader
+  closed (Windows file locks); heights are kept in heap buffers instead of direct memory.
+- Grids: east-to-west grids are flipped; the no-data value is compared as a float (a value such as 0.1 was missed);
+  grids without any data are not used.
+- Options: the default DEM folder and WMS server list are no longer written into the preferences on save, so later
+  defaults reach the user; an unusable tile cache folder makes the options invalid instead of WorldWind silently
+  using another folder.
+- New tests: the tessellation path (`getElevations`) uses the local DEM, interrupted and unusable loads.

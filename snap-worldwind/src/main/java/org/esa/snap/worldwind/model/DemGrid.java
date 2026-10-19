@@ -63,7 +63,8 @@ public final class DemGrid {
 
     /**
      * Reads the first band of a DEM product in geographic coordinates (e.g. a Copernicus or SRTM tile), keeping at most
-     * {@code maxSize} samples per row and column. Returns null if the product is not on a lat/lon grid.
+     * {@code maxSize} samples per row and column. Returns null if the product is not on a lat/lon grid or holds no
+     * data.
      */
     public static DemGrid fromProduct(final Product product, final int maxSize) throws IOException {
         if (product.getNumBands() == 0) {
@@ -89,13 +90,16 @@ public final class DemGrid {
             return null;
         }
         final boolean northUp = first.lat > last.lat;
+        final boolean westFirst = first.lon < last.lon;
 
-        final double noData = band.isNoDataValueUsed() ? band.getGeophysicalNoDataValue() : Double.NaN;
+        // the heights are read as floats: compare with the no-data value as a float
+        final float noData = band.isNoDataValueUsed() ? (float) band.getGeophysicalNoDataValue() : Float.NaN;
         final float[] heights = new float[columns.length * rows.length];
         // rows are read in strips: reading them one by one decodes each image tile many times
         final int stripHeight = Math.min(STRIP_HEIGHT, rasterHeight);
         final float[] strip = new float[rasterWidth * stripHeight];
         int stripStart = -1;
+        boolean anyData = false;
         for (int r = 0; r < rows.length; r++) {
             // output row 0 is the north
             final int sourceRow = northUp ? rows[r] : rows[rows.length - 1 - r];
@@ -107,9 +111,16 @@ public final class DemGrid {
             }
             final int offset = (sourceRow - stripStart) * rasterWidth;
             for (int c = 0; c < columns.length; c++) {
-                final float value = strip[offset + columns[c]];
-                heights[r * columns.length + c] = (Float.isNaN(value) || value == noData) ? Float.NaN : value;
+                // output column 0 is the west
+                final int sourceColumn = westFirst ? columns[c] : columns[columns.length - 1 - c];
+                final float value = strip[offset + sourceColumn];
+                final boolean missing = Float.isNaN(value) || value == noData;
+                heights[r * columns.length + c] = missing ? Float.NaN : value;
+                anyData |= !missing;
             }
+        }
+        if (!anyData) {
+            return null;
         }
         return new DemGrid(Math.min(first.lat, last.lat), Math.max(first.lat, last.lat),
                            Math.min(first.lon, last.lon), Math.max(first.lon, last.lon),

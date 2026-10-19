@@ -220,7 +220,7 @@ final class WorldWindOptionsPanel extends JPanel {
         final boolean demChanged = localDemCheckBox.isSelected() != WorldWindPreferences.isLocalDemEnabled() ||
                 !new File(localDemDirField.getText().trim()).equals(WorldWindPreferences.getLocalDemDir());
         preferences.putBoolean(WorldWindPreferences.LOCAL_DEM, localDemCheckBox.isSelected());
-        preferences.put(WorldWindPreferences.LOCAL_DEM_DIR, localDemDirField.getText().trim());
+        WorldWindPreferences.setLocalDemDir(localDemDirField.getText());
 
         WorldWindPreferences.setWmsServers(WorldWindPreferences.parseLines(wmsServersArea.getText()));
 
@@ -235,7 +235,7 @@ final class WorldWindOptionsPanel extends JPanel {
     }
 
     boolean valid() {
-        // Check whether form is consistent and complete
-        return true;
+        // WorldWind silently falls back to another folder if the cache folder cannot be written
+        return WorldWindPreferences.isUsableCacheDir(cacheDirField.getText());
     }
 }

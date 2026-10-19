@@ -59,7 +59,7 @@ public class AppPanel extends JPanel {
         this.wwd.setModel(m);
         this.wwd.setView(flatWorld ? new FlatOrbitView() : new BasicOrbitView());
         // local DEM files as terrain, if chosen in the preferences
-        LocalDemTerrain.attach(m.getGlobe());
+        LocalDemTerrain.attach(m.getGlobe(), this.wwd);
 
         if (removeExtraLayers) {
             final LayerList layerList = m.getLayers();

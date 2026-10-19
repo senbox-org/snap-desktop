@@ -1,6 +1,8 @@
 package org.esa.snap.worldwind;
 
 import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.LatLon;
+import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.LocalElevationModel;
@@ -9,8 +11,12 @@ import org.esa.snap.worldwind.model.DemGrid;
 import org.esa.snap.worldwind.model.DemGridTestAccess;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -94,5 +100,49 @@ public class LocalDemTerrainTest {
         LocalDemTerrain.removeFrom(globe, local);
         assertSame(zero, globe.getElevationModel());
         assertFalse(globe.getElevationModel() instanceof CompoundElevationModel);
+    }
+
+    @Test
+    public void testTessellationUsesTheLocalDem() {
+        // the globe's surface is built from getElevations, not from point lookups
+        final CompoundElevationModel own = new CompoundElevationModel();
+        own.addElevationModel(constant(40, 50, 0, 20, 2001, 100));
+        final Earth globe = new Earth();
+        globe.setElevationModel(own);
+        LocalDemTerrain.addTo(globe, constant(45, 46, 10, 11, 11, 700));
+
+        final Sector sector = Sector.fromDegrees(45.2, 45.8, 9.0, 10.8);
+        final List<LatLon> locations = Arrays.asList(LatLon.fromDegrees(45.5, 10.5), LatLon.fromDegrees(45.5, 9.5));
+        final double[] heights = new double[2];
+        globe.getElevationModel().getElevations(sector, locations, 1.0e-6, heights);
+        assertEquals("inside the local DEM", 700, heights[0], 1e-3);
+        assertEquals("outside it", 100, heights[1], 1e-3);
+    }
+
+    @Test
+    public void testInterruptedLoadGivesNothing() throws Exception {
+        final java.io.File folder = java.nio.file.Files.createTempDirectory("dem").toFile();
+        try {
+            assertTrue(new java.io.File(folder, "a.tif").createNewFile());
+            Thread.currentThread().interrupt();
+            assertNull(LocalDemTerrain.load(folder));
+        } finally {
+            Thread.interrupted();
+            new java.io.File(folder, "a.tif").delete();
+            folder.delete();
+        }
+    }
+
+    @Test
+    public void testUnusableFilesGiveNoTerrain() throws Exception {
+        final java.io.File folder = java.nio.file.Files.createTempDirectory("dem").toFile();
+        final java.io.File notATiff = new java.io.File(folder, "readme.tif");
+        try {
+            java.nio.file.Files.write(notATiff.toPath(), "not a GeoTIFF".getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+            assertNull(LocalDemTerrain.load(folder));
+        } finally {
+            notATiff.delete();
+            folder.delete();
+        }
     }
 }

@@ -64,8 +64,49 @@ public final class WorldWindPreferences {
         return parseLines(preferences().get(WMS_SERVERS, DEFAULT_WMS_SERVERS));
     }
 
+    /**
+     * Stores the WMS servers; the default list is not stored, so that later changes of the default reach the user.
+     */
     public static void setWmsServers(final List<String> servers) {
-        preferences().put(WMS_SERVERS, String.join("\n", servers));
+        if (servers.equals(parseLines(DEFAULT_WMS_SERVERS))) {
+            preferences().remove(WMS_SERVERS);
+        } else {
+            preferences().put(WMS_SERVERS, String.join("\n", servers));
+        }
+    }
+
+    /**
+     * Stores the DEM folder; SNAP's DEM folder is not stored, so that it follows a moved auxdata folder.
+     */
+    public static void setLocalDemDir(final String dir) {
+        final String trimmed = dir == null ? "" : dir.trim();
+        if (trimmed.isEmpty() || new File(trimmed).equals(defaultLocalDemDir())) {
+            preferences().remove(LOCAL_DEM_DIR);
+        } else {
+            preferences().put(LOCAL_DEM_DIR, trimmed);
+        }
+    }
+
+    static File defaultLocalDemDir() {
+        return SystemUtils.getAuxDataPath().resolve("dem").toFile();
+    }
+
+    /**
+     * True if the tile cache folder can be used: empty (WorldWind's default), or a folder that exists and is writable,
+     * or can be created in a writable folder.
+     */
+    public static boolean isUsableCacheDir(final String dir) {
+        if (dir == null || dir.trim().isEmpty()) {
+            return true;
+        }
+        File folder = new File(dir.trim()).getAbsoluteFile();
+        if (folder.exists()) {
+            return folder.isDirectory() && folder.canWrite();
+        }
+        while (folder != null && !folder.exists()) {
+            folder = folder.getParentFile();
+        }
+        return folder != null && folder.isDirectory() && folder.canWrite();
     }
 
     public static boolean isOffline() {
@@ -89,7 +130,7 @@ public final class WorldWindPreferences {
      */
     public static File getLocalDemDir() {
         final String dir = preferences().get(LOCAL_DEM_DIR, "").trim();
-        return dir.isEmpty() ? SystemUtils.getAuxDataPath().resolve("dem").toFile() : new File(dir);
+        return dir.isEmpty() ? defaultLocalDemDir() : new File(dir);
     }
 
     /**

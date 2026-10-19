@@ -15,6 +15,7 @@
  */
 package org.esa.snap.worldwind;
 
+import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.avlist.AVListImpl;
@@ -25,6 +26,7 @@ import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.nasa.worldwind.terrain.LocalElevationModel;
 import org.esa.snap.core.dataio.ProductIO;
 import org.esa.snap.core.dataio.ProductIOPlugInManager;
+import org.esa.snap.core.dataio.ProductReader;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
@@ -34,13 +36,13 @@ import org.esa.snap.worldwind.preferences.WorldWindPreferences;
 import javax.swing.SwingUtilities;
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 
@@ -59,9 +61,12 @@ public final class LocalDemTerrain {
     static final float MISSING_DATA = -32768f;
     static final String GEOTIFF_FORMAT = "GeoTIFF";
 
-    private static final Set<Globe> globes = Collections.newSetFromMap(new WeakHashMap<>());
+    // the globes with their windows, to redraw them when the terrain arrives; both weakly held
+    private static final Map<Globe, WeakReference<WorldWindow>> globes = new WeakHashMap<>();
     private static LocalElevationModel terrain;
-    private static boolean loading;
+    private static Thread loader;
+    // the folder last loaded, also when it gave no terrain, so that new views do not read it again
+    private static File loadedFolder;
     private static int generation;
 
     private LocalDemTerrain() {
@@ -70,11 +75,11 @@ public final class LocalDemTerrain {
     /**
      * Gives a globe the local terrain, now or once it is loaded, as long as the preference is set.
      */
-    static void attach(final Globe globe) {
-        globes.add(globe);
+    static void attach(final Globe globe, final WorldWindow wwd) {
+        globes.put(globe, new WeakReference<>(wwd));
         if (terrain != null) {
             addTo(globe, terrain);
-        } else if (!loading) {
+        } else if (loader == null && !WorldWindPreferences.getLocalDemDir().equals(loadedFolder)) {
             reload();
         }
     }
@@ -84,35 +89,51 @@ public final class LocalDemTerrain {
      */
     public static void reload() {
         if (terrain != null) {
-            for (Globe globe : globes) {
+            for (Globe globe : globes.keySet()) {
                 removeFrom(globe, terrain);
             }
             terrain = null;
+            redrawAll();
         }
         final int thisGeneration = ++generation;
-        loading = false;
+        if (loader != null) {
+            // a load of the previous settings is still running: stop it, its result is discarded anyway
+            loader.interrupt();
+            loader = null;
+        }
+        loadedFolder = null;
         if (!WorldWindPreferences.isLocalDemEnabled() || globes.isEmpty()) {
             return;
         }
-        loading = true;
         final File folder = WorldWindPreferences.getLocalDemDir();
-        final Thread thread = new Thread(() -> {
+        loader = new Thread(() -> {
             final LocalElevationModel model = load(folder);
             SwingUtilities.invokeLater(() -> {
                 if (thisGeneration != generation) {
                     return;
                 }
-                loading = false;
+                loader = null;
+                loadedFolder = folder;
                 terrain = model;
                 if (model != null) {
-                    for (Globe globe : globes) {
+                    for (Globe globe : globes.keySet()) {
                         addTo(globe, model);
                     }
+                    redrawAll();
                 }
             });
         }, "WorldWind local DEM");
-        thread.setDaemon(true);
-        thread.start();
+        loader.setDaemon(true);
+        loader.start();
+    }
+
+    private static void redrawAll() {
+        for (WeakReference<WorldWindow> reference : globes.values()) {
+            final WorldWindow wwd = reference.get();
+            if (wwd != null) {
+                wwd.redraw();
+            }
+        }
     }
 
     /**
@@ -120,14 +141,18 @@ public final class LocalDemTerrain {
      * null if no file could be used.
      */
     static LocalElevationModel load(final File folder) {
-        final List<File> files = DemGrid.findDemFiles(folder, MAX_FILES);
-        if (files.size() == MAX_FILES) {
-            SystemUtils.LOG.warning("WorldWind: only the first " + MAX_FILES + " DEM files of " + folder + " are used as terrain");
-        }
+        final List<File> files = DemGrid.findDemFiles(folder, Integer.MAX_VALUE);
         final LocalElevationModel model = new LocalElevationModel();
         model.setName("Local DEM");
         int used = 0;
         for (File file : files) {
+            if (Thread.currentThread().isInterrupted()) {
+                return null; // superseded by a reload
+            }
+            if (used == MAX_FILES) {
+                SystemUtils.LOG.warning("WorldWind: only " + MAX_FILES + " DEM files of " + folder + " are used as terrain");
+                break;
+            }
             Product product = null;
             try {
                 product = readDem(file);
@@ -165,11 +190,21 @@ public final class LocalDemTerrain {
             return product;
         }
         final Iterator<ProductReaderPlugIn> plugIns = ProductIOPlugInManager.getInstance().getReaderPlugIns(GEOTIFF_FORMAT);
-        return plugIns.hasNext() ? plugIns.next().createReaderInstance().readProductNodes(file, null) : null;
+        if (!plugIns.hasNext()) {
+            return null;
+        }
+        final ProductReader reader = plugIns.next().createReaderInstance();
+        try {
+            return reader.readProductNodes(file, null);
+        } catch (IOException | RuntimeException e) {
+            // the reader keeps the file open until closed
+            reader.close();
+            throw e;
+        }
     }
 
     static void addGrid(final LocalElevationModel model, final DemGrid grid) {
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(grid.heights.length * Float.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+        final ByteBuffer buffer = ByteBuffer.allocate(grid.heights.length * Float.BYTES).order(ByteOrder.LITTLE_ENDIAN);
         for (float height : grid.heights) {
             buffer.putFloat(Float.isNaN(height) ? MISSING_DATA : height);
         }

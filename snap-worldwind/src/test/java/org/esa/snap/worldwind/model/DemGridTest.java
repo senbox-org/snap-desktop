@@ -93,6 +93,48 @@ public class DemGridTest {
     }
 
     @Test
+    public void testEastToWestIsFlipped() throws Exception {
+        final Product product = new Product("dem", "TEST", 100, 50);
+        // column 0 in the east
+        product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 100, 50, 11.0, 46.0,
+                                                   -0.01, 0.01, 0.0, 0.0));
+        product.addBand(new VirtualBand("height", ProductData.TYPE_FLOAT32, 100, 50, "floor(X) + 1000 * floor(Y)"));
+        final DemGrid grid = DemGrid.fromProduct(product, 1000);
+        assertNotNull(grid);
+        assertEquals(10.005, grid.minLon, 1e-9);
+        assertEquals(10.995, grid.maxLon, 1e-9);
+        // the westernmost column is the last source column
+        assertEquals(99, grid.heights[0], 0);
+        assertEquals(0, grid.heights[99], 0);
+    }
+
+    @Test
+    public void testFloatNoDataValue() throws Exception {
+        // 0.1 is not exactly representable as a float
+        final Product product = new Product("dem", "TEST", 10, 10);
+        product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 10, 10, 10.0, 46.0, 0.01, 0.01, 0.0, 0.0));
+        final Band band = new VirtualBand("height", ProductData.TYPE_FLOAT32, 10, 10, "X < 5 ? 0.1 : 7");
+        band.setNoDataValue(0.1);
+        band.setNoDataValueUsed(true);
+        product.addBand(band);
+        final DemGrid grid = DemGrid.fromProduct(product, 1000);
+        assertNotNull(grid);
+        assertTrue(Float.isNaN(grid.heights[0]));
+        assertEquals(7, grid.heights[9], 0);
+    }
+
+    @Test
+    public void testNoDataOnlyIsNotADem() throws Exception {
+        final Product product = new Product("dem", "TEST", 10, 10);
+        product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 10, 10, 10.0, 46.0, 0.01, 0.01, 0.0, 0.0));
+        final Band band = new VirtualBand("height", ProductData.TYPE_FLOAT32, 10, 10, "-9999");
+        band.setNoDataValue(-9999);
+        band.setNoDataValueUsed(true);
+        product.addBand(band);
+        assertNull(DemGrid.fromProduct(product, 1000));
+    }
+
+    @Test
     public void testNoData() throws Exception {
         final Product product = createDem(46.0, 0.01);
         product.getBandAt(0).setNoDataValue(5);
