@@ -565,3 +565,11 @@ F3 — vector data:
   through the transformation, features in a CRS that cannot be transformed.
 - Test fix: `WWProductManagerListenerTest` assumed the worker thread would add and remove the product before the EDT
   handled the add, which failed about one run in three; the EDT is now held until both events are queued.
+
+Q5 — WMS browser:
+
+- WorldWind's `WMSLayersPanel` only prints a connection failure to the console and keeps showing its progress bar,
+  and the server was saved to the preferences before it had answered. The dialog now waits for the panel's loading
+  thread: a server without layers (unreachable, mistyped, not WMS) is reported and its tab removed, and a server is
+  saved only after it answered with layers. Connecting to a server already open selects its tab. Tested against a
+  closed local port; checked against EOX.

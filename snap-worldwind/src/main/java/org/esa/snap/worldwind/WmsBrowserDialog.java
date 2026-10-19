@@ -28,13 +28,16 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -49,6 +52,7 @@ class WmsBrowserDialog extends JDialog {
     private final Consumer<Layer> layerAdded;
     private final JComboBox<String> serverCombo;
     private final JTabbedPane tabs = new JTabbedPane();
+    private final Map<String, SnapWMSLayersPanel> panels = new HashMap<>();
 
     WmsBrowserDialog(final Window owner, final WorldWindow wwd, final Consumer<Layer> layerAdded) {
         super(owner, "Add WMS Layer", ModalityType.MODELESS);
@@ -80,6 +84,11 @@ class WmsBrowserDialog extends JDialog {
         if (server.isEmpty()) {
             return;
         }
+        final SnapWMSLayersPanel existing = panels.get(server);
+        if (existing != null) {
+            tabs.setSelectedComponent(existing);
+            return;
+        }
         final SnapWMSLayersPanel panel;
         try {
             // the capabilities are loaded in the panel's own thread
@@ -88,16 +97,32 @@ class WmsBrowserDialog extends JDialog {
             Dialogs.showError("Add WMS Layer", "Invalid server address: " + server);
             return;
         }
+        panels.put(server, panel);
         tabs.addTab(panel.getServerDisplayString(), panel);
         tabs.setSelectedComponent(panel);
+        pack();
+        panel.whenLoaded(() -> loaded(server, panel));
+    }
 
+    /**
+     * WorldWind's panel only prints a failure to the console and keeps showing its progress bar; report it, and
+     * remember the server only once it has answered with layers.
+     */
+    private void loaded(final String server, final SnapWMSLayersPanel panel) {
+        if (!panel.hasLayers()) {
+            tabs.remove(panel);
+            panels.remove(server);
+            pack();
+            Dialogs.showError("Add WMS Layer", "No layers from " + server + ".\n" +
+                                               "The server cannot be reached or is not a WMS server.");
+            return;
+        }
         final List<String> servers = new ArrayList<>(WorldWindPreferences.getWmsServers());
         if (!servers.contains(server)) {
             servers.add(server);
             WorldWindPreferences.setWmsServers(servers);
             serverCombo.addItem(server);
         }
-        pack();
     }
 
     /**
@@ -112,6 +137,27 @@ class WmsBrowserDialog extends JDialog {
                            final Consumer<Layer> layerAdded) throws URISyntaxException {
             super(wwd, server, size);
             this.layerAdded = layerAdded;
+        }
+
+        boolean hasLayers() {
+            return !layerInfos.isEmpty();
+        }
+
+        /**
+         * Runs a task on the EDT once the capabilities have been loaded or failed to load.
+         */
+        void whenLoaded(final Runnable task) {
+            final Thread waiter = new Thread(() -> {
+                try {
+                    loadingThread.join();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                SwingUtilities.invokeLater(task);
+            }, "WMS capabilities " + serverURI);
+            waiter.setDaemon(true);
+            waiter.start();
         }
 
         @Override
