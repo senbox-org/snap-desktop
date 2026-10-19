@@ -41,6 +41,9 @@ import java.util.List;
  */
 public class Polygon3DSelection extends MouseAdapter {
 
+    static final String ANTIMERIDIAN_MESSAGE = "Polygons crossing the antimeridian (180\u00b0) are not supported as " +
+            "area of interest.\nKeep drawing on one side of it, or choose 'Clear selection' in the right-click menu.";
+
     private final WorldWindow wwd;
     private final RenderableLayer layer = new RenderableLayer();
     private final SurfacePolygon polygonShape = new SurfacePolygon();
@@ -122,12 +125,19 @@ public class Polygon3DSelection extends MouseAdapter {
         event.consume();
         this.consumeClick = true;
         if (event.getClickCount() >= 2) {
-            final PolygonArea polygon = Map2DMouseHandler.buildPolygonArea(this.vertices);
-            if (polygon != null) {
-                this.polygonArea = polygon;
-                this.drawing = false;
-                this.vertices.clear();
-                this.cursor = null;
+            if (crossesAntimeridian(this.vertices)) {
+                // the polygon is kept in plain longitudes: across 180 degrees it would enclose the rest of the world
+                Map2DMouseHandler.polygonRejected.accept(ANTIMERIDIAN_MESSAGE);
+            } else {
+                final PolygonArea polygon = Map2DMouseHandler.buildPolygonArea(this.vertices);
+                if (polygon != null) {
+                    this.polygonArea = polygon;
+                    this.drawing = false;
+                    this.vertices.clear();
+                    this.cursor = null;
+                } else if (this.vertices.size() >= 3) {
+                    Map2DMouseHandler.polygonRejected.accept(Map2DMouseHandler.INVALID_POLYGON_MESSAGE);
+                }
             }
         } else {
             final Point.Double position = toLonLat(event.getPoint());
@@ -159,6 +169,19 @@ public class Polygon3DSelection extends MouseAdapter {
             this.cursor = toLonLat(event.getPoint());
             update();
         }
+    }
+
+    /**
+     * True if an edge of the closed polygon is shorter going across the antimeridian than along the parallels.
+     */
+    static boolean crossesAntimeridian(List<Point.Double> vertices) {
+        for (int i = 0; i < vertices.size(); i++) {
+            final Point.Double next = vertices.get((i + 1) % vertices.size());
+            if (Math.abs(next.x - vertices.get(i).x) > 180.0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Point.Double toLonLat(Point screenPoint) {

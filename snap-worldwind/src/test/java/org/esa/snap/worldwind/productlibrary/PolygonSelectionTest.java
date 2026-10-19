@@ -30,6 +30,20 @@ import static org.mockito.Mockito.when;
 
 public class PolygonSelectionTest {
 
+    private final List<String> messages = new java.util.ArrayList<>();
+    private java.util.function.Consumer<String> originalHandler;
+
+    @org.junit.Before
+    public void collectMessages() {
+        originalHandler = Map2DMouseHandler.polygonRejected;
+        Map2DMouseHandler.polygonRejected = messages::add;
+    }
+
+    @org.junit.After
+    public void restoreHandler() {
+        Map2DMouseHandler.polygonRejected = originalHandler;
+    }
+
     private static MouseEvent event(final Component source, final int id, final int x, final int y, final int clickCount) {
         return new MouseEvent(source, id, 0, MouseEvent.BUTTON1_DOWN_MASK, x, y, clickCount, false, MouseEvent.BUTTON1);
     }
@@ -52,6 +66,30 @@ public class PolygonSelectionTest {
         assertNull(Map2DMouseHandler.buildPolygonArea(points(10, 45, 14, 45)));
         assertNull(Map2DMouseHandler.buildPolygonArea(points(10, 45, 14, 45, 14, 45)));
         assertNull("collinear", Map2DMouseHandler.buildPolygonArea(points(10, 45, 11, 46, 12, 47)));
+        assertNull("bow tie", Map2DMouseHandler.buildPolygonArea(points(10, 45, 14, 48, 10, 48, 14, 45)));
+    }
+
+    @Test
+    public void test2DCrossingEdgesKeepDrawingWithAMessage() {
+        final LayerCanvas canvas = new LayerCanvas();
+        final Map2DMouseHandler handler = new Map2DMouseHandler(canvas);
+        handler.enablePolygon();
+        // a bow tie
+        for (int[] click : new int[][]{{10, 10}, {60, 60}, {10, 60}, {60, 10}}) {
+            handler.mousePressed(event(canvas, MouseEvent.MOUSE_PRESSED, click[0], click[1], 1));
+        }
+        handler.mousePressed(event(canvas, MouseEvent.MOUSE_PRESSED, 60, 10, 2));
+        assertTrue(handler.isDrawingPolygon());
+        assertNull(handler.getSelectedArea());
+        assertEquals(java.util.Collections.singletonList(Map2DMouseHandler.INVALID_POLYGON_MESSAGE), messages);
+    }
+
+    @Test
+    public void testAntimeridianCrossing() {
+        assertTrue(Polygon3DSelection.crossesAntimeridian(points(170, 10, -170, 10, -170, 20, 170, 20)));
+        assertFalse(Polygon3DSelection.crossesAntimeridian(points(10, 45, 14, 45, 12, 48)));
+        // the closing edge counts too
+        assertTrue(Polygon3DSelection.crossesAntimeridian(points(175, 10, 179, 15, -178, 20)));
     }
 
     @Test
@@ -109,6 +147,7 @@ public class PolygonSelectionTest {
         handler.mousePressed(event(canvas, MouseEvent.MOUSE_PRESSED, 10, 10, 2));
         assertTrue(handler.isDrawingPolygon());
         assertNull(handler.getSelectedArea());
+        assertTrue("no message before three vertices", messages.isEmpty());
     }
 
     @Test
@@ -162,6 +201,36 @@ public class PolygonSelectionTest {
         selection.setSelectedArea(new Rectangle2D.Double(0, 0, 1, 1));
         assertNull("a rectangle removes the polygon", selection.getSelectedArea());
         assertEquals(0, selection.getLayer().getNumRenderables());
+    }
+
+    @Test
+    public void test3DAntimeridianPolygonRejected() {
+        final WorldWindow wwd = mock(WorldWindow.class);
+        final Model model = mock(Model.class);
+        final View view = mock(View.class);
+        when(wwd.getModel()).thenReturn(model);
+        when(model.getLayers()).thenReturn(new LayerList());
+        when(wwd.getInputHandler()).thenReturn(mock(InputHandler.class));
+        when(wwd.getView()).thenReturn(view);
+        // screen x -> lon: 0..10 is 170..180, above 10 wraps to -180..
+        when(view.computePositionFromScreenPoint(anyDouble(), anyDouble())).thenAnswer(invocation -> {
+            double lon = 170 + (Double) invocation.getArgument(0);
+            if (lon > 180) {
+                lon -= 360;
+            }
+            return Position.fromDegrees((Double) invocation.getArgument(1), lon, 0);
+        });
+
+        final Polygon3DSelection selection = new Polygon3DSelection(wwd);
+        final JPanel source = new JPanel();
+        selection.start();
+        for (int[] click : new int[][]{{0, 10}, {20, 10}, {20, 20}, {0, 20}}) {
+            selection.mousePressed(event(source, MouseEvent.MOUSE_PRESSED, click[0], click[1], 1));
+        }
+        selection.mousePressed(event(source, MouseEvent.MOUSE_PRESSED, 0, 20, 2));
+        assertTrue("keeps drawing", selection.isDrawing());
+        assertNull(selection.getSelectedArea());
+        assertEquals(java.util.Collections.singletonList(Polygon3DSelection.ANTIMERIDIAN_MESSAGE), messages);
     }
 
     @Test

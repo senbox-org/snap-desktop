@@ -504,3 +504,19 @@ Q7 — local DEM terrain:
   defaults reach the user; an unusable tile cache folder makes the options invalid instead of WorldWind silently
   using another folder.
 - New tests: the tessellation path (`getElevations`) uses the local DEM, interrupted and unusable loads.
+
+Q8 — polygon area of interest:
+
+- `PolygonArea` (snap-engine): bounds can no longer drift from the vertices — `setRect(Rectangle2D)` throws as the
+  other setters do, and the getters (`getX/Y/Width/Height`, `isEmpty`, `getBounds2D`, `outcode`, intersections)
+  read private bounds, not the public fields of `Rectangle2D.Double`. Vertices must be finite and the edges must not
+  cross (a bow tie is invalid for `ST_Intersects` and for remote queries).
+- Drawing: a closed polygon whose edges cross is refused with a message and drawing continues. On the 3D globe a
+  polygon with an edge across the antimeridian is refused the same way: it is stored in plain longitudes and would
+  otherwise search the rest of the world.
+- **Documented — bounding-box searches.** Some remote sources search only the polygon's bounding box: the USGS source
+  uses the bounds of the query polygon, and TAO's default polygon converter sends the bounds of polygons with 200 or
+  more points (found in the TAO 1.5.3 jars). The bounding box contains the polygon, so no product is missed; more
+  products than drawn may be found. Stated in the `PolygonArea` javadoc.
+- Known, not changed: `Rectangle2D.equals(polygonArea)` compares bounds only (the JDK's method), so the equality is
+  not symmetric; no code compares areas of interest.

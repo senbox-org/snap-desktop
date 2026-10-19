@@ -2,6 +2,7 @@ package org.esa.snap.worldwind.productlibrary;
 
 import com.bc.ceres.glayer.swing.LayerCanvas;
 import org.apache.commons.math3.util.FastMath;
+import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.remote.products.repository.geometry.PolygonArea;
 
 import javax.swing.*;
@@ -14,6 +15,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Adapter class for receiving mouse events for 2D earth globe.
@@ -21,6 +23,14 @@ import java.util.List;
  * Created by jcoravu on 21/10/2019.
  */
 public class Map2DMouseHandler extends MouseAdapter {
+
+    static final String INVALID_POLYGON_MESSAGE = "This polygon cannot be used as area of interest: its edges cross " +
+            "each other or it encloses no area.\nKeep drawing, or choose 'Clear selection' in the right-click menu.";
+
+    /**
+     * Tells the user why a closed polygon is not accepted; replaceable for tests.
+     */
+    static Consumer<String> polygonRejected = message -> Dialogs.showWarning("Polygon Selection", message, null);
 
     private final LayerCanvas layerCanvas;
 
@@ -113,7 +123,11 @@ public class Map2DMouseHandler extends MouseAdapter {
     private void finishPolygon() {
         PolygonArea polygon = buildPolygonArea(this.polygonVertices);
         if (polygon == null) {
-            return; // fewer than three vertices: keep drawing
+            // keep drawing; say why, unless the user has not drawn three vertices yet
+            if (this.polygonVertices.size() >= 3) {
+                polygonRejected.accept(INVALID_POLYGON_MESSAGE);
+            }
+            return;
         }
         this.polygonArea = polygon;
         this.selectionStart = null;
@@ -129,8 +143,8 @@ public class Map2DMouseHandler extends MouseAdapter {
     }
 
     /**
-     * The polygon of the given vertices, or null if they do not make one (fewer than three distinct vertices, or no
-     * area).
+     * The polygon of the given vertices, or null if they do not make one (fewer than three distinct vertices, no area,
+     * or crossing edges).
      */
     static PolygonArea buildPolygonArea(List<Point.Double> vertices) {
         List<Point.Double> distinct = new ArrayList<>();
@@ -157,7 +171,14 @@ public class Map2DMouseHandler extends MouseAdapter {
             int next = (i + 1) % lons.length;
             twiceArea += lons[i] * lats[next] - lons[next] * lats[i];
         }
-        return Math.abs(twiceArea) > 1.0e-12 ? new PolygonArea(lons, lats) : null;
+        if (Math.abs(twiceArea) <= 1.0e-12) {
+            return null;
+        }
+        try {
+            return new PolygonArea(lons, lats);
+        } catch (IllegalArgumentException e) {
+            return null; // crossing edges
+        }
     }
 
     /**
