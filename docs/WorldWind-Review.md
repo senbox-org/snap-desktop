@@ -379,3 +379,13 @@ Q2 — SNAP layer configuration:
 - **Addition — layer order.** SNAP's layers used to be inserted before the NASA place name layer, which no longer
   exists; they are now inserted below the overlays (world map, scale bar, compass, layer panel, place names), marked
   with `LayerConfiguration.OVERLAY`.
+
+Q1 — live base maps:
+
+- Added, all disabled by default (Bing stays the default): NASA GIBS Blue Marble Shaded Relief + Bathymetry, NASA
+  GIBS VIIRS true colour, EOX Sentinel-2 cloudless 2016 (CC BY 4.0) and **2025** (CC BY-NC-SA 4.0; §5 did not name a
+  year, 2025 is the latest EOX publishes). The licence is part of each EOX layer name. Verified on a globe: VIIRS over
+  Europe, EOX at 5 km scale in the Alps, GIBS relief over the Himalaya.
+- **Addition — daily imagery.** The VIIRS layer shows the last complete UTC day (`TIME` parameter in the GetMap URL,
+  date in the layer name and cache name), because the current day is still being filled in and a fixed cache name
+  would keep showing the first day ever downloaded.

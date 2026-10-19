@@ -107,6 +107,119 @@
         <RetrievalTimeouts><ReadTimeout><Time units="milliseconds" value="30000"/></ReadTimeout></RetrievalTimeouts>
     </Layer>
 
+    <!-- NASA GIBS (public domain, attribution requested), checked 2026-10-19.
+         Level counts follow the product resolution: 500 m Blue Marble, 250 m VIIRS. -->
+    <!-- static global mosaic -->
+    <Layer layerType="TiledImageLayer" actuate="onRequest">
+        <DisplayName>NASA GIBS Blue Marble Shaded Relief</DisplayName>
+        <Service serviceName="OGC:WMS" version="1.3.0">
+            <GetCapabilitiesURL>https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi</GetCapabilitiesURL>
+            <GetMapURL>https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi</GetMapURL>
+            <LayerNames>BlueMarble_ShadedRelief_Bathymetry</LayerNames>
+        </Service>
+        <RetrievePropertiesFromService>false</RetrievePropertiesFromService>
+        <DataCacheName>Earth/GIBS/BlueMarble_ShadedRelief_Bathymetry</DataCacheName>
+        <ImageFormat>image/jpeg</ImageFormat>
+        <AvailableImageFormats>
+            <ImageFormat>image/jpeg</ImageFormat>
+        </AvailableImageFormats>
+        <FormatSuffix>.dds</FormatSuffix>
+        <NumLevels count="6" numEmpty="0"/>
+        <TileOrigin><LatLon units="degrees" latitude="-90" longitude="-180"/></TileOrigin>
+        <LevelZeroTileDelta><LatLon units="degrees" latitude="36" longitude="36"/></LevelZeroTileDelta>
+        <TileSize><Dimension width="512" height="512"/></TileSize>
+        <Sector>
+            <SouthWest><LatLon units="degrees" latitude="-90" longitude="-180"/></SouthWest>
+            <NorthEast><LatLon units="degrees" latitude="90" longitude="180"/></NorthEast>
+        </Sector>
+        <UseTransparentTextures>false</UseTransparentTextures>
+        <RetrievalTimeouts><ReadTimeout><Time units="milliseconds" value="30000"/></ReadTimeout></RetrievalTimeouts>
+    </Layer>
+
+    <!-- daily imagery of the last complete UTC day; one cache per day -->
+    <Layer layerType="TiledImageLayer" actuate="onRequest">
+        <DisplayName>NASA GIBS VIIRS True Colour ${imageryDate}</DisplayName>
+        <Service serviceName="OGC:WMS" version="1.3.0">
+            <GetCapabilitiesURL>https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?TIME=${imageryDate}</GetCapabilitiesURL>
+            <GetMapURL>https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?TIME=${imageryDate}</GetMapURL>
+            <LayerNames>VIIRS_SNPP_CorrectedReflectance_TrueColor</LayerNames>
+        </Service>
+        <RetrievePropertiesFromService>false</RetrievePropertiesFromService>
+        <DataCacheName>Earth/GIBS/VIIRS_SNPP_CorrectedReflectance_TrueColor/${imageryDate}</DataCacheName>
+        <ImageFormat>image/jpeg</ImageFormat>
+        <AvailableImageFormats>
+            <ImageFormat>image/jpeg</ImageFormat>
+        </AvailableImageFormats>
+        <FormatSuffix>.dds</FormatSuffix>
+        <NumLevels count="7" numEmpty="0"/>
+        <TileOrigin><LatLon units="degrees" latitude="-90" longitude="-180"/></TileOrigin>
+        <LevelZeroTileDelta><LatLon units="degrees" latitude="36" longitude="36"/></LevelZeroTileDelta>
+        <TileSize><Dimension width="512" height="512"/></TileSize>
+        <Sector>
+            <SouthWest><LatLon units="degrees" latitude="-90" longitude="-180"/></SouthWest>
+            <NorthEast><LatLon units="degrees" latitude="90" longitude="180"/></NorthEast>
+        </Sector>
+        <UseTransparentTextures>false</UseTransparentTextures>
+        <RetrievalTimeouts><ReadTimeout><Time units="milliseconds" value="30000"/></ReadTimeout></RetrievalTimeouts>
+    </Layer>
+
+    <!-- EOX Sentinel-2 cloudless, checked 2026-10-19 (https://cloudless.eox.at, Contains modified Copernicus Sentinel
+         data). The 2016 mosaic is CC BY 4.0; later years are CC BY-NC-SA 4.0 and need a licence from EOX for
+         commercial use, so the layers start disabled and carry their licence in the name. About 10 m resolution. -->
+    <!-- EOX s2cloudless 2016 -->
+    <Layer layerType="TiledImageLayer" actuate="onRequest">
+        <DisplayName>Sentinel-2 cloudless 2016 by EOX (CC BY 4.0)</DisplayName>
+        <Service serviceName="OGC:WMS" version="1.1.1">
+            <GetCapabilitiesURL>https://tiles.maps.eox.at/wms</GetCapabilitiesURL>
+            <GetMapURL>https://tiles.maps.eox.at/wms</GetMapURL>
+            <LayerNames>s2cloudless</LayerNames>
+        </Service>
+        <RetrievePropertiesFromService>false</RetrievePropertiesFromService>
+        <DataCacheName>Earth/EOX/s2cloudless-2016</DataCacheName>
+        <ImageFormat>image/jpeg</ImageFormat>
+        <AvailableImageFormats>
+            <ImageFormat>image/jpeg</ImageFormat>
+        </AvailableImageFormats>
+        <FormatSuffix>.dds</FormatSuffix>
+        <NumLevels count="12" numEmpty="0"/>
+        <TileOrigin><LatLon units="degrees" latitude="-90" longitude="-180"/></TileOrigin>
+        <LevelZeroTileDelta><LatLon units="degrees" latitude="36" longitude="36"/></LevelZeroTileDelta>
+        <TileSize><Dimension width="512" height="512"/></TileSize>
+        <Sector>
+            <SouthWest><LatLon units="degrees" latitude="-90" longitude="-180"/></SouthWest>
+            <NorthEast><LatLon units="degrees" latitude="90" longitude="180"/></NorthEast>
+        </Sector>
+        <UseTransparentTextures>false</UseTransparentTextures>
+        <RetrievalTimeouts><ReadTimeout><Time units="milliseconds" value="30000"/></ReadTimeout></RetrievalTimeouts>
+    </Layer>
+
+    <!-- EOX s2cloudless 2025 -->
+    <Layer layerType="TiledImageLayer" actuate="onRequest">
+        <DisplayName>Sentinel-2 cloudless 2025 by EOX (non-commercial, CC BY-NC-SA 4.0)</DisplayName>
+        <Service serviceName="OGC:WMS" version="1.1.1">
+            <GetCapabilitiesURL>https://tiles.maps.eox.at/wms</GetCapabilitiesURL>
+            <GetMapURL>https://tiles.maps.eox.at/wms</GetMapURL>
+            <LayerNames>s2cloudless-2025</LayerNames>
+        </Service>
+        <RetrievePropertiesFromService>false</RetrievePropertiesFromService>
+        <DataCacheName>Earth/EOX/s2cloudless-2025</DataCacheName>
+        <ImageFormat>image/jpeg</ImageFormat>
+        <AvailableImageFormats>
+            <ImageFormat>image/jpeg</ImageFormat>
+        </AvailableImageFormats>
+        <FormatSuffix>.dds</FormatSuffix>
+        <NumLevels count="12" numEmpty="0"/>
+        <TileOrigin><LatLon units="degrees" latitude="-90" longitude="-180"/></TileOrigin>
+        <LevelZeroTileDelta><LatLon units="degrees" latitude="36" longitude="36"/></LevelZeroTileDelta>
+        <TileSize><Dimension width="512" height="512"/></TileSize>
+        <Sector>
+            <SouthWest><LatLon units="degrees" latitude="-90" longitude="-180"/></SouthWest>
+            <NorthEast><LatLon units="degrees" latitude="90" longitude="180"/></NorthEast>
+        </Sector>
+        <UseTransparentTextures>false</UseTransparentTextures>
+        <RetrievalTimeouts><ReadTimeout><Time units="milliseconds" value="30000"/></ReadTimeout></RetrievalTimeouts>
+    </Layer>
+
     <Layer layerType="TiledImageLayer" actuate="onRequest">
         <DisplayName>Earth at Night</DisplayName>
         <Service serviceName="OGC:WMS" version="1.3">

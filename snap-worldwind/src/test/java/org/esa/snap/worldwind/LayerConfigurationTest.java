@@ -57,6 +57,35 @@ public class LayerConfigurationTest {
     }
 
     @Test
+    public void testLiveBaseMaps() {
+        final LayerList layers = LayerConfiguration.createLayers(DATE);
+        final List<String> names = names(layers);
+
+        assertTrue(names.toString(), names.contains("NASA GIBS Blue Marble Shaded Relief"));
+        // daily imagery of the given day, cached per day
+        final Layer viirs = layers.getLayerByName("NASA GIBS VIIRS True Colour 2026-10-18");
+        assertNotNull(names.toString(), viirs);
+        assertTrue(viirs instanceof TiledImageLayer);
+        final String cacheName = ((TiledImageLayer) viirs).getLevels().getFirstLevel().getCacheName();
+        assertTrue(cacheName, cacheName.contains("2026-10-18"));
+        assertTrue(((TiledImageLayer) viirs).getLevels().getFirstLevel().getService().contains("TIME=2026-10-18"));
+        for (String name : names) {
+            assertFalse(name, name.contains(LayerConfiguration.IMAGERY_DATE_TOKEN));
+        }
+
+        // the EOX mosaics name their licence and are not enabled by default
+        int eoxLayers = 0;
+        for (Layer layer : layers) {
+            if (layer.getName().contains("EOX")) {
+                eoxLayers++;
+                assertFalse(layer.getName(), layer.isEnabled());
+                assertTrue(layer.getName(), layer.getName().contains("CC BY"));
+            }
+        }
+        assertEquals(2, eoxLayers);
+    }
+
+    @Test
     public void testOverlaysLast() {
         final LayerList layers = LayerConfiguration.createLayers(DATE);
         boolean overlaySeen = false;
