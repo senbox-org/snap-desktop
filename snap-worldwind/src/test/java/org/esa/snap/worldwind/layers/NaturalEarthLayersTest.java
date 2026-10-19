@@ -5,6 +5,7 @@ import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.GeographicText;
+import gov.nasa.worldwind.render.ShapeAttributes;
 import org.esa.snap.worldwind.LayerConfiguration;
 import org.esa.snap.worldwind.model.PlaceNames;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -40,6 +42,12 @@ public class NaturalEarthLayersTest {
         assertTrue(NaturalEarthLayers.isInternationalBoundary(null));
         assertFalse(NaturalEarthLayers.isInternationalBoundary("Disputed (please verify)"));
         assertFalse(NaturalEarthLayers.isInternationalBoundary("Line of control (please verify)"));
+
+        // WorldWind's shapefile lines honour only colour and width: the kinds must differ in those
+        final ShapeAttributes international = NaturalEarthLayers.borderAttributes("International boundary (verify)");
+        final ShapeAttributes disputed = NaturalEarthLayers.borderAttributes("Disputed (please verify)");
+        assertNotEquals(international.getOutlineMaterial().getDiffuse(), disputed.getOutlineMaterial().getDiffuse());
+        assertEquals(NaturalEarthLayers.OTHER_BOUNDARY_COLOR, disputed.getOutlineMaterial().getDiffuse());
     }
 
     @Test

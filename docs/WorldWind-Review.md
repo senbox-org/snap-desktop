@@ -400,8 +400,11 @@ Q3 — offline borders and place names:
   WorldWind's `GeographicTextRenderer` (overlap culling by priority: capitals, then population). A place is labelled
   below the eye altitude 10⁸ m / 2^`min_zoom`, from Natural Earth's recommended web-map zoom. The selection is in
   the WorldWind-independent `model.PlaceNames`.
-- **Addition — disputed lines dashed.** Boundaries whose feature class is not "International boundary" (disputed,
-  line of control, indefinite) are drawn dashed.
+- **Addition — disputed lines distinguished.** Boundaries whose feature class is not "International boundary"
+  (disputed, line of control, indefinite) are drawn in orange instead of the pale yellow of recognised boundaries.
+  *Correction (review, 2026-10-19):* this note first said "dashed"; the stipple pattern was set but WorldWind's
+  `ShapefilePolylines` honours only colour and width (no stipple, no opacity), so the lines were drawn as recognised
+  boundaries. Checked on a globe over Kashmir.
 - `FixingPlaceNameLayer` (renamed one sea in the dead NASA layer, SNAP-1476) is removed with that layer; Natural
   Earth's populated places contain no sea names.
 

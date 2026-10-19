@@ -43,6 +43,13 @@ public final class NaturalEarthLayers {
     static final String INTERNATIONAL_BOUNDARY = "International boundary (verify)";
 
     private static final Color BORDER_COLOR = new Color(255, 255, 200);
+    /**
+     * Disputed boundaries, lines of control and indefinite frontiers: not drawn like recognised boundaries.
+     */
+    static final Color OTHER_BOUNDARY_COLOR = new Color(255, 150, 60);
+
+    static final ShapeAttributes INTERNATIONAL_ATTRIBUTES = createBorderAttributes(BORDER_COLOR, 1.2);
+    static final ShapeAttributes OTHER_BOUNDARY_ATTRIBUTES = createBorderAttributes(OTHER_BOUNDARY_COLOR, 1.0);
 
     private NaturalEarthLayers() {
     }
@@ -62,8 +69,10 @@ public final class NaturalEarthLayers {
     }
 
     /**
-     * The country borders: international boundaries as solid lines, disputed, indefinite and other lines dashed.
-     * The shapes are loaded in the background. Returns null if the bundled data cannot be read.
+     * The country borders: international boundaries in one colour, disputed, line-of-control, indefinite and other
+     * lines in another. WorldWind draws shapefile lines with their colour and width only (no dash pattern, no
+     * opacity), so the colour is what tells the boundary kinds apart. The shapes are loaded in the background.
+     * Returns null if the bundled data cannot be read.
      */
     public static Layer createBordersLayer() {
         final InputStream shp = NaturalEarthLayers.class.getResourceAsStream(BORDERS_RESOURCE + ".shp");
@@ -72,17 +81,16 @@ public final class NaturalEarthLayers {
         final InputStream prj = NaturalEarthLayers.class.getResourceAsStream(BORDERS_RESOURCE + ".prj");
         if (shp == null || shx == null || dbf == null || prj == null) {
             SystemUtils.LOG.warning("WorldWind: bundled Natural Earth borders not found");
+            closeQuietly(shp, shx, dbf, prj);
             return null;
         }
         try {
-            final ShapeAttributes solid = createBorderAttributes(false);
-            final ShapeAttributes dashed = createBorderAttributes(true);
             final ShapefileLayerFactory factory = new ShapefileLayerFactory();
-            factory.setNormalShapeAttributes(solid);
+            factory.setNormalShapeAttributes(INTERNATIONAL_ATTRIBUTES);
             factory.setAttributeDelegate((shapefileRecord, renderableRecord) -> {
                 final Object featureClass = shapefileRecord.getAttributes() != null ?
                         shapefileRecord.getAttributes().getValue(FEATURE_CLASS) : null;
-                renderableRecord.setAttributes(isInternationalBoundary(featureClass) ? solid : dashed);
+                renderableRecord.setAttributes(borderAttributes(featureClass));
             });
             // the factory reads and closes the shapefile in the background
             final Layer layer = (Layer) factory.createFromShapefileSource(new Shapefile(shp, shx, dbf, prj));
@@ -91,7 +99,20 @@ public final class NaturalEarthLayers {
             return layer;
         } catch (Exception e) {
             SystemUtils.LOG.log(Level.WARNING, "WorldWind: unable to read the bundled Natural Earth borders", e);
+            closeQuietly(shp, shx, dbf, prj);
             return null;
+        }
+    }
+
+    private static void closeQuietly(final InputStream... streams) {
+        for (InputStream stream : streams) {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (Exception ignored) {
+                    // nothing to do
+                }
+            }
         }
     }
 
@@ -99,17 +120,16 @@ public final class NaturalEarthLayers {
         return featureClass == null || INTERNATIONAL_BOUNDARY.equals(featureClass.toString().trim());
     }
 
-    private static ShapeAttributes createBorderAttributes(final boolean dashed) {
+    static ShapeAttributes borderAttributes(final Object featureClass) {
+        return isInternationalBoundary(featureClass) ? INTERNATIONAL_ATTRIBUTES : OTHER_BOUNDARY_ATTRIBUTES;
+    }
+
+    private static ShapeAttributes createBorderAttributes(final Color color, final double width) {
         final ShapeAttributes attributes = new BasicShapeAttributes();
         attributes.setDrawInterior(false);
         attributes.setDrawOutline(true);
-        attributes.setOutlineMaterial(new Material(BORDER_COLOR));
-        attributes.setOutlineOpacity(0.8);
-        attributes.setOutlineWidth(1.2);
-        if (dashed) {
-            attributes.setOutlineStippleFactor(3);
-            attributes.setOutlineStipplePattern((short) 0xAAAA);
-        }
+        attributes.setOutlineMaterial(new Material(color));
+        attributes.setOutlineWidth(width);
         return attributes;
     }
 }
