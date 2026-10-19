@@ -458,3 +458,20 @@ Q7 — offline, cache and terrain:
   Hesselberg (summit 689 m, smoothed by the ~100 m sampling); about 2 s per tile after start-up, mostly DEFLATE
   decoding. **Not yet seen on a globe:** OpenGL was unavailable on the test machine when this was built (locked
   session), so the terrain rendering itself still needs a look in the application.
+
+Q8 — Product Library polygon AOI:
+
+- **Correction — the search does not accept WKT.** §5 assumed it did; the area of interest is a `Rectangle2D` all the
+  way down: the remote query (`RemoteRepositoriesManager`, TAO polygon of the four corners) and the local database
+  (`DataAccess` → `GeometryUtils.buildPolygon`) both build the polygon from the rectangle. Q8 therefore also changes
+  snap-engine (branch `worldwind-fixes` there).
+- **Design — `PolygonArea extends Rectangle2D.Double`** (snap-remote-products-repository, geometry package): the
+  polygon's vertices, and as a rectangle its bounding box. The parameter type stays `Rectangle2D`, so the product
+  library UI needed no change; `GeometryUtils.buildPolygon`/`buildPath` and the remote query use the vertices, and
+  any code that only knows rectangles searches the bounding box, which contains the polygon.
+- Drawing: right-click menu "Start polygon selection (double-click to close)" on the 2D map and the 3D globe; each
+  click adds a vertex, the outline follows the mouse, a double click closes it. Drawing clicks are consumed so that
+  they do not also select footprints. Fewer than three vertices or collinear vertices do not close the polygon.
+- Tests: polygon area, database WKT and remote query polygon (snap-engine), 2D and 3D drawing with simulated mouse
+  events (snap-worldwind). **Not yet seen on screen** (OpenGL unavailable on the test machine, see Q7); polygons
+  crossing the antimeridian are not supported.

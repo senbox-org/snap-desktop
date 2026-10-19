@@ -145,6 +145,9 @@ public abstract class WorldMapPanelWrapper extends JPanel {
     }
 
     private void processLeftMouseClick(MouseEvent mouseEvent) {
+        if (mouseEvent.isConsumed() || this.currentWorldMap.isDrawingPolygon()) {
+            return; // a click drawing the polygon selection
+        }
         Point.Double clickedPoint = this.currentWorldMap.convertPointToDegrees(mouseEvent.getPoint());
         if (clickedPoint != null) {
             List<Path2D.Double> polygonPaths = this.polygonsLayerModel.findPolygonsContainsPoint(clickedPoint.getX(), clickedPoint.getY());
@@ -155,7 +158,8 @@ public abstract class WorldMapPanelWrapper extends JPanel {
     private void processRightMouseClick(MouseEvent mouseEvent) {
         WorldMap worldMap = (WorldMap)mouseEvent.getSource();
         JMenuItem selectionMenuItem;
-        if (worldMap.getSelectedArea() != null) {
+        JMenuItem polygonMenuItem = null;
+        if (worldMap.getSelectedArea() != null || worldMap.isDrawingPolygon()) {
             selectionMenuItem = new JMenuItem("Clear selection");
             selectionMenuItem.addActionListener(new ActionListener() {
                 @Override
@@ -175,6 +179,8 @@ public abstract class WorldMapPanelWrapper extends JPanel {
                     inputWorldMap.enableSelection();
                 }
             });
+            polygonMenuItem = new JMenuItem("Start polygon selection (double-click to close)");
+            polygonMenuItem.addActionListener(actionEvent -> worldMap.enablePolygonSelection());
         }
         selectionMenuItem.putClientProperty(selectionMenuItem, worldMap);
 
@@ -205,6 +211,9 @@ public abstract class WorldMapPanelWrapper extends JPanel {
         }
         JPopupMenu popup = new JPopupMenu();
         popup.add(selectionMenuItem);
+        if (polygonMenuItem != null) {
+            popup.add(polygonMenuItem);
+        }
         popup.add(viewMenu);
         popup.show((JPanel)worldMap, mouseEvent.getX(), mouseEvent.getY());
     }

@@ -20,6 +20,7 @@ import gov.nasa.worldwind.pick.PickedObjectList;
 import gov.nasa.worldwind.util.BasicGLCapabilitiesChooser;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
+import org.esa.snap.remote.products.repository.geometry.PolygonArea;
 import org.esa.snap.worldwind.AppPanel;
 import org.esa.snap.worldwind.LayerConfiguration;
 
@@ -35,6 +36,7 @@ import java.awt.geom.Rectangle2D;
 public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
 
     private final Rectangle3DSelection selector;
+    private final Polygon3DSelection polygonSelector;
 
     public WorldMap3DPanel(boolean flatEarth, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
         super(null, Configuration.getRequiredGLCapabilities(), new BasicGLCapabilitiesChooser());
@@ -59,6 +61,7 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
         this.selector.setBorderColor(WorldMapPanelWrapper.SELECTION_BORDER_COLOR);
         this.selector.setBorderWidth(WorldMapPanelWrapper.SELECTION_LINE_WIDTH);
         this.selector.getLayer().setEnabled(true);
+        this.polygonSelector = new Polygon3DSelection(this.wwd);
 
         LayerList layerList = this.wwd.getModel().getLayers();
 
@@ -76,13 +79,16 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
         AppPanel.addReferenceLayers(layerList);
 
         layerList.add(this.selector.getLayer());
+        layerList.add(this.polygonSelector.getLayer());
 
         layerList.add(new Polygons3DLayer(polygonsLayerModel));
     }
 
     @Override
     public void setSelectedArea(Rectangle2D selectedArea) {
-        this.selector.setSelectedArea(selectedArea);
+        // a polygon area is drawn by the polygon selector; as a rectangle it is only its bounding box
+        this.polygonSelector.setSelectedArea(selectedArea);
+        this.selector.setSelectedArea(selectedArea instanceof PolygonArea ? null : selectedArea);
     }
 
     @Override
@@ -92,17 +98,31 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
 
     @Override
     public void enableSelection() {
+        this.polygonSelector.clear();
         this.selector.enable();
     }
 
     @Override
     public void disableSelection() {
         this.selector.disable();
+        this.polygonSelector.clear();
+    }
+
+    @Override
+    public void enablePolygonSelection() {
+        this.selector.disable();
+        this.polygonSelector.start();
+    }
+
+    @Override
+    public boolean isDrawingPolygon() {
+        return this.polygonSelector.isDrawing();
     }
 
     @Override
     public Rectangle2D getSelectedArea() {
-        return this.selector.getSelectedArea();
+        final PolygonArea polygonArea = this.polygonSelector.getSelectedArea();
+        return polygonArea != null ? polygonArea : this.selector.getSelectedArea();
     }
 
     @Override
