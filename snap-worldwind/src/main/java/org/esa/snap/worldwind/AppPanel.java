@@ -27,13 +27,12 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
 import gov.nasa.worldwind.layers.StarsLayer;
 import gov.nasa.worldwind.layers.WorldMapLayer;
-import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import gov.nasa.worldwind.util.PlacemarkClutterFilter;
 import gov.nasa.worldwind.util.StatusBar;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
 import gov.nasa.worldwindx.examples.ClickAndGoSelectListener;
-import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
+import org.esa.snap.worldwind.layers.NaturalEarthLayers;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -107,21 +106,10 @@ public class AppPanel extends JPanel {
     }
 
     /**
-     * Replaces the default place name layer by {@link FixingPlaceNameLayer}, which corrects some names
-     * (https://senbox.atlassian.net/browse/SNAP-1476).
-     * The layer is added disabled: the NASA place name WFS server (worldwind22.arc.nasa.gov) it relies on no longer
-     * responds, so enabling it by default only produces failing requests. Users can still enable it in the layer list.
+     * Adds the offline country borders and place names (Natural Earth) as overlays.
      */
-    public static void replacePlaceNameLayer(final LayerList layerList) {
-        for (Layer layer : layerList) {
-            if (layer instanceof PlaceNameLayer) {
-                layerList.remove(layer);
-            }
-        }
-        final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
-        fixingPlaceNameLayer.setEnabled(false);
-        LayerConfiguration.markOverlay(fixingPlaceNameLayer);
-        layerList.add(fixingPlaceNameLayer);
+    public static void addReferenceLayers(final LayerList layerList) {
+        NaturalEarthLayers.addTo(layerList);
     }
 
     private static class MinimalStatusBar extends StatusBar {

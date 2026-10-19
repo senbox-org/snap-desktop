@@ -73,7 +73,7 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
             }
         }
 
-        AppPanel.replacePlaceNameLayer(layerList);
+        AppPanel.addReferenceLayers(layerList);
 
         layerList.add(this.selector.getLayer());
 

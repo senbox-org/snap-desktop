@@ -389,3 +389,18 @@ Q1 — live base maps:
 - **Addition — daily imagery.** The VIIRS layer shows the last complete UTC day (`TIME` parameter in the GetMap URL,
   date in the layer name and cache name), because the current day is still being filled in and a fixed cache name
   would keep showing the first day ever downloaded.
+
+Q3 — offline borders and place names:
+
+- Natural Earth 1:50m boundary lines (v5.1.0, shapefile with the attribute table cut to `FEATURECLA`, 360 KB) and
+  populated places (v5.1.2, 1251 places as tab-separated text, 51 KB) under `org/esa/snap/worldwind/naturalearth`,
+  with a README giving the sources. Both layers are on by default, as overlays, in all three globes.
+- **Deviation — place names are not a shapefile layer.** `ShapefileLayerFactory` turns points into placemarks without
+  any choice by zoom level, so the places are a small text file and `NaturalEarthPlaceNameLayer` labels them with
+  WorldWind's `GeographicTextRenderer` (overlap culling by priority: capitals, then population). A place is labelled
+  below the eye altitude 10⁸ m / 2^`min_zoom`, from Natural Earth's recommended web-map zoom. The selection is in
+  the WorldWind-independent `model.PlaceNames`.
+- **Addition — disputed lines dashed.** Boundaries whose feature class is not "International boundary" (disputed,
+  line of control, indefinite) are drawn dashed.
+- `FixingPlaceNameLayer` (renamed one sea in the dead NASA layer, SNAP-1476) is removed with that layer; Natural
+  Earth's populated places contain no sea names.

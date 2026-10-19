@@ -146,7 +146,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                 }
             }
 
-            AppPanel.replacePlaceNameLayer(layerList);
+            AppPanel.addReferenceLayers(layerList);
 
             if (productLayer != null && imageLayer != null) {
                 // a full-resolution image replaces the quicklook of its product

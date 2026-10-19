@@ -110,7 +110,7 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
                 }
             }
 
-            AppPanel.replacePlaceNameLayer(layerList);
+            AppPanel.addReferenceLayers(layerList);
 
             // Put the pieces together.
             mainPane.add(wwjPanel, BorderLayout.CENTER);
