@@ -15,8 +15,11 @@
  */
 package org.esa.snap.worldwind.preferences;
 
+import gov.nasa.worldwind.WorldWind;
+import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.runtime.Config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -28,6 +31,20 @@ public final class WorldWindPreferences {
 
     public static final String WMS_SERVERS = "snap.worldwind.wmsServers";
     public static final String LAST_DATA_DIR = "snap.worldwind.lastDataDir";
+    public static final String OFFLINE = "snap.worldwind.offline";
+    public static final String CACHE_DIR = "snap.worldwind.cacheDir";
+    public static final String LOCAL_DEM = "snap.worldwind.localDem";
+    public static final String LOCAL_DEM_DIR = "snap.worldwind.localDemDir";
+
+    /**
+     * System property that makes WorldWind keep its tile cache in {@code <value>/WorldWindData}; read once, when
+     * WorldWind creates its file store.
+     */
+    static final String WORLDWIND_STORE_PROPERTY = "gov.nasa.worldwind.platform.alluser.store";
+    /**
+     * Name of the folder WorldWind creates in the cache location.
+     */
+    public static final String WORLDWIND_DATA_FOLDER = "WorldWindData";
 
     /**
      * WMS servers offered by the "Add WMS Layer" dialog, checked 2026-10-19.
@@ -49,6 +66,44 @@ public final class WorldWindPreferences {
 
     public static void setWmsServers(final List<String> servers) {
         preferences().put(WMS_SERVERS, String.join("\n", servers));
+    }
+
+    public static boolean isOffline() {
+        return preferences().getBoolean(OFFLINE, false);
+    }
+
+    /**
+     * The folder chosen for WorldWind's tile cache, or null for WorldWind's default location.
+     */
+    public static File getCacheDir() {
+        final String dir = preferences().get(CACHE_DIR, "").trim();
+        return dir.isEmpty() ? null : new File(dir);
+    }
+
+    public static boolean isLocalDemEnabled() {
+        return preferences().getBoolean(LOCAL_DEM, false);
+    }
+
+    /**
+     * The folder searched for DEM GeoTIFFs; by default SNAP's DEM folder, where SNAP keeps the tiles it downloads.
+     */
+    public static File getLocalDemDir() {
+        final String dir = preferences().get(LOCAL_DEM_DIR, "").trim();
+        return dir.isEmpty() ? SystemUtils.getAuxDataPath().resolve("dem").toFile() : new File(dir);
+    }
+
+    /**
+     * Applies the cache location and the offline mode. Called once at start-up, before WorldWind creates its file
+     * store; a later change of the cache location needs a restart.
+     */
+    public static void applyAtStartup() {
+        final File cacheDir = getCacheDir();
+        if (cacheDir != null && System.getProperty(WORLDWIND_STORE_PROPERTY) == null) {
+            System.setProperty(WORLDWIND_STORE_PROPERTY, cacheDir.getAbsolutePath());
+        }
+        if (isOffline()) {
+            WorldWind.setOfflineMode(true);
+        }
     }
 
     /**

@@ -435,3 +435,26 @@ Q5 — external data:
   the layer list.
 - Verified on a globe: a KML polygon, a GeoJSON line and the EOX hydrography WMS layer, all listed in the layer
   panel and drawn above the base maps.
+
+Q7 — offline, cache and terrain:
+
+- Options > General > World View: **Work offline** (`WorldWind.setOfflineMode`, applied at start-up and on change);
+  **tile cache folder** (WorldWind's `gov.nasa.worldwind.platform.alluser.store` system property, set by
+  `WWActivator` before WorldWind creates its file store, so a change needs a restart); **local DEM terrain** (folder,
+  default SNAP's `auxdata/dem`).
+- **Deviation — cache size.** WorldWind has no size limit for its tile cache, so instead of a size setting the
+  panel shows the cache's location and size with a **Clear Cache** button (asks first; refuses any folder not named
+  `WorldWindData`).
+- **Deviation — terrain is read with SNAP, not `LocalElevationModel.addElevations(File)`.** WorldWind's own GeoTIFF
+  reader does not decode the DEFLATE-compressed Copernicus tiles. The DEM GeoTIFFs of the folder (up to 64) are read
+  with SNAP's readers in the background, sampled to at most 1024 × 1024 (about 100 m for a 1° 30 m tile), and added
+  as one `LocalElevationModel` to the globes' `CompoundElevationModel`, so WorldWind's elevations remain elsewhere.
+  Only regular lat/lon grids are used (`CrsGeoCoding` on a geographic CRS without rotation; tie-point geo-codings
+  report a geographic CRS too and are rejected). The grid model is the WorldWind-independent `model.DemGrid`.
+- **Addition — Copernicus COG tiles.** SNAP's GeoTIFF reader plug-in declines these tiles in its qualification
+  (`ProductIO.readProduct` returns null) although it reads them, as SNAP's DEM module does; the terrain loader falls
+  back to the GeoTIFF reader directly.
+- Checked headless on the real Copernicus 90 m tile N49 E010: heights 408 m at Ansbach (map 409 m) and 680 m at the
+  Hesselberg (summit 689 m, smoothed by the ~100 m sampling); about 2 s per tile after start-up, mostly DEFLATE
+  decoding. **Not yet seen on a globe:** OpenGL was unavailable on the test machine when this was built (locked
+  session), so the terrain rendering itself still needs a look in the application.

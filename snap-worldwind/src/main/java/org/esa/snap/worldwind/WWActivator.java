@@ -3,6 +3,7 @@ package org.esa.snap.worldwind;
 import gov.nasa.worldwind.util.Logging;
 import org.esa.snap.runtime.Activator;
 import org.esa.snap.runtime.Config;
+import org.esa.snap.worldwind.preferences.WorldWindPreferences;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +22,8 @@ public class WWActivator implements Activator{
 //        Logger logger = Logger.getLogger(Configuration.DEFAULT_LOGGER_NAME);
         String level = Config.instance().preferences().get(WORLDWIND_LOGLEVEL_KEY, "OFF");
         logger.setLevel(Level.parse(level));
+        // cache location and offline mode, before any view creates WorldWind's file store
+        WorldWindPreferences.applyAtStartup();
     }
 
     @Override
