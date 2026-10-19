@@ -36,6 +36,9 @@ public class LayerPanelLayer extends LayerManagerLayer {
 
     public LayerPanelLayer(WorldWindow wwd) {
         super(wwd);
+        // LayerManagerLayer only refreshes its list on select events; also follow layers added, removed or switched
+        // on and off by code (products, data files, WMS layers)
+        wwd.getModel().getLayers().addPropertyChangeListener(event -> update());
     }
 
     private static boolean isHidden(final Layer layer) {

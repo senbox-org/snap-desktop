@@ -287,6 +287,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
             }
         }
 
+        addLeftAligned(controlPanel, new ExternalDataPanel(getWwd()));
         addLeftAligned(controlPanel, new MeasurePanel(getWwd()));
 
         return controlPanel;

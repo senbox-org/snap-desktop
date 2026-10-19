@@ -418,3 +418,20 @@ Q4 — map tools:
 - Verified on a globe from the GL framebuffer: UTM grid with labels, a measured line across the Alps and its profile
   (926–2447 m). Desktop screen captures of the test window came out blank while it was covered on the screen, so
   the smoke test reads the framebuffer instead.
+
+Q5 — external data:
+
+- "External Data" box in the Analysis view: **Add File...** reads KML/KMZ (`KMLRoot` + `KMLController`), shapefiles
+  (`ShapefileLayerFactory`, waited for so that errors are reported) and GeoJSON (worldwindx `GeoJSONLoader`) off the
+  EDT into a layer named after the file; **Remove** takes added layers off the globe. Reading is in
+  `layers.DataFileLayers`, tested on real KML, GeoJSON and shapefile files and on broken ones.
+- **Addition — GeoJSON errors.** `GeoJSONLoader` returns an empty layer for JSON that is not GeoJSON; that is
+  reported as an error instead of adding an invisible layer.
+- **Add WMS...** opens WorldWind's `WMSLayersPanel` per server, in a subclass: the original inserts layers before
+  the place name layer, which no longer exists, i.e. at the bottom under the base maps. Servers come from the
+  preferences (Options > General > World View), default GIBS and EOX; a server typed into the dialog is added.
+- **Fix — layer panel.** WorldWind's `LayerManagerLayer` refreshed its list only on mouse-over, so layers added by
+  code (products, data files, WMS layers) were missing from it; `LayerPanelLayer` now refreshes on every change of
+  the layer list.
+- Verified on a globe: a KML polygon, a GeoJSON line and the EOX hydrography WMS layer, all listed in the layer
+  panel and drawn above the base maps.

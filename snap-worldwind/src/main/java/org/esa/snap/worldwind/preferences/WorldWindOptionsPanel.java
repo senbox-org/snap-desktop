@@ -20,52 +20,82 @@ import org.esa.snap.runtime.Config;
 import org.esa.snap.worldwind.WWWorldViewToolView;
 import org.openide.awt.Mnemonics;
 
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-final class WorldWindOptionsPanel extends javax.swing.JPanel {
+final class WorldWindOptionsPanel extends JPanel {
 
-    private javax.swing.JCheckBox useFlatEarthCheckBox;
+    private final JCheckBox useFlatEarthCheckBox = new JCheckBox();
+    private final JTextArea wmsServersArea = new JTextArea(4, 50);
 
     WorldWindOptionsPanel(final WorldWindOptionsPanelController controller) {
+        super(new GridBagLayout());
         initComponents();
         // listen to changes in form fields and call controller.changed()
         useFlatEarthCheckBox.addItemListener(e -> controller.changed());
+        wmsServersArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                controller.changed();
+            }
 
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                controller.changed();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                controller.changed();
+            }
+        });
     }
 
     private void initComponents() {
-        useFlatEarthCheckBox = new javax.swing.JCheckBox();
         Mnemonics.setLocalizedText(useFlatEarthCheckBox, "Use flat Earth projection");
 
+        final GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.insets = new Insets(2, 2, 2, 2);
+        add(useFlatEarthCheckBox, c);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                            .addComponent(useFlatEarthCheckBox)
-                                                            .addGap(0, 512, Short.MAX_VALUE)
-                                          ).addContainerGap())
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                          .addComponent(useFlatEarthCheckBox)
-                                          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                          .addContainerGap())
-        );
+        c.gridy++;
+        c.insets = new Insets(10, 2, 2, 2);
+        add(new JLabel("WMS servers of \"Add WMS\" in the Analysis view, one address per line:"), c);
+        c.gridy++;
+        c.insets = new Insets(2, 2, 2, 2);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0;
+        add(new JScrollPane(wmsServersArea), c);
+
+        // push everything to the top
+        c.gridy++;
+        c.weighty = 1.0;
+        add(new JPanel(), c);
     }
 
     void load() {
         useFlatEarthCheckBox.setSelected(
                 Config.instance().preferences().getBoolean(WWWorldViewToolView.useFlatEarth, false));
+        wmsServersArea.setText(String.join("\n", WorldWindPreferences.getWmsServers()));
     }
 
     void store() {
         final Preferences preferences = Config.instance().preferences();
         preferences.putBoolean(WWWorldViewToolView.useFlatEarth, useFlatEarthCheckBox.isSelected());
+        WorldWindPreferences.setWmsServers(WorldWindPreferences.parseLines(wmsServersArea.getText()));
 
         try {
             preferences.flush();
