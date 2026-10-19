@@ -1,10 +1,9 @@
 package org.esa.snap.worldwind.productlibrary;
 
+import gov.nasa.worldwind.BasicModel;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.SceneController;
-import gov.nasa.worldwind.WorldWind;
-import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.globes.Earth;
@@ -22,6 +21,7 @@ import gov.nasa.worldwind.util.BasicGLCapabilitiesChooser;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
 import org.esa.snap.worldwind.AppPanel;
+import org.esa.snap.worldwind.LayerConfiguration;
 
 import java.awt.Cursor;
 import java.awt.Point;
@@ -39,8 +39,8 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
     public WorldMap3DPanel(boolean flatEarth, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
         super(null, Configuration.getRequiredGLCapabilities(), new BasicGLCapabilitiesChooser());
 
-        // create the default model as described in the current world wind properties
-        Model model = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
+        // SNAP's layer configuration, not WorldWind's defaults; the globe is set below
+        Model model = new BasicModel(new Earth(), LayerConfiguration.createLayers());
 
         setModel(model);
         if (flatEarth) {

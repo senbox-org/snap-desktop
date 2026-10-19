@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The initial layers of SNAP's WorldWind views, used instead of WorldWind's own config/worldwind.layers.xml so that
+  dead NASA endpoints cannot come back with a WorldWind update. List only services that respond; check them with a
+  GetMap request before adding or changing an entry.
+
+  Layers with actuate="onLoad" are enabled, actuate="onRequest" are disabled until enabled in the layer panel.
+  RetrievePropertiesFromService is false everywhere: the level sets are given here, so no capabilities document has
+  to be downloaded (the GIBS one is several MB).
+
+  Base layers come first, overlays (world map, scale bar, compass) last; SNAP's own layers are inserted between them.
+
+  ${imageryDate} is replaced by the date of the latest complete day of daily imagery when the layers are created.
+-->
+<LayerList>
+    <Layer className="gov.nasa.worldwind.layers.StarsLayer">
+        <Property name="Name" value="Stars"/>
+    </Layer>
+    <Layer className="gov.nasa.worldwind.layers.SkyGradientLayer"/>
+
+    <!-- bundled with WorldWind: works offline -->
+    <Layer className="gov.nasa.worldwind.layers.Earth.BMNGOneImage">
+        <Property name="MinActiveAltitude" value="3e6"/>
+    </Layer>
+
+    <!-- NASA WorldWind servers, checked 2026-10-19 -->
+    <Layer layerType="TiledImageLayer" actuate="onLoad">
+        <DisplayName>Blue Marble May 2004</DisplayName>
+        <Service serviceName="OGC:WMS" version="1.3">
+            <GetCapabilitiesURL>https://worldwind25.arc.nasa.gov/wms</GetCapabilitiesURL>
+            <GetMapURL>https://worldwind25.arc.nasa.gov/wms</GetMapURL>
+            <LayerNames>BlueMarble-200405</LayerNames>
+        </Service>
+        <RetrievePropertiesFromService>false</RetrievePropertiesFromService>
+        <DataCacheName>Earth/BMNGWMS2/BMNG(Shaded + Bathymetry) Tiled - Version 1.1 - 5.2004</DataCacheName>
+        <ImageFormat>image/jpeg</ImageFormat>
+        <AvailableImageFormats>
+            <ImageFormat>image/jpeg</ImageFormat>
+        </AvailableImageFormats>
+        <FormatSuffix>.dds</FormatSuffix>
+        <NumLevels count="5" numEmpty="0"/>
+        <TileOrigin><LatLon units="degrees" latitude="-90" longitude="-180"/></TileOrigin>
+        <LevelZeroTileDelta><LatLon units="degrees" latitude="36" longitude="36"/></LevelZeroTileDelta>
+        <TileSize><Dimension width="512" height="512"/></TileSize>
+        <Sector>
+            <SouthWest><LatLon units="degrees" latitude="-90" longitude="-180"/></SouthWest>
+            <NorthEast><LatLon units="degrees" latitude="90" longitude="180"/></NorthEast>
+        </Sector>
+        <ForceLevelZeroLoads>true</ForceLevelZeroLoads>
+        <RetainLevelZeroTiles>true</RetainLevelZeroTiles>
+        <UseTransparentTextures>false</UseTransparentTextures>
+        <RetrievalTimeouts><ReadTimeout><Time units="milliseconds" value="30000"/></ReadTimeout></RetrievalTimeouts>
+    </Layer>
+
+    <Layer layerType="TiledImageLayer" actuate="onLoad">
+        <DisplayName>i-cubed Landsat</DisplayName>
+        <Service serviceName="OGC:WMS" version="1.3">
+            <GetCapabilitiesURL>https://worldwind25.arc.nasa.gov/wms</GetCapabilitiesURL>
+            <GetMapURL>https://worldwind25.arc.nasa.gov/wms</GetMapURL>
+            <LayerNames>esat</LayerNames>
+        </Service>
+        <RetrievePropertiesFromService>false</RetrievePropertiesFromService>
+        <DataCacheName>Earth/NASA LandSat I3 WMS 2</DataCacheName>
+        <ImageFormat>image/png</ImageFormat>
+        <AvailableImageFormats>
+            <ImageFormat>image/png</ImageFormat>
+        </AvailableImageFormats>
+        <FormatSuffix>.dds</FormatSuffix>
+        <NumLevels count="10" numEmpty="4"/>
+        <TileOrigin><LatLon units="degrees" latitude="-90" longitude="-180"/></TileOrigin>
+        <LevelZeroTileDelta><LatLon units="degrees" latitude="36" longitude="36"/></LevelZeroTileDelta>
+        <TileSize><Dimension width="512" height="512"/></TileSize>
+        <Sector>
+            <SouthWest><LatLon units="degrees" latitude="-90" longitude="-180"/></SouthWest>
+            <NorthEast><LatLon units="degrees" latitude="90" longitude="180"/></NorthEast>
+        </Sector>
+        <UseTransparentTextures>true</UseTransparentTextures>
+        <RetrievalTimeouts><ReadTimeout><Time units="milliseconds" value="30000"/></ReadTimeout></RetrievalTimeouts>
+    </Layer>
+
+    <Layer layerType="TiledImageLayer" actuate="onRequest">
+        <DisplayName>Bing Imagery</DisplayName>
+        <Service serviceName="OGC:WMS" version="1.1.1">
+            <GetCapabilitiesURL>https://worldwind27.arc.nasa.gov/wms/virtualearth</GetCapabilitiesURL>
+            <GetMapURL>https://worldwind27.arc.nasa.gov/wms/virtualearth</GetMapURL>
+            <LayerNames>ve</LayerNames>
+        </Service>
+        <RetrievePropertiesFromService>false</RetrievePropertiesFromService>
+        <DataCacheName>Earth/Bing</DataCacheName>
+        <ImageFormat>image/png</ImageFormat>
+        <AvailableImageFormats>
+            <ImageFormat>image/png</ImageFormat>
+        </AvailableImageFormats>
+        <FormatSuffix>.png</FormatSuffix>
+        <NumLevels count="16" numEmpty="6"/>
+        <TileOrigin><LatLon units="degrees" latitude="-90" longitude="-180"/></TileOrigin>
+        <LevelZeroTileDelta><LatLon units="degrees" latitude="36" longitude="36"/></LevelZeroTileDelta>
+        <TileSize><Dimension width="512" height="512"/></TileSize>
+        <Sector>
+            <SouthWest><LatLon units="degrees" latitude="-90" longitude="-180"/></SouthWest>
+            <NorthEast><LatLon units="degrees" latitude="90" longitude="180"/></NorthEast>
+        </Sector>
+        <ScreenCredit creditType="ScreenImage">
+            <FileName>images/Bing_32x32.png</FileName>
+            <Link>http://www.microsoft.com/maps/assets/docs/terms.aspx/</Link>
+        </ScreenCredit>
+        <RetrievalTimeouts><ReadTimeout><Time units="milliseconds" value="30000"/></ReadTimeout></RetrievalTimeouts>
+    </Layer>
+
+    <Layer layerType="TiledImageLayer" actuate="onRequest">
+        <DisplayName>Earth at Night</DisplayName>
+        <Service serviceName="OGC:WMS" version="1.3">
+            <GetCapabilitiesURL>https://worldwind25.arc.nasa.gov/wms</GetCapabilitiesURL>
+            <GetMapURL>https://worldwind25.arc.nasa.gov/wms</GetMapURL>
+            <LayerNames>earthatnight</LayerNames>
+        </Service>
+        <RetrievePropertiesFromService>false</RetrievePropertiesFromService>
+        <DataCacheName>Earth/EarthAtNight</DataCacheName>
+        <ImageFormat>image/jpeg</ImageFormat>
+        <AvailableImageFormats>
+            <ImageFormat>image/jpeg</ImageFormat>
+        </AvailableImageFormats>
+        <FormatSuffix>.dds</FormatSuffix>
+        <NumLevels count="6" numEmpty="0"/>
+        <TileOrigin><LatLon units="degrees" latitude="-90" longitude="-180"/></TileOrigin>
+        <LevelZeroTileDelta><LatLon units="degrees" latitude="36" longitude="36"/></LevelZeroTileDelta>
+        <TileSize><Dimension width="512" height="512"/></TileSize>
+        <Sector>
+            <SouthWest><LatLon units="degrees" latitude="-90" longitude="-180"/></SouthWest>
+            <NorthEast><LatLon units="degrees" latitude="90" longitude="180"/></NorthEast>
+        </Sector>
+        <UseTransparentTextures>false</UseTransparentTextures>
+        <RetrievalTimeouts><ReadTimeout><Time units="milliseconds" value="30000"/></ReadTimeout></RetrievalTimeouts>
+    </Layer>
+
+    <!-- overlays -->
+    <Layer className="gov.nasa.worldwind.layers.WorldMapLayer"/>
+    <Layer className="gov.nasa.worldwind.layers.ScalebarLayer"/>
+    <Layer className="gov.nasa.worldwind.layers.CompassLayer"/>
+</LayerList>

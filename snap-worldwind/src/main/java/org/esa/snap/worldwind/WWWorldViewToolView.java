@@ -103,7 +103,7 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
             for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
                 if (layerDescriptor.showInWorldMapToolView()) {
                     final WWLayer wwLayer = layerDescriptor.createWWLayer();
-                    layerList.add(wwLayer);
+                    LayerConfiguration.insertBelowOverlays(layerList, wwLayer);
 
                     wwLayer.setOpacity(1.0);
                     wwLayer.setPickEnabled(false);

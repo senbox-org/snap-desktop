@@ -15,13 +15,10 @@
  */
 package org.esa.snap.worldwind;
 
-import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
-import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.Product;
@@ -113,18 +110,6 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
         return mainPane;
     }
 
-    private static void insertTiledLayer(final WorldWindow wwd, final Layer layer) {
-        int position = 0;
-        final LayerList layers = wwd.getModel().getLayers();
-        for (Layer l : layers) {
-            if (l instanceof PlaceNameLayer) {
-                position = layers.indexOf(l);
-                break;
-            }
-        }
-        layers.add(position, layer);
-    }
-
     private void initialize(final JPanel mainPane) {
         SystemUtils.LOG.fine("INITIALIZE IN WWAnalysisToolView CALLED includeProductPanel " + includeProductPanel);
 
@@ -144,7 +129,7 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
             for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
                 if (layerDescriptor.showIn3DToolView()) {
                     final WWLayer wwLayer = layerDescriptor.createWWLayer();
-                    insertTiledLayer(getWwd(), wwLayer);
+                    LayerConfiguration.insertBelowOverlays(layerList, wwLayer);
 
                     wwLayer.setOpacity(0.8);
                     // CHANGED: otherwise the objects in the product layer won't react to the select listener

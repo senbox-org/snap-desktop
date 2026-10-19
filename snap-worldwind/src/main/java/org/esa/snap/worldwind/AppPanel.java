@@ -15,9 +15,8 @@
  */
 package org.esa.snap.worldwind;
 
+import gov.nasa.worldwind.BasicModel;
 import gov.nasa.worldwind.Model;
-import gov.nasa.worldwind.WorldWind;
-import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.EarthFlat;
@@ -44,7 +43,7 @@ import java.awt.BorderLayout;
  */
 public class AppPanel extends JPanel {
 
-    // display name of the Landsat layer in the WorldWind 2.2.1 layer configuration (LandsatI3WMSLayer2.xml)
+    // display name of the Landsat layer in SNAP's layer configuration
     public static final String LANDSAT_LAYER_NAME = "i-cubed Landsat";
 
     private WorldWindowGLCanvas wwd = null;
@@ -56,16 +55,10 @@ public class AppPanel extends JPanel {
 
         this.wwd = new WorldWindowGLCanvas(shareWith);
 
-        // Create the default model as described in the current worldwind properties.
-        final Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
+        // SNAP's layer configuration, not WorldWind's defaults
+        final Model m = new BasicModel(flatWorld ? new EarthFlat() : new Earth(), LayerConfiguration.createLayers());
         this.wwd.setModel(m);
-        if (flatWorld) {
-            m.setGlobe(new EarthFlat());
-            this.wwd.setView(new FlatOrbitView());
-        } else {
-            m.setGlobe(new Earth());
-            this.wwd.setView(new BasicOrbitView());
-        }
+        this.wwd.setView(flatWorld ? new FlatOrbitView() : new BasicOrbitView());
 
         if (removeExtraLayers) {
             final LayerList layerList = m.getLayers();
@@ -127,6 +120,7 @@ public class AppPanel extends JPanel {
         }
         final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
         fixingPlaceNameLayer.setEnabled(false);
+        LayerConfiguration.markOverlay(fixingPlaceNameLayer);
         layerList.add(fixingPlaceNameLayer);
     }
 

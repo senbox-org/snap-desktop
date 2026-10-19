@@ -362,3 +362,20 @@ F3 — vector data:
 - **Addition — CRS.** Features whose CRS differs from the scene's model CRS are first transformed to the model
   CRS with GeoTools.
 - Hover info is a screen annotation next to the mouse, shown on rollover in the Analysis view.
+
+### 7b. Quick wins (2026-10-19)
+
+Q2 — SNAP layer configuration:
+
+- **Correction — configuration key.** §5 named a `gov.nasa.worldwind.avkey.LayersConfigurationDocument` key; WorldWind
+  2.2.1 has no such key (`BasicModel` reads only `LayerClassNames` or the `./LayerList` element of the global
+  configuration). Instead the views build their model as `new BasicModel(globe, LayerConfiguration.createLayers())`
+  from `org/esa/snap/worldwind/config/snap-worldwind-layers.xml`; WorldWind's global configuration is untouched.
+- **Endpoints checked 2026-10-19** with GetMap requests: worldwind25 (Blue Marble, i-cubed Landsat, Earth at Night),
+  worldwind27 (Bing) and worldwind26 (elevations) answer; worldwind22 (boundaries, place names), worldwind20 (OSM) and
+  the USGS NAIP server do not, and are not configured. A test fails if one of the dead hosts comes back.
+- **Addition — no capabilities downloads.** All layers set `RetrievePropertiesFromService` to false with their level
+  sets in the file.
+- **Addition — layer order.** SNAP's layers used to be inserted before the NASA place name layer, which no longer
+  exists; they are now inserted below the overlays (world map, scale bar, compass, layer panel, place names), marked
+  with `LayerConfiguration.OVERLAY`.
