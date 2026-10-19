@@ -10,6 +10,7 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.ui.product.ProductSceneView;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.esa.snap.worldwind.model.GeoBounds;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -88,6 +89,47 @@ public class ProductImageLayerTest {
         assertFalse(layer.hasImage(product));
         assertEquals("[p=true, p=false]", shown.toString());
         verify(view).removePropertyChangeListener(eq(ProductSceneView.PROPERTY_NAME_IMAGE_INFO), any());
+    }
+
+    @Test
+    public void testSwitchingTheLayerOffShowsTheQuicklookAgain() throws Exception {
+        final ProductImageLayer layer = new ProductImageLayer();
+        final List<String> shown = new ArrayList<>();
+        layer.setImageShownListener((product, isShown) -> shown.add(String.valueOf(isShown)));
+        final Product product = createProduct("p", true);
+        final ProductSceneView view = mockView(product.getBand("a"));
+
+        onEDT(() -> {
+            layer.addProduct(product, null);
+            layer.setSelectedSceneView(view);
+        });
+        assertTrue(layer.awaitPendingImages(10000));
+        assertEquals("[true]", shown.toString());
+
+        onEDT(() -> layer.setEnabled(false));
+        assertEquals("the quicklook comes back", "[true, false]", shown.toString());
+        onEDT(() -> layer.setEnabled(false));
+        assertEquals("no change", "[true, false]", shown.toString());
+        onEDT(() -> layer.setEnabled(true));
+        assertEquals("[true, false, true]", shown.toString());
+    }
+
+    @Test
+    public void testImageShownWhileTheLayerIsOffKeepsTheQuicklook() throws Exception {
+        final ProductImageLayer layer = new ProductImageLayer();
+        final List<String> shown = new ArrayList<>();
+        layer.setImageShownListener((product, isShown) -> shown.add(String.valueOf(isShown)));
+        final Product product = createProduct("p", true);
+        final ProductSceneView view = mockView(product.getBand("a"));
+
+        onEDT(() -> {
+            layer.setEnabled(false);
+            layer.addProduct(product, null);
+            layer.setSelectedSceneView(view);
+        });
+        assertTrue(layer.awaitPendingImages(10000));
+        assertTrue(layer.hasImage(product));
+        assertTrue("the quicklook stays", shown.isEmpty());
     }
 
     @Test
@@ -216,8 +258,12 @@ public class ProductImageLayerTest {
         assertEquals(49.5, tiledLayer.getLevels().getSector().getMinLatitude().degrees, 0.011);
         assertEquals(11.0, tiledLayer.getLevels().getSector().getMaxLongitude().degrees, 0.011);
         assertEquals(512, tiledLayer.getLevels().getFirstLevel().getTileWidth());
-        // 0.01 degree pixels at 50 N need more levels than a 1 degree product
-        assertTrue(tiledLayer.getLevels().getNumLevels() >= 5);
+        // 0.01 degree pixels at 50 N: 0.0064 degree of arc, so one level more than 0.01 degree pixels would get
+        assertEquals(GeoBounds.numLevels(0.01 * Math.cos(Math.toRadians(50)), ProductImageTiledLayer.LEVEL_ZERO_DELTA_DEG,
+                                         ProductImageTiledLayer.TILE_SIZE, ProductImageTiledLayer.MAX_LEVELS),
+                     tiledLayer.getLevels().getNumLevels(), 1);
+        assertTrue(tiledLayer.getLevels().getNumLevels() > GeoBounds.numLevels(0.01,
+                ProductImageTiledLayer.LEVEL_ZERO_DELTA_DEG, ProductImageTiledLayer.TILE_SIZE, ProductImageTiledLayer.MAX_LEVELS));
         // every image has its own tile cache
         assertFalse(tiledLayer.getLevels().getFirstLevel().getCacheName().equals(
                 ProductImageLayer.createTiledLayer(new RasterDataNode[]{product.getBand("a")}, null)

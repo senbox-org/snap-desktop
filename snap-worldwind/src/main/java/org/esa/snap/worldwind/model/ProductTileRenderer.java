@@ -44,6 +44,8 @@ public class ProductTileRenderer {
     private final int rasterWidth;
     private final int rasterHeight;
     private final MultiLevelSource imageSource;
+    // to skip areas that cannot touch the raster before inverting the geo-coding pixel by pixel; may be null
+    private final Footprint footprint;
 
     /**
      * @param rasters   the rasters of an image view: one, or three for RGB
@@ -63,6 +65,7 @@ public class ProductTileRenderer {
         this.rasterWidth = rasterWidth;
         this.rasterHeight = rasterHeight;
         this.imageSource = imageSource;
+        this.footprint = Footprint.of(geoCoding, rasterWidth, rasterHeight);
     }
 
     private static MultiLevelSource createImageSource(final RasterDataNode[] rasters, final ImageInfo imageInfo) {
@@ -96,6 +99,9 @@ public class ProductTileRenderer {
      */
     public BufferedImage render(final double minLat, final double maxLat, final double minLon, final double maxLon,
                                 final int width, final int height) {
+        if (footprint != null && !footprint.mayIntersect(minLat, maxLat, minLon, maxLon)) {
+            return null;
+        }
         final double dLat = (maxLat - minLat) / height;
         final double dLon = (maxLon - minLon) / width;
 
@@ -133,11 +139,18 @@ public class ProductTileRenderer {
                 // the last row and column of cells include their far edge
                 final int yEnd = r1 == nodeY.length - 1 ? y1 : y1 - 1;
                 final int xEnd = c1 == nodeX.length - 1 ? x1 : x1 - 1;
+                // a cell with nodes outside the geo-coding that cannot touch the raster needs no exact pixels
+                final boolean outside = exact && footprint != null &&
+                        !footprint.mayIntersect(maxLat - (yEnd + 1) * dLat, maxLat - y0 * dLat,
+                                                minLon + x0 * dLon, minLon + (xEnd + 1) * dLon);
                 for (int y = y0; y <= yEnd; y++) {
                     final double fy = y1 > y0 ? (y - y0) / (double) (y1 - y0) : 0;
                     for (int x = x0; x <= xEnd; x++) {
                         final int i = y * width + x;
-                        if (exact) {
+                        if (outside) {
+                            px[i] = Double.NaN;
+                            py[i] = Double.NaN;
+                        } else if (exact) {
                             // a node outside the geo-coding (swath edge): compute this pixel exactly
                             geoPos.setLocation(maxLat - (y + 0.5) * dLat, minLon + (x + 0.5) * dLon);
                             final PixelPos pp = toPixel(geoPos, pixelPos);

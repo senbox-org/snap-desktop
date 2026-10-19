@@ -520,3 +520,21 @@ Q8 — polygon area of interest:
   products than drawn may be found. Stated in the `PolygonArea` javadoc.
 - Known, not changed: `Rectangle2D.equals(polygonArea)` compares bounds only (the JDK's method), so the equality is
   not symmetric; no code compares areas of interest.
+
+F1 — full-resolution display:
+
+- **Cost of tiles outside the product.** A cell of the inverse-geocoding grid whose nodes fall outside the
+  geo-coding was inverted pixel by pixel; a 512 tile wholly outside a swath cost 262 144 inversions (most tiles of a
+  product crossing the antimeridian, whose bounds are the whole longitude range), and came back when WorldWind
+  forgot the absent tile. The renderer now builds the product's outline once (`model.Footprint`, 400 boundary points,
+  longitudes unwrapped across the antimeridian) and skips tiles and cells that cannot touch it, with a margin for the
+  curvature between boundary points. Outlines around a pole or with invalid boundary positions give no footprint,
+  and every pixel is tested as before. Test: a tile outside a swath now costs no pixel inversion.
+- **Own render threads.** Product tiles were rendered on WorldWind's shared task service (4 threads, also loading
+  base maps and elevations). They now run on their own low-priority pool (up to 4 threads), nearest tiles first, at
+  most 64 queued; a tile requested again while queued is not rendered twice.
+- **Failures visible.** The first render failure of an image is logged as a WARNING, further ones at FINE.
+- **Quicklook and layer state.** The quicklook is only hidden while the "Product Images" layer is on: switching
+  the layer off shows the quicklooks again, and an image built while the layer is off does not hide it.
+- **Tests for the tile adapter** (`ProductImageTiledLayerTest`, without OpenGL): rendered, empty, failing and
+  disposed tiles, failure after disposal, duplicate requests. The level-count test now checks the exact count.

@@ -249,10 +249,25 @@ public class ProductImageLayer extends BaseLayer implements WWLayer {
             view.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_IMAGE_INFO, image.imageInfoListener);
         }
 
-        if (!wasShown && imageShownListener != null) {
+        // the quicklook is only hidden while the full-resolution image can be seen
+        if (!wasShown && imageShownListener != null && isEnabled()) {
             imageShownListener.accept(product, true);
         }
         redraw();
+    }
+
+    /**
+     * Switching the layer off shows the quicklooks again, switching it on hides those of products with an image.
+     */
+    @Override
+    public void setEnabled(final boolean enabled) {
+        final boolean changed = enabled != isEnabled();
+        super.setEnabled(enabled);
+        if (changed && imageShownListener != null && images != null) {
+            for (Product product : new ArrayList<>(images.keySet())) {
+                imageShownListener.accept(product, enabled);
+            }
+        }
     }
 
     private void removeImage(final Product product) {

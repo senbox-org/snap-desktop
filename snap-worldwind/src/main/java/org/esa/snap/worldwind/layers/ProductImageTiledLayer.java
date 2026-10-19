@@ -28,12 +28,19 @@ import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.layers.TextureTile;
 import gov.nasa.worldwind.layers.TiledImageLayer;
 import gov.nasa.worldwind.render.DrawContext;
+import gov.nasa.worldwind.util.TileKey;
 import gov.nasa.worldwind.util.LevelSet;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.worldwind.model.GeoBounds;
 import org.esa.snap.worldwind.model.ProductTileRenderer;
 
 import java.awt.image.BufferedImage;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -48,10 +55,26 @@ class ProductImageTiledLayer extends TiledImageLayer {
     static final double LEVEL_ZERO_DELTA_DEG = 36;
     static final int MAX_LEVELS = 22;
 
+    /**
+     * Tiles waiting for the render threads at most; further requests wait for the next frame, which asks again for
+     * the tiles still needed.
+     */
+    static final int MAX_QUEUED_TILES = 64;
+
     private static final AtomicInteger instanceCount = new AtomicInteger();
+
+    /**
+     * Product tiles are rendered on their own threads, nearest tiles first: WorldWind's shared task service (4 threads)
+     * also loads the base maps and elevations, which slow product tiles would hold up.
+     */
+    private static final ThreadPoolExecutor RENDER_EXECUTOR = createRenderExecutor();
 
     private final ProductTileRenderer renderer;
     private volatile boolean disposed;
+    // tiles queued or being rendered, so that a tile requested again in the next frame is not rendered twice
+    private final Set<TileKey> pending = ConcurrentHashMap.newKeySet();
+    // the first render failure of the layer is logged as a warning, later ones at FINE
+    private final AtomicBoolean failureLogged = new AtomicBoolean();
 
     ProductImageTiledLayer(final ProductTileRenderer renderer, final GeoBounds bounds, final double resolutionDeg) {
         super(createLevelSet(bounds, resolutionDeg));
@@ -62,6 +85,17 @@ class ProductImageTiledLayer extends TiledImageLayer {
         // level 0 tiles are rendered like any other, on a background thread
         setForceLevelZeroLoads(false);
         setRetainLevelZeroTiles(false);
+    }
+
+    private static ThreadPoolExecutor createRenderExecutor() {
+        final int threads = Math.max(1, Math.min(4, Runtime.getRuntime().availableProcessors() / 2));
+        final AtomicInteger threadCount = new AtomicInteger();
+        return new ThreadPoolExecutor(threads, threads, 30, TimeUnit.SECONDS, new PriorityBlockingQueue<>(), runnable -> {
+            final Thread thread = new Thread(runnable, "WorldWind product tiles " + threadCount.incrementAndGet());
+            thread.setDaemon(true);
+            thread.setPriority(Thread.MIN_PRIORITY);
+            return thread;
+        });
     }
 
     static LevelSet createLevelSet(final GeoBounds bounds, final double resolutionDeg) {
@@ -78,7 +112,7 @@ class ProductImageTiledLayer extends TiledImageLayer {
                         new LatLon(Angle.fromDegrees(LEVEL_ZERO_DELTA_DEG), Angle.fromDegrees(LEVEL_ZERO_DELTA_DEG)));
         params.setValue(AVKey.TILE_ORIGIN, new LatLon(Angle.NEG90, Angle.NEG180));
         params.setValue(AVKey.SECTOR, Sector.fromDegrees(bounds.minLat, bounds.maxLat, bounds.minLon, bounds.maxLon));
-        // a tile without data stays without data: never request it again
+        // a tile without data stays without data; WorldWind's absent list still forgets it after a while
         params.setValue(AVKey.MAX_ABSENT_TILE_ATTEMPTS, 1);
         params.setValue(AVKey.MIN_ABSENT_TILE_CHECK_INTERVAL, Integer.MAX_VALUE);
         return new LevelSet(params);
@@ -105,12 +139,30 @@ class ProductImageTiledLayer extends TiledImageLayer {
         if (referencePoint != null) {
             tile.setPriority(centroid.distanceTo3(referencePoint));
         }
-        getRequestQ().add(new RenderTask(tile, this));
+        getRequestQ().add(createRenderTask(tile));
     }
 
     @Override
     protected void forceTextureLoad(final TextureTile tile) {
         // tiles are only rendered on background threads
+    }
+
+    @Override
+    protected void sendRequests() {
+        Runnable task = getRequestQ().poll();
+        while (task != null) {
+            if (RENDER_EXECUTOR.getQueue().size() >= MAX_QUEUED_TILES) {
+                break; // asked again in the next frame if still needed
+            }
+            submit(task);
+            task = getRequestQ().poll();
+        }
+    }
+
+    void submit(final Runnable task) {
+        if (task instanceof RenderTask && pending.add(((RenderTask) task).tile.getTileKey())) {
+            RENDER_EXECUTOR.execute(task);
+        }
     }
 
     /**
@@ -119,22 +171,48 @@ class ProductImageTiledLayer extends TiledImageLayer {
      * @return true if the tile has data
      */
     boolean loadTile(final TextureTile tile) {
-        final Sector sector = tile.getSector();
-        final BufferedImage image = renderer.render(sector.getMinLatitude().degrees, sector.getMaxLatitude().degrees,
-                                                    sector.getMinLongitude().degrees, sector.getMaxLongitude().degrees,
-                                                    tile.getWidth(), tile.getHeight());
+        final BufferedImage image = renderTile(tile);
         if (image == null) {
             getLevels().markResourceAbsent(tile);
             return false;
         }
+        if (disposed) {
+            return false;
+        }
+        installTexture(tile, image);
+        return true;
+    }
+
+    BufferedImage renderTile(final TextureTile tile) {
+        final Sector sector = tile.getSector();
+        return renderer.render(sector.getMinLatitude().degrees, sector.getMaxLatitude().degrees,
+                               sector.getMinLongitude().degrees, sector.getMaxLongitude().degrees,
+                               tile.getWidth(), tile.getHeight());
+    }
+
+    /**
+     * Turns a rendered tile into texture data for WorldWind (needs the OpenGL profile; replaced in tests).
+     */
+    void installTexture(final TextureTile tile, final BufferedImage image) {
         final TextureData textureData = AWTTextureIO.newTextureData(Configuration.getMaxCompatibleGLProfile(),
                                                                      image, isUseMipMaps());
         tile.setTextureData(textureData);
         TextureTile.getMemoryCache().add(tile.getTileKey(), tile);
-        return true;
     }
 
-    private static class RenderTask implements Runnable, Comparable<RenderTask> {
+    void renderFailed(final TextureTile tile, final Exception e) {
+        getLevels().markResourceAbsent(tile);
+        // a systematic failure would otherwise leave the image blank without trace in the log
+        final Level level = failureLogged.compareAndSet(false, true) ? Level.WARNING : Level.FINE;
+        SystemUtils.LOG.log(level, "WorldWind: unable to render a tile of the product image " + getName() +
+                                   (level == Level.WARNING ? " (further failures of this image are logged at FINE)" : ""), e);
+    }
+
+    RenderTask createRenderTask(final TextureTile tile) {
+        return new RenderTask(tile, this);
+    }
+
+    static class RenderTask implements Runnable, Comparable<RenderTask> {
 
         private final TextureTile tile;
         private final ProductImageTiledLayer layer;
@@ -146,19 +224,20 @@ class ProductImageTiledLayer extends TiledImageLayer {
 
         @Override
         public void run() {
-            if (Thread.currentThread().isInterrupted() || layer.isDisposed()) {
-                return;
-            }
             try {
+                if (Thread.currentThread().isInterrupted() || layer.isDisposed()) {
+                    return;
+                }
                 if (layer.loadTile(tile) && !layer.isDisposed()) {
                     layer.firePropertyChange(AVKey.LAYER, null, layer);
                 }
             } catch (Exception e) {
-                // e.g. the product was closed while the tile was rendered
+                // a product closed while its tile was rendered is not an error
                 if (!layer.isDisposed()) {
-                    SystemUtils.LOG.log(Level.FINE, "WorldWind: unable to render tile " + tile, e);
-                    layer.getLevels().markResourceAbsent(tile);
+                    layer.renderFailed(tile, e);
                 }
+            } finally {
+                layer.pending.remove(tile.getTileKey());
             }
         }
 
