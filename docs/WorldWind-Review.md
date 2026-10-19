@@ -538,3 +538,13 @@ F1 — full-resolution display:
   the layer off shows the quicklooks again, and an image built while the layer is off does not hide it.
 - **Tests for the tile adapter** (`ProductImageTiledLayerTest`, without OpenGL): rendered, empty, failing and
   disposed tiles, failure after disposal, duplicate requests. The level-count test now checks the exact count.
+
+F2 — image view sync:
+
+- **OCN and ETAD products.** The view gave a product either the layers intended for it or the suitable ones, so
+  Sentinel-1 OCN and ETAD products (which have their own intended layers in microwave-toolbox) got no pins, cursor,
+  vector data or full-resolution image. Layers that show something of every product now say so
+  (`WWLayer.isComplementary`) and are added to the intended layers; the default outline layer is still replaced.
+- **Round-trip test.** The check that rejects positions an extrapolating geo-coding maps into the raster is now
+  tested with a geo-coding that returns an in-raster pixel for a far-away position (before, only the bounds check was
+  exercised).

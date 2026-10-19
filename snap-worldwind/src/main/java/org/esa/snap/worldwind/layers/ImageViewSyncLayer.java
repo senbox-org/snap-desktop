@@ -102,6 +102,11 @@ public class ImageViewSyncLayer extends BaseLayer implements WWLayer {
     }
 
     @Override
+    public boolean isComplementary() {
+        return true;
+    }
+
+    @Override
     public Suitability getSuitability(final Product product) {
         return Suitability.SUITABLE;
     }

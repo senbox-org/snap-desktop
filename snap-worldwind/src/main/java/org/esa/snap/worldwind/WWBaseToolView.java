@@ -276,19 +276,31 @@ public abstract class WWBaseToolView extends ToolTopComponent implements WWView 
         return wwLayers;
     }
 
-    private List<WWLayer> getSuitableLayers(List<WWLayer> wwLayers, final Product product) {
+    /**
+     * The layers that show a product: the layers intended for it, or else the suitable ones; complementary layers
+     * (pins, vector data, full-resolution images) show it in either case.
+     */
+    static List<WWLayer> getSuitableLayers(List<WWLayer> wwLayers, final Product product) {
 
         final List<WWLayer> intendedLayers = new ArrayList<>();
         final List<WWLayer> suitableLayers = new ArrayList<>();
+        final List<WWLayer> complementaryLayers = new ArrayList<>();
         for (WWLayer wwLayer : wwLayers) {
             BaseLayer.Suitability suitability = wwLayer.getSuitability(product);
             if (suitability == BaseLayer.Suitability.INTENDED) {
                 intendedLayers.add(wwLayer);
             } else if (suitability == BaseLayer.Suitability.SUITABLE) {
                 suitableLayers.add(wwLayer);
+                if (wwLayer.isComplementary()) {
+                    complementaryLayers.add(wwLayer);
+                }
             }
         }
-        return intendedLayers.isEmpty() ? suitableLayers : intendedLayers;
+        if (intendedLayers.isEmpty()) {
+            return suitableLayers;
+        }
+        intendedLayers.addAll(complementaryLayers);
+        return intendedLayers;
     }
 
     public void setProducts(final Product[] products) {
