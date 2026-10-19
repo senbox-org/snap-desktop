@@ -548,3 +548,20 @@ F2 — image view sync:
 - **Round-trip test.** The check that rejects positions an extrapolating geo-coding maps into the raster is now
   tested with a geo-coding that returns an in-raster pixel for a far-away position (before, only the bounds check was
   exercised).
+
+F3 — vector data:
+
+- **Vertex limit inside features.** The 100 000-vertex limit was checked only between features, so one huge feature
+  (a coastline, an imported polygon) was converted in full; it now stops in the middle of a feature. The
+  densification of one edge is limited to 256 intermediate points (an edge across a huge raster gave thousands).
+- **No silent misplacement.** When no transformation from the features' CRS to the product's exists, the node was
+  drawn with untransformed coordinates (e.g. degrees read as pixels); it is now not shown, with a warning. A feature
+  that fails to transform is logged as a warning (further ones at FINE).
+- **Bursts of feature events.** Every added feature fires an event, and each event converted the whole node again
+  (quadratic for an import). The conversion is now submitted only after the EDT has handled the pending events, and
+  a conversion already superseded when it starts is skipped: 200 features added one by one convert the node at most
+  three times (test).
+- New tests: the limit inside one feature, bounded densification, features in another CRS (World Mercator) placed
+  through the transformation, features in a CRS that cannot be transformed.
+- Test fix: `WWProductManagerListenerTest` assumed the worker thread would add and remove the product before the EDT
+  handled the add, which failed about one run in three; the EDT is now held until both events are queued.

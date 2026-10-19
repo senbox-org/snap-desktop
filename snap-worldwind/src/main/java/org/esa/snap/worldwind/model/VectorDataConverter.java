@@ -31,6 +31,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
@@ -93,14 +94,28 @@ public class VectorDataConverter {
         }
     }
 
+    /**
+     * Intermediate points per edge at most: long edges are densified to follow the geo-coding, but an edge across a
+     * huge raster must not make a single feature unbounded.
+     */
+    static final int MAX_EDGE_STEPS = 256;
+
     private final GeoCoding geoCoding;
     private final AffineTransform modelToImage;
+    private final int maxVertices;
     private int vertexCount;
+    // the vertex limit was reached: conversion stops, also in the middle of a feature
+    private boolean truncated;
 
     /**
      * @throws IllegalArgumentException if the product has no geo-coding
      */
     public VectorDataConverter(final Product product) {
+        this(product, MAX_VERTICES);
+    }
+
+    VectorDataConverter(final Product product, final int maxVertices) {
+        this.maxVertices = maxVertices;
         geoCoding = product.getSceneGeoCoding();
         if (geoCoding == null || !geoCoding.canGetGeoPos()) {
             throw new IllegalArgumentException("Product " + product.getName() + " has no geo-coding");
@@ -129,14 +144,22 @@ public class VectorDataConverter {
      */
     public List<Shape> convert(final VectorDataNode node) {
         vertexCount = 0;
+        truncated = false;
         final List<Shape> shapes = new ArrayList<>();
-        final MathTransform featureToModel = findFeatureToModelTransform(node);
+        final MathTransform featureToModel;
+        try {
+            featureToModel = findFeatureToModelTransform(node);
+        } catch (FactoryException e) {
+            // drawing the coordinates as if they were model coordinates would put them in the wrong place
+            SystemUtils.LOG.log(Level.WARNING, "WorldWind: vector data " + node.getName() + " is not shown: no " +
+                                               "transformation from its coordinate reference system to the product's", e);
+            return shapes;
+        }
         final String defaultCss = node.getDefaultStyleCss();
         final SimpleFeature[] features = node.getFeatureCollection().toArray(new SimpleFeature[0]);
+        boolean transformFailureLogged = false;
         for (SimpleFeature feature : features) {
-            if (vertexCount >= MAX_VERTICES) {
-                SystemUtils.LOG.warning("WorldWind: vector data " + node.getName() + " has more than " + MAX_VERTICES +
-                                                " vertices; the rest is not shown");
+            if (truncated) {
                 break;
             }
             final Object value = feature.getDefaultGeometry();
@@ -148,31 +171,42 @@ public class VectorDataConverter {
                 try {
                     geometry = JTS.transform(geometry, featureToModel);
                 } catch (Exception e) {
-                    SystemUtils.LOG.log(Level.FINE, "WorldWind: unable to transform feature " + feature.getID(), e);
+                    SystemUtils.LOG.log(transformFailureLogged ? Level.FINE : Level.WARNING,
+                                        "WorldWind: feature " + feature.getID() + " of " + node.getName() +
+                                        " is not shown: it cannot be transformed to the product's coordinates", e);
+                    transformFailureLogged = true;
                     continue;
                 }
             }
             final Style style = parseStyle(defaultCss, styleCss(feature));
             convert(geometry, feature.getID(), style, shapes);
         }
+        if (truncated) {
+            SystemUtils.LOG.warning("WorldWind: vector data " + node.getName() + " has more than " + maxVertices +
+                                    " vertices; the rest is not shown");
+        }
         return shapes;
+    }
+
+    boolean isTruncated() {
+        return truncated;
+    }
+
+    int getVertexCount() {
+        return vertexCount;
     }
 
     /**
      * @return the transform from the features' CRS to the model CRS, or null if they are the same
+     * @throws FactoryException if the features' CRS cannot be transformed to the model CRS
      */
-    private MathTransform findFeatureToModelTransform(final VectorDataNode node) {
+    private MathTransform findFeatureToModelTransform(final VectorDataNode node) throws FactoryException {
         final CoordinateReferenceSystem featureCrs = node.getFeatureType().getCoordinateReferenceSystem();
         final CoordinateReferenceSystem modelCrs = Product.findModelCRS(geoCoding);
         if (featureCrs == null || modelCrs == null || CRS.equalsIgnoreMetadata(featureCrs, modelCrs)) {
             return null;
         }
-        try {
-            return CRS.findMathTransform(featureCrs, modelCrs, true);
-        } catch (Exception e) {
-            SystemUtils.LOG.log(Level.FINE, "WorldWind: no transform from the CRS of " + node.getName(), e);
-            return null;
-        }
+        return CRS.findMathTransform(featureCrs, modelCrs, true);
     }
 
     private static String styleCss(final SimpleFeature feature) {
@@ -203,7 +237,9 @@ public class VectorDataConverter {
             }
         } else if (geometry instanceof Point) {
             final double[] pos = toGeo(((Point) geometry).getX(), ((Point) geometry).getY());
-            if (pos != null) {
+            if (pos != null && vertexCount >= maxVertices) {
+                truncated = true;
+            } else if (pos != null) {
                 final List<List<double[]>> parts = new ArrayList<>();
                 final List<double[]> point = new ArrayList<>();
                 point.add(pos);
@@ -250,11 +286,14 @@ public class VectorDataConverter {
         List<double[]> current = new ArrayList<>();
         Point2D previous = null;
         for (Coordinate coordinate : coordinates) {
+            if (truncated) {
+                break;
+            }
             final Point2D pixel = modelToImage.transform(new Point2D.Double(coordinate.x, coordinate.y), null);
             if (previous != null) {
                 // intermediate points of a long edge
                 final double length = previous.distance(pixel);
-                final int steps = (int) Math.ceil(length / DENSIFY_PIXELS);
+                final int steps = Math.min(MAX_EDGE_STEPS, (int) Math.ceil(length / DENSIFY_PIXELS));
                 for (int s = 1; s < steps; s++) {
                     final double f = s / (double) steps;
                     current = addVertex(previous.getX() + (pixel.getX() - previous.getX()) * f,
@@ -275,6 +314,10 @@ public class VectorDataConverter {
      */
     private List<double[]> addVertex(final double x, final double y, final List<double[]> current,
                                      final List<List<double[]>> lines) {
+        if (vertexCount >= maxVertices) {
+            truncated = true;
+            return current;
+        }
         final double[] pos = toGeoFromPixel(x, y);
         if (pos == null) {
             // the line ends here; a single vertex is not a line

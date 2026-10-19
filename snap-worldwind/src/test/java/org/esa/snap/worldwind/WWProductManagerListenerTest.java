@@ -54,13 +54,20 @@ public class WWProductManagerListenerTest {
         productManager.addListener(new WWProductManagerListener(view, () -> productManager));
         final Product product = new Product("target", "T", 10, 10);
 
-        // what SingleTargetProductDialog does with its target product
+        // what SingleTargetProductDialog does with its target product; the EDT is held until both events are
+        // queued, as when it is busy, so that the add is handled after the product is gone
         final Thread worker = new Thread(() -> {
             productManager.addProduct(product);
             productManager.removeProduct(product);
         });
-        worker.start();
-        worker.join();
+        SwingUtilities.invokeAndWait(() -> {
+            worker.start();
+            try {
+                worker.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
         SwingUtilities.invokeAndWait(() -> { });
 
         // the product was already gone when the add was processed, so it is never added

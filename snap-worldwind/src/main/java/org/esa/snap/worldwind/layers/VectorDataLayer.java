@@ -79,6 +79,13 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
     private final Map<VectorDataNode, List<Renderable>> shapes = new IdentityHashMap<>();
     // the latest requested conversion of each node; an older conversion is discarded
     private final Map<VectorDataNode, Integer> generations = new IdentityHashMap<>();
+    // the same, readable by the conversion thread: a conversion that is already superseded when it starts is skipped,
+    // so that a burst of feature events (one per added feature) converts the node once, not once per event
+    private final Map<VectorDataNode, Integer> requestedGenerations = Collections.synchronizedMap(new IdentityHashMap<>());
+    // conversions actually run, for tests
+    private final AtomicInteger conversions = new AtomicInteger();
+    // nodes whose conversion is about to be submitted (EDT only)
+    private final Set<VectorDataNode> scheduledNodes = Collections.newSetFromMap(new IdentityHashMap<>());
     private final AtomicInteger pendingTasks = new AtomicInteger();
     private final ScreenAnnotation infoAnnotation;
     private WorldWindowGLCanvas wwd;
@@ -138,6 +145,7 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
         for (VectorDataNode node : new ArrayList<>(generations.keySet())) {
             if (node.getProduct() == product || node.getProduct() == null) {
                 generations.remove(node);
+                requestedGenerations.remove(node);
             }
         }
         for (VectorDataNode node : new ArrayList<>(shapes.keySet())) {
@@ -188,6 +196,7 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
                 }
                 if (removed) {
                     generations.remove(vectorDataNode);
+                    requestedGenerations.remove(vectorDataNode);
                     removeShapes(vectorDataNode);
                     redraw();
                 } else {
@@ -198,20 +207,42 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
     }
 
     /**
-     * Converts a node in the background and replaces its shapes on the EDT.
+     * Converts a node in the background and replaces its shapes on the EDT. Changes arriving before the conversion
+     * is submitted are taken into the same conversion: the submission waits until the EDT has handled the current
+     * events, e.g. all features of an import.
      */
     private void update(final Product product, final VectorDataNode node) {
         final int generation = generations.merge(node, 1, Integer::sum);
+        requestedGenerations.put(node, generation);
         if (!VectorDataConverter.isShown(product, node)) {
             removeShapes(node);
             redraw();
             return;
         }
+        if (!scheduledNodes.add(node)) {
+            return; // a conversion is about to be submitted and will see this change
+        }
         pendingTasks.incrementAndGet();
+        SwingUtilities.invokeLater(() -> {
+            scheduledNodes.remove(node);
+            final Integer latest = generations.get(node);
+            if (latest == null || !products.contains(product)) {
+                pendingTasks.decrementAndGet();
+                return;
+            }
+            convert(product, node, latest);
+        });
+    }
+
+    private void convert(final Product product, final VectorDataNode node, final int generation) {
         vectorExecutor.execute(() -> {
             List<Renderable> renderables = null;
             try {
-                renderables = createRenderables(node, new VectorDataConverter(product).convert(node));
+                final Integer requested = requestedGenerations.get(node);
+                if (requested != null && requested == generation) {
+                    conversions.incrementAndGet();
+                    renderables = createRenderables(node, new VectorDataConverter(product).convert(node));
+                }
             } catch (Throwable e) {
                 SystemUtils.LOG.log(Level.WARNING, "WorldWind: unable to show the vector data " + node.getName(), e);
             }
@@ -233,6 +264,10 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
                 }
             });
         });
+    }
+
+    int getConversionCount() {
+        return conversions.get();
     }
 
     static List<Renderable> createRenderables(final VectorDataNode node, final List<VectorDataConverter.Shape> converted) {

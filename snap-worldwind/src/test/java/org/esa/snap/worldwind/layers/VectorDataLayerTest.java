@@ -56,6 +56,31 @@ public class VectorDataLayerTest {
     }
 
     @Test
+    public void testABurstOfFeatureEventsConvertsTheNodeOnce() throws Exception {
+        final VectorDataLayer layer = new VectorDataLayer();
+        final Product product = createProduct();
+        final VectorDataNode node = createNode(product, "burst", square(10.0, 50.0));
+        product.getVectorDataGroup().add(node);
+        onEDT(() -> layer.addProduct(product, null));
+        assertTrue(layer.awaitPendingConversions(10000));
+        final int before = layer.getConversionCount();
+
+        // features added one by one, as an import does: one event each
+        onEDT(() -> {
+            for (int i = 0; i < 200; i++) {
+                node.getFeatureCollection().add(PlainFeatureFactory.createPlainFeature(
+                        node.getFeatureType(), "f" + i, square(10.0 + (i % 10) * 0.08, 49.9 - (i / 10) * 0.02), null));
+            }
+        });
+        assertTrue(layer.awaitPendingConversions(30000));
+
+        assertEquals(201, layer.getShapes(node).size());
+        // before, every event converted the whole node again: 200 conversions of up to 200 features
+        final int conversions = layer.getConversionCount() - before;
+        assertTrue("conversions: " + conversions, conversions <= 3);
+    }
+
+    @Test
     public void testNodesAreShownAndFollowChanges() throws Exception {
         final VectorDataLayer layer = new VectorDataLayer();
         final Product product = createProduct();
