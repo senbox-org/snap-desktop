@@ -16,6 +16,10 @@
 
 package org.esa.snap.rcp.mask;
 
+import com.bc.ceres.glayer.Layer;
+import com.bc.ceres.glayer.LayerFilter;
+import com.bc.ceres.glayer.support.LayerUtils;
+import org.esa.snap.core.layer.MaskLayerType;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.Product;
@@ -23,6 +27,9 @@ import org.esa.snap.core.datamodel.ProductNodeEvent;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.ProductNodeListenerAdapter;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import eu.esa.snap.netbeans.docwin.WindowUtilities;
+import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.table.AbstractTableModel;
 import java.awt.Color;
@@ -177,6 +184,8 @@ class MaskTableModel extends AbstractTableModel {
     private void makeMaskVisible(Mask mask) {
         if (visibleBand != null) {
             visibleBand.getOverlayMaskGroup().add(mask);
+            updateOpenedMaskLayers(mask, true);
+            visibleBand.fireImageInfoChanged();
         }
     }
 
@@ -309,6 +318,7 @@ class MaskTableModel extends AbstractTableModel {
             } else {
                 overlayMaskGroup.remove(mask);
             }
+            updateOpenedMaskLayers(mask, visible);
             visibleBand.fireImageInfoChanged();
             fireTableCellUpdated(rowIndex, columnIndex);
         } else if (column == IDX_NAME) {
@@ -329,6 +339,27 @@ class MaskTableModel extends AbstractTableModel {
 
     }
 
+    private void updateOpenedMaskLayers(Mask mask, boolean visible) {
+        WindowUtilities.getOpened(ProductSceneViewTopComponent.class).forEach(tc -> {
+            ProductSceneView view = tc.getView();
+            if (view.getRaster() == visibleBand) {
+                if (visible) {
+                    view.setMaskOverlayEnabled(true);
+                }
+                Layer maskLayer = getMaskLayer(view, mask);
+                if (maskLayer != null) {
+                    maskLayer.setVisible(visible);
+                }
+            }
+        });
+    }
+
+    private static Layer getMaskLayer(ProductSceneView view, Mask mask) {
+        LayerFilter maskLayerFilter = layer -> layer.getConfiguration().isPropertyDefined(MaskLayerType.PROPERTY_NAME_MASK)
+                && layer.getConfiguration().getValue(MaskLayerType.PROPERTY_NAME_MASK) == mask;
+        return LayerUtils.getChildLayer(view.getRootLayer(), LayerUtils.SEARCH_DEEP, maskLayerFilter);
+    }
+
     private class MaskPNL extends ProductNodeListenerAdapter {
 
         @Override
@@ -343,7 +374,17 @@ class MaskTableModel extends AbstractTableModel {
 
         @Override
         public void nodeChanged(ProductNodeEvent event) {
-            processEvent(event);
+            if (event.getSourceNode() instanceof Mask) {
+                Mask mask = (Mask) event.getSourceNode();
+                int rowIndex = getMaskIndex(mask.getName());
+                if (rowIndex >= 0) {
+                    fireTableRowsUpdated(rowIndex, rowIndex);
+                } else {
+                    fireTableDataChanged();
+                }
+            } else {
+                processEvent(event);
+            }
         }
 
         private void processEvent(ProductNodeEvent event) {
