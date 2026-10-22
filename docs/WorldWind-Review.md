@@ -119,7 +119,7 @@ OCN test products through the layer code), and a third review round on the last 
 | `--add-opens` for JOGL 2.6.0 in the development launcher | **Done** (`54a440f53`) |
 | Rendering smoke test on Windows x64 | **Done** |
 | Smoke tests on Linux x64/aarch64 and macOS (universal natives) | **Open** — needs those machines |
-| Move to WorldWindEarth 2.3.1 (DPI fixes, EGM2008) | **Open decision** — SNAP would have to build and host the jar; recommended once the multi-platform JOGL tests pass, mainly for the HiDPI fixes |
+| Move to WorldWindEarth 2.3.1 (DPI fixes, EGM2008) | **Decided 2026-10-22: stay on NASA 2.2.1 for now.** 2.3.1 is a maintenance release (mainly HiDPI picking/text fixes) and would have to be built and hosted on SNAP's Nexus. Upstream is barely active: NASA's last commit was Apr 2024; WorldWindEarth's was Oct 2025, and its Java 17 / JOGL 2.6 PR (#87) has been unmerged since Oct 2025. No fork is a maintained successor. Revisit if HiDPI picking problems are reported; the best build then would be WorldWindEarth `develop` plus the 8 HiDPI commits of the Unmanned-Software-Solutions fork |
 
 ### Part 3 — improvements
 
