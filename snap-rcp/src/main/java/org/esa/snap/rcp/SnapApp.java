@@ -829,7 +829,7 @@ public class SnapApp {
         }
     }
 
-    private class SnapAppGPFOperatorExecutor extends ProgressMonitorSwingWorker<Void, Void> {
+    private static class SnapAppGPFOperatorExecutor extends ProgressMonitorSwingWorker<Void, Void> {
 
         private final Operator operator;
 

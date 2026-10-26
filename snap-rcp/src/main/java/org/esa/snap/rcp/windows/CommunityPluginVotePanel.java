@@ -82,46 +82,37 @@ public class CommunityPluginVotePanel extends JPanel {
 	public CommunityPluginVotePanel() {
 		// create the executor
 		buildUI();
-		addHierarchyListener(new HierarchyListener() {
+		addHierarchyListener(e -> {
 
-			@Override
-			public void hierarchyChanged(HierarchyEvent e) {
+            if ((e.getChangeFlags() & HierarchyEvent.PARENT_CHANGED) != 0x0L) {
+                if (name == null || version == null) {
+                    return;
+                }
+                Container p = e.getChangedParent();
+                while (p != null) {
+                    if (p.toString().contains("org.netbeans.modules.autoupdate.ui.UnitTab")) {
+                        try {
+                            final ExecutorService executor = Executors.newSingleThreadExecutor();
+                            final Method m = p.getClass().getMethod("getHelpId");
+                            final Object result = m.invoke(p);
+                            final AsyncPluginReviewRetriever retriever = new AsyncPluginReviewRetriever(name, version, result.toString(), executor);
+                            retriever.executeAsync();
 
-				if ((e.getChangeFlags() & HierarchyEvent.PARENT_CHANGED) != 0x0l) {
-					if (name == null || version == null) {
-						return;
-					}
-					Container p = e.getChangedParent();
-					while (p != null) {
-						if (p.toString().contains("org.netbeans.modules.autoupdate.ui.UnitTab")) {
-							try {
-								final ExecutorService executor = Executors.newSingleThreadExecutor();
-								final Method m = p.getClass().getMethod("getHelpId");
-								final Object result = m.invoke(p);
-								final AsyncPluginReviewRetriever retriever = new AsyncPluginReviewRetriever(name, version, result.toString(), executor);
-								retriever.executeAsync();
+                            break;
+                        } catch (NoSuchMethodException ex) {
+                            // not here
+                        } catch (SecurityException ex) {
+                            SystemUtils.LOG.severe("Access error");
+                        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                            SystemUtils.LOG.severe("Invokation error");
+                        }
+                    }
 
-								break;
-							} catch (NoSuchMethodException ex) {
-								// not here
-							} catch (SecurityException ex) {
-					            SystemUtils.LOG.severe("Access error");
-							} catch (IllegalAccessException ex) {
-								SystemUtils.LOG.severe("Invokation error");
-							} catch (IllegalArgumentException ex) {
-								SystemUtils.LOG.severe("Invokation error");
-							} catch (InvocationTargetException ex) {
-								SystemUtils.LOG.severe("Invokation error");
-							}
+                    p = p.getParent();
+                }
+            }
 
-						}
-
-						p = p.getParent();
-					}
-				}
-
-			}
-		});
+        });
 	}
 
 	/**
@@ -320,8 +311,7 @@ public class CommunityPluginVotePanel extends JPanel {
 				if (c != null) {
 					try {
 						c.disconnect();
-					} catch (Exception ex) {
-
+					} catch (Exception ignored) {
 					}
 				}
 			}

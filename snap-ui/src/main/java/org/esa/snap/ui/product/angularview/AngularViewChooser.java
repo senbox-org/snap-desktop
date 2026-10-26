@@ -332,7 +332,7 @@ public class AngularViewChooser extends ModalDialog implements LoadSaveRasterDat
 
     }
 
-    private class BooleanRenderer extends JCheckBox implements TableCellRenderer {
+    private static class BooleanRenderer extends JCheckBox implements TableCellRenderer {
 
         private BooleanRenderer() {
             this.setOpaque(true);

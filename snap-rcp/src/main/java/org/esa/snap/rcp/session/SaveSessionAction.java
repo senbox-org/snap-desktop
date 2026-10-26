@@ -120,8 +120,6 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
         } catch (Exception e) {
             e.printStackTrace();
             Dialogs.showError(TITLE, e.getMessage());
-        } finally {
-//            app.updateState(); // to update menu entries e.g. 'Close Session'
         }
     }
 
@@ -177,7 +175,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
                 if (answer == Dialogs.Answer.YES) {
                     SaveProductAction saveProductAction = new SaveProductAction(product);
                     saveProductAction.execute();
-                } else if (answer == Dialogs.Answer.YES) {
+                } else if (answer == Dialogs.Answer.NO) {
                     return false;
                 }
             }

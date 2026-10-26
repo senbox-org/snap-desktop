@@ -126,9 +126,9 @@ public class AutoCompleteTextArea extends JTextArea {
     /**
      * This will visually hold the current suggestions (if any).
      */
-    class InputOptionsPanel {
+    static class InputOptionsPanel {
+        private final JPopupMenu popupMenu;
         private JList<String> list;
-        private JPopupMenu popupMenu;
         private String subWord;
         private int insertionPosition;
         private final JTextArea textArea;

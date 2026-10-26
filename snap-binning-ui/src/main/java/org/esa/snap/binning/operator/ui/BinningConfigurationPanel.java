@@ -332,7 +332,7 @@ class BinningConfigurationPanel extends JPanel {
         }
     }
 
-    private class DoubleTextField extends JTextField {
+    private static class DoubleTextField extends JTextField {
 
         private final static String disallowedChars = "`§~!@#$%^&*()_+=\\|\"':;?/><,- ";
 
