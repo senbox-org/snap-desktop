@@ -331,8 +331,8 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     protected abstract JPanel createBundlePanel();
 
     private boolean shouldValidate() {
-        String value = NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_ON_SAVE, null);
-        return value != null && Boolean.parseBoolean(value);
+        final String value = NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_ON_SAVE, null);
+        return Boolean.parseBoolean(value);
     }
 
     @Override

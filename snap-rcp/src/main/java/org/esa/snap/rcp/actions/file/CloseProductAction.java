@@ -188,13 +188,12 @@ public final class CloseProductAction extends AbstractAction implements ContextA
             final ProductReader reader = openProduct.getProductReader();
             if (reader != null) {
                 final Object input = reader.getInput();
-                if (input instanceof Product) {
-                    Product sourceProduct = (Product) input;
+                if (input instanceof Product sourceProduct) {
                     if (productToBeClosed.equals(sourceProduct)) {
                         return openProduct;
                     } else {
-                        Product indirectSourceProduct = findFirstDirectSourceProduct(sourceProduct, productsStillOpen);
-                        if (indirectSourceProduct != null && productToBeClosed.equals(indirectSourceProduct)) {
+                        final Product indirectSourceProduct = findFirstDirectSourceProduct(sourceProduct, productsStillOpen);
+                        if (productToBeClosed.equals(indirectSourceProduct)) {
                             return openProduct;
                         }
                     }
@@ -204,8 +203,8 @@ public final class CloseProductAction extends AbstractAction implements ContextA
                             if (productToBeClosed.equals(sourceProduct)) {
                                 return openProduct;
                             }
-                            Product indirectSourceProduct = findFirstDirectSourceProduct(sourceProduct, productsStillOpen);
-                            if (indirectSourceProduct != null && productToBeClosed.equals(indirectSourceProduct)) {
+                            final Product indirectSourceProduct = findFirstDirectSourceProduct(sourceProduct, productsStillOpen);
+                            if (productToBeClosed.equals(indirectSourceProduct)) {
                                 return openProduct;
                             }
                         }

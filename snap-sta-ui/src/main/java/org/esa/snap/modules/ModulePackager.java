@@ -439,6 +439,7 @@ public final class ModulePackager {
         return fOut.toByteArray();
     }
 
+    @SuppressWarnings({"CatchMayIgnoreException", "CallToPrintStackTrace"})
     private static byte[] packAdapterJar(ToolAdapterOperatorDescriptor descriptor) throws IOException {
         _manifest.getMainAttributes().put(ATTR_DESCRIPTION_NAME, descriptor.getAlias());
         _manifest.getMainAttributes().put(ATTR_MODULE_NAME, descriptor.getName());

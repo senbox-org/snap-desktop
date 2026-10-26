@@ -695,24 +695,19 @@ public class AngularTopComponent extends ToolTopComponent {
 
 
     private void runProgressMonitorForCursor() {
-        // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 1");
-
-        ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
+        final ProgressMonitorSwingWorker pmSwingWorker = new ProgressMonitorSwingWorker(SnapApp.getDefault().getMainFrame(),
                 "Collecting Angular Data") {
 
             @Override
             protected Void doInBackground(com.bc.ceres.core.ProgressMonitor pm) throws Exception {
-
                 int totalWorkPlanned = 100;
                 pm.beginTask("Collecting angular data: this can take several minutes on larger files", totalWorkPlanned);
 
                 try {
-                    // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 2");
-
                     updateData(0, 0, 0, true, pm, (totalWorkPlanned - 10));
                     chartHandler.setEmptyPlot();
 
-                    if (pm != null && pm.isCanceled()) {
+                    if (pm.isCanceled()) {
                         cancelActions();
                         pm.done();
                         return null;
@@ -721,19 +716,12 @@ public class AngularTopComponent extends ToolTopComponent {
                     chartPanel.repaint();
 
                     updateUIState();
-                    // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS 3");
-
                 } finally {
-                    // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS Finally");
-
-                    if (pm != null && pm.isCanceled()) {
+                    if (pm.isCanceled()) {
                         cancelActions();
-                        return null;
                     }
                     pm.done();
                 }
-
-                // System.out.println("INSIDE: runProgressMonitorForCursor - PROGRESS END");
 
                 return null;
             }

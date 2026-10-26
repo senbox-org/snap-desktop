@@ -310,7 +310,7 @@ class ImageFileAssistantPage1 extends AbstractLayerSourceAssistantPage {
             return worldFilePath;
         }
 
-        private class ImagePreviewWorker extends SwingWorker<Image, Object> {
+        private static class ImagePreviewWorker extends SwingWorker<Image, Object> {
 
             private final Dimension targetDimension;
             private final String imageFilePath;
