@@ -19,7 +19,6 @@ package org.esa.snap.rcp.statistics;
 import com.bc.ceres.swing.TableLayout;
 import org.esa.snap.core.dataio.geocoding.ComponentGeoCoding;
 import org.esa.snap.core.dataio.geocoding.GeoRaster;
-import org.esa.snap.core.datamodel.BasicPixelGeoCoding;
 import org.esa.snap.core.datamodel.CombinedFXYGeoCoding;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.FXYGeoCoding;
@@ -242,8 +241,6 @@ class GeoCodingPanel extends PagePanel {
             writeTiePointGeoCoding((TiePointGeoCoding) geoCoding, nodeType);
         } else if (geoCoding instanceof ComponentGeoCoding) {
             writeComponentGeoCoding((ComponentGeoCoding) geoCoding, nodeType);
-        } else if (geoCoding instanceof BasicPixelGeoCoding) {
-            writePixelGeoCoding((BasicPixelGeoCoding) geoCoding, nodeType);
         } else if (geoCoding instanceof MapGeoCoding) {
             writeMapGeoCoding((MapGeoCoding) geoCoding, nodeType);
         } else if (geoCoding instanceof FXYGeoCoding) {
@@ -457,30 +454,7 @@ class GeoCodingPanel extends PagePanel {
         addRow("Pixel size X", String.valueOf(mi.getPixelSizeX()) + " " + mapUnit);
         addRow("Pixel size Y", String.valueOf(mi.getPixelSizeY()) + " " + mapUnit);
     }
-
-    private void writePixelGeoCoding(BasicPixelGeoCoding gc, String nodeType) {
-        addEmptyRow();
-        addRow("The " + nodeType + " uses a pixel based geo-coding.");
-        addEmptyRow();
-        addRow("Name of latitude band", gc.getLatBand().getName());
-        addRow("Name of longitude band", gc.getLonBand().getName());
-
-        addRow("Search radius", gc.getSearchRadius() + " pixels");
-        final String validMask = gc.getValidMask();
-        addRow("Valid pixel mask", validMask != null ? validMask : "");
-        addRow("Crossing 180 degree meridian", String.valueOf(gc.isCrossingMeridianAt180()));
-
-        addEmptyRow();
-        addRow("<html>Geographic coordinates (lat,lon) are computed from pixel coordinates (x,y)<br/>" +
-               "by linear interpolation between pixels.</html>");
-
-        addEmptyRow();
-        addRow("<html>Pixel coordinates (x,y) are computed from geographic coordinates (lat,lon)<br/>" +
-               "by a search algorithm.</html>");
-        addEmptyRow();
-    }
-
-    private void writeComponentGeoCoding(ComponentGeoCoding gc, String nodeType) {
+private void writeComponentGeoCoding(ComponentGeoCoding gc, String nodeType) {
         addHeaderRow("The " + nodeType + " uses a component composed geo-coding.");
         addRow("Type:", gc.getClass().getSimpleName());
 
