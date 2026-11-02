@@ -32,9 +32,8 @@ import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
@@ -61,6 +60,7 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
         "CTL_WorldMapTopComponent_Name=World Map",
         "CTL_WorldMapTopComponent_HelpId=showWorldMapWnd"
 })
+
 /**
  * The window displaying the world map.
  *
@@ -93,12 +93,9 @@ public class WorldMapTopComponent extends ToolTopComponent {
 
         final SnapApp snapApp = SnapApp.getDefault();
         snapApp.getProductManager().addListener(new WorldMapProductManagerListener());
-        snapApp.getSelectionSupport(ProductNode.class).addHandler(new SelectionSupport.Handler<ProductNode>() {
-            @Override
-            public void selectionChange(@NullAllowed ProductNode oldValue, @NullAllowed ProductNode newValue) {
-                if(newValue != null) {
-                    setSelectedProduct(newValue.getProduct());
-                }
+        snapApp.getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
+            if (newValue != null) {
+                setSelectedProduct(newValue.getProduct());
             }
         });
         setProducts(snapApp.getProductManager().getProducts());
@@ -131,7 +128,14 @@ public class WorldMapTopComponent extends ToolTopComponent {
         public void productAdded(ProductManager.Event event) {
             final Product product = event.getProduct();
             worldMapDataModel.addProduct(product);
-            setSelectedProduct(product);
+
+            final ProductNode selectedProductNode = SnapApp.getDefault().getSelectedProductNode(SnapApp.SelectionSourceHint.EXPLORER);
+            if (selectedProductNode != null) {
+                final Product selectedProduct = selectedProductNode.getProduct();
+                setSelectedProduct(selectedProduct);
+            } else {
+                setSelectedProduct(null);
+            }
         }
 
         @Override
@@ -143,5 +147,4 @@ public class WorldMapTopComponent extends ToolTopComponent {
             worldMapDataModel.removeProduct(product);
         }
     }
-
 }
