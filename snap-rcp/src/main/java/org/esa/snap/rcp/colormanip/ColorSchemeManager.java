@@ -663,7 +663,7 @@ public class ColorSchemeManager {
     }
 
 
-    class MyComboBoxRenderer extends BasicComboBoxRenderer {
+    static class MyComboBoxRenderer extends BasicComboBoxRenderer {
 
         private String[] tooltips;
         private Boolean[] enabledList;
@@ -758,7 +758,7 @@ public class ColorSchemeManager {
 
 
     public boolean isNoneScheme(ColorSchemeInfo colorSchemeInfo) {
-        return (noneColorSchemeInfo != null && noneColorSchemeInfo == colorSchemeInfo) ? true : false;
+        return noneColorSchemeInfo != null && noneColorSchemeInfo == colorSchemeInfo;
     }
 
 

@@ -464,14 +464,14 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         getContent().repaint();
     }
 
-    public class FileChooserCellEditor extends DefaultCellEditor implements TableCellEditor {
+    public static class FileChooserCellEditor extends DefaultCellEditor implements TableCellEditor {
 
         /** Number of clicks to start editing */
         private static final int CLICK_COUNT_TO_START = 2;
         /** Editor component */
-        private JButton button;
+        private final JButton button;
         /** File chooser */
-        private JFileChooser fileChooser;
+        private final JFileChooser fileChooser;
         /** Selected file */
         private String file = "";
 

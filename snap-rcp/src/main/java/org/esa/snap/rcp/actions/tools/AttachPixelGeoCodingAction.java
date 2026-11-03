@@ -133,7 +133,7 @@ public class AttachPixelGeoCodingAction extends AbstractAction implements Contex
         final int height = product.getSceneRasterHeight();
         final int sizeOfDouble = 8;
 
-        return width * height * 2 * sizeOfDouble;
+        return (long) width * height * 2 * sizeOfDouble;
     }
 
     private void setEnableState() {

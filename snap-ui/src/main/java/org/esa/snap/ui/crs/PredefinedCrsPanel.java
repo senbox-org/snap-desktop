@@ -167,6 +167,7 @@ class PredefinedCrsPanel extends JPanel {
     private class CrsListSelectionListener implements ListSelectionListener {
 
 
+        @SuppressWarnings("CatchMayIgnoreException")
         @Override
         public void valueChanged(ListSelectionEvent e) {
             final JList list = (JList) e.getSource();

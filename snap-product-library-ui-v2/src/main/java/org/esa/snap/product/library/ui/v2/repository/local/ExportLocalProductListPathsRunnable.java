@@ -28,7 +28,7 @@ public class ExportLocalProductListPathsRunnable extends AbstractRunnable<Void> 
         if (filePath == null) {
             throw new NullPointerException("The file path is null.");
         }
-        if (parentDialogComponent == null) {
+        if (localProductPaths == null) {
             throw new NullPointerException("The local product paths array is null.");
         }
         this.parentDialogComponent = parentDialogComponent;

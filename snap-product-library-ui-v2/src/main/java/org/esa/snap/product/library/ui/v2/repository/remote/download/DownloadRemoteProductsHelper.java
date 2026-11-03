@@ -378,10 +378,10 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
         for (Map.Entry<AbstractBackgroundDownloadRunnable, Pair<DownloadProgressStatus, Boolean>> entry : this.runningTasks.entrySet()) {
             AbstractBackgroundDownloadRunnable runnable = entry.getKey();
             if (runnable instanceof DownloadProductRunnable) {
-                Pair<DownloadProgressStatus, Boolean> value = entry.getValue();
+                final Pair<DownloadProgressStatus, Boolean> value = entry.getValue();
                 if (value == null) {
                     throw new NullPointerException("The value is null.");
-                } else if (value.getSecond().booleanValue() == true) {
+                } else if (value.getSecond()) {
                     canCloseThreadPool = false;
                 }
             } else {
@@ -389,9 +389,9 @@ public class DownloadRemoteProductsHelper implements DownloadingProductProgressC
             }
         }
         if (canCloseThreadPool) {
-            this.threadPoolExecutor.shutdown();
-            this.threadPoolExecutor = null; // reset the thread pool
-            this.runningTasks = null; // reset the running tasks
+            threadPoolExecutor.shutdown();
+            threadPoolExecutor = null; // reset the thread pool
+            runningTasks = null; // reset the running tasks
         }
     }
 

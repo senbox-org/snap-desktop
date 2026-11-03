@@ -171,17 +171,13 @@ public class QuantizationUI extends BaseOperatorUI {
 		return contentPane;
 	}
 
-	private class IntervalsTablePanel extends JPanel {
+	private static class IntervalsTablePanel extends JPanel {
 
 		private final JTable intervalsTable = new JTable();
-
 		private final JScrollPane tableContainer;
-
 		private final JButton addButton = new JButton("Add");
-
 		private final JButton deleteButton = new JButton("Delete");
-
-		private Map<Integer, Range> intervalsMap = new HashMap<>();
+		private final Map<Integer, Range> intervalsMap = new HashMap<>();
 
 		private String lastErrorMessage;
 

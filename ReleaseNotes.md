@@ -1,5 +1,8 @@
 Release Notes - Sentinel Application Platform
 =============================================
+# New in SNAP 14.0.3
+    [SNAP-233] Selection in World Map and Product Explorer is different
+
 # New in SNAP 14.0.1
     [SNAP-4252] Mask overlays not displayed
 

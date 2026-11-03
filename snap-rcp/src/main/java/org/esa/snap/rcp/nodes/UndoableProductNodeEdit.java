@@ -54,7 +54,7 @@ public class UndoableProductNodeEdit<T extends ProductNode> extends AbstractUndo
         return redo != null;
     }
 
-    interface Edit<T extends ProductNode> {
+    public interface Edit<T extends ProductNode> {
         void edit(T node);
     }
 }

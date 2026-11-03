@@ -48,7 +48,7 @@ import static org.esa.snap.rcp.nodes.PNNodeSupport.performUndoableProductNodeEdi
  *
  * @author Norman
  */
-abstract class PNNode<T extends ProductNode> extends PNNodeBase {
+abstract public class PNNode<T extends ProductNode> extends PNNodeBase {
 
     private final T productNode;
     private final PNNodeSupport nodeSupport;
