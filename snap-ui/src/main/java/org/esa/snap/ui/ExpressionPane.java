@@ -808,7 +808,7 @@ public class ExpressionPane extends JPanel {
         }
     }
 
-    class ActionPane extends JPanel {
+    public class ActionPane extends JPanel {
 
         private AbstractButton selAllButton;
         private AbstractButton undoButton;

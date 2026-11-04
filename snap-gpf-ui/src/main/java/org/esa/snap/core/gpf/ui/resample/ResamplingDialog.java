@@ -361,12 +361,11 @@ class ResamplingDialog extends SingleTargetProductDialog {
         container.setEnabled(enable);
 
         try {
-            Component[] components= ((Container) container).getComponents();
-            for (int i = 0; i < components.length; i++) {
-                setEnableRec(components[i], enable);
+            final Component[] components= ((Container) container).getComponents();
+            for (Component component : components) {
+                setEnableRec(component, enable);
             }
-        } catch (ClassCastException e) {
-
+        } catch (ClassCastException ignored) {
         }
     }
 

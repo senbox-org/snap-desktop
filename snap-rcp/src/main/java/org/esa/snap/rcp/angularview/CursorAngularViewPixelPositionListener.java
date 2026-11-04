@@ -107,7 +107,7 @@ public class CursorAngularViewPixelPositionListener implements PixelPositionList
         }
     }
 
-    private class Waiter extends SwingWorker<Void, Void> {
+    private static class Waiter extends SwingWorker<Void, Void> {
 
         @Override
         protected Void doInBackground() throws Exception {
@@ -122,7 +122,7 @@ public class CursorAngularViewPixelPositionListener implements PixelPositionList
     }
 
     //todo copied (and changed very slightly) from time-series-tool: Move to BEAM or Ceres
-    static interface WorkerChainSupport {
+    interface WorkerChainSupport {
 
         void removeWorkerAndStartNext(SwingWorker worker);
     }

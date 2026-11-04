@@ -73,7 +73,7 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
 
     private static final String GCP_FILE_DESCRIPTION = "ENVI Ground Control Points";
     private static final String GCP_FILE_EXTENSION = ".pts";
-    private static final String GCP_LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final String GCP_LINE_SEPARATOR = System.lineSeparator();
     private static final String GCP_EXPORT_DIR_PREFERENCES_KEY = "user.gcp.export.dir";
     private static final String HELP_ID = "exportEnviGcpFile";
     private final Lookup.Result<ProductNode> result;

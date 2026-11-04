@@ -62,7 +62,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-class LayerManagerForm implements AbstractLayerForm {
+public class LayerManagerForm implements AbstractLayerForm {
 
     private final ProductSceneView view;
     private final ToolTopComponent parentComponent;

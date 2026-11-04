@@ -22,7 +22,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.GeodeticDatum;
 
-abstract class AbstractCrsProvider {
+abstract public class AbstractCrsProvider {
 
     private final String name;
     private final boolean hasParameters;

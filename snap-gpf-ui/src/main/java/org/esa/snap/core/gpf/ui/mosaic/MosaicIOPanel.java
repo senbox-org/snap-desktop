@@ -378,7 +378,7 @@ class MosaicIOPanel extends JPanel {
         }
     }
 
-    public class UpdateProductFilter implements ProductFilter {
+    public static class UpdateProductFilter implements ProductFilter {
 
         @Override
         public boolean accept(Product product) {

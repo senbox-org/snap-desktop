@@ -196,7 +196,7 @@ abstract class TablePagePanel extends PagePanel {
         }
     }
 
-    static interface TableRow {}
+    public interface TableRow {}
 
     protected static abstract class TablePagePanelModel implements TableModel {
 

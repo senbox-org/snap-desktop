@@ -63,6 +63,7 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -275,6 +276,7 @@ class MosaicExpressionsPanel extends JPanel {
 
     private JScrollPane createConditionsTable(final String labelName) {
         conditionsTable = new JTable() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

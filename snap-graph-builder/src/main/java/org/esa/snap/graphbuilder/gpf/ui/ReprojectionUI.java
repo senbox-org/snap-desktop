@@ -101,20 +101,19 @@ public class ReprojectionUI extends BaseOperatorUI {
                         predefinedCrsUI.getRadioButton().setSelected(true);
                         crsSelectionPanel.prepareShow();
                     }else{
-                        if (crs instanceof ProjectedCRS) {
-                            ProjectedCRS projectedCRS = (ProjectedCRS) crs;
-                            Projection conversionFromBase = projectedCRS.getConversionFromBase();
-                            OperationMethod operationMethod = conversionFromBase.getMethod();
-                            ParameterValueGroup parameterValues = conversionFromBase.getParameterValues();
-                            GeodeticDatum geodeticDatum = projectedCRS.getDatum();
+                        if (crs instanceof ProjectedCRS projectedCRS) {
+                            final Projection conversionFromBase = projectedCRS.getConversionFromBase();
+                            final OperationMethod operationMethod = conversionFromBase.getMethod();
+                            final ParameterValueGroup parameterValues = conversionFromBase.getParameterValues();
+                            final GeodeticDatum geodeticDatum = projectedCRS.getDatum();
 
                             customCrsUI.setCustom(geodeticDatum, operationMethod, parameterValues);
                             customCrsUI.getRadioButton().setSelected(true);
                             crsSelectionPanel.prepareShow();
                         }
                     }
-                } catch (FactoryException e) { }
-
+                } catch (FactoryException ignored) {
+                }
             }
         }
 

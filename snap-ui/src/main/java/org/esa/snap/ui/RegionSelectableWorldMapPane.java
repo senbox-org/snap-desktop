@@ -416,7 +416,7 @@ public class RegionSelectableWorldMapPane {
             }
         }
 
-        private class NullPanSupport implements PanSupport {
+        private static class NullPanSupport implements PanSupport {
 
             @Override
             public void panStarted(MouseEvent event) {

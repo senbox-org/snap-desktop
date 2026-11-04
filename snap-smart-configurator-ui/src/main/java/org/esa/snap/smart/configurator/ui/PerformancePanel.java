@@ -54,7 +54,7 @@ import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
 import java.util.regex.Pattern;
 
-final class PerformancePanel extends javax.swing.JPanel {
+final public class PerformancePanel extends javax.swing.JPanel {
     
     /**
      * Color for fields filed with values in place in the application

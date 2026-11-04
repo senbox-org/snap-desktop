@@ -476,7 +476,7 @@ public class Filter {
         void filterChanged(Filter filter, String propertyName);
     }
 
-    interface FillFunction {
+    public interface FillFunction {
         double compute(double x, double y, int w, int h);
     }
 }

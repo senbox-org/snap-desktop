@@ -32,13 +32,13 @@ import static org.junit.Assert.*;
  * @author Marco Peters
  * @since BEAM 4.6
  */
+@SuppressWarnings("resource")
 public class StatisticsUtilsTest {
 
     @Test
     public void testCreateTransectProfileText_Byte() throws IOException {
         final Product product = new Product("X", "Y", 2, 1);
         Band node = product.addBand("name", ProductData.TYPE_INT8);
-        node.setSynthetic(true);
         node.setNoDataValue(0);
         node.setNoDataValueUsed(true);
         final byte[] data = new byte[product.getSceneRasterWidth() * product.getSceneRasterHeight()];
@@ -57,7 +57,6 @@ public class StatisticsUtilsTest {
     public void testCreateTransectProfileText_Float() throws IOException {
         final Product product = new Product("X", "Y", 2, 1);
         Band node = product.addBand("name", ProductData.TYPE_FLOAT32);
-        node.setSynthetic(true);
         final float[] data = new float[product.getSceneRasterWidth() * product.getSceneRasterHeight()];
         Arrays.fill(data, 1.0f);
         data[0] = Float.NaN; // no data
