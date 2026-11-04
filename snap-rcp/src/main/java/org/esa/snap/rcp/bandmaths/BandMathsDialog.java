@@ -169,7 +169,7 @@ class BandMathsDialog extends ModalDialog {
             setBandProperties(band, validMaskExpression);
         } else {
             band = new Band(getBandName(), ProductData.TYPE_FLOAT32, width, height);
-            setBandProperties(band, "");
+            setBandProperties(band, null);
         }
 
         ProductNodeGroup<Band> bandGroup = targetProduct.getBandGroup();
