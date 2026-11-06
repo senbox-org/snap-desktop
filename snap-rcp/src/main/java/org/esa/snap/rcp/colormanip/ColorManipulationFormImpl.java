@@ -17,6 +17,7 @@ package org.esa.snap.rcp.colormanip;
 
 import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.core.SubProgressMonitor;
 import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
@@ -39,6 +40,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.rcp.util.ProgressHandleMonitor;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.runtime.Config;
@@ -48,6 +50,7 @@ import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.help.HelpDisplayer;
 import org.esa.snap.ui.product.BandChooser;
 import org.esa.snap.ui.product.ProductSceneView;
+import org.netbeans.api.progress.BaseProgressUtils;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -604,13 +607,11 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
             final Product product = productManager.getProduct(i);
             final Band[] bands = product.getBands();
             for (final Band band : bands) {
-                boolean validBand = false;
-                if (band.getImageInfo() != null) {
-                    validBand = true;
-                    for (RasterDataNode protectedRaster : protectedRasters) {
-                        if (band == protectedRaster) {
-                            validBand = false;
-                        }
+                boolean validBand = true;
+                for (RasterDataNode protectedRaster : protectedRasters) {
+                    if (band == protectedRaster) {
+                        validBand = false;
+                        break;
                     }
                 }
                 if (validBand) {
@@ -636,10 +637,12 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         final Set<RasterDataNode> modifiedRasters = new HashSet<>(availableBands.length);
         if (bandChooser.show() == BandChooser.ID_OK) {
             bandsToBeModified = bandChooser.getSelectedBands();
-            for (final Band band : bandsToBeModified) {
-                applyColorPaletteDef(getFormModel().getModifiedImageInfo().getColorPaletteDef(), band, band.getImageInfo());
-                modifiedRasters.add(band);
+            final ImageInfo sourceImageInfo = getFormModel().getModifiedImageInfo();
+            final Boolean autoDistribute = getAutoDistribute(sourceImageInfo.getColorPaletteDef(), bandsToBeModified);
+            if (autoDistribute == null) {
+                return;
             }
+            applyColorPaletteDef(sourceImageInfo, autoDistribute, bandsToBeModified, modifiedRasters);
         }
 
 
@@ -653,6 +656,41 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 }
             }
         });
+    }
+
+    private void applyColorPaletteDef(ImageInfo sourceImageInfo,
+                                      boolean autoDistribute,
+                                      Band[] targetBands,
+                                      Set<RasterDataNode> modifiedRasters) {
+        String title = "Applying " + NamingConvention.COLOR_LOWER_CASE + " palette";
+        ProgressHandleMonitor pm = ProgressHandleMonitor.create(title);
+        Runnable operation = () -> applyColorPaletteDef(sourceImageInfo, autoDistribute, targetBands, modifiedRasters, pm);
+        BaseProgressUtils.runOffEventThreadWithProgressDialog(operation,
+                title,
+                pm.getProgressHandle(),
+                true,
+                50,
+                1000);
+    }
+
+    private void applyColorPaletteDef(ImageInfo sourceImageInfo,
+                                      boolean autoDistribute,
+                                      Band[] targetBands,
+                                      Set<RasterDataNode> modifiedRasters,
+                                      ProgressMonitor pm) {
+        pm.beginTask("Applying " + NamingConvention.COLOR_LOWER_CASE + " palette", targetBands.length);
+        try {
+            for (Band band : targetBands) {
+                if (pm.isCanceled()) {
+                    break;
+                }
+                pm.setSubTaskName(band.getDisplayName());
+                applyColorPaletteDef(sourceImageInfo, autoDistribute, band, SubProgressMonitor.create(pm, 1));
+                modifiedRasters.add(band);
+            }
+        } finally {
+            pm.done();
+        }
     }
 
     private void setIODir(final File dir) {
@@ -810,26 +848,34 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         }
     }
 
-    private void applyColorPaletteDef(ColorPaletteDef colorPaletteDef,
+    private void applyColorPaletteDef(ImageInfo sourceImageInfo,
+                                      boolean autoDistribute,
                                       RasterDataNode targetRaster,
-                                      ImageInfo targetImageInfo) {
-        if (isIndexCoded(targetRaster)) {
-            targetImageInfo.setColors(colorPaletteDef.getColors());
-        } else {
-            Stx stx = targetRaster.getStx(false, ProgressMonitor.NULL);
-            Boolean autoDistribute = getAutoDistribute(colorPaletteDef);
-            if (autoDistribute == null) {
-                return;
+                                      ProgressMonitor pm) {
+        pm.beginTask("Applying " + NamingConvention.COLOR_LOWER_CASE + " palette", 2);
+        try {
+            ColorPaletteDef colorPaletteDef = sourceImageInfo.getColorPaletteDef();
+            ImageInfo targetImageInfo = targetRaster.getImageInfo(SubProgressMonitor.create(pm, 1));
+            if (isIndexCoded(targetRaster)) {
+                targetImageInfo.setColors(colorPaletteDef.getColors());
+            } else {
+                Stx stx = targetRaster.getStx(false, SubProgressMonitor.create(pm, 1));
+                boolean targetLogScaled = sourceImageInfo.isLogScaled() && stx.getMinimum() > 0.0;
+                targetImageInfo.setColorPaletteDef(colorPaletteDef,
+                        stx.getMinimum(),
+                        stx.getMaximum(),
+                        autoDistribute,
+                        colorPaletteDef.isLogScaled(),
+                        targetLogScaled);
             }
-            targetImageInfo.setColorPaletteDef(colorPaletteDef,
-                    stx.getMinimum(),
-                    stx.getMaximum(),
-                    autoDistribute);
+            targetImageInfo.setColorSchemeInfo(sourceImageInfo.getColorSchemeInfo());
+        } finally {
+            pm.done();
         }
     }
 
-    private Boolean getAutoDistribute(ColorPaletteDef colorPaletteDef) {
-        if (colorPaletteDef.isAutoDistribute()) {
+    private Boolean getAutoDistribute(ColorPaletteDef colorPaletteDef, Band[] targetBands) {
+        if (colorPaletteDef.isAutoDistribute() || !containsNonIndexCodedBand(targetBands)) {
             return Boolean.TRUE;
         }
         int answer = JOptionPane.showConfirmDialog(getToolViewPaneControl(),
@@ -845,6 +891,15 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         } else {
             return null;
         }
+    }
+
+    private boolean containsNonIndexCodedBand(Band[] bands) {
+        for (Band band : bands) {
+            if (!isIndexCoded(band)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isIndexCoded(RasterDataNode targetRaster) {
