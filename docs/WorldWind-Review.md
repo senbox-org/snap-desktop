@@ -573,3 +573,47 @@ Q5 — WMS browser:
   thread: a server without layers (unreachable, mistyped, not WMS) is reported and its tab removed, and a server is
   saved only after it answered with layers. Connecting to a server already open selects its tab. Tested against a
   closed local port; checked against EOX.
+
+### 7d. Review round 2 fixes (2026-11-07)
+
+A second adversarial review (five reviewers) found the blockers and majors below; each was checked in the code
+before fixing. `master` (SNAP-4263 faster startup) was merged first: the World View model is now prepared in the
+background, and as `WWActivator` is deferred, the WorldWind preferences (cache folder, offline mode) are also applied
+before each globe's layers are created.
+
+Q5 — WMS browser and external data:
+
+- WorldWind's own Cancel button removes a server's panel from the tabs; the dialog kept it and threw on the next
+  connect to that server. A cancelled server is now forgotten, neither reported nor saved.
+- A server whose capabilities fail midway (layers read, list never shown) is reported, not saved with a spinner.
+- The external data list and the WMS check boxes follow each other; WMS layers are not disposed when removed from
+  the list, as their check box adds the same layer again.
+
+Q7 — local DEM terrain:
+
+- Loads run one at a time; an Error no longer blocks all later loads.
+- All usable files share 128 MB (1024 to 256 samples per file); of more than 512 files those nearest the view are
+  used. **Known:** the choice is made at load time; it does not follow the view afterwards.
+- A folder giving no terrain is reported once (with "do not show again"); the options refuse a missing DEM folder.
+- Grids in 0..360 longitudes are moved to -180..180; grids across the antimeridian are skipped.
+- Real GeoTIFFs are read in the tests (snap-geotiff as test dependency).
+
+Q8 — polygon area of interest:
+
+- Remote query polygons go clockwise, like the rectangle; a polygon drawn counter-clockwise is reversed (TAO's FedEO
+  converter only reverses the order it gets).
+- On the globe the polygon is drawn with straight longitude/latitude edges, as searched, not great circles; edges
+  of a 2D-map polygon spanning more than 180° are drawn the long way round, as searched.
+
+F1 — full-resolution display:
+
+- Any Throwable while rendering a tile marks it absent (an OutOfMemoryError made it render again in every frame).
+- A queued tile not requested by the last frame drawn is dropped, so renders for an old view do not hold up the
+  new one; queue priorities are fixed per task.
+
+F3 — vector data:
+
+- A polygon cut off at the vertex limit is left out instead of drawn as a different shape.
+- A product's vector data share 300 000 vertices; points are limited to 10 000 per node and share their attributes.
+- Tests for the conversion skipped when superseded before it starts and the result discarded when superseded before
+  it is installed.
