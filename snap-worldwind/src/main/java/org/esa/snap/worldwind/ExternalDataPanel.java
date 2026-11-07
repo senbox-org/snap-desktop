@@ -40,7 +40,9 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -52,6 +54,8 @@ class ExternalDataPanel extends JPanel {
     private final WorldWindow wwd;
     private final DefaultListModel<Layer> layersModel = new DefaultListModel<>();
     private final JList<Layer> layersList = new JList<>(layersModel);
+    // layers of the WMS dialog: owned by its check boxes, which add the same layer again when checked again
+    private final Set<Layer> wmsLayers = new HashSet<>();
     private WmsBrowserDialog wmsDialog;
 
     ExternalDataPanel(final WorldWindow wwd) {
@@ -147,18 +151,35 @@ class ExternalDataPanel extends JPanel {
         wwd.redraw();
     }
 
+    private void addWmsLayer(final Layer layer) {
+        wmsLayers.add(layer);
+        addLayer(layer);
+    }
+
+    /**
+     * A WMS layer unchecked in the dialog.
+     */
+    private void wmsLayerRemoved(final Layer layer) {
+        layersModel.removeElement(layer);
+    }
+
     private void removeSelected() {
         for (Layer layer : layersList.getSelectedValuesList()) {
             wwd.getModel().getLayers().remove(layer);
             layersModel.removeElement(layer);
-            layer.dispose();
+            if (wmsLayers.contains(layer)) {
+                wmsDialog.deselect(layer);
+            } else {
+                layer.dispose();
+            }
         }
         wwd.redraw();
     }
 
     private void showWmsDialog() {
         if (wmsDialog == null) {
-            wmsDialog = new WmsBrowserDialog(SwingUtilities.getWindowAncestor(this), wwd, this::addLayer);
+            wmsDialog = new WmsBrowserDialog(SwingUtilities.getWindowAncestor(this), wwd, this::addWmsLayer,
+                                             this::wmsLayerRemoved);
         }
         wmsDialog.setVisible(true);
         wmsDialog.toFront();
