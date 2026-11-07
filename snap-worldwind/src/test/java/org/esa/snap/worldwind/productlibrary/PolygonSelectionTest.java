@@ -234,6 +234,63 @@ public class PolygonSelectionTest {
     }
 
     @Test
+    public void test3DCrossingEdgesKeepDrawingWithAMessage() {
+        final WorldWindow wwd = mock(WorldWindow.class);
+        final Model model = mock(Model.class);
+        final View view = mock(View.class);
+        when(wwd.getModel()).thenReturn(model);
+        when(model.getLayers()).thenReturn(new LayerList());
+        when(wwd.getInputHandler()).thenReturn(mock(InputHandler.class));
+        when(wwd.getView()).thenReturn(view);
+        when(view.computePositionFromScreenPoint(anyDouble(), anyDouble())).thenAnswer(invocation ->
+                Position.fromDegrees((Double) invocation.getArgument(1) / 10, (Double) invocation.getArgument(0) / 10, 0));
+
+        final Polygon3DSelection selection = new Polygon3DSelection(wwd);
+        final JPanel source = new JPanel();
+        selection.start();
+        // a bow tie
+        for (int[] click : new int[][]{{100, 450}, {140, 480}, {100, 480}, {140, 450}}) {
+            selection.mousePressed(event(source, MouseEvent.MOUSE_PRESSED, click[0], click[1], 1));
+        }
+        selection.mousePressed(event(source, MouseEvent.MOUSE_PRESSED, 140, 450, 2));
+        assertTrue("keeps drawing", selection.isDrawing());
+        assertNull(selection.getSelectedArea());
+        assertEquals(java.util.Collections.singletonList(Map2DMouseHandler.INVALID_POLYGON_MESSAGE), messages);
+    }
+
+    @Test
+    public void test3DShapesHaveStraightLonLatEdges() {
+        final WorldWindow wwd = mock(WorldWindow.class);
+        final Model model = mock(Model.class);
+        when(wwd.getModel()).thenReturn(model);
+        when(model.getLayers()).thenReturn(new LayerList());
+        when(wwd.getInputHandler()).thenReturn(mock(InputHandler.class));
+        final Polygon3DSelection selection = new Polygon3DSelection(wwd);
+        selection.setSelectedArea(new PolygonArea(new double[]{-60, 60, 0}, new double[]{50, 50, 70}));
+        final gov.nasa.worldwind.render.SurfacePolygon shape =
+                (gov.nasa.worldwind.render.SurfacePolygon) selection.getLayer().getRenderables().iterator().next();
+        // as searched: straight in longitude and latitude, not great circles bowing towards the pole
+        assertEquals(gov.nasa.worldwind.avlist.AVKey.LINEAR, shape.getPathType());
+    }
+
+    @Test
+    public void testWideEdgesFromThe2DMapGoTheLongWayOnTheGlobe() {
+        // from the 2D map: an edge from -170 to 170 spans 340 degrees, not 20 across the antimeridian
+        final PolygonArea wide = new PolygonArea(new double[]{-170, 170, 170, -170}, new double[]{-10, -10, 10, 10});
+        final List<gov.nasa.worldwind.geom.LatLon> locations = Polygon3DSelection.displayLocations(wide);
+        assertEquals(4 + 3 + 3, locations.size());
+        for (int i = 0; i < locations.size(); i++) {
+            final double lon = locations.get(i).getLongitude().degrees;
+            final double nextLon = locations.get((i + 1) % locations.size()).getLongitude().degrees;
+            assertTrue("no edge WorldWind would take across 180", Math.abs(nextLon - lon) <= 90.0 + 1e-9);
+        }
+        assertEquals(-85.0, locations.get(1).getLongitude().degrees, 1e-9);
+        // edges within 90 degrees are kept as they are
+        final PolygonArea small = new PolygonArea(new double[]{10, 14, 12}, new double[]{45, 45, 48});
+        assertEquals(3, Polygon3DSelection.displayLocations(small).size());
+    }
+
+    @Test
     public void test3DIgnoresClicksWhenNotDrawing() {
         final WorldWindow wwd = mock(WorldWindow.class);
         when(wwd.getInputHandler()).thenReturn(mock(InputHandler.class));

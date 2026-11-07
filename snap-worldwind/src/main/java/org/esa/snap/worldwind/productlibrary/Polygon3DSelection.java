@@ -16,6 +16,7 @@
 package org.esa.snap.worldwind.productlibrary;
 
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.LayerList;
@@ -67,6 +68,9 @@ public class Polygon3DSelection extends MouseAdapter {
         attributes.setOutlineWidth(WorldMapPanelWrapper.SELECTION_LINE_WIDTH);
         this.polygonShape.setAttributes(attributes);
         this.outlineShape.setAttributes(attributes);
+        // straight edges in longitude and latitude, as the area is searched, not great circles
+        this.polygonShape.setPathType(AVKey.LINEAR);
+        this.outlineShape.setPathType(AVKey.LINEAR);
 
         wwd.getInputHandler().addMouseListener(this);
         wwd.getInputHandler().addMouseMotionListener(this);
@@ -184,6 +188,29 @@ public class Polygon3DSelection extends MouseAdapter {
         return false;
     }
 
+    /**
+     * The outline of a polygon area as WorldWind should draw it. The area is in plain longitudes, so an edge spanning
+     * more than 180 degrees (possible on the 2D map) goes the long way round; WorldWind would take it across the
+     * antimeridian. Such edges get intermediate points, no edge spanning more than 90 degrees.
+     */
+    static List<LatLon> displayLocations(PolygonArea area) {
+        final List<LatLon> locations = new ArrayList<>();
+        final int count = area.getVertexCount();
+        for (int i = 0; i < count; i++) {
+            final double lon = area.getLongitude(i);
+            final double lat = area.getLatitude(i);
+            locations.add(LatLon.fromDegrees(lat, lon));
+            final double nextLon = area.getLongitude((i + 1) % count);
+            final double nextLat = area.getLatitude((i + 1) % count);
+            final int steps = (int) Math.ceil(Math.abs(nextLon - lon) / 90.0);
+            for (int k = 1; k < steps; k++) {
+                final double f = (double) k / steps;
+                locations.add(LatLon.fromDegrees(lat + f * (nextLat - lat), lon + f * (nextLon - lon)));
+            }
+        }
+        return locations;
+    }
+
     private Point.Double toLonLat(Point screenPoint) {
         final Position position = this.wwd.getView().computePositionFromScreenPoint(screenPoint.getX(), screenPoint.getY());
         if (position == null) {
@@ -195,11 +222,7 @@ public class Polygon3DSelection extends MouseAdapter {
     private void update() {
         this.layer.removeAllRenderables();
         if (this.polygonArea != null) {
-            final List<LatLon> locations = new ArrayList<>();
-            for (int i = 0; i < this.polygonArea.getVertexCount(); i++) {
-                locations.add(LatLon.fromDegrees(this.polygonArea.getLatitude(i), this.polygonArea.getLongitude(i)));
-            }
-            this.polygonShape.setLocations(locations);
+            this.polygonShape.setLocations(displayLocations(this.polygonArea));
             this.layer.addRenderable(this.polygonShape);
         } else if (this.drawing && !this.vertices.isEmpty()) {
             final List<LatLon> locations = new ArrayList<>();
