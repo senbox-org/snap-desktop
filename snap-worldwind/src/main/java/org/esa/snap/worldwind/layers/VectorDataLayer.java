@@ -48,6 +48,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,11 @@ import java.util.logging.Level;
  * removed on the EDT.
  */
 public class VectorDataLayer extends BaseLayer implements WWLayer {
+
+    /**
+     * Vertices of all vector data of a product at most: each node is limited too, but a product can have many.
+     */
+    static final int MAX_PRODUCT_VERTICES = 3 * VectorDataConverter.MAX_VERTICES;
 
     private static final AtomicInteger threadCount = new AtomicInteger();
     private static final ExecutorService vectorExecutor = Executors.newSingleThreadExecutor(r -> {
@@ -87,10 +93,20 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
     // nodes whose conversion is about to be submitted (EDT only)
     private final Set<VectorDataNode> scheduledNodes = Collections.newSetFromMap(new IdentityHashMap<>());
     private final AtomicInteger pendingTasks = new AtomicInteger();
+    // vertices of the shapes installed for each node (EDT only), for the product limit
+    private final Map<VectorDataNode, Integer> vertexCounts = new IdentityHashMap<>();
+    // conversion results installed, for tests
+    private final AtomicInteger installs = new AtomicInteger();
+    private final int maxProductVertices;
     private final ScreenAnnotation infoAnnotation;
     private WorldWindowGLCanvas wwd;
 
     public VectorDataLayer() {
+        this(MAX_PRODUCT_VERTICES);
+    }
+
+    VectorDataLayer(final int maxProductVertices) {
+        this.maxProductVertices = maxProductVertices;
         setName("Vector Data");
         infoAnnotation = new ScreenAnnotation("", new Point(0, 0));
         infoAnnotation.getAttributes().setSize(new Dimension(Integer.MAX_VALUE, 0));
@@ -235,18 +251,34 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
     }
 
     private void convert(final Product product, final VectorDataNode node, final int generation) {
+        // what the product's other nodes leave of the product limit
+        int otherVertices = 0;
+        for (Map.Entry<VectorDataNode, Integer> entry : vertexCounts.entrySet()) {
+            if (entry.getKey() != node && entry.getKey().getProduct() == product) {
+                otherVertices += entry.getValue();
+            }
+        }
+        final int maxVertices = Math.max(0, Math.min(VectorDataConverter.MAX_VERTICES, maxProductVertices - otherVertices));
         vectorExecutor.execute(() -> {
             List<Renderable> renderables = null;
+            int vertexCount = 0;
             try {
                 final Integer requested = requestedGenerations.get(node);
                 if (requested != null && requested == generation) {
                     conversions.incrementAndGet();
-                    renderables = createRenderables(node, new VectorDataConverter(product).convert(node));
+                    final VectorDataConverter converter = new VectorDataConverter(product, maxVertices);
+                    renderables = createRenderables(node, converter.convert(node));
+                    vertexCount = converter.getVertexCount();
+                    if (maxVertices < VectorDataConverter.MAX_VERTICES && converter.isTruncated()) {
+                        SystemUtils.LOG.warning("WorldWind: the vector data of " + product.getName() + " has more than " +
+                                                maxProductVertices + " vertices; " + node.getName() + " is not shown in full");
+                    }
                 }
             } catch (Throwable e) {
                 SystemUtils.LOG.log(Level.WARNING, "WorldWind: unable to show the vector data " + node.getName(), e);
             }
             final List<Renderable> result = renderables;
+            final int vertices = vertexCount;
             SwingUtilities.invokeLater(() -> {
                 try {
                     final Integer latest = generations.get(node);
@@ -258,6 +290,8 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
                         addRenderable(renderable);
                     }
                     shapes.put(node, result);
+                    vertexCounts.put(node, vertices);
+                    installs.incrementAndGet();
                     redraw();
                 } finally {
                     pendingTasks.decrementAndGet();
@@ -270,8 +304,21 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
         return conversions.get();
     }
 
+    int getInstallCount() {
+        return installs.get();
+    }
+
+    /**
+     * Runs a task on the conversion thread, after the conversions already queued (for tests).
+     */
+    static void runOnConversionThread(final Runnable task) {
+        vectorExecutor.execute(task);
+    }
+
     static List<Renderable> createRenderables(final VectorDataNode node, final List<VectorDataConverter.Shape> converted) {
         final List<Renderable> renderables = new ArrayList<>();
+        // shared by the points of a colour: up to MAX_POINTS placemarks per node
+        final Map<Color, PointPlacemarkAttributes> pointAttributes = new HashMap<>();
         for (VectorDataConverter.Shape shape : converted) {
             final String info = node.getName() + ": " + shape.featureId;
             switch (shape.kind) {
@@ -300,12 +347,14 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
                     final double[] pos = shape.parts.get(0).get(0);
                     final PointPlacemark placemark = new PointPlacemark(Position.fromDegrees(pos[0], pos[1], 0));
                     placemark.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-                    final PointPlacemarkAttributes attributes = new PointPlacemarkAttributes();
-                    attributes.setUsePointAsDefaultImage(true);
-                    attributes.setLineMaterial(new Material(opaque(shape.style.stroke)));
-                    attributes.setScale(6.0);
-                    attributes.setImageOffset(new Offset(0.5, 0.5, AVKey.FRACTION, AVKey.FRACTION));
-                    placemark.setAttributes(attributes);
+                    placemark.setAttributes(pointAttributes.computeIfAbsent(opaque(shape.style.stroke), color -> {
+                        final PointPlacemarkAttributes attributes = new PointPlacemarkAttributes();
+                        attributes.setUsePointAsDefaultImage(true);
+                        attributes.setLineMaterial(new Material(color));
+                        attributes.setScale(6.0);
+                        attributes.setImageOffset(new Offset(0.5, 0.5, AVKey.FRACTION, AVKey.FRACTION));
+                        return attributes;
+                    }));
                     placemark.setValue(AVKey.DISPLAY_NAME, info);
                     renderables.add(placemark);
                     break;
@@ -341,6 +390,7 @@ public class VectorDataLayer extends BaseLayer implements WWLayer {
     }
 
     private void removeShapes(final VectorDataNode node) {
+        vertexCounts.remove(node);
         final List<Renderable> renderables = shapes.remove(node);
         if (renderables != null) {
             for (Renderable renderable : renderables) {

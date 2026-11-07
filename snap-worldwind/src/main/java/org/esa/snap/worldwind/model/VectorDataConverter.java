@@ -58,6 +58,8 @@ public class VectorDataConverter {
     static final double DENSIFY_PIXELS = 8;
     /** Vertices per node at most, to keep the globe responsive. */
     public static final int MAX_VERTICES = 100_000;
+    /** Points per node at most: each is a placemark of its own, which costs far more to draw than a vertex. */
+    public static final int MAX_POINTS = 10_000;
 
     public enum Kind {POLYGON, LINE, POINT}
 
@@ -103,7 +105,9 @@ public class VectorDataConverter {
     private final GeoCoding geoCoding;
     private final AffineTransform modelToImage;
     private final int maxVertices;
+    private final int maxPoints;
     private int vertexCount;
+    private int pointCount;
     // the vertex limit was reached: conversion stops, also in the middle of a feature
     private boolean truncated;
 
@@ -114,8 +118,16 @@ public class VectorDataConverter {
         this(product, MAX_VERTICES);
     }
 
-    VectorDataConverter(final Product product, final int maxVertices) {
+    /**
+     * @param maxVertices vertices at most, e.g. what is left of a limit for all vector data of the product
+     */
+    public VectorDataConverter(final Product product, final int maxVertices) {
+        this(product, maxVertices, MAX_POINTS);
+    }
+
+    VectorDataConverter(final Product product, final int maxVertices, final int maxPoints) {
         this.maxVertices = maxVertices;
+        this.maxPoints = maxPoints;
         geoCoding = product.getSceneGeoCoding();
         if (geoCoding == null || !geoCoding.canGetGeoPos()) {
             throw new IllegalArgumentException("Product " + product.getName() + " has no geo-coding");
@@ -144,6 +156,7 @@ public class VectorDataConverter {
      */
     public List<Shape> convert(final VectorDataNode node) {
         vertexCount = 0;
+        pointCount = 0;
         truncated = false;
         final List<Shape> shapes = new ArrayList<>();
         final MathTransform featureToModel;
@@ -183,16 +196,16 @@ public class VectorDataConverter {
         }
         if (truncated) {
             SystemUtils.LOG.warning("WorldWind: vector data " + node.getName() + " has more than " + maxVertices +
-                                    " vertices; the rest is not shown");
+                                    " vertices or " + maxPoints + " points to show; the rest is not shown");
         }
         return shapes;
     }
 
-    boolean isTruncated() {
+    public boolean isTruncated() {
         return truncated;
     }
 
-    int getVertexCount() {
+    public int getVertexCount() {
         return vertexCount;
     }
 
@@ -216,6 +229,9 @@ public class VectorDataConverter {
     }
 
     private void convert(final Geometry geometry, final String id, final Style style, final List<Shape> shapes) {
+        if (truncated) {
+            return;
+        }
         if (geometry instanceof Polygon) {
             final List<List<double[]>> rings = new ArrayList<>();
             final List<double[]> shell = toRing(((Polygon) geometry).getExteriorRing().getCoordinates());
@@ -229,6 +245,10 @@ public class VectorDataConverter {
                     rings.add(hole);
                 }
             }
+            if (truncated) {
+                // cut off at the limit: closing what was converted would show a shape the feature does not have
+                return;
+            }
             shapes.add(new Shape(Kind.POLYGON, id, rings, style));
         } else if (geometry instanceof LineString) {
             final List<List<double[]>> lines = toLines(geometry.getCoordinates());
@@ -236,20 +256,23 @@ public class VectorDataConverter {
                 shapes.add(new Shape(Kind.LINE, id, lines, style));
             }
         } else if (geometry instanceof Point) {
-            final double[] pos = toGeo(((Point) geometry).getX(), ((Point) geometry).getY());
-            if (pos != null && vertexCount >= maxVertices) {
+            if (vertexCount >= maxVertices || pointCount >= maxPoints) {
                 truncated = true;
-            } else if (pos != null) {
+                return;
+            }
+            final double[] pos = toGeo(((Point) geometry).getX(), ((Point) geometry).getY());
+            if (pos != null) {
                 final List<List<double[]>> parts = new ArrayList<>();
                 final List<double[]> point = new ArrayList<>();
                 point.add(pos);
                 parts.add(point);
                 vertexCount++;
+                pointCount++;
                 shapes.add(new Shape(Kind.POINT, id, parts, style));
             }
         } else {
             // multi-geometries and collections
-            for (int i = 0; i < geometry.getNumGeometries(); i++) {
+            for (int i = 0; i < geometry.getNumGeometries() && !truncated; i++) {
                 final Geometry part = geometry.getGeometryN(i);
                 if (part != geometry) {
                     convert(part, id, style, shapes);

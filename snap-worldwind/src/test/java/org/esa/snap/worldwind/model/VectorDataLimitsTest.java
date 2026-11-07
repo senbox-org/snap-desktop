@@ -70,6 +70,41 @@ public class VectorDataLimitsTest {
     }
 
     @Test
+    public void testPolygonCutOffAtTheLimitIsNotShown() throws Exception {
+        final Product product = createMapProduct(0.001);
+        final Coordinate[] ring = new Coordinate[101];
+        for (int i = 0; i < 100; i++) {
+            final double angle = 2 * Math.PI * i / 100;
+            ring[i] = new Coordinate(10.5 + 0.2 * Math.cos(angle), 49.5 + 0.2 * Math.sin(angle));
+        }
+        ring[100] = ring[0];
+        final VectorDataNode node = node(product, product.getSceneCRS(), GF.createPolygon(ring));
+
+        final VectorDataConverter converter = new VectorDataConverter(product, 50);
+        final List<VectorDataConverter.Shape> shapes = converter.convert(node);
+
+        assertTrue(converter.isTruncated());
+        // closing the first 50 vertices would draw half a disc
+        assertTrue(shapes.isEmpty());
+    }
+
+    @Test
+    public void testPointsAreLimitedSeparately() throws Exception {
+        final Product product = createMapProduct(0.001);
+        final Coordinate[] coordinates = new Coordinate[40];
+        for (int i = 0; i < coordinates.length; i++) {
+            coordinates[i] = new Coordinate(10.0 + i * 0.01, 49.5);
+        }
+        final VectorDataNode node = node(product, product.getSceneCRS(), GF.createMultiPointFromCoords(coordinates));
+
+        final VectorDataConverter converter = new VectorDataConverter(product, 1000, 25);
+        final List<VectorDataConverter.Shape> shapes = converter.convert(node);
+
+        assertTrue(converter.isTruncated());
+        assertEquals(25, shapes.size());
+    }
+
+    @Test
     public void testDensificationOfAnEdgeIsBounded() throws Exception {
         // 0.0001 degree pixels: an edge of 0.09 degrees is 900 pixels, and an edge longer than the raster still more
         final Product product = createMapProduct(0.0001);

@@ -19,6 +19,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import javax.swing.SwingUtilities;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -78,6 +80,109 @@ public class VectorDataLayerTest {
         // before, every event converted the whole node again: 200 conversions of up to 200 features
         final int conversions = layer.getConversionCount() - before;
         assertTrue("conversions: " + conversions, conversions <= 3);
+    }
+
+    @Test
+    public void testConversionSupersededBeforeItStartsIsSkipped() throws Exception {
+        final VectorDataLayer layer = new VectorDataLayer();
+        final Product product = createProduct();
+        final VectorDataNode node = createNode(product, "superseded", square(10.0, 50.0));
+        product.getVectorDataGroup().add(node);
+        onEDT(() -> layer.addProduct(product, null));
+        assertTrue(layer.awaitPendingConversions(10000));
+        final int before = layer.getConversionCount();
+
+        // the conversion thread is busy while two changes are submitted one after the other
+        final CountDownLatch release = new CountDownLatch(1);
+        VectorDataLayer.runOnConversionThread(() -> {
+            try {
+                release.await(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+        onEDT(() -> node.getFeatureCollection().add(PlainFeatureFactory.createPlainFeature(
+                node.getFeatureType(), "a", square(10.2, 49.9), null)));
+        onEDT(() -> { }); // the first conversion is submitted
+        onEDT(() -> node.getFeatureCollection().add(PlainFeatureFactory.createPlainFeature(
+                node.getFeatureType(), "b", square(10.4, 49.9), null)));
+        onEDT(() -> { }); // the second one too
+        release.countDown();
+        assertTrue(layer.awaitPendingConversions(10000));
+
+        assertEquals("the first is skipped", 1, layer.getConversionCount() - before);
+        assertEquals(3, layer.getShapes(node).size());
+    }
+
+    @Test
+    public void testConversionSupersededBeforeItIsInstalledIsDiscarded() throws Exception {
+        final VectorDataLayer layer = new VectorDataLayer();
+        final Product product = createProduct();
+        final VectorDataNode node = createNode(product, "discarded", square(10.0, 50.0));
+        product.getVectorDataGroup().add(node);
+        onEDT(() -> layer.addProduct(product, null));
+        assertTrue(layer.awaitPendingConversions(10000));
+        final int installsBefore = layer.getInstallCount();
+        final int conversionsBefore = layer.getConversionCount();
+
+        onEDT(() -> node.getFeatureCollection().add(PlainFeatureFactory.createPlainFeature(
+                node.getFeatureType(), "a", square(10.2, 49.9), null)));
+        onEDT(() -> {
+            // hold the EDT until the conversion is done and its result waits to be installed, then change the node
+            final long end = System.currentTimeMillis() + 10000;
+            while (layer.getConversionCount() == conversionsBefore && System.currentTimeMillis() < end) {
+                Thread.onSpinWait();
+            }
+            final CountDownLatch converted = new CountDownLatch(1);
+            VectorDataLayer.runOnConversionThread(converted::countDown);
+            try {
+                converted.await(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            node.getFeatureCollection().add(PlainFeatureFactory.createPlainFeature(
+                    node.getFeatureType(), "b", square(10.4, 49.9), null));
+        });
+        assertTrue(layer.awaitPendingConversions(10000));
+
+        assertEquals("only the latest result is installed", 1, layer.getInstallCount() - installsBefore);
+        assertEquals(3, layer.getShapes(node).size());
+    }
+
+    @Test
+    public void testVerticesOfAllNodesOfAProductAreLimited() throws Exception {
+        // a square of 10 pixel edges has 9 vertices once densified: room for one square, not two
+        final VectorDataLayer layer = new VectorDataLayer(12);
+        final Product product = createProduct();
+        final VectorDataNode first = createNode(product, "first", square(10.2, 49.9));
+        final VectorDataNode second = createNode(product, "second", square(10.5, 49.9));
+        product.getVectorDataGroup().add(first);
+        onEDT(() -> layer.addProduct(product, null));
+        assertTrue(layer.awaitPendingConversions(10000));
+        assertEquals(1, layer.getShapes(first).size());
+
+        onEDT(() -> product.getVectorDataGroup().add(second));
+        assertTrue(layer.awaitPendingConversions(10000));
+        assertTrue("the second node gets only what is left", layer.getShapes(second).isEmpty());
+
+        // removing the first frees its vertices
+        onEDT(() -> product.getVectorDataGroup().remove(first));
+        onEDT(() -> second.getFeatureCollection().add(PlainFeatureFactory.createPlainFeature(
+                second.getFeatureType(), "x", square(10.7, 49.9), null)));
+        assertTrue(layer.awaitPendingConversions(10000));
+        assertEquals(1, layer.getShapes(second).size());
+    }
+
+    @Test
+    public void testPointsShareTheirAttributes() throws Exception {
+        final Product product = createProduct();
+        final VectorDataNode node = createNode(product, "points", GF.createPoint(new Coordinate(10.1, 49.9)),
+                                               GF.createPoint(new Coordinate(10.2, 49.9)));
+        final List<Renderable> renderables = VectorDataLayer.createRenderables(
+                node, new org.esa.snap.worldwind.model.VectorDataConverter(product).convert(node));
+        assertEquals(2, renderables.size());
+        assertTrue(((PointPlacemark) renderables.get(0)).getAttributes() ==
+                   ((PointPlacemark) renderables.get(1)).getAttributes());
     }
 
     @Test
