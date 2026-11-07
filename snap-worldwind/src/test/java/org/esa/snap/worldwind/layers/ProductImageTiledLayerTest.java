@@ -128,6 +128,92 @@ public class ProductImageTiledLayerTest {
     }
 
     @Test
+    public void testErrorMarksTheTileAbsent() {
+        final ProductTileRenderer renderer = mock(ProductTileRenderer.class);
+        when(renderer.render(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyInt(), anyInt()))
+                .thenThrow(new OutOfMemoryError("Java heap space"));
+        final TestLayer layer = new TestLayer(renderer);
+        final TextureTile tile = tile(layer, 3, 5);
+
+        layer.createRenderTask(tile).run();
+
+        // not requested again in every frame
+        assertTrue(layer.getLevels().isResourceAbsent(tile));
+    }
+
+    /**
+     * Occupies the render threads until the returned latch is released.
+     */
+    private static CountDownLatch blockRenderThreads() {
+        final CountDownLatch release = new CountDownLatch(1);
+        final ProductTileRenderer blocking = mock(ProductTileRenderer.class);
+        when(blocking.render(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyInt(), anyInt())).thenAnswer(i -> {
+            release.await(10, TimeUnit.SECONDS);
+            return null;
+        });
+        final TestLayer blocker = new TestLayer(blocking);
+        for (int column = 0; column < 4; column++) {
+            blocker.submit(blocker.createRenderTask(tile(blocker, 0, column)));
+        }
+        return release;
+    }
+
+    private static void awaitRenders(final AtomicInteger renders, final int count) throws InterruptedException {
+        final long end = System.currentTimeMillis() + 10000;
+        while (renders.get() < count && System.currentTimeMillis() < end) {
+            Thread.sleep(20);
+        }
+    }
+
+    @Test
+    public void testQueuedTileNoLongerRequestedIsDropped() throws Exception {
+        final AtomicInteger renders = new AtomicInteger();
+        final ProductTileRenderer renderer = mock(ProductTileRenderer.class);
+        when(renderer.render(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyInt(), anyInt())).thenAnswer(i -> {
+            renders.incrementAndGet();
+            return null;
+        });
+        final TestLayer layer = new TestLayer(renderer);
+        final TextureTile tile = tile(layer, 3, 5);
+
+        final CountDownLatch release = blockRenderThreads();
+        layer.submit(layer.createRenderTask(tile));
+        // the view moved: two frames drawn without asking for the tile
+        layer.frameDrawn();
+        layer.frameDrawn();
+        release.countDown();
+        Thread.sleep(500);
+        assertEquals("dropped", 0, renders.get());
+
+        // asked for again later, it is rendered
+        layer.submit(layer.createRenderTask(tile));
+        awaitRenders(renders, 1);
+        assertEquals(1, renders.get());
+    }
+
+    @Test
+    public void testQueuedTileStillRequestedIsRendered() throws Exception {
+        final AtomicInteger renders = new AtomicInteger();
+        final ProductTileRenderer renderer = mock(ProductTileRenderer.class);
+        when(renderer.render(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyInt(), anyInt())).thenAnswer(i -> {
+            renders.incrementAndGet();
+            return null;
+        });
+        final TestLayer layer = new TestLayer(renderer);
+        final TextureTile tile = tile(layer, 3, 5);
+
+        final CountDownLatch release = blockRenderThreads();
+        layer.submit(layer.createRenderTask(tile));
+        layer.frameDrawn();
+        // the next frame still needs it
+        layer.submit(layer.createRenderTask(tile));
+        layer.frameDrawn();
+        release.countDown();
+        awaitRenders(renders, 1);
+        assertEquals(1, renders.get());
+    }
+
+    @Test
     public void testATileRequestedAgainIsRenderedOnce() throws Exception {
         final CountDownLatch release = new CountDownLatch(1);
         final AtomicInteger renders = new AtomicInteger();

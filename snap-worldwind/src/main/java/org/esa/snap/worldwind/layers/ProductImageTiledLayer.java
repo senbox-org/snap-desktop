@@ -35,13 +35,14 @@ import org.esa.snap.worldwind.model.GeoBounds;
 import org.esa.snap.worldwind.model.ProductTileRenderer;
 
 import java.awt.image.BufferedImage;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 /**
@@ -71,8 +72,11 @@ class ProductImageTiledLayer extends TiledImageLayer {
 
     private final ProductTileRenderer renderer;
     private volatile boolean disposed;
-    // tiles queued or being rendered, so that a tile requested again in the next frame is not rendered twice
-    private final Set<TileKey> pending = ConcurrentHashMap.newKeySet();
+    // tiles queued or being rendered, with the last frame that requested them: a tile requested again in the next
+    // frame is not rendered twice, and a queued tile no longer requested (the view moved on) is dropped
+    private final Map<TileKey, Long> pending = new ConcurrentHashMap<>();
+    // frames whose requests have been sent
+    private final AtomicLong frames = new AtomicLong();
     // the first render failure of the layer is logged as a warning, later ones at FINE
     private final AtomicBoolean failureLogged = new AtomicBoolean();
 
@@ -136,10 +140,8 @@ class ProductImageTiledLayer extends TiledImageLayer {
         }
         final Vec4 centroid = tile.getCentroidPoint(dc.getGlobe());
         final Vec4 referencePoint = getReferencePoint(dc);
-        if (referencePoint != null) {
-            tile.setPriority(centroid.distanceTo3(referencePoint));
-        }
-        getRequestQ().add(createRenderTask(tile));
+        final double priority = referencePoint != null ? centroid.distanceTo3(referencePoint) : 0.0;
+        getRequestQ().add(createRenderTask(tile, priority));
     }
 
     @Override
@@ -149,20 +151,43 @@ class ProductImageTiledLayer extends TiledImageLayer {
 
     @Override
     protected void sendRequests() {
-        Runnable task = getRequestQ().poll();
-        while (task != null) {
-            if (RENDER_EXECUTOR.getQueue().size() >= MAX_QUEUED_TILES) {
-                break; // asked again in the next frame if still needed
-            }
+        for (Runnable task = getRequestQ().poll(); task != null; task = getRequestQ().poll()) {
             submit(task);
-            task = getRequestQ().poll();
+        }
+        frames.incrementAndGet();
+    }
+
+    /**
+     * Queues a tile requested in the current frame, or notes that a queued tile is still needed. Beyond
+     * {@link #MAX_QUEUED_TILES} the request is dropped; it is made again in the next frame if still needed.
+     */
+    void submit(final Runnable task) {
+        if (!(task instanceof RenderTask)) {
+            return;
+        }
+        final TileKey key = ((RenderTask) task).tile.getTileKey();
+        final long frame = frames.get();
+        if (pending.replace(key, frame) != null) {
+            return; // queued or being rendered
+        }
+        if (RENDER_EXECUTOR.getQueue().size() < MAX_QUEUED_TILES && pending.putIfAbsent(key, frame) == null) {
+            RENDER_EXECUTOR.execute(task);
         }
     }
 
-    void submit(final Runnable task) {
-        if (task instanceof RenderTask && pending.add(((RenderTask) task).tile.getTileKey())) {
-            RENDER_EXECUTOR.execute(task);
-        }
+    /**
+     * True if a queued tile was not requested by the last frame drawn: the view has moved on and does not need it.
+     */
+    boolean isStale(final TextureTile tile) {
+        final Long requested = pending.get(tile.getTileKey());
+        return requested != null && requested < frames.get() - 1;
+    }
+
+    /**
+     * Counts a frame as drawn, as {@link #sendRequests()} does (for tests).
+     */
+    void frameDrawn() {
+        frames.incrementAndGet();
     }
 
     /**
@@ -200,7 +225,7 @@ class ProductImageTiledLayer extends TiledImageLayer {
         TextureTile.getMemoryCache().add(tile.getTileKey(), tile);
     }
 
-    void renderFailed(final TextureTile tile, final Exception e) {
+    void renderFailed(final TextureTile tile, final Throwable e) {
         getLevels().markResourceAbsent(tile);
         // a systematic failure would otherwise leave the image blank without trace in the log
         final Level level = failureLogged.compareAndSet(false, true) ? Level.WARNING : Level.FINE;
@@ -209,30 +234,38 @@ class ProductImageTiledLayer extends TiledImageLayer {
     }
 
     RenderTask createRenderTask(final TextureTile tile) {
-        return new RenderTask(tile, this);
+        return createRenderTask(tile, 0.0);
+    }
+
+    RenderTask createRenderTask(final TextureTile tile, final double priority) {
+        return new RenderTask(tile, priority, this);
     }
 
     static class RenderTask implements Runnable, Comparable<RenderTask> {
 
         private final TextureTile tile;
+        // the distance from the eye when requested; fixed, as the executor's queue orders by it
+        private final double priority;
         private final ProductImageTiledLayer layer;
 
-        RenderTask(final TextureTile tile, final ProductImageTiledLayer layer) {
+        RenderTask(final TextureTile tile, final double priority, final ProductImageTiledLayer layer) {
             this.tile = tile;
+            this.priority = priority;
             this.layer = layer;
         }
 
         @Override
         public void run() {
             try {
-                if (Thread.currentThread().isInterrupted() || layer.isDisposed()) {
+                if (Thread.currentThread().isInterrupted() || layer.isDisposed() || layer.isStale(tile)) {
                     return;
                 }
                 if (layer.loadTile(tile) && !layer.isDisposed()) {
                     layer.firePropertyChange(AVKey.LAYER, null, layer);
                 }
-            } catch (Exception e) {
-                // a product closed while its tile was rendered is not an error
+            } catch (Throwable e) {
+                // also errors such as OutOfMemoryError: the tile is marked absent instead of being requested again in
+                // every frame. A product closed while its tile was rendered is not an error.
                 if (!layer.isDisposed()) {
                     layer.renderFailed(tile, e);
                 }
@@ -243,7 +276,7 @@ class ProductImageTiledLayer extends TiledImageLayer {
 
         @Override
         public int compareTo(final RenderTask that) {
-            return Double.compare(this.tile.getPriority(), that.tile.getPriority());
+            return Double.compare(this.priority, that.priority);
         }
 
         @Override
