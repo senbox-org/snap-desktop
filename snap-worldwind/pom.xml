@@ -186,6 +186,13 @@
         </dependency>
 
         <dependency>
+            <!-- the local DEM terrain reads GeoTIFFs through SNAP's reader, available in the application -->
+            <groupId>org.esa.snap</groupId>
+            <artifactId>snap-geotiff</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>

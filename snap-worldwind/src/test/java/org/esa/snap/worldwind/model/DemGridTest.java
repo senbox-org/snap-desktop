@@ -93,6 +93,53 @@ public class DemGridTest {
     }
 
     @Test
+    public void testLongitudesBeyond180AreMoved() throws Exception {
+        final Product product = new Product("dem", "TEST", 100, 50);
+        // a grid in 0..360 longitudes: 190..191 is -170..-169
+        product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 100, 50, 190.0, 46.0,
+                                                   0.01, 0.01, 0.0, 0.0));
+        product.addBand(new VirtualBand("height", ProductData.TYPE_FLOAT32, 100, 50, "floor(X) + 1000 * floor(Y)"));
+        final DemGrid grid = DemGrid.fromProduct(product, 1000);
+        assertNotNull(grid);
+        assertEquals(-169.995, grid.minLon, 1e-9);
+        assertEquals(-169.005, grid.maxLon, 1e-9);
+        // north and west first, as in the source
+        assertEquals(0, grid.heights[0], 0);
+        assertEquals(99, grid.heights[99], 0);
+        assertArrayEquals(new double[]{45.505, 45.995, -169.995, -169.005}, DemGrid.bounds(product), 1e-9);
+    }
+
+    @Test
+    public void testGridAcrossTheAntimeridianIsNotUsed() throws Exception {
+        final Product product = new Product("dem", "TEST", 100, 50);
+        // 179.5 .. 180.5
+        product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 100, 50, 179.5, 46.0,
+                                                   0.01, 0.01, 0.0, 0.0));
+        product.addBand(new VirtualBand("height", ProductData.TYPE_FLOAT32, 100, 50, "1"));
+        assertNull(DemGrid.fromProduct(product, 1000));
+        assertNull(DemGrid.bounds(product));
+    }
+
+    @Test
+    public void testManyStripsInBothDirections() throws Exception {
+        // more rows than one strip, north up and south up
+        for (double pixelSizeY : new double[]{0.001, -0.001}) {
+            final Product product = new Product("dem", "TEST", 10, 600);
+            product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 10, 600, 10.0,
+                                                       pixelSizeY > 0 ? 46.0 : 45.4, 0.01, pixelSizeY, 0.0, 0.0));
+            product.addBand(new VirtualBand("height", ProductData.TYPE_FLOAT32, 10, 600, "floor(Y)"));
+            final DemGrid grid = DemGrid.fromProduct(product, 1000);
+            assertNotNull(grid);
+            assertEquals(600, grid.height);
+            for (int row = 0; row < 600; row++) {
+                // output row 0 is the north
+                final float expected = pixelSizeY > 0 ? row : 599 - row;
+                assertEquals("row " + row, expected, grid.heights[row * 10], 0);
+            }
+        }
+    }
+
+    @Test
     public void testEastToWestIsFlipped() throws Exception {
         final Product product = new Product("dem", "TEST", 100, 50);
         // column 0 in the east

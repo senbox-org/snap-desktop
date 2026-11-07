@@ -236,6 +236,11 @@ final class WorldWindOptionsPanel extends JPanel {
 
     boolean valid() {
         // WorldWind silently falls back to another folder if the cache folder cannot be written
-        return WorldWindPreferences.isUsableCacheDir(cacheDirField.getText());
+        if (!WorldWindPreferences.isUsableCacheDir(cacheDirField.getText())) {
+            return false;
+        }
+        // an empty field means SNAP's DEM folder
+        final String demDir = localDemDirField.getText().trim();
+        return !localDemCheckBox.isSelected() || demDir.isEmpty() || new File(demDir).isDirectory();
     }
 }
