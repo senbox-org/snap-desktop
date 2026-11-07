@@ -24,6 +24,7 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.ScalebarLayer;
 import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwindx.examples.util.LayerManagerLayer;
+import org.esa.snap.worldwind.preferences.WorldWindPreferences;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -60,6 +61,8 @@ public final class LayerConfiguration {
      * Creates the initial layers, with daily imagery of the last complete UTC day.
      */
     public static LayerList createLayers() {
+        // the first layers may be created before the deferred module activator has run
+        WorldWindPreferences.applyAtStartup();
         return createLayers(LocalDate.now(ZoneOffset.UTC).minusDays(1));
     }
 

@@ -167,6 +167,7 @@ class DensityPlotPanel extends ChartPagePanel {
         }
     }
 
+    @SuppressWarnings("CatchMayIgnoreException")
     @Override
     protected void updateComponents() {
         super.updateComponents();
@@ -199,6 +200,7 @@ class DensityPlotPanel extends ChartPagePanel {
         refreshButton.setEnabled(xBandProperty.getValue() != null && yBandProperty.getValue() != null);
     }
 
+    @SuppressWarnings("CatchMayIgnoreException")
     private void updateBandList(final Product product, final Property bandProperty, boolean considerReferenceSize) {
         if (product == null) {
             return;

@@ -60,14 +60,27 @@ import java.awt.Component;
 })
 public class UncertaintyVisualisationTopComponent extends TopComponent {
 
+    private final ColorManipulationForm cmf;
+    private boolean contentAdded;
+
     public static final String UNCERTAINTY_MODE_PROPERTY = "uncertaintyMode";
 
 
     public UncertaintyVisualisationTopComponent() {
         setName(Bundle.CTL_UncertaintyVisualisationTopComponent_ComponentName());
-        ColorManipulationForm cmf = new ColorManipulationFormImpl(this, new UncertaintyFormModel());
+        cmf = new ColorManipulationFormImpl(this, new UncertaintyFormModel());
         setLayout(new BorderLayout());
-        add(cmf.getContentPanel(), BorderLayout.CENTER);
+    }
+
+    @Override
+    protected void componentShowing() {
+        super.componentShowing();
+        // building the form is deferred until the window is first shown, it syncs itself to the selected view
+        if (!contentAdded) {
+            contentAdded = true;
+            add(cmf.getContentPanel(), BorderLayout.CENTER);
+            revalidate();
+        }
     }
 
     @Override

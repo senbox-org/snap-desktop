@@ -1595,6 +1595,7 @@ public class ProductSceneView extends BasicView
             return null;
         }
 
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
         @Override
         public Object clone() {
             return INSTANCE;

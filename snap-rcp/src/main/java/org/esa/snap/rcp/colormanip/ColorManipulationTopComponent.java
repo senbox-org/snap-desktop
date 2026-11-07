@@ -53,13 +53,26 @@ import java.awt.BorderLayout;
  */
 public class ColorManipulationTopComponent extends TopComponent implements HelpCtx.Provider {
 
+    private final ColorManipulationFormImpl cmf;
+    private boolean contentAdded;
+
     private static final String HELP_ID = "showColorManipulationWnd";
 
     public ColorManipulationTopComponent() {
         setName(Bundle.CTL_ColorManipulationTopComponent_ComponentName());
-        ColorManipulationFormImpl cmf = new ColorManipulationFormImpl(this, new ColorFormModel());
+        cmf = new ColorManipulationFormImpl(this, new ColorFormModel());
         setLayout(new BorderLayout());
-        add(cmf.getContentPanel(), BorderLayout.CENTER);
+    }
+
+    @Override
+    protected void componentShowing() {
+        super.componentShowing();
+        // building the form is deferred until the window is first shown, it syncs itself to the selected view
+        if (!contentAdded) {
+            contentAdded = true;
+            add(cmf.getContentPanel(), BorderLayout.CENTER);
+            revalidate();
+        }
     }
 
     @Override

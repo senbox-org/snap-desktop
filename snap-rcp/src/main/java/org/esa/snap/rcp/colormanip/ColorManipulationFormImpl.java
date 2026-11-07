@@ -40,6 +40,7 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.rcp.SnapApp;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
+import org.esa.snap.rcp.util.StartupTasks;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.ui.AbstractDialog;
@@ -80,8 +81,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.esa.snap.core.util.NamingConvention.COLOR_LOWER_CASE;
 
@@ -134,9 +134,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
     private SnapFileFilter palFileFilter;
     private SnapFileFilter cptFileFilter;
     private final ProductNodeListener productNodeListener;
-    private boolean colorPalettesAuxFilesInstalled;
-    private boolean colorSchemesAuxFilesInstalled;
-    private boolean rgbProfilesFilesInstalled;
+    private static final AtomicBoolean AUX_FILES_INSTALL_SCHEDULED = new AtomicBoolean(false);
     private JPanel contentPanel;
     private JPanel innerContentPanel;
     private ColorManipulationChildForm childForm;
@@ -164,6 +162,17 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         sceneViewChangeListener = new SceneViewImageInfoChangeListener();
         titlePrefix = this.formModel.getTitlePrefix();
         emptyForm = new EmptyImageInfoForm(this);
+
+        // Scheduled here rather than when the content panel is built, so the auxdata is installed even if the window
+        // is never shown. The directories are shared by all colour manipulation windows, so install once per session,
+        // in the background once startup has completed.
+        if (AUX_FILES_INSTALL_SCHEDULED.compareAndSet(false, true)) {
+            StartupTasks.runAfterStartup("Colour manipulation auxdata installation", () -> {
+                new InstallColorPalettesAuxFiles().run();
+                new InstallColorSchemesAuxFiles().run();
+                new InstallRGBAuxFiles().run();
+            }, 0);
+        }
     }
 
     @Override
@@ -176,21 +185,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         if (contentPanel == null) {
             initContentPanel();
         }
-        if (!colorPalettesAuxFilesInstalled) {
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.submit(new InstallColorPalettesAuxFiles());
-        }
-
-        if (!colorSchemesAuxFilesInstalled) {
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.submit(new InstallColorSchemesAuxFiles());
-        }
-
-        if (!rgbProfilesFilesInstalled) {
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.submit(new InstallRGBAuxFiles());
-        }
-
         return contentPanel;
     }
 
@@ -932,7 +926,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 // these file get overwritten as we do not encourage that these standard files to be altered
                 resourceInstaller.install(".*oceancolor_.*." + FILE_EXTENSION_CPD, ProgressMonitor.NULL);
 
-                colorPalettesAuxFilesInstalled = true;
             } catch (IOException e) {
                 SnapApp.getDefault().handleError("Unable to install auxdata/" + ColorManipulationDefaults.DIR_NAME_COLOR_PALETTES, e);
             }
@@ -957,7 +950,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
                 resourceInstaller.install(".*." + ColorManipulationDefaults.COLOR_SCHEMES_FILENAME, ProgressMonitor.NULL);
                 resourceInstaller.install(".*" + ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME, ProgressMonitor.NULL);
 
-                colorSchemesAuxFilesInstalled = true;
             } catch (IOException e) {
                 SnapApp.getDefault().handleError("Unable to install auxdata/" + ColorManipulationDefaults.DIR_NAME_COLOR_SCHEMES, e);
             }
@@ -981,7 +973,6 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
                 resourceInstaller.install(".*." + FILE_EXTENSION_RGB_PROFILES, ProgressMonitor.NULL);
 
-                rgbProfilesFilesInstalled = true;
             } catch (IOException e) {
                 SnapApp.getDefault().handleError("Unable to install auxdata/" + ColorManipulationDefaults.DIR_NAME_RGB_PROFILES, e);
             }

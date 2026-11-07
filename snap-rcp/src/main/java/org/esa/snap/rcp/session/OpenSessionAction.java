@@ -196,7 +196,7 @@ public class OpenSessionAction extends AbstractAction {
             return action;
         }
 
-        private class SessionProblemSolver implements Session.ProblemSolver {
+        private static class SessionProblemSolver implements Session.ProblemSolver {
             @Override
             public Product solveProductNotFound(int id, File file) throws CanceledException {
                 final File[] newFile = new File[1];
@@ -208,14 +208,10 @@ public class OpenSessionAction extends AbstractAction {
                                                                 "(Select ''No'' if the product shall no longer be part of the session.)",
                                                         id, file);
                 try {
-                    SwingUtilities.invokeAndWait(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            answer[0] = Dialogs.requestDecision(title, msg, true, null);
-                            if (answer[0] == Dialogs.Answer.YES) {
-                                newFile[0] = Dialogs.requestFileForOpen(title, false, null, null);
-                            }
+                    SwingUtilities.invokeAndWait((Runnable) () -> {
+                        answer[0] = Dialogs.requestDecision(title, msg, true, null);
+                        if (answer[0] == Dialogs.Answer.YES) {
+                            newFile[0] = Dialogs.requestFileForOpen(title, false, null, null);
                         }
                     });
                 } catch (Exception e) {
@@ -229,7 +225,7 @@ public class OpenSessionAction extends AbstractAction {
                 if (newFile[0] != null) {
                     try {
                         return ProductIO.readProduct(newFile[0]);
-                    } catch (IOException e) {
+                    } catch (IOException ignored) {
                     }
                 }
                 return null;

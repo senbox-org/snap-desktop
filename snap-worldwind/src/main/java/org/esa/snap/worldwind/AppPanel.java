@@ -50,29 +50,24 @@ public class AppPanel extends JPanel {
 
     public AppPanel(final WorldWindowGLCanvas shareWith, final boolean includeStatusBar, final boolean flatWorld,
                     final boolean removeExtraLayers) {
+        this(shareWith, includeStatusBar, flatWorld, createModel(flatWorld, removeExtraLayers));
+    }
+
+    /**
+     * Creates the panel around a model prepared by {@link #createModel(boolean, boolean)}. Must be called on the EDT.
+     */
+    public AppPanel(final WorldWindowGLCanvas shareWith, final boolean includeStatusBar, final boolean flatWorld,
+                    final Model model) {
         super(new BorderLayout());
 
         this.wwd = new WorldWindowGLCanvas(shareWith);
-
-        // SNAP's layer configuration, not WorldWind's defaults
-        final Model m = new BasicModel(flatWorld ? new EarthFlat() : new Earth(), LayerConfiguration.createLayers());
-        this.wwd.setModel(m);
+        this.wwd.setModel(model);
         this.wwd.setView(flatWorld ? new FlatOrbitView() : new BasicOrbitView());
         // local DEM files as terrain, if chosen in the preferences
-        LocalDemTerrain.attach(m.getGlobe(), this.wwd);
+        LocalDemTerrain.attach(model.getGlobe(), this.wwd);
 
-        if (removeExtraLayers) {
-            final LayerList layerList = m.getLayers();
-            for (Layer layer : layerList) {
-                if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer ||
-                        layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer ||
-                        LANDSAT_LAYER_NAME.equals(layer.getName()))
-                    layerList.remove(layer);
-            }
-        } else {
-            // Setup a select listener for the worldmap click-and-go feature
-            this.wwd.addSelectListener(new ClickAndGoSelectListener(wwd, WorldMapLayer.class));
-        }
+        // Setup a select listener for the worldmap click-and-go feature (no effect without a world map layer)
+        this.wwd.addSelectListener(new ClickAndGoSelectListener(wwd, WorldMapLayer.class));
 
         this.wwd.getSceneController().setClutterFilter(new PlacemarkClutterFilter());
 
@@ -83,6 +78,26 @@ public class AppPanel extends JPanel {
             this.add(statusBar, BorderLayout.PAGE_END);
             this.statusBar.setEventSource(wwd);
         }
+    }
+
+    /**
+     * Creates the model from SNAP's layer configuration, not WorldWind's defaults. This is the expensive part of
+     * setting up a WorldWind view (configuration, globe, layers) and does not touch Swing or OpenGL, so it may be
+     * called from a background thread.
+     */
+    public static Model createModel(final boolean flatWorld, final boolean removeExtraLayers) {
+        final Model m = new BasicModel(flatWorld ? new EarthFlat() : new Earth(), LayerConfiguration.createLayers());
+
+        if (removeExtraLayers) {
+            final LayerList layerList = m.getLayers();
+            for (Layer layer : layerList) {
+                if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer ||
+                        layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer ||
+                        LANDSAT_LAYER_NAME.equals(layer.getName()))
+                    layerList.remove(layer);
+            }
+        }
+        return m;
     }
 
     public void addLayerPanelLayer() {

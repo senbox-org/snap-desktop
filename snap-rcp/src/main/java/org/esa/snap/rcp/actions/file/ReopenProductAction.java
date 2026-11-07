@@ -16,6 +16,8 @@ import org.openide.util.actions.Presenter;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -48,6 +50,28 @@ public final class ReopenProductAction extends AbstractAction implements Present
 
     @Override
     public JMenuItem getMenuPresenter() {
+        // The platform asks for presenters many times while building menus and toolbars, so the entries are only
+        // resolved (recent-path parsing, File.exists() per entry) when the user actually opens the menu.
+        JMenu menu = new JMenu(Bundle.CTL_ReopenProductActionMenuText());
+        menu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                populateMenu(menu);
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {
+            }
+        });
+        return menu;
+    }
+
+    private void populateMenu(JMenu menu) {
+        menu.removeAll();
 
         List<File> openedFiles = OpenProductAction.getOpenedProductFiles();
         List<String> pathList = getRecentProductPaths().get();
@@ -57,9 +81,6 @@ public final class ReopenProductAction extends AbstractAction implements Present
                 DEFAULT_MAX_FILE_LIST_REOPEN);
 
         // Add "open recent product file" actions
-        JMenu menu = new JMenu(Bundle.CTL_ReopenProductActionMenuText());
-
-
         pathList.stream().limit(maxFileList).forEach(path->{
             File theFile = new File(path);
             if (!openedFiles.contains(theFile) && theFile.exists()) {
@@ -73,13 +94,12 @@ public final class ReopenProductAction extends AbstractAction implements Present
 
 
         // Add "Clear List" action
-        if (menu.getComponentCount() > 0 || pathList.size() > 0) {
+        if (menu.getMenuComponentCount() > 0 || pathList.size() > 0) {
             menu.addSeparator();
             JMenuItem menuItem = new JMenuItem(Bundle.CTL_ClearListActionMenuText());
             menuItem.addActionListener(e -> getRecentProductPaths().clear());
             menu.add(menuItem);
         }
-        return menu;
     }
 
     @Override

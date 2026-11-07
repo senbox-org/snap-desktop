@@ -15,6 +15,7 @@
  */
 package org.esa.snap.worldwind;
 
+import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.geom.Position;
@@ -70,6 +71,13 @@ public abstract class WWBaseToolView extends ToolTopComponent implements WWView 
     AppPanel createWWPanel(final WorldWindowGLCanvas shareWith,
                            final boolean includeStatusBar, final boolean flatWorld, final boolean removeExtraLayers) {
         wwjPanel = new AppPanel(shareWith, includeStatusBar, flatWorld, removeExtraLayers);
+        wwjPanel.setPreferredSize(canvasSize);
+        return wwjPanel;
+    }
+
+    AppPanel createWWPanel(final WorldWindowGLCanvas shareWith, final boolean includeStatusBar,
+                           final boolean flatWorld, final Model model) {
+        wwjPanel = new AppPanel(shareWith, includeStatusBar, flatWorld, model);
         wwjPanel.setPreferredSize(canvasSize);
         return wwjPanel;
     }

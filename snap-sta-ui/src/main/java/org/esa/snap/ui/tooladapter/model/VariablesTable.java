@@ -182,7 +182,7 @@ public class VariablesTable extends JTable {
                 case 3:
                     SystemVariable variable = variables.get(row);
                     if (variable instanceof SystemDependentVariable) {
-                        lastEditor = new SystemDependentVariableCellEditor(appContext.getApplicationWindow(), (SystemDependentVariable)variable, null);
+                        lastEditor = new SystemDependentVariableCellEditor(appContext.getApplicationWindow(), (SystemDependentVariable) variable, null);
                         return lastEditor.getTableCellEditorComponent(table, value, isSelected, row, column);
                     } else {
                         lastEditor = getDefaultEditor(String.class);
@@ -205,12 +205,13 @@ public class VariablesTable extends JTable {
         }
     }
 
-    class SystemDependentVariableCellEditor extends DefaultCellEditor implements TableCellEditor, VariableChangedListener {
+    static class SystemDependentVariableCellEditor extends DefaultCellEditor implements TableCellEditor, VariableChangedListener {
 
         private static final int CLICK_COUNT_TO_START = 2;
-        private JButton button;
-        private SystemDependentVariableEditorDialog dialog;
-        private SystemDependentVariable variable;
+
+        private final JButton button;
+        private final SystemDependentVariableEditorDialog dialog;
+        private final SystemDependentVariable variable;
 
         /**
          * Constructor.

@@ -7,10 +7,7 @@ import org.esa.snap.core.util.SystemUtils;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +22,7 @@ import java.util.Map;
  */
 public class TransientAction implements Action, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 3069372659219673560L;
     private static final Map<String, Action> DELEGATES = new HashMap<>();
 

@@ -51,8 +51,21 @@ import javax.swing.event.ListSelectionListener;
 public class MaskManagerToolTopComponent extends MaskToolTopComponent {
     public static final String ID = MaskManagerToolTopComponent.class.getName();
 
+    private boolean uiInitialized;
+
     public MaskManagerToolTopComponent() {
-        initUI();
+        setDisplayName(getTitle());
+    }
+
+    @Override
+    protected void componentShowing() {
+        super.componentShowing();
+        // the mask form is built when the window is first shown, it syncs itself to the selected view
+        if (!uiInitialized) {
+            uiInitialized = true;
+            initUI();
+            revalidate();
+        }
     }
 
     @Override

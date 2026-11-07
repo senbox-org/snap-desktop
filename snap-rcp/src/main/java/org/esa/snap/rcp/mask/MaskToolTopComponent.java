@@ -69,6 +69,10 @@ public abstract class MaskToolTopComponent extends ToolTopComponent implements H
     }
 
     private void updateMaskForm(ProductSceneView view) {
+        if (maskForm == null) {
+            // UI not built yet
+            return;
+        }
         if (view == null) {
             final ProductNode selectedProductNode = SnapApp.getDefault().getSelectedProductNode(EXPLORER);
             if (selectedProductNode instanceof RasterDataNode) {

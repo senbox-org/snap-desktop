@@ -142,7 +142,7 @@ class CorrelativeFieldSelector {
         dataFieldList.setSelectedItem(dataField);
     }
 
-    private class NullAttributeDescriptor implements AttributeDescriptor {
+    private static class NullAttributeDescriptor implements AttributeDescriptor {
 
         @Override
         public AttributeType getType() {

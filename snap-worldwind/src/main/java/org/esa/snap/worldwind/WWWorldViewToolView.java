@@ -15,7 +15,10 @@
  */
 package org.esa.snap.worldwind;
 
+import com.jogamp.opengl.GLProfile;
+import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.layers.LayerList;
+import org.esa.snap.rcp.util.StartupTasks;
 import org.esa.snap.runtime.Config;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
@@ -27,12 +30,15 @@ import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The window displaying the world map.
@@ -58,6 +64,7 @@ import java.awt.Window;
 @NbBundle.Messages({
         "CTL_WorldWindTopComponentName=World View",
         "CTL_WorldWindTopComponentDescription=WorldWind World View",
+        "CTL_WorldWindLoading=Loading World View...",
 })
 public class WWWorldViewToolView extends WWBaseToolView implements WWView {
 
@@ -65,6 +72,8 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
 
     private static final boolean includeStatusBar = true;
     private final boolean flatWorld;
+    private final JPanel mainPane = new JPanel(new BorderLayout(4, 4));
+    private final AtomicBoolean initStarted = new AtomicBoolean(false);
 
     public WWWorldViewToolView() {
         setDisplayName(Bundle.CTL_WorldWindTopComponentName());
@@ -83,20 +92,37 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
         final Window windowPane = SwingUtilities.getWindowAncestor(this);
         if (windowPane != null)
             windowPane.setSize(300, 300);
-        final JPanel mainPane = new JPanel(new BorderLayout(4, 4));
         mainPane.setSize(new Dimension(300, 300));
-
-        // world wind canvas, created on the EDT once this component exists
-        SwingUtilities.invokeLater(() -> initialize(mainPane));
+        mainPane.add(new JLabel(Bundle.CTL_WorldWindLoading(), SwingConstants.CENTER), BorderLayout.CENTER);
 
         return mainPane;
     }
 
-    private void initialize(final JPanel mainPane) {
-        try {
-            createWWPanel(null, includeStatusBar, flatWorld, true);
+    // Creating the WorldWind globe costs several seconds of CPU (OpenGL setup, configuration, layers), so it is not
+    // done while SNAP starts: an opened view is initialised in the background shortly after startup, or right away
+    // once it becomes visible.
 
-            final LayerList layerList = getWwd().getModel().getLayers();
+    @Override
+    protected void componentOpened() {
+        super.componentOpened();
+        StartupTasks.runAfterStartup("World View initialisation", this::initializeInBackground);
+    }
+
+    @Override
+    protected void componentShowing() {
+        super.componentShowing();
+        StartupTasks.runAfterStartup("World View initialisation", this::initializeInBackground, 0);
+    }
+
+    private void initializeInBackground() {
+        if (!initStarted.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            // model preparation does not touch Swing or OpenGL
+            GLProfile.initSingleton();
+            final Model model = AppPanel.createModel(flatWorld, true);
+            final LayerList layerList = model.getLayers();
             AppPanel.enableLayer(layerList, "Bing Imagery");
 
             final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
@@ -112,9 +138,21 @@ public class WWWorldViewToolView extends WWBaseToolView implements WWView {
 
             AppPanel.addReferenceLayers(layerList);
 
+            SwingUtilities.invokeLater(() -> installWorldWindow(model));
+        } catch (Throwable e) {
+            SwingUtilities.invokeLater(() -> showInitError(mainPane, Bundle.CTL_WorldWindTopComponentName(), e));
+        }
+    }
+
+    private void installWorldWindow(final Model model) {
+        try {
+            createWWPanel(null, includeStatusBar, flatWorld, model);
+
             // Put the pieces together.
+            mainPane.removeAll();
             mainPane.add(wwjPanel, BorderLayout.CENTER);
             mainPane.revalidate();
+            mainPane.repaint();
 
             // update world map window with the information of the currently activated product scene view.
             connectToSnap();

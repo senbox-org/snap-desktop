@@ -134,10 +134,11 @@ public final class WorldWindPreferences {
     }
 
     /**
-     * Applies the cache location and the offline mode. Called once at start-up, before WorldWind creates its file
-     * store; a later change of the cache location needs a restart.
+     * Applies the cache location and the offline mode. Called by the module activator and again before each globe's
+     * layers are created, as the activator is started in the background and may come later; it must run before
+     * WorldWind creates its file store, and a later change of the cache location needs a restart.
      */
-    public static void applyAtStartup() {
+    public static synchronized void applyAtStartup() {
         final File cacheDir = getCacheDir();
         if (cacheDir != null && System.getProperty(WORLDWIND_STORE_PROPERTY) == null) {
             System.setProperty(WORLDWIND_STORE_PROPERTY, cacheDir.getAbsolutePath());

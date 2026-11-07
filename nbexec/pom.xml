@@ -66,7 +66,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.14.0</version>
                 <configuration>
                     <source>${jvm.version}</source>
                     <target>${jvm.version}</target>
@@ -74,7 +74,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.4.2</version>
                 <configuration>
                     <archive>
                         <manifest>
