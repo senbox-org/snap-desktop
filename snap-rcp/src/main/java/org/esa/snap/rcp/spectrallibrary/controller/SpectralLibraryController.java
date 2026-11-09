@@ -1039,43 +1039,56 @@ public class SpectralLibraryController {
         }
     }
 
-    public Optional<SpectralLibrary> importLibraryFromFile(File file) {
+    public List<SpectralLibrary> importLibraryFromFile(File file) {
         if (file == null) {
-            return Optional.empty();
+            return List.of();
         }
         try {
-            SpectralLibrary imported = io.read(file.toPath());
-            String yUnit = imported.getDefaultYUnit().orElse("value");
-            SpectralLibrary persisted = service.createLibrary(
-                    imported.getName(),
-                    imported.getAxis(),
-                    yUnit
-            );
+            List<SpectralLibrary> persistedLibraries = new ArrayList<>();
 
-            List<SpectralProfile> raw = SpectralLibraryUtils.safeCopyWithoutNulls(imported.getProfiles());
-            List<SpectralProfile> toAdd = new ArrayList<>(raw.size());
-            for (SpectralProfile p : raw) {
-                if (p.getId() != null
-                        && p.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR).isEmpty()) {
-                    Color c = ColorUtils.defaultColor(p.getId());
-                    if (c != null) {
-                        p = p.withAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR,
-                                AttributeValue.ofString(ColorUtils.toHex(c)));
+            for (SpectralLibrary imported : io.readAll(file.toPath())) {
+                String yUnit = imported.getDefaultYUnit().orElse("value");
+                SpectralLibrary persisted = service.createLibrary(imported.getName(), imported.getAxis(), yUnit);
+
+                List<SpectralProfile> raw = SpectralLibraryUtils.safeCopyWithoutNulls(imported.getProfiles());
+                List<SpectralProfile> toAdd = new ArrayList<>(raw.size());
+
+                for (SpectralProfile p : raw) {
+                    if (p.getId() != null && p.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR).isEmpty()) {
+                        Color c = ColorUtils.defaultColor(p.getId());
+
+                        if (c != null) {
+                            p = p.withAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR, AttributeValue.ofString(ColorUtils.toHex(c)));
+                        }
                     }
+                    toAdd.add(p);
                 }
-                toAdd.add(p);
+
+                service.addProfiles(persisted.getId(), toAdd);
+                persistedLibraries.add(persisted);
             }
-            SpectralLibraryService.BulkAddResult r = service.addProfiles(persisted.getId(), toAdd);
-            int added = r.added();
+
+            if (persistedLibraries.isEmpty()) {
+                vm.setStatus(UiStatus.warn("No spectral libraries found in: " + file.getName()));
+                return List.of();
+            }
 
             reloadLibraries();
-            vm.setActiveLibraryId(persisted.getId());
+            SpectralLibrary active = persistedLibraries.getFirst();
+            vm.setActiveLibraryId(active.getId());
             refreshActiveLibraryProfiles();
-            vm.setStatus(UiStatus.info("Imported: " + file.getName() + " (" + added + " profiles)"));
-            return Optional.of(persisted);
+
+            String message = persistedLibraries.size() == 1
+                    ? "Imported: " + file.getName() + " (" + service.getLibrary(active.getId())
+                    .map(library -> library.getProfiles().size()).orElse(0) + " profiles)"
+                    : "Imported " + persistedLibraries.size() + " spectral libraries from " + file.getName()
+                    + ". Active: " + active.getName();
+            vm.setStatus(UiStatus.info(message));
+
+            return List.copyOf(persistedLibraries);
         } catch (Exception ex) {
             vm.setStatus(UiStatus.error("Import failed: " + ex.getMessage()));
-            return Optional.empty();
+            return List.of();
         }
     }
 

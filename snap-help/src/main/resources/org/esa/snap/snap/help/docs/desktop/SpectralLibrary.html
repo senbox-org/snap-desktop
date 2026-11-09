@@ -216,6 +216,13 @@
             data, bad band information, custom attributes, and optional point geometry.
         </li>
         <li>
+            <b>GeoPackage (*.gpkg)</b> - An EnMAP-Box-compatible spatial database format. Each
+            layer and spectral-profile field is imported as a separate library; if a field contains
+            profiles with different wavelength axes, separate libraries are created for each axis.
+            All imported libraries are retained and the first one (ordered by layer and field name)
+            becomes active.
+        </li>
+        <li>
             <b>Spectral Library CSV (*.csv)</b> - A tabular text format compatible with the EcoSIS
             (Ecological Spectral Information System) convention. Wavelengths are stored as numeric
             column headers; non-numeric columns are treated as metadata attributes. Both
