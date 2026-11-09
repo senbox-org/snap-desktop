@@ -40,7 +40,7 @@ public class WWLayerRegistry {
         registerWWLayers();
     }
 
-    public static WWLayerRegistry getInstance() {
+    public static synchronized WWLayerRegistry getInstance() {
         if (instance == null) {
             instance = new WWLayerRegistry();
         }
@@ -112,25 +112,38 @@ public class WWLayerRegistry {
             return null;
         }
 
+        // The NetBeans system class loader sees all enabled modules, so one lookup usually suffices; probing each
+        // module's loader in turn costs a ClassNotFoundException per miss (hundreds at startup).
+        final ClassLoader systemClassLoader = Lookup.getDefault().lookup(ClassLoader.class);
+        if (systemClassLoader != null) {
+            try {
+                return checkType(systemClassLoader.loadClass(className), attributeName, expectedType);
+            } catch (ClassNotFoundException e) {
+                // fall back to probing the module class loaders
+            }
+        }
+
         final Collection<? extends ModuleInfo> modules = Lookup.getDefault().lookupAll(ModuleInfo.class);
         for (ModuleInfo module : modules) {
             if (module.isEnabled()) {
                 try {
-                    final Class<?> implClass = module.getClassLoader().loadClass(className);
-                    if (expectedType.isAssignableFrom(implClass)) {
-                        //noinspection unchecked
-                        return (Class<T>) implClass;
-                    } else {
-                        throw new IllegalArgumentException(String.format("Value %s of attribute '%s' must be a %s",
-                                                                         implClass.getName(),
-                                                                         attributeName,
-                                                                         expectedType.getName()));
-                    }
+                    return checkType(module.getClassLoader().loadClass(className), attributeName, expectedType);
                 } catch (ClassNotFoundException e) {
                     // it's ok, continue
                 }
             }
         }
         return null;
+    }
+
+    private static <T> Class<T> checkType(Class<?> implClass, String attributeName, Class<T> expectedType) {
+        if (expectedType.isAssignableFrom(implClass)) {
+            //noinspection unchecked
+            return (Class<T>) implClass;
+        }
+        throw new IllegalArgumentException(String.format("Value %s of attribute '%s' must be a %s",
+                                                         implClass.getName(),
+                                                         attributeName,
+                                                         expectedType.getName()));
     }
 }

@@ -64,29 +64,19 @@ public class AppPanel extends JPanel {
 
     public AppPanel(final WorldWindowGLCanvas shareWith, final boolean includeStatusBar, final boolean flatWorld,
                     final boolean removeExtraLayers) {
+        this(shareWith, includeStatusBar, flatWorld, createModel(flatWorld, removeExtraLayers));
+    }
+
+    /**
+     * Creates the panel around a model prepared by {@link #createModel(boolean, boolean)}. Must be called on the EDT.
+     */
+    public AppPanel(final WorldWindowGLCanvas shareWith, final boolean includeStatusBar, final boolean flatWorld,
+                    final Model model) {
         super(new BorderLayout());
 
         this.wwd = new WorldWindowGLCanvas(shareWith);
-
-        // Create the default model as described in the current worldwind properties.
-        final Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
-        this.wwd.setModel(m);
-        if (flatWorld) {
-            m.setGlobe(new EarthFlat());
-            this.wwd.setView(new FlatOrbitView());
-        } else {
-            m.setGlobe(new Earth());
-            this.wwd.setView(new BasicOrbitView());
-        }
-
-        if (removeExtraLayers) {
-            final LayerList layerList = m.getLayers();
-            for (Layer layer : layerList) {
-                if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer ||
-                        layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer)
-                    layerList.remove(layer);
-            }
-        }
+        this.wwd.setModel(model);
+        this.wwd.setView(flatWorld ? new FlatOrbitView() : new BasicOrbitView());
 
         // Setup a select listener for the worldmap click-and-go feature
         this.wwd.addSelectListener(new ClickAndGoSelectListener(wwd, WorldMapLayer.class));
@@ -100,6 +90,26 @@ public class AppPanel extends JPanel {
             this.add(statusBar, BorderLayout.PAGE_END);
             this.statusBar.setEventSource(wwd);
         }
+    }
+
+    /**
+     * Creates the default model as described in the current worldwind properties. This is the expensive part of
+     * setting up a WorldWind view (configuration, globe, layers) and does not touch Swing or OpenGL, so it may be
+     * called from a background thread.
+     */
+    public static Model createModel(final boolean flatWorld, final boolean removeExtraLayers) {
+        final Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
+        m.setGlobe(flatWorld ? new EarthFlat() : new Earth());
+
+        if (removeExtraLayers) {
+            final LayerList layerList = m.getLayers();
+            for (Layer layer : layerList) {
+                if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer ||
+                        layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer)
+                    layerList.remove(layer);
+            }
+        }
+        return m;
     }
 
     public void addLayerPanelLayer() {
