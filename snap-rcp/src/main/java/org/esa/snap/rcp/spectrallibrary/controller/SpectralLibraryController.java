@@ -1169,16 +1169,21 @@ public class SpectralLibraryController {
         }
 
         final double[] kernel;
+        final boolean zeroIntegralKernel;
         try {
             SpectralNoiseKernelFactory kernelFactory = new SpectralNoiseKernelFactory(
                     settings.filterType(),
                     settings.kernelSize(),
                     settings.gaussianSigma(),
-                    settings.sgPolynomialOrder()
+                    settings.sgPolynomialOrder(),
+                    settings.rickerWidth(),
+                    settings.trapezoidWidth(),
+                    settings.trapezoidSlope()
             );
             kernelFactory.validateFilterParameters();
             kernelFactory.ensureKernelSize(sourceLibrary.getAxis().size());
             kernel = kernelFactory.createKernel();
+            zeroIntegralKernel = kernelFactory.usesZeroIntegralKernel();
         } catch (IllegalArgumentException | IllegalStateException ex) {
             vm.setStatus(UiStatus.warn(ex.getMessage()));
             return;
@@ -1186,7 +1191,7 @@ public class SpectralLibraryController {
 
         List<SpectralProfile> smoothedProfiles = new ArrayList<>(selectedProfiles.size());
         for (SpectralProfile profile : selectedProfiles) {
-            smoothedProfiles.add(SpectralNoiseUtils.createSmoothedProfile(profile, kernel, nameSuffix));
+            smoothedProfiles.add(SpectralNoiseUtils.createSmoothedProfile(profile, kernel, nameSuffix, zeroIntegralKernel));
         }
 
         try {
