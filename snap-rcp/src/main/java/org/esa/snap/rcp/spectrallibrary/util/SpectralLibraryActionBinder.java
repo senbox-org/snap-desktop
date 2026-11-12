@@ -1082,6 +1082,20 @@ public class SpectralLibraryActionBinder {
         }
         File file = ensureExtension(fileChooser.getSelectedFile(), (FileNameExtensionFilter) fileChooser.getFileFilter());
 
+        if (file.isFile()) {
+            int answer = JOptionPane.showConfirmDialog(
+                    panel,
+                    "The file '" + file.getName() + "' already exists and will be replaced completely. Continue?",
+                    "Replace Spectral Library File",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            if (answer != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+
         controller.exportActiveLibraryToFile(file);
     }
 
