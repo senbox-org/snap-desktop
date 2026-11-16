@@ -1,8 +1,5 @@
 package org.esa.snap.nbexec;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
@@ -13,6 +10,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -74,6 +72,9 @@ import java.util.stream.Stream;
  */
 public class Launcher {
 
+    private static final String PATH_SEPARATOR = System.getProperty("path.separator");
+    private static final char PATH_SEPARATOR_CHAR = PATH_SEPARATOR.charAt(0);
+    private static final String SEPARATOR = FileSystems.getDefault().getSeparator();
     private static final String CLUSTERS_EXT = ".clusters";
 
     // Command-line arguments
@@ -217,7 +218,7 @@ public class Launcher {
         }
 
         if (clusterDirs != null) {
-            clusterList.addAll(toAbsolutePaths(Arrays.asList(clusterDirs.split(File.pathSeparator))));
+            clusterList.addAll(toAbsolutePaths(Arrays.asList(clusterDirs.split(PATH_SEPARATOR))));
         }
 
         String clusterPaths = toPathsString(clusterList);
@@ -309,7 +310,7 @@ public class Launcher {
         while (true) {
             String patchPatterns = parseArg(argList, "--patches");
             if (patchPatterns != null) {
-                String[] patterns = patchPatterns.split(File.pathSeparator);
+                String[] patterns = patchPatterns.split(PATH_SEPARATOR);
                 for (String pattern : patterns) {
                     patches.add(Patch.parse(pattern));
                 }
@@ -524,7 +525,7 @@ public class Launcher {
         StringBuilder sb = new StringBuilder();
         for (String path : paths) {
             if (sb.length() > 0) {
-                sb.append(File.pathSeparatorChar);
+                sb.append(PATH_SEPARATOR_CHAR);
             }
             sb.append(path);
         }
@@ -614,7 +615,7 @@ public class Launcher {
             int wcPos = pattern.indexOf(WILDCARD_CHAR);
             if (wcPos >= 0) {
                 String subPath = pattern.substring(wcPos + 1);
-                if (subPath.startsWith(File.separator) || subPath.startsWith("/")) {
+                if (subPath.startsWith(SEPARATOR) || subPath.startsWith("/")) {
                     subPath = subPath.substring(1);
                 }
                 if (subPath.indexOf(WILDCARD_CHAR) > 0) {
@@ -644,9 +645,9 @@ public class Launcher {
         @Override
         public String toString() {
             if (subPath.isEmpty()) {
-                return dir + File.separator + WILDCARD_CHAR;
+                return dir + SEPARATOR + WILDCARD_CHAR;
             }
-            return dir + File.separator + WILDCARD_CHAR + File.separator + subPath;
+            return dir + SEPARATOR + WILDCARD_CHAR + SEPARATOR + subPath;
         }
 
         @Override
