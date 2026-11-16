@@ -4,7 +4,7 @@ import org.esa.lib.gdal.activator.GDALDriverInfo;
 import org.esa.snap.core.util.StringUtils;
 
 import javax.swing.filechooser.FileFilter;
-import java.io.File;
+import java.nio.file.Files;
 
 /**
  * @author Jean Coravu
@@ -19,14 +19,13 @@ public class ExportDriversFileFilter extends FileFilter {
     }
 
     @Override
-    public boolean accept(File fileToAccept) {
-        if (fileToAccept.isDirectory()) {
+    public boolean accept(java.io.File fileToAccept) {
+        if (Files.isDirectory(fileToAccept.toPath())) {
             return true;
         }
         return StringUtils.endsWithIgnoreCase(fileToAccept.getName(), this.driverInfo.getExtensionName());
     }
 
-    @Override
     public String getDescription() {
         return this.description;
     }

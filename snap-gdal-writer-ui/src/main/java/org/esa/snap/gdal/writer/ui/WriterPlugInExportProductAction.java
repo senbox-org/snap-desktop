@@ -21,7 +21,8 @@ import org.netbeans.api.progress.ProgressUtils;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -91,14 +92,14 @@ public class WriterPlugInExportProductAction extends ExportProductAction {
         if (returnVal != JFileChooser.APPROVE_OPTION || fileChooser.getSelectedFile() == null) {
             return false; // cancelled
         }
-        File newFile = fileChooser.getSelectedFile();
+        Path newFile = fileChooser.getSelectedFile().toPath();
         ExportDriversFileFilter selectedFileFilter = (ExportDriversFileFilter)fileChooser.getFileFilter();
-        if (!selectedFileFilter.accept(newFile)) {
+        if (!selectedFileFilter.accept(newFile.toFile())) {
             String message = MessageFormat.format("The extension of the selected file\n" +
                             "''{0}''\n" +
                             "does not match the selected file type.\n" +
                             "Please set the file extension according to the selected file type.",
-                    newFile.getPath());
+                    newFile.toString());
             Dialogs.showWarning(getDisplayName(), message, null);
             return false;
         }
@@ -123,21 +124,21 @@ public class WriterPlugInExportProductAction extends ExportProductAction {
         return exportProduct(exportProduct, newFile, formatName);
     }
 
-    private boolean canWriteSelectedFile(File newFile) {
-        if (newFile.isFile() && !newFile.canWrite()) {
+    private boolean canWriteSelectedFile(Path newFile) {
+        if (Files.isRegularFile(newFile) && !Files.isWritable(newFile)) {
             Dialogs.showWarning(getDisplayName(),
                     MessageFormat.format("The product\n" +
                                     "''{0}''\n" +
                                     "exists and cannot be overwritten, because it is read only.\n" +
                                     "Please choose another file or remove the write protection.",
-                            newFile.getPath()),
+                            newFile.toString()),
                     null);
             return false;
         }
         return true;
     }
 
-    private Boolean exportProduct(Product exportProduct, File newFile, String formatName) {
+    private Boolean exportProduct(Product exportProduct, Path newFile, String formatName) {
         SnapApp.getDefault().setStatusBarMessage(MessageFormat.format("Exporting product ''{0}'' to {1}...", exportProduct.getDisplayName(), newFile));
 
         WriteProductOperation operation = new WriteProductOperation(exportProduct, newFile, formatName, false);
@@ -155,7 +156,7 @@ public class WriterPlugInExportProductAction extends ExportProductAction {
 
     private ProductFileChooser buildFileChooserDialog(Product product, boolean useSubset, FileFilter filter) {
         Preferences preferences = SnapApp.getDefault().getPreferences();
-        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+        ProductFileChooser fc = new ProductFileChooser(Path.of(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setSubsetEnabled(useSubset);
         fc.setAdvancedEnabled(false);
