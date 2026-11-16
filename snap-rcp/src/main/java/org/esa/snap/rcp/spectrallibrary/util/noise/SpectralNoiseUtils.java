@@ -11,15 +11,20 @@ public class SpectralNoiseUtils {
 
 
     public static SpectralProfile createSmoothedProfile(SpectralProfile profile, double[] kernel, String suffix) {
+        return createSmoothedProfile(profile, kernel, suffix, false);
+    }
+
+    public static SpectralProfile createSmoothedProfile(SpectralProfile profile, double[] kernel, String suffix, boolean zeroIntegralKernel) {
         double[] values = profile.getSignature().getValues();
         boolean[] validMask = new boolean[values.length];
+
         for (int i = 0; i < values.length; i++) {
             double v = values[i];
             validMask[i] = !Double.isNaN(v) && !Double.isInfinite(v);
         }
 
         double[] filtered = new double[values.length];
-        SpectralNoiseReducer.applyConvolution(values, validMask, kernel, filtered);
+        SpectralNoiseReducer.applyConvolution(values, validMask, kernel, filtered, !zeroIntegralKernel, !zeroIntegralKernel);
 
         String yUnit = profile.getSignature().getYUnitOrNull();
         SpectralSignature smoothedSignature = (yUnit == null)

@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.spectrallibrary.util;
 
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
+import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
 import org.esa.snap.rcp.spectrallibrary.ui.SpectralLibraryPanel;
 import org.esa.snap.speclib.model.SpectralAxis;
@@ -11,8 +12,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,6 +58,7 @@ public class ViewModelBinder {
         applyActiveLibraryToTable();
         panel.getLibraryTableModel().setProfiles(vm.getLibraryProfiles());
         panel.getPreviewPanel().setProfiles(vm.getPreviewProfiles());
+        applyPreviewPaints();
         panel.getPreviewPanel().setSelectedProfileId(vm.getSelectedPreviewProfileId().orElse(null));
         updatePreviewAxisFromActiveLibrary();
         updateStatus(vm.getStatus());
@@ -76,7 +80,7 @@ public class ViewModelBinder {
                     case SpectralLibraryViewModel.PROP_ACTIVE_LIBRARY_ID -> {
                         updateActiveLibrarySelection(vm.getActiveLibraryId());
                         applyActiveLibraryToTable();
-                        panel.getPreviewPanel().setProfilePaints(vm.getActiveLibraryProfileColors());
+                        applyPreviewPaints();
                         updatePreviewAxisFromActiveLibrary();
                     }
                     case SpectralLibraryViewModel.PROP_LIBRARY_PROFILES -> {
@@ -90,16 +94,16 @@ public class ViewModelBinder {
                             }
                         }
                         panel.getLibraryTableModel().setProfiles(ps);
-                        panel.getPreviewPanel().setProfilePaints(vm.getActiveLibraryProfileColors());
+                        applyPreviewPaints();
                     }
-                    case SpectralLibraryViewModel.PROP_PREVIEW_PROFILES ->
-                            panel.getPreviewPanel().setProfiles(vm.getPreviewProfiles());
+                    case SpectralLibraryViewModel.PROP_PREVIEW_PROFILES -> {
+                        panel.getPreviewPanel().setProfiles(vm.getPreviewProfiles());
+                        applyPreviewPaints();
+                    }
                     case SpectralLibraryViewModel.PROP_SELECTED_PREVIEW_PROFILE_ID ->
                             panel.getPreviewPanel().setSelectedProfileId(vm.getSelectedPreviewProfileId().orElse(null));
-                    case SpectralLibraryViewModel.PROP_STATUS ->
-                            updateStatus(vm.getStatus());
-                    case SpectralLibraryViewModel.PROP_PROFILE_COLORS ->
-                        panel.getPreviewPanel().setProfilePaints(vm.getActiveLibraryProfileColors());
+                    case SpectralLibraryViewModel.PROP_STATUS -> updateStatus(vm.getStatus());
+                    case SpectralLibraryViewModel.PROP_PROFILE_COLORS -> applyPreviewPaints();
                     default -> {}
                 }
             };
@@ -108,6 +112,40 @@ public class ViewModelBinder {
             } else {
                 SwingUtilities.invokeLater(ui);
             }
+        }
+    }
+
+
+    private void applyPreviewPaints() {
+        panel.getPreviewPanel().setProfilePaints(
+                resolvePreviewPaints(vm.getActiveLibraryProfileColors(), vm.getPreviewProfiles(), vm.getLibraryProfiles())
+        );
+    }
+
+    static Map<UUID, Paint> resolvePreviewPaints(Map<UUID, ? extends Paint> transientPaints, List<SpectralProfile> previewProfiles, List<SpectralProfile> libraryProfiles) {
+        Map<UUID, Paint> paints = new HashMap<>();
+        if (transientPaints != null) {
+            paints.putAll(transientPaints);
+        }
+
+        addPersistedProfileColors(paints, previewProfiles);
+        addPersistedProfileColors(paints, libraryProfiles);
+        return paints;
+    }
+
+    private static void addPersistedProfileColors(Map<UUID, Paint> paints, List<SpectralProfile> profiles) {
+        if (profiles == null || profiles.isEmpty()) {
+            return;
+        }
+
+        for (SpectralProfile profile : profiles) {
+            if (profile == null || profile.getId() == null) {
+                continue;
+            }
+            profile.getAttribute(SpectralProfileTableModel.ATTR_DISPLAY_COLOR)
+                    .map(value -> ColorUtils.parseCssColor(value.asString()))
+                    .filter(Objects::nonNull)
+                    .ifPresent(color -> paints.put(profile.getId(), color));
         }
     }
 

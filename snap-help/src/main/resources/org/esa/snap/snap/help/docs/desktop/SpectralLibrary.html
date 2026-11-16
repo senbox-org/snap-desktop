@@ -125,6 +125,9 @@
             Select one or more profiles in the table and use
             <b>Apply Spectral Noise Reduction for selected Profiles</b>.
             A dialog opens where the filter method and its parameters can be configured.
+            Available methods are Savitzky-Golay, Gaussian, Box, Ricker Wavelet, and Trapezoid.
+            Ricker Wavelet uses an EnMAP-compatible width default of <code>1.0</code>; Trapezoid uses width
+            <code>3.0</code> and slope <code>1.0</code>.
             The smoothed profiles can either be stored in the current active library or in a newly created library.
             New profile names are created by appending a suffix such as <code>_smoothed</code>.
         </li>
