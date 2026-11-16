@@ -26,7 +26,7 @@ import org.esa.snap.ui.tooladapter.actions.ToolAdapterActionRegistrar;
 import org.openide.modules.ModuleInstall;
 import org.openide.modules.Places;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -55,23 +55,23 @@ public class ModuleInstaller extends ModuleInstall {
     private final static FilenameFilter jarFilter = (dir, name) -> name.endsWith("jar");
 
     private final Logger logger = Logger.getGlobal();
-    private final Path nbUserModulesPath = Paths.get(Places.getUserDirectory().getAbsolutePath(), "modules");
-    private final File userModulePath = ToolAdapterIO.getUserAdapterPath();
+    private final Path nbUserModulesPath = Paths.get(Places.getUserDirectory().toAbsolutePath(), "modules");
+    private final Path userModulePath = ToolAdapterIO.getUserAdapterPath();
 
     @Override
     public void restored() {
         String jarFile = getCurrentJarPath();
         if (jarFile != null) {
-            File unpackLocation = processJarFile(new File(jarFile));
+            Path unpackLocation = processJarFile(Path.of(jarFile));
             if (unpackLocation != null) {
                 registerAdapterAction(ToolAdapterIO.registerAdapter(unpackLocation));
             } else {
                 logger.warning(String.format("Jar %s could not be unpacked. See previous exception.", jarFile));
             }
         } else {
-            Map<String, File> jarAdapters = getJarAdapters(nbUserModulesPath.toFile());
+            Map<String, Path> jarAdapters = getJarAdapters(nbUserModulesPath);
             jarAdapters.keySet().stream().forEach(key -> {
-                File destination = new File(userModulePath, key);
+                Path destination = userModulePath.resolve(key);
                 processJarFile(destination);
             });
             synchronized (ToolAdapterIO.class) {
@@ -88,7 +88,7 @@ public class ModuleInstaller extends ModuleInstall {
         if (jarFile != null) {
             try {
                 logger.info("Jar file: " + jarFile);
-                String alias = ModulePackager.getAdapterAlias(new File(jarFile));
+                String alias = ModulePackager.getAdapterAlias(Path.of(jarFile));
                 logger.info("Alias: " + alias);
                 ToolAdapterOpSpi spi = ToolAdapterRegistry.INSTANCE.getOperatorMap().values()
                         .stream()
@@ -107,20 +107,20 @@ public class ModuleInstaller extends ModuleInstall {
         }
     }
 
-    private Map<String, File> getJarAdapters(File fromPath) {
-        Map<String, File> output = new HashMap<>();
-        File[] files = fromPath.listFiles(jarFilter);
+    private Map<String, Path> getJarAdapters(Path fromPath) {
+        Map<String, Path> output = new HashMap<>();
+        Path[] files = fromPath.listFiles(jarFilter);
         if (files != null) {
             logger.info(String.format("Found %s packed user module" + (files.length > 1 ? "s" : ""), String.valueOf(files.length)));
             try {
 
-                for (File file : files) {
+                for (Path file : files) {
                     JarFile jarFile = new JarFile(file);
                     Manifest manifest = jarFile.getManifest();
                     Attributes manifestEntries = manifest.getMainAttributes();
                     if (manifestEntries.containsKey(typeKey) &&
                             "STA".equals(manifestEntries.getValue(typeKey.toString()))) {
-                        logger.info(String.format("Module %s was detected as a STA module", file.getName()));
+                        logger.info(String.format("Module %s was detected as a STA module",(file.getFileName()));
                         output.put(manifestEntries.getValue(descriptionKeyName), file);
                     }
                 }
@@ -137,28 +137,28 @@ public class ModuleInstaller extends ModuleInstall {
             URL url = this.getClass().getProtectionDomain().getCodeSource().getLocation();
             JarURLConnection connection = (JarURLConnection) url.openConnection();
             JarFile jarFile = connection.getJarFile();
-            path = jarFile.getName();
+            path = jarFile.getFileName();
         } catch (IOException e) {
             logger.severe(e.getMessage());
         }
         return path;
     }
 
-    private File processJarFile(File jarFile) {
-        String unpackPath = jarFile.getName().replace(".jar", "");
+    private Path processJarFile(Path jarFile) {
+        String unpackPath = jarFile.getFileName().replace(".jar", "");
         try {
             unpackPath = ModulePackager.getAdapterAlias(jarFile);
         } catch (IOException e) {
             logger.warning(e.getMessage());
         }
-        File destination = new File(userModulePath, unpackPath);
+        Path destination = userModulePath.resolve(unpackPath);
         try{
-            if (!destination.exists()) {
+            if (!Files.exists(destination)) {
                 ModulePackager.unpackAdapterJar(jarFile, destination);
             } else {
-                File versionFile = new File(destination, "version.txt");
-                if (versionFile.exists()) {
-                    String versionText = new String(Files.readAllBytes(Paths.get(versionFile.toURI()))); //FileUtils.readText(versionFile);
+                Path versionFile = destination.resolve("version.txt");
+                if (Files.exists(versionFile)) {
+                    String versionText = new String(Files.readAllBytes(UrlHelper.urlToFile(versionFile))); //FileUtils.readText(versionFile);
                     String jarVersion = ModulePackager.getAdapterVersion(jarFile);
                     if (jarVersion != null && !versionText.equals(jarVersion)) {
                         ModulePackager.unpackAdapterJar(jarFile, destination);
