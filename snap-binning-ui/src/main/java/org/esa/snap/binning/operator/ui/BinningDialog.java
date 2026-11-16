@@ -37,7 +37,7 @@ import org.esa.snap.core.gpf.ui.TargetProductSelectorModel;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.ui.AppContext;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -194,7 +194,7 @@ public class BinningDialog extends SingleTargetProductDialog {
         parameters.put("variableConfigs", formModel.getVariableConfigs());
         parameters.put("aggregatorConfigs", formModel.getAggregatorConfigs());
 
-        parameters.put("outputFile", getTargetProductSelector().getModel().getProductFile().getPath());
+        parameters.put("outputFile", getTargetProductSelector().getModel().getProductFile().toString());
         parameters.put("outputFormat", getTargetProductSelector().getModel().getFormatName());
 
         parameters.put("maskExpr", formModel.getMaskExpr());
@@ -227,8 +227,8 @@ public class BinningDialog extends SingleTargetProductDialog {
         }
 
         if (parameterMap.containsKey("outputFile")) {
-            File outputFile = new File((String) parameterMap.get("outputFile"));
-            File outputDir = outputFile.getParentFile();
+            Path outputFile = Path.of((String) parameterMap.get("outputFile"));
+            Path outputDir = outputFile.getParent();
             if (outputDir != null) {
                 getTargetProductSelector().getModel().setProductDir(outputDir);
             }

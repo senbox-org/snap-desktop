@@ -36,7 +36,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
 import java.awt.Insets;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.TreeSet;
 import java.util.logging.Logger;
@@ -154,9 +154,9 @@ class BinningIOPanel extends JPanel {
                         continue;
                     }
                     try {
-                        final TreeSet<File> fileSet = new TreeSet<>();
+                        final TreeSet<Path> fileSet = new TreeSet<>();
                         WildcardMatcher.glob(inputPath, fileSet);
-                        for (File file : fileSet) {
+                        for (Path file : fileSet) {
                             final Product product = ProductIO.readProduct(file);
                             if (product != null) {
                                 return product;
