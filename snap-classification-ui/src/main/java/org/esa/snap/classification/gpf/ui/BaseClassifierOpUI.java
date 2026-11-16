@@ -15,13 +15,14 @@
  */
 package org.esa.snap.classification.gpf.ui;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.classification.gpf.BaseClassifier;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNodeGroup;
 import org.esa.snap.core.datamodel.VectorDataNode;
-import org.esa.snap.engine_utilities.util.VectorUtils;
-import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
+import org.esa.snap.engine_utilities.util.VectorUtils;
 import org.esa.snap.graphbuilder.gpf.ui.BaseOperatorUI;
 import org.esa.snap.graphbuilder.gpf.ui.OperatorUIUtils;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
@@ -29,18 +30,31 @@ import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.AppContext;
 
-import javax.swing.*;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
-import java.io.FileFilter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -206,14 +220,10 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
     private void populateClassifierNames() {
         final Path classifierDir = getClassifierFolder();
 
-        final File folder = new File(classifierDir.toString());
-        final File[] listOfFiles = folder.listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.isFile() && pathname.getName().endsWith(getClassifierFileExtension());
-            }
-        });
-        if (listOfFiles != null && listOfFiles.length > 0) {
-            for (File file : listOfFiles) {
+        final Path folder = Path.of(classifierDir.toString());
+        final Collection<Path> listOfFiles = IOHelper.listFiles(folder, pathname -> Files.isRegularFile(pathname) && pathname.getFileName().toString().endsWith(getClassifierFileExtension()));
+        if (listOfFiles != null && !listOfFiles.isEmpty()) {
+            for (Path file : listOfFiles) {
                 classifierNameComboBox.addItem(FileUtils.getFilenameWithoutExtension(file));
             }
             classifierNameComboBox.setSelectedIndex(0);
@@ -230,8 +240,8 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
                                                             true, null);
             if (answer.equals(Dialogs.Answer.YES)) {
                 final Path classifierDir = getClassifierFolder();
-                final File classiferFile = classifierDir.resolve(name + getClassifierFileExtension()).toFile();
-                if (classiferFile.exists()) {
+                final Path classiferFile = classifierDir.resolve(name + getClassifierFileExtension());
+                if (Files.exists(classiferFile)) {
                     if (deleteClassifier(classiferFile, name)) {
                         classifierNameComboBox.removeItem(name);
                         if (classifierNameComboBox.getItemCount() == 0) {
@@ -247,18 +257,13 @@ public abstract class BaseClassifierOpUI extends BaseOperatorUI {
         }
     }
 
-    private static boolean deleteClassifier(final File classifierFile, final String classifierName) {
-        boolean ok = classifierFile.delete();
+    private static boolean deleteClassifier(final Path classifierFile, final String classifierName) {
+        boolean ok = IOHelper.delete(classifierFile);
         // find other associated files
-        final File[] files = classifierFile.getParentFile().listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return FileUtils.getFilenameWithoutExtension(pathname).equals(classifierName);
-            }
-        });
+        final Collection<Path> files = IOHelper.listFiles(classifierFile.getParent(), pathname -> FileUtils.getFilenameWithoutExtension(pathname).equals(classifierName));
         if (files != null) {
-            for (File file : files) {
-                file.delete();
+            for (Path file : files) {
+                IOHelper.delete(file);
             }
         }
         return ok;
