@@ -32,7 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -93,8 +93,8 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
 
         externalDEMBrowseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                final File file = Dialogs.requestFileForOpen("External DEM File", false, null, DEMFactory.LAST_EXTERNAL_DEM_DIR_KEY);
-                externalDEMFile.setText(file.getAbsolutePath());
+                final Path file = Dialogs.requestFileForOpen("External DEM File", false, null, DEMFactory.LAST_EXTERNAL_DEM_DIR_KEY);
+                externalDEMFile.setText(file.toAbsolutePath().toString());
                 extNoDataValue = OperatorUIUtils.getNoDataValue(file);
                 externalDEMNoDataValue.setText(String.valueOf(extNoDataValue));
             }
@@ -125,9 +125,9 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
         }
         demResamplingMethod.setSelectedItem(paramMap.get("demResamplingMethod"));
 
-        final File extFile = (File) paramMap.get("externalDEMFile");
+        final Path extFile = (Path) paramMap.get("externalDEMFile");
         if (extFile != null) {
-            externalDEMFile.setText(extFile.getAbsolutePath());
+            externalDEMFile.setText(extFile.toAbsolutePath().toString());
             extNoDataValue = (Double) paramMap.get("externalDEMNoDataValue");
             if (extNoDataValue != null && !textAreaKeyListener.isChangedByUser()) {
                 externalDEMNoDataValue.setText(String.valueOf(extNoDataValue));
@@ -152,7 +152,7 @@ public class ComputeSlopeAspectOpUI extends BaseOperatorUI {
 
         final String extFileStr = externalDEMFile.getText();
         if (!extFileStr.isEmpty()) {
-            paramMap.put("externalDEMFile", new File(extFileStr));
+            paramMap.put("externalDEMFile", Path.of(extFileStr));
             paramMap.put("externalDEMNoDataValue", Double.parseDouble(externalDEMNoDataValue.getText()));
         }
 
