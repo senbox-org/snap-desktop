@@ -29,7 +29,7 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -55,7 +55,7 @@ public class TargetProductSelectorModel {
     private String productName;
     private boolean saveToFileSelected;
     private boolean openInAppSelected;
-    private File productDir;
+    private Path productDir;
     private String formatName;
     private String[] formatNames;
 
@@ -130,12 +130,12 @@ public class TargetProductSelectorModel {
         return openInAppSelected;
     }
 
-    public File getProductDir() {
+    public Path getProductDir() {
         return productDir;
     }
 
-    public File getProductFile() {
-        return new File(productDir, getProductFileName());
+    public Path getProductFile() {
+        return productDir.resolve(getProductFileName());
     }
 
     String getProductFileName() {
@@ -182,7 +182,7 @@ public class TargetProductSelectorModel {
         setPropertyContainerValue(PROEPRTY_OPEN_IN_APP_SELECTED, openInAppSelected);
     }
 
-    public void setProductDir(File productDir) {
+    public void setProductDir(Path productDir) {
         setPropertyContainerValue(PROPERTY_PRODUCT_DIR, productDir);
     }
 
@@ -220,12 +220,12 @@ public class TargetProductSelectorModel {
         }
 
         @Override
-        public File getProductFile() {
+        public Path getProductFile() {
             if (!ENVISAT_FORMAT_NAME.equals(getFormatName())) {
                 return super.getProductFile();
             }
             final String productName = getProductName();
-            return new File(getProductDir(), FileUtils.ensureExtension(productName, ".N1"));
+            return getProductDir().resolve(FileUtils.ensureExtension(productName, ".N1"));
 
         }
 

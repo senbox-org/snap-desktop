@@ -38,7 +38,8 @@ import org.esa.snap.ui.ModelessDialog;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 import java.awt.Toolkit;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
@@ -71,9 +72,9 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         super(appContext.getApplicationWindow(), title, buttonMask, helpID);
         this.appContext = appContext;
         targetProductSelector = new TargetProductSelector(model, alwaysWriteOutput);
-        String homeDirPath = SystemUtils.getUserHomeDir().getPath();
+        String homeDirPath = SystemUtils.getUserHomeDir().toString();
         String saveDir = appContext.getPreferences().getPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
-        targetProductSelector.getModel().setProductDir(new File(saveDir));
+        targetProductSelector.getModel().setProductDir(Path.of(saveDir));
         if (!alwaysWriteOutput) {
             targetProductSelector.getOpenInAppCheckBox().setText("Open in " + appContext.getApplicationName());
         }
@@ -122,7 +123,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
             return;
         }
 
-        String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
+        String productDir = targetProductSelector.getModel().getProductDir().toAbsolutePath().toString();
         appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
 
         Product targetProduct = null;
@@ -223,12 +224,12 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
             }
         }
         if (targetProductSelector.getModel().isSaveToFileSelected()) {
-            File productFile = targetProductSelector.getModel().getProductFile();
-            if (productFile.exists()) {
+            Path productFile = targetProductSelector.getModel().getProductFile();
+            if (Files.exists(productFile)) {
                 String message = MessageFormat.format(
                         "<html>The specified output file<br>\"{0}\"<br> already exists.<br><br>" +
                                 "Do you want to overwrite the existing file?",
-                        productFile.getPath()
+                        productFile.toString()
                 );
                 final int answer = JOptionPane.showConfirmDialog(getJDialog(), message,
                         getTitle(), JOptionPane.YES_NO_OPTION);
@@ -241,7 +242,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
     }
 
     private void showSaveInfo(long saveTime) {
-        File productFile = getTargetProductSelector().getModel().getProductFile();
+        Path productFile = getTargetProductSelector().getModel().getProductFile();
         final String message = MessageFormat.format(
                 "<html>The target product has been successfully written to<br>{0}<br>" +
                         "Total time spend for processing: {1}",
@@ -262,7 +263,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
     }
 
     private void showSaveAndOpenInAppInfo(long saveTime) {
-        File productFile = getTargetProductSelector().getModel().getProductFile();
+        Path productFile = getTargetProductSelector().getModel().getProductFile();
         final String message = MessageFormat.format(
                 "<html>The target product has been successfully written to<br>" +
                         "<p>{0}</p><br>" +
@@ -275,7 +276,7 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
         showSuppressibleInformationDialog(message, "saveAndOpenInAppInfo");
     }
 
-    String formatFile(File file) {
+    String formatFile(Path file) {
         return FileUtils.getDisplayText(file, 54);
     }
 
@@ -366,10 +367,10 @@ public abstract class SingleTargetProductDialog extends ModelessDialog {
                 saveTime = System.currentTimeMillis() - t0;
 
                 if (model.isOpenInAppSelected()) {
-                    File targetFile = model.getProductFile();
-                    if (!targetFile.exists())
+                    Path targetFile = model.getProductFile();
+                    if (!Files.exists(targetFile))
                         targetFile = targetProduct.getFileLocation();
-                    if (targetFile.exists()) {
+                    if (Files.exists(targetFile)) {
                         targetProduct.dispose();
                         targetProduct = null;
                         product = ProductIO.readProduct(targetFile);

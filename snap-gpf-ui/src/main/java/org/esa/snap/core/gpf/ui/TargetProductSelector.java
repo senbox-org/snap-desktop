@@ -39,7 +39,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * WARNING: This class belongs to a preliminary API and may change in future releases.
@@ -120,7 +120,7 @@ public class TargetProductSelector {
             public void propertyChange(PropertyChangeEvent evt) {
                 String propertyName = evt.getPropertyName();
                 if (propertyName.equals(TargetProductSelectorModel.PROPERTY_PRODUCT_DIR)) {
-                    productDirTextField.setToolTipText(model.getProductDir().getPath());
+                    productDirTextField.setToolTipText(model.getProductDir().toString());
                 } else {
                     updateUIState();
                 }
@@ -271,11 +271,11 @@ public class TargetProductSelector {
             final JFileChooser chooser = FileChooserFactory.getInstance().createDirChooser(model.getProductDir());
             chooser.setDialogTitle("Select Target Directory");
             if (chooser.showDialog(windowAncestor, APPROVE_BUTTON_TEXT) == JFileChooser.APPROVE_OPTION) {
-                final File selectedDir = chooser.getSelectedFile();
+                final Path selectedDir = chooser.getSelectedFile() == null ? null : chooser.getSelectedFile().toPath();
                 if (selectedDir != null) {
                     model.setProductDir(selectedDir);
                 } else {
-                    model.setProductDir(new File("."));
+                    model.setProductDir(Path.of("."));
                 }
             }
         }

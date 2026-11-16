@@ -16,18 +16,17 @@
 
 package org.esa.snap.core.gpf.ui;
 
-import org.esa.snap.core.datamodel.Product;
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import com.bc.ceres.test.LongTestRunner;
+import java.awt.GraphicsEnvironment;
+import javax.swing.JComboBox;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.ui.DefaultAppContext;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.swing.JComboBox;
-import java.awt.GraphicsEnvironment;
-import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -115,7 +114,7 @@ public class SourceProductSelectorTest {
         assertSame(defaultProducts[1], selectedProduct);
 
         Product oldProduct = new Product("new", "T1", 0, 0);
-        oldProduct.setFileLocation(new File(""));
+        oldProduct.setFileLocation(IOHelper.createATempDir());
         selector.setSelectedProduct(oldProduct);
         selectedProduct = selector.getSelectedProduct();
         assertSame(oldProduct, selectedProduct);
@@ -148,7 +147,7 @@ public class SourceProductSelectorTest {
         SourceProductSelector selector = new SourceProductSelector(appContext, "Source");
         selector.initProducts();
         Product newProduct = new Product("new", "T1", 0, 0);
-        newProduct.setFileLocation(new File(""));
+        newProduct.setFileLocation(IOHelper.createATempDir());
         selector.setSelectedProduct(newProduct);
         assertSame(newProduct, selector.getSelectedProduct());
         selector.setSelectedProduct(defaultProducts[0]);
@@ -166,7 +165,7 @@ public class SourceProductSelectorTest {
         selector.setSelectedProduct(defaultProducts[0]);
         assertSame(defaultProducts[0], selector.getSelectedProduct());
         Product newProduct = new Product("new", "T1", 0, 0);
-        newProduct.setFileLocation(new File(""));
+        newProduct.setFileLocation(IOHelper.createATempDir());
         selector.setSelectedProduct(newProduct);
         assertSame(newProduct, selector.getSelectedProduct());
 

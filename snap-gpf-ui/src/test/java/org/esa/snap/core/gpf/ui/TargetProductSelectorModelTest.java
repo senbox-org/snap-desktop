@@ -29,7 +29,7 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -96,16 +96,16 @@ public class TargetProductSelectorModelTest {
 
     @Test
     public void testSetGetDirectory() {
-        final File directory = new File("Gallien");
+        final Path directory = Path.of("Gallien");
         model.setProductDir(directory);
         assertEquals(directory, model.getProductDir());
 
         model.setProductName("Obelix");
-        assertEquals(new File("Gallien", "Obelix.dim"), model.getProductFile());
+        assertEquals(Path.of("Gallien", "Obelix.dim"), model.getProductFile());
 
         // other format
         model.setFormatName(writerPlugIn.getFormatNames()[0]);
-        assertEquals(new File("Gallien", "Obelix.x"), model.getProductFile());
+        assertEquals(Path.of("Gallien", "Obelix.x"), model.getProductFile());
     }
 
     @Test

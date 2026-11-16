@@ -37,13 +37,13 @@ import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.ui.AppContext;
+import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.io.FileArrayEditor;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import java.awt.BorderLayout;
@@ -52,8 +52,8 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -81,8 +81,8 @@ class MosaicIOPanel extends JPanel {
         final FileArrayEditor.EditorParent context = new FileArrayEditorContext(appContext);
         sourceFileEditor = new FileArrayEditor(context, "Source products") {
             @Override
-            protected JFileChooser createFileChooserDialog() {
-                final JFileChooser fileChooser = super.createFileChooserDialog();
+            protected SnapFileChooser createFileChooserDialog() {
+                final SnapFileChooser fileChooser = super.createFileChooserDialog();
                 fileChooser.setDialogTitle("Mosaic - Open Source Product(s)");
                 return fileChooser;
             }
@@ -286,8 +286,8 @@ class MosaicIOPanel extends JPanel {
 
     private void prepareShowTargetProductSelector() {
         try {
-            final List<File> files = sourceFileEditor.getFiles();
-            mosaicModel.setSourceProducts(files.toArray(new File[files.size()]));
+            final List<Path> files = sourceFileEditor.getFiles();
+            mosaicModel.setSourceProducts(files.toArray(new Path[files.size()]));
         } catch (IOException ignore) {
         }
     }
@@ -303,7 +303,7 @@ class MosaicIOPanel extends JPanel {
 
     private void prepareHideTargetProductSelector() {
         try {
-            mosaicModel.setSourceProducts(new File[0]);
+            mosaicModel.setSourceProducts(new Path[0]);
         } catch (IOException ignore) {
         }
     }
@@ -318,25 +318,25 @@ class MosaicIOPanel extends JPanel {
         }
 
         @Override
-        public File getUserInputDir() {
+        public Path getUserInputDir() {
             return getInputProductDir();
         }
 
         @Override
-        public void setUserInputDir(File newDir) {
+        public void setUserInputDir(Path newDir) {
             setInputProductDir(newDir);
         }
 
-        private void setInputProductDir(final File currentDirectory) {
+        private void setInputProductDir(final Path currentDirectory) {
             applicationContext.getPreferences().setPropertyString(INPUT_PRODUCT_DIR_KEY,
-                                                                  currentDirectory.getAbsolutePath());
+                                                                  currentDirectory.toAbsolutePath().toString());
         }
 
-        private File getInputProductDir() {
+        private Path getInputProductDir() {
             final String path = applicationContext.getPreferences().getPropertyString(INPUT_PRODUCT_DIR_KEY);
-            final File inputProductDir;
+            final Path inputProductDir;
             if (path != null) {
-                inputProductDir = new File(path);
+                inputProductDir = Path.of(path);
             } else {
                 inputProductDir = null;
             }
@@ -362,18 +362,18 @@ class MosaicIOPanel extends JPanel {
                     final String iseMsg = String.format("No product writer found for format '%s'", formatName);
                     appContext.handleError(errMsg, new IllegalStateException(iseMsg));
                 }
-                final File fileLocation = product.getFileLocation();
+                final Path fileLocation = product.getFileLocation();
                 final String fileName = FileUtils.getFilenameWithoutExtension(fileLocation);
-                final File fileDir = fileLocation.getParentFile();
+                final Path fileDir = fileLocation.getParent();
                 selectorModel.setProductName(fileName);
                 selectorModel.setProductDir(fileDir);
             } else {
                 selectorModel.setFormatName(ProductIO.DEFAULT_FORMAT_NAME);
                 selectorModel.setProductName("mosaic");
-                String homeDirPath = SystemUtils.getUserHomeDir().getPath();
+                String homeDirPath = SystemUtils.getUserHomeDir().toString();
                 final PropertyMap prefs = appContext.getPreferences();
                 String saveDir = prefs.getPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
-                selectorModel.setProductDir(new File(saveDir));
+                selectorModel.setProductDir(Path.of(saveDir));
             }
         }
     }

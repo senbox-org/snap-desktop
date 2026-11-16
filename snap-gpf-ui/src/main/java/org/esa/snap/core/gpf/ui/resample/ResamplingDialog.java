@@ -46,17 +46,33 @@ import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
 import org.netbeans.swing.outline.OutlineModel;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -452,7 +468,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                SnapFileChooser fileChooser = new SnapFileChooser(SystemUtils.getAuxDataPath().resolve(ResamplingUtils.RESAMPLING_PRESET_FOLDER).toFile());
+                SnapFileChooser fileChooser = new SnapFileChooser(SystemUtils.getAuxDataPath().resolve(ResamplingUtils.RESAMPLING_PRESET_FOLDER));
                 fileChooser.setAcceptAllFileFilterUsed(true);
                 fileChooser.setDialogTitle("Select resampling preset");
                 SnapFileFilter fileFilter = new SnapFileFilter("ResPreset", ".res", "Resampling preset files");
@@ -463,11 +479,11 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
                 fileChooser.setDialogType(SnapFileChooser.OPEN_DIALOG);
 
-                File selectedFile;
+                Path selectedFile;
                 while (true) {
                     int i = fileChooser.showDialog(panel, null);
                     if (i == SnapFileChooser.APPROVE_OPTION) {
-                        selectedFile = fileChooser.getSelectedFile();
+                        selectedFile = fileChooser.getSelectedFile().toPath();
                         try {
                             ResamplingPreset resamplingPreset = ResamplingPreset.loadResamplingPreset(selectedFile);
 
@@ -512,7 +528,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                SnapFileChooser fileChooser = new SnapFileChooser(SystemUtils.getAuxDataPath().resolve(ResamplingUtils.RESAMPLING_PRESET_FOLDER).toFile());
+                SnapFileChooser fileChooser = new SnapFileChooser(SystemUtils.getAuxDataPath().resolve(ResamplingUtils.RESAMPLING_PRESET_FOLDER));
                 fileChooser.setAcceptAllFileFilterUsed(true);
                 fileChooser.setDialogTitle("Select resampling preset");
                 SnapFileFilter fileFilter = new SnapFileFilter("ResPreset", ".res", "Resampling preset files");
@@ -523,12 +539,12 @@ class ResamplingDialog extends SingleTargetProductDialog {
 
                 fileChooser.setDialogType(SnapFileChooser.SAVE_DIALOG);
 
-                File selectedFile;
+                Path selectedFile;
                 while (true) {
                     int i = fileChooser.showDialog(panel, null);
                     if (i == SnapFileChooser.APPROVE_OPTION) {
-                        selectedFile = fileChooser.getSelectedFile();
-                        if (!selectedFile.exists()) {
+                        selectedFile = fileChooser.getSelectedFile().toPath();
+                        if (!Files.exists(selectedFile)) {
                             break;
                         }
                         i = JOptionPane.showConfirmDialog(panel,
@@ -551,7 +567,7 @@ class ResamplingDialog extends SingleTargetProductDialog {
                 if(selectedFile != null) {
                     //update BandResamplingPresets with values of table
                     updateResamplingPreset();
-                    ResamplingPreset auxPreset = new ResamplingPreset(selectedFile.getName(),bandResamplingPresets);
+                    ResamplingPreset auxPreset = new ResamplingPreset(selectedFile.getFileName().toString(),bandResamplingPresets);
                     auxPreset.saveToFile(selectedFile, ioParametersPanel.getSourceProductSelectorList().get(0).getSelectedProduct());
                 }
             }

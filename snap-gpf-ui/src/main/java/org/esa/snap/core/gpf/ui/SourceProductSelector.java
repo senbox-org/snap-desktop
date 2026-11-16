@@ -57,8 +57,9 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
@@ -77,7 +78,7 @@ public class SourceProductSelector {
     private AppContext appContext;
     private ProductFilter productFilter;
     private Product extraProduct;
-    private File currentDirectory;
+    private Path currentDirectory;
     private DefaultComboBoxModel<Object> productListModel;
     private JLabel productNameLabel;
     private JButton productFileChooserButton;
@@ -119,7 +120,7 @@ public class SourceProductSelector {
             if (selected != null && selected instanceof Product) {
                 Product product = (Product) selected;
                 if (product.getFileLocation() != null) {
-                    productNameComboBox.setToolTipText(product.getFileLocation().getPath());
+                    productNameComboBox.setToolTipText(product.getFileLocation().toString());
                 } else {
                     productNameComboBox.setToolTipText(product.getDisplayName());
                 }
@@ -203,13 +204,13 @@ public class SourceProductSelector {
         return (Product) productListModel.getSelectedItem();
     }
 
-    public void setCurrentDirectory(File directory) {
-        if (directory != null && directory.isDirectory()) {
+    public void setCurrentDirectory(Path directory) {
+        if (directory != null && Files.isDirectory(directory)) {
             currentDirectory = directory;
         }
     }
 
-    public File getCurrentDirectory() {
+    public Path getCurrentDirectory() {
         return currentDirectory;
     }
 
@@ -332,18 +333,18 @@ public class SourceProductSelector {
         public void actionPerformed(ActionEvent event) {
             final Window window = SwingUtilities.getWindowAncestor((JComponent) event.getSource());
 
-            String homeDirPath = SystemUtils.getUserHomeDir().getPath();
+            String homeDirPath = SystemUtils.getUserHomeDir().toString();
             String openDir = appContext.getPreferences().getPropertyString(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR,
                                                                            homeDirPath);
-            currentDirectory = new File(openDir);
-            chooser.setCurrentDirectory(currentDirectory);
+            currentDirectory = Path.of(openDir);
+            chooser.setCurrentDirectory(currentDirectory.toFile());
 
             if (chooser.showDialog(window, APPROVE_BUTTON_TEXT) == JFileChooser.APPROVE_OPTION) {
                 SwingWorker cursorWorker = new CursorWorker(window, chooser);
                 cursorWorker.execute();
-                currentDirectory = chooser.getCurrentDirectory();
+                currentDirectory = chooser.getCurrentDirectory().toPath();
                 appContext.getPreferences().setPropertyString(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR,
-                                                              currentDirectory.getAbsolutePath());
+                                                              currentDirectory.toAbsolutePath().toString());
             }
         }
 
@@ -354,7 +355,7 @@ public class SourceProductSelector {
         private final Component window;
         private final JFileChooser chooser;
         private Cursor defaultCursor;
-        private File file;
+        private Path file;
 
         public CursorWorker(Component window, JFileChooser chooser) {
             this.window = window;
@@ -367,7 +368,7 @@ public class SourceProductSelector {
             try {
                 defaultCursor = window.getCursor();
                 window.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                file = chooser.getSelectedFile();
+                file = chooser.getSelectedFile().toPath();
                 product = ProductIO.readProduct(file);
             } catch (IOException e) {
                 handleError(e.getMessage());
@@ -381,13 +382,13 @@ public class SourceProductSelector {
             try {
                 product = get();
                 if (product == null) {
-                    throw new IOException(MessageFormat.format("File ''{0}'' could not be read.", this.file.getPath()));
+                    throw new IOException(MessageFormat.format("File ''{0}'' could not be read.", this.file.toString()));
                 }
                 if (productFilter.accept(product)) {
                     setSelectedProduct(product);
                 } else {
                     final String message = String.format("Product [%s] is not a valid source.",
-                                                         product.getFileLocation().getCanonicalPath());
+                            product.getFileLocation().toRealPath());
                     handleError(message);
                     product.dispose();
                 }

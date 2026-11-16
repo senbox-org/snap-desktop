@@ -40,7 +40,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 import java.awt.geom.Rectangle2D;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -74,7 +74,7 @@ class MosaicFormModel {
 
     private final PropertySet container;
     private final Map<String, Object> parameterMap = new HashMap<>();
-    private final Map<File, Product> sourceProductMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Path, Product> sourceProductMap = Collections.synchronizedMap(new HashMap<>());
     private final WorldMapPaneDataModel worldMapModel = new WorldMapPaneDataModel();
     private MosaicForm parentForm;
 
@@ -106,13 +106,13 @@ class MosaicFormModel {
                                            new MapEntryAccessor(parameterMap, propertyName)));
     }
 
-    void setSourceProducts(File[] files) throws IOException {
+    void setSourceProducts(Path[] files) throws IOException {
         boolean changeSourceProducts = false;
         if (files != null && files.length > 0) {
-            final List<File> fileList = Arrays.asList(files);
-            final Iterator<Map.Entry<File, Product>> iterator = sourceProductMap.entrySet().iterator();
+            final List<Path> fileList = Arrays.asList(files);
+            final Iterator<Map.Entry<Path, Product>> iterator = sourceProductMap.entrySet().iterator();
             while (iterator.hasNext()) {
-                final Map.Entry<File, Product> entry = iterator.next();
+                final Map.Entry<Path, Product> entry = iterator.next();
                 if (!fileList.contains(entry.getKey())) {
                     final Product product = entry.getValue();
                     worldMapModel.removeProduct(product);
@@ -125,7 +125,7 @@ class MosaicFormModel {
             }
 
             for (int i = 0; i < files.length; i++) {
-                final File file = files[i];
+                final Path file = files[i];
                 Product product = sourceProductMap.get(file);
                 if (product == null) {
                     product = ProductIO.readProduct(file);
@@ -146,7 +146,7 @@ class MosaicFormModel {
         if (changeSourceProducts) updateRegionSelectableMapBounds(files);
     }
 
-    void updateRegionSelectableMapBounds(File[] files){
+    void updateRegionSelectableMapBounds(Path[] files){
 
         /* set default values in case files.length == 0 */
         double southBoundVal = 35.0;

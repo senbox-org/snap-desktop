@@ -39,11 +39,26 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.help.HelpDisplayer;
 import org.xmlpull.mxp1.MXParser;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * WARNING: This class belongs to a preliminary API and may change in future releases.
@@ -200,15 +215,15 @@ public class OperatorMenu {
 
     private void applyCurrentDirectory(JFileChooser fileChooser) {
         if (appContext != null) {
-            String homeDirPath = SystemUtils.getUserHomeDir().getPath();
+            String homeDirPath = SystemUtils.getUserHomeDir().toString();
             String lastDir = appContext.getPreferences().getPropertyString(lastDirPreferenceKey, homeDirPath);
-            fileChooser.setCurrentDirectory(new File(lastDir));
+            fileChooser.setCurrentDirectory(Path.of(lastDir).toFile());
         }
     }
 
     private void preserveCurrentDirectory(JFileChooser fileChooser) {
         if (appContext != null) {
-            String lastDir = fileChooser.getCurrentDirectory().getAbsolutePath();
+            String lastDir = fileChooser.getCurrentDirectory().toPath().toAbsolutePath().toString();
             appContext.getPreferences().setPropertyString(lastDirPreferenceKey, lastDir);
         }
     }
@@ -234,7 +249,7 @@ public class OperatorMenu {
             if (JFileChooser.APPROVE_OPTION == response) {
                 try {
                     preserveCurrentDirectory(fileChooser);
-                    readFromFile(fileChooser.getSelectedFile());
+                    readFromFile(fileChooser.getSelectedFile().toPath());
                 } catch (Exception e) {
                     Debug.trace(e);
                     AbstractDialog.showErrorDialog(parentComponent, "Could not load parameters.\n" + e.getMessage(), TITLE);
@@ -247,8 +262,8 @@ public class OperatorMenu {
             return super.isEnabled() && parameterSupport != null;
         }
 
-        private void readFromFile(File selectedFile) throws Exception {
-            try (FileReader reader = new FileReader(selectedFile)) {
+        private void readFromFile(Path selectedFile) throws Exception {
+            try (Reader reader = Files.newBufferedReader(selectedFile)) {
                 DomElement domElement = readXml(reader);
                 parameterSupport.fromDomElement(domElement);
             }
@@ -289,7 +304,7 @@ public class OperatorMenu {
             if (JFileChooser.APPROVE_OPTION == response) {
                 try {
                     preserveCurrentDirectory(fileChooser);
-                    File selectedFile = fileChooser.getSelectedFile();
+                    Path selectedFile = fileChooser.getSelectedFile().toPath();
                     selectedFile = FileUtils.ensureExtension(selectedFile,
                             "." + parameterFileFilter.getExtensions()[0]);
                     DomElement domElement = parameterSupport.toDomElement();
@@ -308,8 +323,8 @@ public class OperatorMenu {
             return super.isEnabled() && parameterSupport != null;
         }
 
-        private void writeToFile(String s, File outputFile) throws IOException {
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
+        private void writeToFile(String s, Path outputFile) throws IOException {
+            try (BufferedWriter bw = new BufferedWriter(Files.newBufferedWriter(outputFile))) {
                 bw.write(s);
             }
         }
