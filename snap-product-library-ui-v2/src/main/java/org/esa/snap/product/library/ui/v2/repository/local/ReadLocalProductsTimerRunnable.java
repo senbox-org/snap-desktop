@@ -10,7 +10,6 @@ import org.esa.snap.product.library.v2.database.model.LocalRepositoryProduct;
 import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -48,22 +47,18 @@ public class ReadLocalProductsTimerRunnable extends AbstractProgressTimerRunnabl
                 // the product exists on the local disk
 
                 //TODO Jean temporary method until the Landsat8 product reader will be changed to read the product from a folder
-                Path productPath = RemoteProductsRepositoryProvider.prepareProductPathToOpen(repositoryProduct.getPath(), repositoryProduct);
-                File productFile = productPath.toFile();
-
-                //TODO Jean old code to get the product path to open
-                //File productFile = repositoryProduct.getPath().toFile();
+                Path productFile = RemoteProductsRepositoryProvider.prepareProductPathToOpen(repositoryProduct.getPath(), repositoryProduct);
 
                 ProductReader productReader = ProductIO.getProductReaderForInput(productFile);
                 if (productReader == null) {
                     // no product reader found in the application
-                    throw new IllegalStateException("No product reader found in the application for file '" + productFile.getAbsolutePath()+"'.");
+                    throw new IllegalStateException("No product reader found in the application for file '" + productFile.toAbsolutePath()+"'.");
                 } else {
                     // there is a product reader in the application
                     Product product = productReader.readProductNodes(productFile, null);
                     if (product == null) {
                         // the product has not been read
-                        throw new NullPointerException("The product '" + repositoryProduct.getName() + "' has not been read from '" + productFile.getAbsolutePath()+"'.");
+                        throw new NullPointerException("The product '" + repositoryProduct.getName() + "' has not been read from '" + productFile.toAbsolutePath()+"'.");
                     } else {
                         // the product has been read
                         products[i] = product;

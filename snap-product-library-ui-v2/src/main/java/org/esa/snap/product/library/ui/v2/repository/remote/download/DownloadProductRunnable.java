@@ -12,7 +12,6 @@ import org.esa.snap.remote.products.repository.RemoteProductsRepositoryProvider;
 import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.remote.products.repository.listener.ProgressListener;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.logging.Level;
@@ -60,11 +59,7 @@ public abstract class DownloadProductRunnable extends AbstractBackgroundDownload
             }
 
             //TODO Jean temporary method until the Landsat8 product reader will be changed to read the product from a folder
-            Path productPathToOpen = RemoteProductsRepositoryProvider.prepareProductPathToOpen(productPath, this.remoteProductDownloader.getProductToDownload());
-            File productFileToOpen = productPathToOpen.toFile();
-
-            //TODO Jean old code to get the product path to open
-            //File productFileToOpen = productPath.toFile();
+            Path productFileToOpen = RemoteProductsRepositoryProvider.prepareProductPathToOpen(productPath, this.remoteProductDownloader.getProductToDownload());
 
             Product product = null;
             try {

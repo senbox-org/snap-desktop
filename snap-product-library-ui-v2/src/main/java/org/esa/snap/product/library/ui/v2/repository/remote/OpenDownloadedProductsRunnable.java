@@ -12,7 +12,6 @@ import org.esa.snap.remote.products.repository.RepositoryProduct;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.SwingUtilities;
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.logging.Level;
@@ -45,11 +44,7 @@ public class OpenDownloadedProductsRunnable extends AbstractRunnable<Void> {
                 updateProductProgressStatusLater(repositoryProduct, DownloadProgressStatus.OPENING);
 
                 //TODO Jean temporary method until the Landsat8 product reader will be changed to read the product from a folder
-                Path productPath = RemoteProductsRepositoryProvider.prepareProductPathToOpen(entry.getValue(), repositoryProduct);
-                File productFile = productPath.toFile();
-
-                //TODO Jean old code to get the product path to open
-                //File productFile = entry.getValue().toFile();
+                Path productFile = RemoteProductsRepositoryProvider.prepareProductPathToOpen(entry.getValue(), repositoryProduct);
 
                 ProductReader productReader = ProductIO.getProductReaderForInput(productFile);
                 if (productReader == null) {
@@ -59,7 +54,7 @@ public class OpenDownloadedProductsRunnable extends AbstractRunnable<Void> {
                     // there is a product reader in the application
                     Product product = productReader.readProductNodes(productFile, null);
                     if (product == null) {
-                        throw new NullPointerException("The product '" + repositoryProduct.getName()+"' has not been read from '" + productFile.getAbsolutePath()+"'.");
+                        throw new NullPointerException("The product '" + repositoryProduct.getName()+"' has not been read from '" + productFile.toAbsolutePath()+"'.");
                     } else {
                         this.appContext.getProductManager().addProduct(product);
                         updateProductProgressStatusLater(repositoryProduct, DownloadProgressStatus.OPENED);

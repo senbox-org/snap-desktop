@@ -5,13 +5,10 @@ import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelper;
 import org.esa.snap.product.library.v2.database.LocalRepositoryFolderHelper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.SaveProductData;
-import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.*;
-import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +18,7 @@ import java.util.logging.Logger;
  *
  * Created by jcoravu on 3/10/2019.
  */
-public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimerRunnable<Map<File, String>> {
+public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimerRunnable<Map<Path, String>> {
 
     private static final Logger logger = Logger.getLogger(AddLocalRepositoryFolderTimerRunnable.class.getName());
 
@@ -50,7 +47,7 @@ public class AddLocalRepositoryFolderTimerRunnable extends AbstractProgressTimer
     }
 
     @Override
-    protected final Map<File, String> execute() throws Exception {
+    protected final Map<Path, String> execute() throws Exception {
         try {
             LocalRepositoryFolderHelper saveLocalProductsHelper = new LocalRepositoryFolderHelper(this.allLocalFolderProductsRepository,
                                                                                     this.scanRecursively, this.generateQuickLookImages, this.validateZips) {

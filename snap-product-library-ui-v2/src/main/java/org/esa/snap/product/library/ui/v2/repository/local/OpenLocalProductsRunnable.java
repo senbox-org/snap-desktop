@@ -12,7 +12,6 @@ import org.esa.snap.ui.AppContext;
 import org.esa.snap.ui.loading.PairRunnable;
 
 import javax.swing.*;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -55,11 +54,7 @@ public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunna
                     // the product exists on the local disk
 
                     //TODO Jean temporary method until the Landsat8 product reader will be changed to read the product from a folder
-                    Path productPath = RemoteProductsRepositoryProvider.prepareProductPathToOpen(repositoryProduct.getPath(), repositoryProduct);
-                    File productFile = productPath.toFile();
-
-                    //TODO Jean old code to get the product path to open
-                    //File productFile = repositoryProduct.getPath().toFile();
+                    Path productFile = RemoteProductsRepositoryProvider.prepareProductPathToOpen(repositoryProduct.getPath(), repositoryProduct);
 
                     ProductReader productReader = ProductIO.getProductReaderForInput(productFile);
                     if (productReader == null) {
@@ -70,7 +65,7 @@ public class OpenLocalProductsRunnable extends AbstractProcessLocalProductsRunna
                         Product product = productReader.readProductNodes(productFile, null);
                         if (product == null) {
                             // the product has not been read
-                            throw new NullPointerException("The product '" + repositoryProduct.getName()+"' has not been read from '" + productFile.getAbsolutePath()+"'.");
+                            throw new NullPointerException("The product '" + repositoryProduct.getName()+"' has not been read from '" + productFile.toAbsolutePath()+"'.");
                         } else {
                             // open the product in the application
                             Runnable runnable = new PairRunnable<LocalRepositoryProduct, Product>(repositoryProduct, product) {

@@ -59,8 +59,6 @@ import org.esa.snap.product.library.ui.v2.thread.ProgressBarHelperImpl;
 import org.esa.snap.product.library.ui.v2.thread.ThreadCallback;
 import org.esa.snap.product.library.ui.v2.thread.ThreadListener;
 import org.esa.snap.product.library.ui.v2.worldwind.WorldMapPanelWrapperImpl;
-import org.esa.snap.worldwind.productlibrary.PolygonMouseListener;
-import org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper;
 import org.esa.snap.product.library.v2.database.AllLocalFolderProductsRepository;
 import org.esa.snap.product.library.v2.database.AttributeFilter;
 import org.esa.snap.product.library.v2.database.DataAccess;
@@ -81,6 +79,8 @@ import org.esa.snap.ui.help.HelpDisplayer;
 import org.esa.snap.ui.loading.CustomFileChooser;
 import org.esa.snap.ui.loading.CustomSplitPane;
 import org.esa.snap.ui.loading.SwingUtils;
+import org.esa.snap.worldwind.productlibrary.PolygonMouseListener;
+import org.esa.snap.worldwind.productlibrary.WorldMapPanelWrapper;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -113,9 +113,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -609,7 +608,7 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
 
             @Override
-            protected void onSuccessfullyFinish(Map<File, String> errorFiles) {
+            protected void onSuccessfullyFinish(Map<Path, String> errorFiles) {
                 processErrorFiles(errorFiles);
             }
         };
@@ -674,21 +673,21 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
             }
 
             @Override
-            protected void onSuccessfullyFinish(Map<File, String> errorFiles) {
+            protected void onSuccessfullyFinish(Map<Path, String> errorFiles) {
                 processErrorFiles(errorFiles);
             }
         };
         this.localRepositoryProductsThread.executeAsync(); // start the thread
     }
 
-    private void processErrorFiles(Map<File, String> errorFiles) {
+    private void processErrorFiles(Map<Path, String> errorFiles) {
         if (errorFiles != null && errorFiles.size() > 0) {
             final StringBuilder str = new StringBuilder();
             int cnt = 1;
-            for (Map.Entry<File, String> entry : errorFiles.entrySet()) {
+            for (Map.Entry<Path, String> entry : errorFiles.entrySet()) {
                 str.append(entry.getValue()); // the message
                 str.append("   ");
-                str.append(entry.getKey().getAbsolutePath());
+                str.append(entry.getKey().toAbsolutePath());
                 str.append('\n');
                 if (cnt >= 20) {
                     str.append("plus ").append(errorFiles.size() - 20).append(" other errors...\n");
@@ -701,18 +700,18 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
                     "The follow files have errors:\n" + str + question,
                     false, null);
             if (answer == Dialogs.Answer.YES) {
-                final File file = Dialogs.requestFileForSave("Save as...", false,
+                final Path file = Dialogs.requestFileForSave("Save as...", false,
                         new SnapFileFilter("Text File", new String[]{".txt"}, "Text File"),
                         ".txt", "ProductErrorList", null, LAST_ERROR_OUTPUT_DIR_KEY);
                 if (file != null) {
                     try {
                         writeErrors(errorFiles, file);
                     } catch (Exception e) {
-                        Dialogs.showError("Unable to save to " + file.getAbsolutePath());
+                        Dialogs.showError("Unable to save to " + file.toAbsolutePath());
                     }
-                    if (Desktop.isDesktopSupported() && file.exists()) {
+                    if (Desktop.isDesktopSupported() && Files.exists(file)) {
                         try {
-                            Desktop.getDesktop().open(file);
+                            Desktop.getDesktop().open(file.toFile());
                         } catch (Exception e) {
                             SystemUtils.LOG.warning("Unable to open error file: " + e.getMessage());
                         }
@@ -811,9 +810,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
     private void copySelectedProductsOptionClicked() {
         RepositoryProduct[] selectedProducts = this.repositoryOutputProductListPanel.getProductListPanel().getSelectedProducts();
         if (selectedProducts.length > 0) {
-            File[] fileList = new File[selectedProducts.length];
+            final Path[] fileList = new Path[selectedProducts.length];
             for (int i = 0; i < selectedProducts.length; i++) {
-                fileList[i] = new File(selectedProducts[i].getURL());
+                fileList[i] = Path.of(selectedProducts[i].getURL());
             }
             ClipboardUtils.copyToClipboard(fileList);
         }
@@ -1000,9 +999,9 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
 
     private void openBatchProcessingDialog() {
         RepositoryProduct[] selectedProducts = this.repositoryOutputProductListPanel.getProductListPanel().getSelectedProducts();
-        File[] selectedProductsFiles = new File[selectedProducts.length];
+        Path[] selectedProductsFiles = new Path[selectedProducts.length];
         for (int i = 0; i < selectedProducts.length; i++) {
-            selectedProductsFiles[i] = ((LocalRepositoryProduct) selectedProducts[i]).getPath().toFile();
+            selectedProductsFiles[i] = ((LocalRepositoryProduct) selectedProducts[i]).getPath();
         }
         BatchGraphDialog batchDialog = new BatchGraphDialog(this.appContext, "Batch Processing", "batchProcessing", true);
         batchDialog.setInputFiles(selectedProductsFiles);
@@ -1352,14 +1351,14 @@ public class ProductLibraryToolViewV2 extends ToolTopComponent implements Compon
         return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
     }
 
-    private static void writeErrors(final Map<File, String> errorFiles, final File file) throws Exception {
+    private static void writeErrors(final Map<Path, String> errorFiles, final Path file) throws Exception {
         PrintStream p = null; // declare a print stream object
         try {
-            final FileOutputStream out = new FileOutputStream(file.getAbsolutePath());
+            final OutputStream out = Files.newOutputStream(file.toAbsolutePath());
             // Connect print stream to the output stream
             p = new PrintStream(out);
-            for (Map.Entry<File, String> entry : errorFiles.entrySet()) {
-                p.println(entry.getValue() + "   " + entry.getKey().getAbsolutePath());
+            for (Map.Entry<Path, String> entry : errorFiles.entrySet()) {
+                p.println(entry.getValue() + "   " + entry.getKey().toAbsolutePath());
             }
         } finally {
             if (p != null) {

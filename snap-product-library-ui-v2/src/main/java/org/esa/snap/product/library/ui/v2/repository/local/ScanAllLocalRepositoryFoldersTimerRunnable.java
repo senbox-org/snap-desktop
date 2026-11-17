@@ -9,7 +9,7 @@ import org.esa.snap.product.library.v2.database.model.LocalRepositoryFolder;
 import org.esa.snap.ui.loading.GenericRunnable;
 
 import javax.swing.*;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * Created by jcoravu on 4/10/2019.
  */
-public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgressTimerRunnable<Map<File, String>> {
+public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgressTimerRunnable<Map<Path, String>> {
 
     private static final Logger logger = Logger.getLogger(ScanAllLocalRepositoryFoldersTimerRunnable.class.getName());
 
@@ -48,7 +48,7 @@ public class ScanAllLocalRepositoryFoldersTimerRunnable extends AbstractProgress
     }
 
     @Override
-    protected Map<File, String> execute() throws Exception {
+    protected Map<Path, String> execute() throws Exception {
         List<LocalRepositoryFolder> localRepositoryFolders = this.allLocalFolderProductsRepository.loadRepositoryFolders();
         if (!isFinished()) {
             LocalRepositoryFolderHelper scanLocalProductsHelper = new LocalRepositoryFolderHelper(this.allLocalFolderProductsRepository, this.scanRecursively,
