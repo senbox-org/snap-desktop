@@ -40,9 +40,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -71,11 +69,9 @@ public class FilterOpUI extends BaseOperatorUI {
         initParameters();
 
         kernelFile.setColumns(30);
-        kernelFileBrowseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                final File file = Dialogs.requestFileForOpen("User Defined Kernel File", false, null, "snap.filterDir");
-                kernelFile.setText(file.getAbsolutePath());
-            }
+        kernelFileBrowseButton.addActionListener(e -> {
+            final Path file = Dialogs.requestFileForOpen("User Defined Kernel File", false, null, "snap.filterDir");
+            kernelFile.setText("" + (file != null ? file.toAbsolutePath() : ""));
         });
 
         return panel;
@@ -90,9 +86,9 @@ public class FilterOpUI extends BaseOperatorUI {
             setSelectedFilter(filterName);
         }
 
-        final File kFile = (File) paramMap.get("userDefinedKernelFile");
+        final Path kFile = (Path) paramMap.get("userDefinedKernelFile");
         if (kFile != null) {
-            kernelFile.setText(kFile.getAbsolutePath());
+            kernelFile.setText(kFile.toAbsolutePath().toString());
         }
     }
 
@@ -115,7 +111,7 @@ public class FilterOpUI extends BaseOperatorUI {
 
         final String kernelFileStr = kernelFile.getText();
         if (!kernelFileStr.isEmpty()) {
-            paramMap.put("userDefinedKernelFile", new File(kernelFileStr));
+            paramMap.put("userDefinedKernelFile", Path.of(kernelFileStr));
         }
     }
 

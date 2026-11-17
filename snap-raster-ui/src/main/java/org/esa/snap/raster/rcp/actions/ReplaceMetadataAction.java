@@ -37,9 +37,10 @@ import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,7 +119,7 @@ public class ReplaceMetadataAction extends AbstractSnapAction implements Context
                 }
 
                 final MetadataElement srcAbsRoot = AbstractMetadata.getAbstractedMetadata(srcProduct);
-                final File tmpMetadataFile = new File(SystemUtils.getCacheDir(),
+                final Path tmpMetadataFile = SystemUtils.getCacheDir().resolve(
                         srcProduct.getName() + "_metadata.xml");
                 AbstractMetadataIO.Save(srcProduct, srcAbsRoot, tmpMetadataFile);
 
@@ -132,7 +133,7 @@ public class ReplaceMetadataAction extends AbstractSnapAction implements Context
                 ReplaceMetadataOp.resetPolarizations(AbstractMetadata.getAbstractedMetadata(product),
                         isPolsar, isCalibrated);
 
-                tmpMetadataFile.delete();
+                Files.delete(tmpMetadataFile);
             } catch (Exception e) {
                 Dialogs.showError("Unable to save or load metadata\n" + e.getMessage());
             }
