@@ -20,7 +20,7 @@ import org.esa.snap.engine_utilities.gpf.CommonReaders;
 
 import javax.swing.JList;
 import java.awt.Dimension;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +94,7 @@ public final class OperatorUIUtils {
         paramMap.put(paramName, names);
     }
 
-    public static double getNoDataValue(final File extFile) {
+    public static double getNoDataValue(final Path extFile) {
         try {
             final Product product = CommonReaders.readProduct(extFile);
             if (product != null)

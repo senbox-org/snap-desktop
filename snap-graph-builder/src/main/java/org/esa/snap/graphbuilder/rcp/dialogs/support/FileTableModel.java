@@ -17,18 +17,18 @@ package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Interfrace for FileModel
  */
 public interface FileTableModel extends TableModel {
 
-    void addFile(final File file);
+    void addFile(final Path file);
 
     void removeFile(final int index);
 
-    File[] getFileList();
+    Path[] getFileList();
 
     void refresh();
 
@@ -36,11 +36,11 @@ public interface FileTableModel extends TableModel {
 
     void setColumnWidths(final TableColumnModel columnModel);
 
-    File getFileAt(final int index);
+    Path getFileAt(final int index);
 
-    File[] getFilesAt(final int[] indices);
+    Path[] getFilesAt(final int[] indices);
 
-    int getIndexOf(final File file);
+    int getIndexOf(final Path file);
 
     void move(final int oldIndex, final int newIndex);
 }

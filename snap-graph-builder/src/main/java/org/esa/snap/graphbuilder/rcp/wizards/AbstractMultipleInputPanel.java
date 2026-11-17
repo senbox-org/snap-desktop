@@ -19,9 +19,10 @@ import org.esa.snap.graphbuilder.rcp.dialogs.ProductSetPanel;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.rcp.SnapApp;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Input Panel
@@ -52,8 +53,8 @@ public abstract class AbstractMultipleInputPanel extends WizardPanel {
     }
 
     public boolean validateInput() {
-        final File[] fileList = productSetPanel.getFileList();
-        if (fileList.length == 0 || (fileList.length == 1 && !fileList[0].exists())) {
+        final Path[] fileList = productSetPanel.getFileList();
+        if (fileList.length == 0 || (fileList.length == 1 && !Files.exists(fileList[0]))) {
             showErrorMsg("Please add some products to the table");
             return false;
         }

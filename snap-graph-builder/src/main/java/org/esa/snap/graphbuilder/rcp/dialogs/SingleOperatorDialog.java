@@ -67,7 +67,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -278,7 +279,7 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
             return;
         }
 
-        String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
+        String productDir = targetProductSelector.getModel().getProductDir().toAbsolutePath().toString();
         SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
         statusLabel.setText("");
 
@@ -349,8 +350,8 @@ public class SingleOperatorDialog extends SingleTargetProductDialog {
                 final OperatorExecutor executor = OperatorExecutor.create(operator);
                 executor.execute(SubProgressMonitor.create(pm, 95));
 
-                File targetFile = model.getProductFile();
-                if (model.isOpenInAppSelected() && targetFile.exists()) {
+                Path targetFile = model.getProductFile();
+                if (model.isOpenInAppSelected() && Files.exists(targetFile)) {
                     product = CommonReaders.readProduct(targetFile);
                     if (product == null) {
                         product = targetProduct; // todo - check - this cannot be ok!!! (nf)

@@ -22,15 +22,21 @@ import org.esa.snap.rcp.nodes.PNode;
 import org.esa.snap.rcp.util.Dialogs;
 import org.openide.util.datatransfer.MultiTransferObject;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DropMode;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.TransferHandler;
+import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Table for listing product files
@@ -78,10 +84,10 @@ public class FileTable extends JTable {
         return tip;
     }
 
-    public void setFiles(final File[] fileList) {
+    public void setFiles(final Path[] fileList) {
         if (fileList != null) {
             fileModel.clear();
-            for (File file : fileList) {
+            for (Path file : fileList) {
                 fileModel.addFile(file);
             }
         }
@@ -91,7 +97,7 @@ public class FileTable extends JTable {
         if (fileList != null) {
             fileModel.clear();
             for (String str : fileList) {
-                fileModel.addFile(new File(str));
+                fileModel.addFile(Path.of(str));
             }
         }
     }
@@ -99,14 +105,14 @@ public class FileTable extends JTable {
     public int getFileCount() {
         int cnt = fileModel.getRowCount();
         if (cnt == 1) {
-            File file = fileModel.getFileAt(0);
-            if (file != null && file.getName().isEmpty())
+            Path file = fileModel.getFileAt(0);
+            if (file != null && file.getFileName().toString().isEmpty())
                 return 0;
         }
         return cnt;
     }
 
-    public File[] getFileList() {
+    public Path[] getFileList() {
         return fileModel.getFileList();
     }
 
@@ -129,7 +135,7 @@ public class FileTable extends JTable {
 
     private void paste() {
         try {
-            final File[] fileList = ClipboardUtils.getClipboardFileList();
+            final Path[] fileList = ClipboardUtils.getClipboardFileList();
             if (fileList != null) {
                 setFiles(fileList);
             }
@@ -203,8 +209,8 @@ public class FileTable extends JTable {
                     final String[] values = data.split("\n");
                     
                     for (String value : values) {
-                        final File file = new File(value);
-                        if (file.exists()) {
+                        final Path file = Path.of(value);
+                        if (Files.exists(file)) {
                             if (ProductFunctions.isValidProduct(file)) {
                                 fileModel.addFile(file);
                             }
@@ -215,8 +221,8 @@ public class FileTable extends JTable {
                     Object transferData = t.getTransferData(info.getDataFlavors()[0]);
                     if (transferData instanceof PNode) {
                         final PNode node = (PNode)transferData;
-                        File file = node.getProduct().getFileLocation();
-                        if (file.exists()) {
+                        Path file = node.getProduct().getFileLocation();
+                        if (Files.exists(file)) {
                             fileModel.addFile(file);
                         }
                     } else if(transferData instanceof MultiTransferObject) {
@@ -226,8 +232,8 @@ public class FileTable extends JTable {
                             Object data = multi.getTransferData(i, dataFlavor);
                             if(data instanceof PNode) {
                                 final PNode node = (PNode)data;
-                                File file = node.getProduct().getFileLocation();
-                                if (file.exists()) {
+                                Path file = node.getProduct().getFileLocation();
+                                if (Files.exists(file)) {
                                     fileModel.addFile(file);
                                 }
                             }
@@ -254,8 +260,8 @@ public class FileTable extends JTable {
 
             final StringBuilder listStr = new StringBuilder(256);
             for (int row : rows) {
-                final File file = fileModel.getFileAt(row);
-                listStr.append(file.getAbsolutePath());
+                final Path file = fileModel.getFileAt(row);
+                listStr.append(file.toAbsolutePath());
                 listStr.append('\n');
             }
             if (rows.length != 0) {

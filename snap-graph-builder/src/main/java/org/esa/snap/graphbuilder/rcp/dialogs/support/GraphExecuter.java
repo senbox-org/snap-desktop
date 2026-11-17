@@ -35,6 +35,8 @@ import org.esa.snap.rcp.util.Dialogs;
 
 import javax.swing.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class GraphExecuter extends Observable {
@@ -44,7 +46,7 @@ public class GraphExecuter extends Observable {
     private GraphContext graphContext = null;
     private GraphProcessor processor;
     private String graphDescription = "";
-    private File lastLoadedGraphFile = null;
+    private Path lastLoadedGraphFile = null;
 
     private final GraphNodeList graphNodeList = new GraphNodeList();
     private final static String LAST_GRAPH_PATH = "graphbuilder.last_graph_path";
@@ -275,8 +277,8 @@ public class GraphExecuter extends Observable {
         processor.executeGraph(graphContext, pm);
     }
 
-    public File[] getPotentialOutputFiles() {
-        final List<File> fileList = new ArrayList<>();
+    public Path[] getPotentialOutputFiles() {
+        final List<Path> fileList = new ArrayList<>();
         final Node[] nodes = graph.getNodes();
         for (Node n : nodes) {
             if (n.getOperatorName().startsWith(OperatorSpi.getOperatorAlias(WriteOp.class))) {
@@ -285,31 +287,31 @@ public class GraphExecuter extends Observable {
                 if (fileParam != null) {
                     final String filePath = fileParam.getValue();
                     if (filePath != null && !filePath.isEmpty()) {
-                        final File file = new File(filePath);
+                        final Path file = Path.of(filePath);
                         fileList.add(file);
                     }
                 }
             }
         }
-        return fileList.toArray(new File[fileList.size()]);
+        return fileList.toArray(new Path[fileList.size()]);
     }
 
-    public File saveGraph() throws GraphException {
+    public Path saveGraph() throws GraphException {
 
         String filename = "myGraph";
         if (lastLoadedGraphFile != null)
-            filename = lastLoadedGraphFile.getAbsolutePath();
+            filename = lastLoadedGraphFile.toAbsolutePath().toString();
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
-        final File filePath = Dialogs.requestFileForSave("Save Graph", false, fileFilter, ".xml", filename,
+        final Path filePath = Dialogs.requestFileForSave("Save Graph", false, fileFilter, ".xml", filename,
                 null, LAST_GRAPH_PATH);
         if (filePath != null)
-            writeGraph(filePath.getAbsolutePath());
+            writeGraph(filePath.toAbsolutePath().toString());
         return filePath;
     }
 
     private void writeGraph(final String filePath) throws GraphException {
 
-        try (FileWriter fileWriter = new FileWriter(filePath)) {
+        try (Writer fileWriter = Files.newBufferedWriter(Path.of(filePath))) {
             assignAllParameters();
             GraphIO.write(graph, fileWriter);
         } catch (Exception e) {
@@ -330,7 +332,7 @@ public class GraphExecuter extends Observable {
         return stringWriter.toString();
     }
 
-    public void loadGraph(final InputStream fileStream, final File file, final boolean addUI, final boolean wait) throws GraphException {
+    public void loadGraph(final InputStream fileStream, final Path file, final boolean addUI, final boolean wait) throws GraphException {
         if (fileStream == null) {
             return;
         }
@@ -409,8 +411,8 @@ public class GraphExecuter extends Observable {
         graphDescription = text;
     }
 
-    public List<File> getProductsToOpenInDAT() {
-        final List<File> fileList = new ArrayList<>(2);
+    public List<Path> getProductsToOpenInDAT() {
+        final List<Path> fileList = new ArrayList<>(2);
         final Node[] nodes = graph.getNodes();
         for (Node n : nodes) {
             if (n.getOperatorName().equalsIgnoreCase(OperatorSpi.getOperatorAlias(WriteOp.class))) {
@@ -419,8 +421,8 @@ public class GraphExecuter extends Observable {
                 if (fileParam != null) {
                     final String filePath = fileParam.getValue();
                     if (filePath != null && !filePath.isEmpty()) {
-                        final File file = new File(filePath);
-                        if (file.exists()) {
+                        final Path file = Path.of(filePath);
+                        if (Files.exists(file)) {
                             fileList.add(file);
                         } else {
                             final DomElement formatParam = config.getChild("formatName");
@@ -428,13 +430,13 @@ public class GraphExecuter extends Observable {
 
                             final String ext = ReaderUtils.findExtensionForFormat(format);
 
-                            File newFile = new File(file.getAbsolutePath() + ext);
-                            if (newFile.exists()) {
+                            Path newFile = Path.of(file.toAbsolutePath() + ext);
+                            if (Files.exists(newFile)) {
                                 fileList.add(newFile);
                             } else {
                                 final String name = FileUtils.getFilenameWithoutExtension(file);
-                                newFile = new File(name + ext);
-                                if (newFile.exists())
+                                newFile = Path.of(name + ext);
+                                if (Files.exists(newFile))
                                     fileList.add(newFile);
                             }
                         }
@@ -449,19 +451,19 @@ public class GraphExecuter extends Observable {
      * Update the nodes in the graph with the given reader file and writer file
      */
     public static void setGraphIO(final GraphExecuter graphEx,
-                                  final String readID, final File readPath,
-                                  final String writeID, final File writePath,
+                                  final String readID, final Path readPath,
+                                  final String writeID, final Path writePath,
                                   final String format) {
         final GraphNode readNode = graphEx.getGraphNodeList().findGraphNode(readID);
         if (readNode != null) {
-            graphEx.setOperatorParam(readNode.getID(), "file", readPath.getAbsolutePath());
+            graphEx.setOperatorParam(readNode.getID(), "file", readPath.toAbsolutePath().toString());
         }
 
         if (writeID != null) {
             final GraphNode writeNode = graphEx.getGraphNodeList().findGraphNode(writeID);
             if (writeNode != null) {
                 graphEx.setOperatorParam(writeNode.getID(), "formatName", format);
-                graphEx.setOperatorParam(writeNode.getID(), "file", writePath.getAbsolutePath());
+                graphEx.setOperatorParam(writeNode.getID(), "file", writePath.toAbsolutePath().toString());
             }
         }
     }

@@ -30,8 +30,16 @@ import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.engine_utilities.util.ProductFunctions;
 import org.esa.snap.engine_utilities.util.ResourceUtils;
-import org.esa.snap.graphbuilder.gpf.ui.*;
-import org.esa.snap.graphbuilder.rcp.dialogs.support.*;
+import org.esa.snap.graphbuilder.gpf.ui.OperatorUI;
+import org.esa.snap.graphbuilder.gpf.ui.ProductSetReaderOpUI;
+import org.esa.snap.graphbuilder.gpf.ui.SourceUI;
+import org.esa.snap.graphbuilder.gpf.ui.StatusLabel;
+import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphDialog;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphExecuter;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphPanel;
+import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphsMenu;
 import org.esa.snap.graphbuilder.rcp.progress.LabelBarProgressMonitor;
 import org.esa.snap.graphbuilder.rcp.utils.DialogUtils;
 import org.esa.snap.rcp.SnapApp;
@@ -42,15 +50,36 @@ import org.esa.snap.ui.ModelessDialog;
 import org.esa.snap.ui.help.HelpDisplayer;
 import org.openide.util.HelpCtx;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.plaf.basic.BasicBorders;
-import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.prefs.Preferences;
 
 /**
@@ -102,8 +131,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         graphEx.addObserver(this);
 
         final Preferences preferences = SnapApp.getDefault().getPreferences();
-        String lastDir = preferences.get(LAST_GRAPH_PATH, ResourceUtils.getGraphFolder("").toFile().getAbsolutePath());
-        if (new File(lastDir).exists()) {
+        String lastDir = preferences.get(LAST_GRAPH_PATH, ResourceUtils.getGraphFolder("").toAbsolutePath().toString());
+        if (Files.exists(Path.of(lastDir))) {
             preferences.put(LAST_GRAPH_PATH, lastDir);
         }
 
@@ -267,11 +296,11 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
     }
 
     private boolean checkIfOutputExists() {
-        final File[] files = graphEx.getPotentialOutputFiles();
-        for (File file : files) {
-            if (file.exists()) {
+        final Path[] files = graphEx.getPotentialOutputFiles();
+        for (Path file : files) {
+            if (Files.exists(file)) {
                 final int answer = JOptionPane.showOptionDialog(getJDialog(),
-                        "File " + file.getPath() + " already exists.\nWould you like to overwrite?", "Overwrite?",
+                        "File " + file + " already exists.\nWould you like to overwrite?", "Overwrite?",
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
                 if (answer == JOptionPane.NO_OPTION) {
@@ -319,9 +348,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      */
     public void saveGraph() {
         try {
-            final File file = graphEx.saveGraph();
+            final Path file = graphEx.saveGraph();
             if (file != null) {
-                setTitle(file.getName());
+                setTitle(file.getFileName().toString());
             }
         } catch (GraphException e) {
             showErrorDialog(e.getMessage());
@@ -338,7 +367,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      */
     public void loadGraph() {
         final SnapFileFilter fileFilter = new SnapFileFilter("XML", "xml", "Graph");
-        final File graphFile = Dialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
+        final Path graphFile = Dialogs.requestFileForOpen("Load Graph", false, fileFilter, LAST_GRAPH_PATH);
         if (graphFile == null) {
             return;
         }
@@ -354,12 +383,12 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      *
      * @param file the graph file to load
      */
-    public void loadGraph(final File file) {
+    public void loadGraph(final Path file) {
         try {
 
-            loadGraph(new FileInputStream(file), file);
+            loadGraph(Files.newInputStream(file), file);
             if (allowGraphBuilding) {
-                setTitle(file.getName());
+                setTitle(file.getFileName().toString());
             }
         } catch (IOException e) {
             SnapApp.getDefault().handleError("Unable to load graph " + file, e);
@@ -371,7 +400,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      *
      * @param fileStream the graph file to load
      */
-    public void loadGraph(final InputStream fileStream, final File file) {
+    public void loadGraph(final InputStream fileStream, final Path file) {
         try {
             initGraphEnabled = false;
             tabbedPanel.removeAll();
@@ -421,7 +450,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
      *
      * @param productFileList the product files
      */
-    public void setInputFiles(final File[] productFileList) {
+    public void setInputFiles(final Path[] productFileList) {
         final GraphNode productSetNode = graphEx.getGraphNodeList().findGraphNodeByOperator("ProductSet-Reader");
         if (productSetNode != null) {
             ProductSetReaderOpUI ui = (ProductSetReaderOpUI) productSetNode.getOperatorUI();
@@ -536,7 +565,7 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         }
     }
 
-    private void notifyMSG(final ProcessingListener.MSG msg, final File[] fileList) {
+    private void notifyMSG(final ProcessingListener.MSG msg, final Path[] fileList) {
         for (final ProcessingListener listener : listenerList) {
             listener.notifyMSG(msg, fileList);
         }
@@ -657,8 +686,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
 
                 statusLabel.setText(ProductFunctions.getProcessingStatistics(totalSeconds));
 
-                final List<File> fileList = graphEx.getProductsToOpenInDAT();
-                final File[] files = fileList.toArray(new File[0]);
+                final List<Path> fileList = graphEx.getProductsToOpenInDAT();
+                final Path[] files = fileList.toArray(new Path[0]);
                 notifyMSG(ProcessingListener.MSG.DONE, files);
 
                 ProcessingStats stats = openTargetProducts(files);
@@ -670,9 +699,9 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         }
     }
 
-    private ProcessingStats openTargetProducts(final File[] fileList) {
+    private ProcessingStats openTargetProducts(final Path[] fileList) {
         final ProcessingStats stats = new ProcessingStats();
-        for (File file : fileList) {
+        for (Path file : fileList) {
             try {
                 final Product product = CommonReaders.readProduct(file);
                 if (product != null) {
@@ -693,19 +722,19 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
         long totalPixels = 0;
     }
 
-    public static File getInternalGraphFolder() {
-        return ResourceUtils.getGraphFolder("internal").toFile();
+    public static Path getInternalGraphFolder() {
+        return ResourceUtils.getGraphFolder("internal");
     }
 
-    public static File getStandardGraphFolder() {
-        return ResourceUtils.getGraphFolder("Standard Graphs").toFile();
+    public static Path getStandardGraphFolder() {
+        return ResourceUtils.getGraphFolder("Standard Graphs");
     }
 
     public interface ProcessingListener {
 
         enum MSG {DONE, UPDATE}
 
-        void notifyMSG(final MSG msg, final File[] fileList);
+        void notifyMSG(final MSG msg, final Path[] fileList);
 
         void notifyMSG(final MSG msg, final String text);
     }
@@ -724,8 +753,8 @@ public class GraphBuilderDialog extends ModelessDialog implements Observer, Grap
             final Object selected = event.getSelection().getSelectedValue();
             if (selected instanceof Product) {
                 validateAllNodes();
-            } else if (selected instanceof File) {
-                if (ProductFunctions.isValidProduct((File) selected)) {
+            } else if (selected instanceof Path) {
+                if (ProductFunctions.isValidProduct((Path) selected)) {
                     validateAllNodes();
                 }
             }

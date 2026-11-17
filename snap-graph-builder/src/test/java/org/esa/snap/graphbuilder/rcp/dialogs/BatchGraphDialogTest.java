@@ -16,11 +16,12 @@
 package org.esa.snap.graphbuilder.rcp.dialogs;
 
 import com.bc.ceres.annotation.STTM;
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.graphbuilder.rcp.dialogs.support.GraphNode;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
@@ -37,7 +38,8 @@ public class BatchGraphDialogTest {
         graphNodes[1] = new GraphNode(new Node("Process", "the_processor"));
 
         final GraphNode node = new GraphNode(new Node("Write", "WriteOp"));
-        node.getParameterMap().put("file", new File("whatever"));
+        final Path file = IOHelper.createATempDir().resolve("whatever");
+        node.getParameterMap().put("file", file);
         graphNodes[2] = node;
 
         BatchGraphDialog.ensureWriteNodeTargetReset(graphNodes);

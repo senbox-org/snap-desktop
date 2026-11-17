@@ -38,7 +38,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -73,7 +73,7 @@ public class SubsetUI extends BaseOperatorUI {
     private final JButton geoUpdateButton = new JButton("Update");
     private Geometry geoRegion = null;
     private Polygon polygonRegion = null;
-    private File vectorFile = null;
+    private Path vectorFile = null;
     private static final int MIN_SUBSET_SIZE = 1;
     private Dimension currentProductSize = new Dimension(0, 0);
 
@@ -234,7 +234,7 @@ public class SubsetUI extends BaseOperatorUI {
             vectorFilePanel.setVisible(false);
         }
         polygonRegion = (Polygon) paramMap.get(POLYGON_REGION_PARAMETER);
-        vectorFile = (File) paramMap.get(VECTOR_FILE_PARAMETER);
+        vectorFile = (Path) paramMap.get(VECTOR_FILE_PARAMETER);
         if (polygonRegion != null || vectorFile != null) {
             vectorFileRadio.setSelected(true);
             pixelPanel.setVisible(false);

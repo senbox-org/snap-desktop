@@ -21,7 +21,7 @@ import org.esa.snap.graphbuilder.rcp.dialogs.support.FileTable;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.JComponent;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -63,20 +63,20 @@ public class ProductSetReaderOpUI extends BaseOperatorUI {
     @Override
     public void updateParameters() {
 
-        final File[] fileList = productSetTable.getFileList();
+        final Path[] fileList = productSetTable.getFileList();
         if (fileList.length == 0) return;
 
         final String[] fList = new String[fileList.length];
         for (int i = 0; i < fileList.length; ++i) {
-            if (fileList[i].getName().isEmpty())
+            if (fileList[i].getFileName().toString().isEmpty())
                 fList[i] = "";
             else
-                fList[i] = fileList[i].getAbsolutePath();
+                fList[i] = fileList[i].toAbsolutePath().toString();
         }
         paramMap.put("fileList", fList);
     }
 
-    public void setProductFileList(final File[] productFileList) {
+    public void setProductFileList(final Path[] productFileList) {
         productSetTable.setFiles(productFileList);
     }
 }

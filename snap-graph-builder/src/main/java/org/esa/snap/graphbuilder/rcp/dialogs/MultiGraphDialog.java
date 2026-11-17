@@ -43,8 +43,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -210,9 +210,9 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
      * @param executer the GraphExcecuter
      * @param file     the graph file to load
      */
-    public void loadGraph(final GraphExecuter executer, final File file) {
+    public void loadGraph(final GraphExecuter executer, final Path file) {
         try {
-            executer.loadGraph(new FileInputStream(file), file, true, true);
+            executer.loadGraph(Files.newInputStream(file), file, true, true);
 
         } catch (Exception e) {
             showErrorDialog(e.getMessage());
@@ -249,9 +249,9 @@ public abstract class MultiGraphDialog extends ModelessDialog implements LabelBa
         return result;
     }
 
-    private void openTargetProducts(final List<File> fileList) {
+    private void openTargetProducts(final List<Path> fileList) {
         if (!fileList.isEmpty()) {
-            for (File file : fileList) {
+            for (Path file : fileList) {
                 try {
 
                     final Product product = CommonReaders.readProduct(file);

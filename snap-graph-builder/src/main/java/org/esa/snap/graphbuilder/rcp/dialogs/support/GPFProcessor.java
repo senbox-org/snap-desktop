@@ -27,10 +27,10 @@ import org.esa.snap.core.gpf.graph.GraphIO;
 import org.esa.snap.core.gpf.graph.GraphProcessor;
 import org.esa.snap.core.gpf.graph.Node;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -40,8 +40,8 @@ public class GPFProcessor {
     private final Graph graph;
     private final GraphProcessor processor = new GraphProcessor();
 
-    public GPFProcessor(final File graphFile, final Map<String, String> parameterMap) throws GraphException, IOException {
-        graph = readGraph(new FileReader(graphFile), parameterMap);
+    public GPFProcessor(final Path graphFile, final Map<String, String> parameterMap) throws GraphException, IOException {
+        graph = readGraph(Files.newBufferedReader(graphFile), parameterMap);
     }
 
     public static Graph readGraph(final Reader fileReader, final Map<String, String> parameterMap)
@@ -55,12 +55,12 @@ public class GPFProcessor {
         return graph;
     }
 
-    public void setIO(final File srcFile, final File tgtFile, final String format) {
+    public void setIO(final Path srcFile, final Path tgtFile, final String format) {
         final String readOperatorAlias = OperatorSpi.getOperatorAlias(ReadOp.class);
         final Node readerNode = findNode(graph, readOperatorAlias);
         if (readerNode != null) {
             final DomElement param = new DefaultDomElement("parameters");
-            param.createChild("file").setValue(srcFile.getAbsolutePath());
+            param.createChild("file").setValue(srcFile.toAbsolutePath().toString());
             readerNode.setConfiguration(param);
         }
 
@@ -68,7 +68,7 @@ public class GPFProcessor {
         final Node writerNode = findNode(graph, writeOperatorAlias);
         if (writerNode != null && tgtFile != null) {
             final DomElement origParam = writerNode.getConfiguration();
-            origParam.getChild("file").setValue(tgtFile.getAbsolutePath());
+            origParam.getChild("file").setValue(tgtFile.toAbsolutePath().toString());
             if (format != null)
                 origParam.getChild("formatName").setValue(format);
         }

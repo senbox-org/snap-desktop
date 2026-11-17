@@ -29,7 +29,7 @@ import org.esa.snap.ui.AppContext;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,9 +49,9 @@ public class IOPanel {
         this.useSourceSelector = createSourceSelector;
 
         targetProductSelector = new TargetProductSelector();
-        final String homeDirPath = SystemUtils.getUserHomeDir().getPath();
+        final String homeDirPath = SystemUtils.getUserHomeDir().toString();
         final String saveDir = SnapApp.getDefault().getPreferences().get(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
-        targetProductSelector.getModel().setProductDir(new File(saveDir));
+        targetProductSelector.getModel().setProductDir(Path.of(saveDir));
         targetProductSelector.getOpenInAppCheckBox().setText("Open in " + theAppContext.getApplicationName());
 
         final TableLayout tableLayout = new TableLayout(1);
@@ -111,7 +111,7 @@ public class IOPanel {
     }
 
     public void onApply() {
-        final String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
+        final String productDir = targetProductSelector.getModel().getProductDir().toAbsolutePath().toString();
         SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
     }
 
@@ -121,7 +121,7 @@ public class IOPanel {
         return null;
     }
 
-    public File getTargetFile() {
+    public Path getTargetFile() {
         return targetProductSelector.getModel().getProductFile();
     }
 

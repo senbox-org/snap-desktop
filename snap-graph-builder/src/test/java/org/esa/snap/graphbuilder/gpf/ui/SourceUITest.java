@@ -28,7 +28,7 @@ import org.junit.Test;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import java.awt.*;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +54,7 @@ public class SourceUITest {
         sourceUI = new SourceUI();
         appContext = new MockAppContext();
 
-        final File path = GlobalTestConfig.getSnapTestDataOutputDirectory();
+        final Path path = GlobalTestConfig.getSnapTestDataOutputDirectory();
         defaultProducts = new Product[2];
         for (int i = 0; i < defaultProducts.length; i++) {
 
@@ -90,8 +90,8 @@ public class SourceUITest {
 
         sourceUI.updateParameters();
 
-        File path = (File) parameterMap.get(FILE_PARAMETER);
-        assertTrue(path.getAbsolutePath().equals(defaultProducts[0].getFileLocation().getAbsolutePath()));
+        Path path = (Path) parameterMap.get(FILE_PARAMETER);
+        assertEquals(path.toAbsolutePath(), defaultProducts[0].getFileLocation().toAbsolutePath());
         assertNotNull(parameterMap.get(PIXEL_REGION_PARAMETER));
         assertNull(parameterMap.get(GEOMETRY_REGION_PARAMETER));
     }

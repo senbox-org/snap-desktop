@@ -15,10 +15,11 @@
  */
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
+import org.esa.snap.engine_utilities.util.ResourceUtils;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.UIUtils;
-import org.esa.snap.engine_utilities.util.ResourceUtils;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -31,7 +32,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
 
 /**
  * Provides a dynamic graphs menu reflecting the graph file contents of ./snap/graphs
@@ -67,7 +70,7 @@ public class GraphsMenu {
         fileMenu.add(viewGraphXMLAction);
 
         JMenu graphMenu = new JMenu("Graphs");
-        createGraphMenu(graphMenu, ResourceUtils.getGraphFolder("").toFile());
+        createGraphMenu(graphMenu, ResourceUtils.getGraphFolder(""));
 
         final JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
@@ -76,13 +79,13 @@ public class GraphsMenu {
         return menuBar;
     }
 
-    private void createGraphMenu(final JMenu menu, final File path) {
-        final File[] filesList = path.listFiles();
-        if (filesList == null || filesList.length == 0) return;
+    private void createGraphMenu(final JMenu menu, final Path path) {
+        final Collection<Path> filesList = IOHelper.listFiles(path);
+        if (filesList.isEmpty()) return;
 
-        for (final File file : filesList) {
-            final String name = file.getName();
-            if (file.isDirectory() && !file.isHidden() && !name.equalsIgnoreCase("internal")) {
+        for (final Path file : filesList) {
+            final String name = file.getFileName().toString();
+            if (Files.isDirectory(file) && !IOHelper.isHidden(file) && !name.equalsIgnoreCase("internal")) {
                 final JMenu subMenu = new JMenu(name);
                 menu.add(subMenu);
                 createGraphMenu(subMenu, file);

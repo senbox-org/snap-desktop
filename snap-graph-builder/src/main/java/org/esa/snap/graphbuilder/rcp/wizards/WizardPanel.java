@@ -51,7 +51,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * A panel that provides the user interface for a single step in a WizardDialog.
@@ -66,10 +66,10 @@ public abstract class WizardPanel extends JPanel {
     private WizardDialog owner;
     private final String panelTitle;
 
-    protected final static File wizardGraphPath = new File(GraphBuilderDialog.getInternalGraphFolder(), "wizards");
+    protected final static Path wizardGraphPath = GraphBuilderDialog.getInternalGraphFolder().resolve("wizards");
     protected boolean finishing = false;
 
-    private File[] targetFileList = new File[0];
+    private Path[] targetFileList = new Path[0];
 
     /**
      * Creates a new panel.
@@ -162,7 +162,7 @@ public abstract class WizardPanel extends JPanel {
      */
     public abstract WizardPanel getNextPanel();
 
-    public File[] getTargetFileList() {
+    public Path[] getTargetFileList() {
         return targetFileList;
     }
 
@@ -177,7 +177,7 @@ public abstract class WizardPanel extends JPanel {
             }
         }
 
-        public void notifyMSG(final MSG msg, final File[] fileList) {
+        public void notifyMSG(final MSG msg, final Path[] fileList) {
             if (msg.equals(MSG.DONE)) {
                 targetFileList = fileList;
                 getOwner().updateState();
@@ -190,7 +190,7 @@ public abstract class WizardPanel extends JPanel {
     }
 
     public class MyBatchProcessListener implements BatchGraphDialog.BatchProcessListener {
-        public void notifyMSG(final BatchMSG msg, final File[] inputFileList, final File[] outputFileList) {
+        public void notifyMSG(final BatchMSG msg, final Path[] inputFileList, final Path[] outputFileList) {
             if (msg.equals(BatchMSG.DONE)) {
                 targetFileList = outputFileList;
                 getOwner().updateState();

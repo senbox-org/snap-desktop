@@ -22,7 +22,7 @@ import org.esa.snap.rcp.SnapApp;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +32,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
     protected Class types[] = null;
     protected int widths[] = null;
 
-    protected final List<File> fileList = new ArrayList<>(10);
+    protected final List<Path> fileList = new ArrayList<>(10);
     private final List<TableData> dataList = new ArrayList<>(10);
 
     public BaseFileModel() {
@@ -42,13 +42,13 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
 
     protected abstract void setColumnData();
 
-    protected abstract TableData createFileStats(final File file);
+    protected abstract TableData createFileStats(final Path file);
 
-    public File[] getFileList() {
-        return fileList.toArray(new File[fileList.size()]);
+    public Path[] getFileList() {
+        return fileList.toArray(new Path[fileList.size()]);
     }
 
-    public void addFile(final File file) {
+    public void addFile(final Path file) {
         fileList.add(file);
         clearBlankFile();
 
@@ -56,7 +56,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         fireTableDataChanged();
     }
 
-    public void addFile(final File file, final String[] values) {
+    public void addFile(final Path file, final String[] values) {
         fileList.add(file);
         clearBlankFile();
 
@@ -76,7 +76,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         if ((oldIndex < 1 && oldIndex > newIndex) || oldIndex > fileList.size() ||
                 newIndex < 0 || newIndex >= fileList.size())
             return;
-        final File file = fileList.get(oldIndex);
+        final Path file = fileList.get(oldIndex);
         final TableData data = dataList.get(oldIndex);
 
         fileList.remove(oldIndex);
@@ -87,7 +87,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         fireTableDataChanged();
     }
 
-    public int getIndexOf(final File file) {
+    public int getIndexOf(final Path file) {
         return fileList.indexOf(file);
     }
 
@@ -95,11 +95,11 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
      * Needed for drag and drop
      */
     private void addBlankFile() {
-        addFile(new File(""));
+        addFile(Path.of(""));
     }
 
     private void clearBlankFile() {
-        if (fileList.size() > 1 && fileList.get(0).getName().isEmpty()) {
+        if (fileList.size() > 1 && fileList.get(0).getFileName().toString().isEmpty()) {
             removeFile(0);
         }
     }
@@ -143,16 +143,16 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         return dataList.get(r).data[c];
     }
 
-    public File getFileAt(final int index) {
+    public Path getFileAt(final int index) {
         return fileList.get(index);
     }
 
-    public File[] getFilesAt(final int[] indices) {
-        final List<File> files = new ArrayList<>(indices.length);
+    public Path[] getFilesAt(final int[] indices) {
+        final List<Path> files = new ArrayList<>(indices.length);
         for (int i : indices) {
             files.add(fileList.get(i));
         }
-        return files.toArray(new File[files.size()]);
+        return files.toArray(new Path[files.size()]);
     }
 
     public void setColumnWidths(final TableColumnModel columnModel) {
@@ -165,9 +165,9 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
 
     public class TableData {
         protected final String data[] = new String[titles.length];
-        protected final File file;
+        protected final Path file;
 
-        public TableData(final File file) {
+        public TableData(final Path file) {
             this.file = file;
             updateData();
         }
@@ -187,7 +187,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
         protected void updateData(final Product product) {
         }
 
-        private void readProduct(final File file) {
+        private void readProduct(final Path file) {
 
             if(file == null)
                 return;
@@ -196,7 +196,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
                 @Override
                 protected Object doInBackground() throws Exception {
                     try {
-                        if (!file.getName().isEmpty()) {
+                        if (!file.getFileName().toString().isEmpty()) {
                             try {
                                 Product product = getProductFromProductManager(file);
                                 if (product == null) {
@@ -216,7 +216,7 @@ public abstract class BaseFileModel extends AbstractTableModel implements FileTa
             worker.execute();
         }
 
-        Product getProductFromProductManager(final File file) {
+        Product getProductFromProductManager(final Path file) {
             final SnapApp app = SnapApp.getDefault();
             if(app != null) {
                 final Product[] products = app.getProductManager().getProducts();

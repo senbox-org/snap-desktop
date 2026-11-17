@@ -51,9 +51,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * ProductSet Panel to handle source and target selection
@@ -113,9 +115,9 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
         if (incTrgProduct) {
             targetProductSelector = new TargetFolderSelector();
-            final String homeDirPath = SystemUtils.getUserHomeDir().getPath();
+            final String homeDirPath = SystemUtils.getUserHomeDir().toString();
             final String saveDir = SnapApp.getDefault().getPreferences().get(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
-            targetProductSelector.getModel().setProductDir(new File(saveDir));
+            targetProductSelector.getModel().setProductDir(Path.of(saveDir));
             targetProductSelector.getOpenInAppCheckBox().setText("Open in " + theAppContext.getApplicationName());
             targetProductSelector.getOpenInAppCheckBox().setVisible(false);
 
@@ -196,7 +198,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         addButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(final ActionEvent e) {
-                final File[] files = getFilePath(addButton, "Add Product");
+                final Path[] files = getFilePath(addButton, "Add Product");
                 if (files != null) {
                     addProducts(tableModel, files); // call for validation is covered - refactor? tb 2025-06-20
                 }
@@ -222,13 +224,13 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
                     return;
                 }
                 final int[] selRows = table.getSelectedRows();
-                final java.util.List<File> filesToRemove = new ArrayList<>(selRows.length);
+                final java.util.List<Path> filesToRemove = new ArrayList<>(selRows.length);
                 for (int row : selRows) {
                     filesToRemove.add(tableModel.getFileAt(row));
                 }
 
                 boolean hasRemoved = false;
-                for (File file : filesToRemove) {
+                for (Path file : filesToRemove) {
                     int index = tableModel.getIndexOf(file);
                     tableModel.removeFile(index);
                     hasRemoved = true;
@@ -282,12 +284,12 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return panel;
     }
 
-    private void addProducts(final FileTableModel tableModel, final File[] files) {
+    private void addProducts(final FileTableModel tableModel, final Path[] files) {
         final ProgressHandleMonitor pm = ProgressHandleMonitor.create("Populating table");
         Runnable operation = () -> {
             pm.beginTask("Populating table...", files.length);
-            File firstProductFile = null;
-            for (File file : files) {
+            Path firstProductFile = null;
+            for (Path file : files) {
                 if (ProductFunctions.isValidProduct(file)) {
                     tableModel.addFile(file);
                     firstProductFile = file;
@@ -306,14 +308,14 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         ProgressUtils.runOffEventThreadWithProgressDialog(operation, "Adding Products", pm.getProgressHandle(), true, 50, 1000);
     }
 
-    private void fireSelectionChanged(FileTableModel tableModel, File productFile) {
+    private void fireSelectionChanged(FileTableModel tableModel, Path productFile) {
         // @todo 1 CHECK call for graph validation - new SelectionChangeEvent()
 
         DefaultSelection selection;
         if (productFile != null) {
             selection = new DefaultSelection(productFile);
         } else {
-            final File selectedFile = tableModel.getFileAt(0);
+            final Path selectedFile = tableModel.getFileAt(0);
             if (selectedFile != null) {
                 selection = new DefaultSelection(selectedFile);
             } else {
@@ -329,10 +331,10 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
             final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
             pm.beginTask("Populating table...", products.length);
 
-            File firstProductFile = null;
+            Path firstProductFile = null;
             for (Product prod : products) {
-                final File file = prod.getFileLocation();
-                if (file != null && file.exists()) {
+                final Path file = prod.getFileLocation();
+                if (file != null && Files.exists(file)) {
                     tableModel.addFile(file);
                     firstProductFile = file;
                 }
@@ -358,19 +360,19 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         updateComponents();
     }
 
-    private static File[] getFilePath(Component component, String title) {
+    private static Path[] getFilePath(Component component, String title) {
 
-        File[] files = null;
-        final File openDir = new File(SnapApp.getDefault().getPreferences().
+        Path[] files = null;
+        final Path openDir = Path.of(SnapApp.getDefault().getPreferences().
                 get(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, "."));
         final JFileChooser chooser = FileChooserFactory.getInstance().createFileChooser(openDir);
         chooser.setMultiSelectionEnabled(true);
         chooser.setDialogTitle(title);
         if (chooser.showDialog(component, "OK") == JFileChooser.APPROVE_OPTION) {
-            files = chooser.getSelectedFiles();
+            files = Stream.of(chooser.getSelectedFiles()).map(java.io.File::toPath).toArray(Path[]::new);
 
             SnapApp.getDefault().getPreferences().
-                    put(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, chooser.getCurrentDirectory().getAbsolutePath());
+                    put(OpenProductAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, chooser.getCurrentDirectory().toPath().toAbsolutePath().toString());
         }
         return files;
     }
@@ -384,7 +386,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
     public void onApply() {
         if (targetProductSelector != null) {
-            final String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
+            final String productDir = targetProductSelector.getModel().getProductDir().toAbsolutePath().toString();
             SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
         }
     }
@@ -397,7 +399,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         targetProductNameSuffix = suffix;
     }
 
-    public File getTargetFolder() {
+    public Path getTargetFolder() {
         if (targetProductSelector != null) {
             final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
             return targetProductSelectorModel.getProductDir();
@@ -413,7 +415,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return null;
     }
 
-    public void setTargetFolder(final File path) {
+    public void setTargetFolder(final Path path) {
         if (targetProductSelector != null) {
             final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
             targetProductSelectorModel.setProductDir(path);
@@ -424,11 +426,11 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return productSetTable.getFileCount();
     }
 
-    public File[] getFileList() {
+    public Path[] getFileList() {
         return productSetTable.getFileList();
     }
 
-    public File[] getSelectedFiles() {
+    public Path[] getSelectedFiles() {
         return productSetTable.getModel().getFilesAt(productSetTable.getSelectedRows());
     }
 
@@ -436,7 +438,7 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
         return productSetTable.getModel().getValueAt(r, c);
     }
 
-    public void setProductFileList(final File[] productFileList) {
+    public void setProductFileList(final Path[] productFileList) {
         productSetTable.setFiles(productFileList);
 
         if(productFileList.length < AUTO_POPULATE_DETAILS_LIMIT) {
@@ -460,12 +462,12 @@ public class ProductSetPanel extends JPanel implements TableModelListener {
 
         public void actionPerformed(final ActionEvent e) {
             final int[] selRows = table.getSelectedRows();
-            final java.util.List<File> filesToMove = new ArrayList<>(selRows.length);
+            final java.util.List<Path> filesToMove = new ArrayList<>(selRows.length);
             for (int row : selRows) {
                 filesToMove.add(tableModel.getFileAt(row));
             }
             int pos = 0;
-            for (File file : filesToMove) {
+            for (Path file : filesToMove) {
                 int index = tableModel.getIndexOf(file);
                 if (index > 0 && movement.equals(MOVE.TOP)) {
                     tableModel.move(index, pos++);

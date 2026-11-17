@@ -27,7 +27,6 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.ui.SourceProductSelector;
 import org.esa.snap.core.metadata.MetadataInspector;
 import org.esa.snap.core.util.GeoUtils;
-import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.math.MathUtils;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 import org.esa.snap.rcp.SnapApp;
@@ -36,12 +35,28 @@ import org.esa.snap.ui.loading.SwingUtils;
 import org.esa.snap.ui.product.ProductSubsetByPolygonUiComponents;
 import org.locationtech.jts.geom.Geometry;
 
-import javax.swing.*;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -91,7 +106,7 @@ public class SourceUI extends BaseOperatorUI {
     private JSpinner geoCoordNorthLatSpinner;
     private JSpinner geoCoordSouthLatSpinner;
 
-    private static List<String> getFormatsForFile(final File file) {
+    private static List<String> getFormatsForFile(final Path file) {
         final Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
         final List<String> formatNameList = new ArrayList<>();
 
@@ -129,7 +144,7 @@ public class SourceUI extends BaseOperatorUI {
         return new JScrollPane(panel);
     }
 
-    private void updateFormatNamesCombo(final File file) {
+    private void updateFormatNamesCombo(final Path file) {
         if (file == null) {
             return;
         }
@@ -149,8 +164,8 @@ public class SourceUI extends BaseOperatorUI {
         assert (paramMap != null);
         final Object fileValue = paramMap.get(FILE_PARAMETER);
         if (fileValue != null) {
-            final File file = (File) fileValue;
-            if (file.isFile()) {
+            final Path file = (Path) fileValue;
+            if (Files.isRegularFile(file)) {
                 setSelectedAsInitialProduct(file, fileValue);
             }
         }
@@ -170,7 +185,7 @@ public class SourceUI extends BaseOperatorUI {
         }
     }
 
-    private void setSelectedAsInitialProduct(File file, Object fileValue) {
+    private void setSelectedAsInitialProduct(Path file, Object fileValue) {
         try {
             Product srcProduct = null;
             // check if product is already opened
@@ -207,7 +222,7 @@ public class SourceUI extends BaseOperatorUI {
         if (sourceProductSelector != null) {
             final Product prod = sourceProductSelector.getSelectedProduct();
             if (prod != null && prod.getFileLocation() != null) {
-                File currentProductFileLocation = (File) paramMap.get(FILE_PARAMETER);
+                Path currentProductFileLocation = (Path) paramMap.get(FILE_PARAMETER);
                 paramMap.put(FILE_PARAMETER, prod.getFileLocation());
                 if (currentProductFileLocation == null || currentProductFileLocation != prod.getFileLocation()) {
                     // sourceProducts from BaseOperatorUI should be populated in order to be able to later obtain getBandNames(), getGeometries(),
@@ -255,7 +270,7 @@ public class SourceUI extends BaseOperatorUI {
 
             final Product prod = sourceProductSelector.getSelectedProduct();
             if (prod != null && prod.getFileLocation() != null) {
-                File currentProductFileLocation = (File) paramMap.get(FILE_PARAMETER);
+                Path currentProductFileLocation = (Path) paramMap.get(FILE_PARAMETER);
                 if (currentProductFileLocation == null || currentProductFileLocation != prod.getFileLocation()) {
                     // for same types of products (with identical band names) the selected bands/masks are kept, therefore clear the selection when input product changes
                     bandList.clearSelection();

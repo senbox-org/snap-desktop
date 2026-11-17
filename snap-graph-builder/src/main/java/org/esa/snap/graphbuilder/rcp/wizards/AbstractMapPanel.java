@@ -24,7 +24,7 @@ import org.esa.snap.graphbuilder.gpf.ui.worldmap.WorldMapUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +33,10 @@ import java.util.List;
  */
 public abstract class AbstractMapPanel extends WizardPanel {
 
-    protected final File[] productFileList;
-    protected final File targetFolder;
+    protected final Path[] productFileList;
+    protected final Path targetFolder;
 
-    public AbstractMapPanel(final File[] productFileList, final File targetFolder) {
+    public AbstractMapPanel(final Path[] productFileList, final Path targetFolder) {
         super("Viewing the footprint");
         this.productFileList = productFileList;
         this.targetFolder = targetFolder;
@@ -70,7 +70,7 @@ public abstract class AbstractMapPanel extends WizardPanel {
                 "Use the mouse wheel to zoom in and out. Hold and drag the right mouse button to pan\n";
     }
 
-    private void createPanel(final File[] productFileList) {
+    private void createPanel(final Path[] productFileList) {
 
         final JPanel textPanel = createTextPanel("Instructions", getInstructions());
         this.add(textPanel, BorderLayout.NORTH);
@@ -82,9 +82,9 @@ public abstract class AbstractMapPanel extends WizardPanel {
         worldMapUI.setAdditionalGeoBoundaries(geoBoundariesList);
     }
 
-    private List<GeoPos[]> getGeoBoundaries(final File[] productFileList) {
+    private List<GeoPos[]> getGeoBoundaries(final Path[] productFileList) {
         final List<GeoPos[]> geoBoundaryList = new ArrayList<>();
-        for(File file : productFileList) {
+        for(Path file : productFileList) {
             try {
                 final Product product = CommonReaders.readProduct(file);
                 final int step = Math.max(30, (product.getSceneRasterWidth() + product.getSceneRasterHeight()) / 10);

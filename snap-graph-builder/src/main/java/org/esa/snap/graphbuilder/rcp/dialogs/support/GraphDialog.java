@@ -1,6 +1,6 @@
 package org.esa.snap.graphbuilder.rcp.dialogs.support;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * dialogs which are able to handle graphs
@@ -9,7 +9,7 @@ public interface GraphDialog {
 
     void loadGraph();
 
-    void loadGraph(final File file);
+    void loadGraph(final Path file);
 
     boolean canSaveGraphs();
 

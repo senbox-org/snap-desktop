@@ -20,7 +20,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.engine_utilities.datamodel.AbstractMetadata;
 import org.esa.snap.engine_utilities.gpf.OperatorUtils;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public class FileModel extends BaseFileModel implements FileTableModel {
 
@@ -38,19 +38,19 @@ public class FileModel extends BaseFileModel implements FileTableModel {
         };
     }
 
-    protected TableData createFileStats(final File file) {
+    protected TableData createFileStats(final Path file) {
         return new FileStats(file);
     }
 
     private class FileStats extends TableData {
 
-        FileStats(final File file) {
+        FileStats(final Path file) {
             super(file);
         }
 
         protected void updateData() {
             if (file != null) {
-                data[0] = file.getName();
+                data[0] = file.getFileName().toString();
             }
         }
 

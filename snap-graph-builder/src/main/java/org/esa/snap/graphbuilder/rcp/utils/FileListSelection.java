@@ -20,7 +20,7 @@ import com.bc.ceres.swing.selection.AbstractSelection;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,20 +35,20 @@ public class FileListSelection extends AbstractSelection implements Transferable
             DataFlavor.javaFileListFlavor
     };
 
-    private final List<File> fileList = new ArrayList<>();
+    private final List<Path> fileList = new ArrayList<>();
 
-    public FileListSelection(File[] fileList) {
+    public FileListSelection(Path[] fileList) {
         this.fileList.addAll(Arrays.asList(fileList));
     }
 
     @Override
-    public File getSelectedValue() {
+    public Path getSelectedValue() {
         return fileList.get(0);
     }
 
     @Override
-    public File[] getSelectedValues() {
-        return fileList.toArray(new File[fileList.size()]);
+    public Path[] getSelectedValues() {
+        return fileList.toArray(new Path[0]);
     }
 
     /**

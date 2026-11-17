@@ -22,7 +22,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class ClipboardUtils {
      *
      * @param fileList the list to copy
      */
-    public static void copyToClipboard(final File[] fileList) {
+    public static void copyToClipboard(final Path[] fileList) {
         final FileListSelection selection = new FileListSelection(fileList);
         final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         if (clipboard != null) {
@@ -79,12 +79,18 @@ public class ClipboardUtils {
      *
      * @return file[] list
      */
-    public static File[] getClipboardFileList() throws IOException, UnsupportedFlavorException {
+    public static Path[] getClipboardFileList() throws IOException, UnsupportedFlavorException {
         final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         if (clipboard != null) {
-            final List<File> fileList = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-            return fileList.toArray(new File[fileList.size()]);
+            final Object clipboardData = clipboard.getData(DataFlavor.javaFileListFlavor);
+            if (clipboardData instanceof List<?> list) {
+                final Path[] fileList = new Path[list.size()];
+                for (int i = 0; i < list.size(); i++) {
+                    fileList[i] = (Path) list.get(i);
+                }
+                return fileList;
+            }
         }
-        return new File[0];
+        return new Path[0];
     }
 }

@@ -18,7 +18,7 @@ package org.esa.snap.graphbuilder.rcp.actions;
 import org.esa.snap.graphbuilder.rcp.dialogs.GraphBuilderDialog;
 import org.esa.snap.ui.ModelessDialog;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -62,8 +62,8 @@ public class GraphAction extends OperatorAction {
         final GraphBuilderDialog dialog = new GraphBuilderDialog(getAppContext(), getDialogTitle(), getHelpId(), isEditingEnabled());
         dialog.show();
 
-        final File graphPath = GraphBuilderDialog.getInternalGraphFolder();
-        final File graphFile = new File(graphPath, getGraphFileName());
+        final Path graphPath = GraphBuilderDialog.getInternalGraphFolder();
+        final Path graphFile = graphPath.resolve(getGraphFileName());
 
         addIcon(dialog);
         dialog.loadGraph(graphFile);

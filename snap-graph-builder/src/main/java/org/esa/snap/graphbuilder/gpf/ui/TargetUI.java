@@ -24,7 +24,7 @@ import org.esa.snap.rcp.actions.file.SaveProductAsAction;
 import org.esa.snap.ui.AppContext;
 
 import javax.swing.JComponent;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -46,17 +46,17 @@ public class TargetUI extends BaseOperatorUI {
         targetProductSelector = new TargetProductSelector(new TargetProductSelectorModel(), true);
         this.appContext = appContext;
 
-        File saveDir = null;
+        Path saveDir = null;
         final Object value = paramMap.get(FILE_PARAMETER);
         if (value != null) {
-            final File file = (File) value;
-            saveDir = file.getParentFile();
+            final Path file = (Path) value;
+            saveDir = file.getParent();
         }
 
         if (saveDir == null) {
-            final String homeDirPath = SystemUtils.getUserHomeDir().getPath();
+            final String homeDirPath = SystemUtils.getUserHomeDir().toString();
             final String savePath = SnapApp.getDefault().getPreferences().get(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
-            saveDir = new File(savePath);
+            saveDir = Path.of(savePath);
         }
         targetProductSelector.getModel().setProductDir(saveDir);
 
@@ -86,8 +86,8 @@ public class TargetUI extends BaseOperatorUI {
         String fileName = defaultFileName;
         final Object fileValue = paramMap.get(FILE_PARAMETER);
         if (fileValue != null) {
-            final File file = (File) fileValue;
-            fileName = FileUtils.getFilenameWithoutAnyExtensions(file.getName());
+            final Path file = (Path) fileValue;
+            fileName = FileUtils.getFilenameWithoutAnyExtensions(file.getFileName().toString());
         }
         if (sourceProducts != null && sourceProducts.length > 0) {
             boolean sourceProductsChange = false;
@@ -110,11 +110,11 @@ public class TargetUI extends BaseOperatorUI {
         final String productName = targetProductSelector.getModel().getProductName();
         if (productName == null || productName.isEmpty())
             return new UIValidation(UIValidation.State.ERROR, "productName not specified");
-        final File file = targetProductSelector.getModel().getProductFile();
+        final Path file = targetProductSelector.getModel().getProductFile();
         if (file == null)
             return new UIValidation(UIValidation.State.ERROR, "Target file not specified");
 
-        final String productDir = targetProductSelector.getModel().getProductDir().getAbsolutePath();
+        final String productDir = targetProductSelector.getModel().getProductDir().toAbsolutePath().toString();
         SnapApp.getDefault().getPreferences().put(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, productDir);
 
         return new UIValidation(UIValidation.State.OK, "");

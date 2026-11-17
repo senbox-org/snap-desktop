@@ -24,7 +24,7 @@ import org.esa.snap.core.gpf.graph.Node;
 import org.esa.snap.core.gpf.internal.ProductSetHandler;
 import org.esa.snap.engine_utilities.gpf.CommonReaders;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -123,7 +123,7 @@ public class ProductSetUIHandler {
         fileParam.setValue(value);
         config.addChild(fileParam);
 
-        final String format = CommonReaders.findCommonProductFormat(new File(value));
+        final String format = CommonReaders.findCommonProductFormat(Path.of(value));
         if(format != null) {
             final DomElement formatParam = new XppDomElement("formatName");
             formatParam.setValue(format);

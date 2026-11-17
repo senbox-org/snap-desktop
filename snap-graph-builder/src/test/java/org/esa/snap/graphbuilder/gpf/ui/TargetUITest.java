@@ -28,7 +28,7 @@ import org.junit.Test;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import java.awt.Window;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +52,7 @@ public class TargetUITest {
         targetUI = new TargetUI();
         appContext = new MockAppContext();
 
-        final File path = GlobalTestConfig.getSnapTestDataOutputDirectory();
+        final Path path = GlobalTestConfig.getSnapTestDataOutputDirectory();
         defaultProducts = new Product[2];
         for (int i = 0; i < defaultProducts.length; i++) {
 
