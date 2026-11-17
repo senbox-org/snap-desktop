@@ -39,7 +39,7 @@ import javax.swing.event.ListDataListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 
 class PixelExtractionIOForm {
@@ -127,16 +127,16 @@ class PixelExtractionIOForm {
 
     private String getDefaultOutputPath(AppContext appContext) {
         final Property dirProperty = container.getProperty("outputDir");
-        String userHomePath = SystemUtils.getUserHomeDir().getAbsolutePath();
+        String userHomePath = SystemUtils.getUserHomeDir().toAbsolutePath().toString();
         String lastDir = appContext.getPreferences().getPropertyString(PROPERTY_NAME_LAST_OPEN_OUTPUT_DIR, userHomePath);
         String path;
         try {
-            path = new File(lastDir).getCanonicalPath();
+            path = Path.of(lastDir).toRealPath().toString();
         } catch (IOException ignored) {
             path = userHomePath;
         }
         try {
-            dirProperty.setValue(new File(path));
+            dirProperty.setValue(Path.of(path));
         } catch (ValidationException ignore) {
         }
         return path;
@@ -151,19 +151,19 @@ class PixelExtractionIOForm {
         AbstractButton button = new JButton("...");
         button.addActionListener(e -> {
             FolderChooser folderChooser = new FolderChooser();
-            folderChooser.setCurrentDirectory(new File(getDefaultOutputPath(appContext)));
+            folderChooser.setCurrentDirectory(Path.of(getDefaultOutputPath(appContext)).toFile());
             folderChooser.setDialogTitle("Select output directory");
             folderChooser.setMultiSelectionEnabled(false);
             int result = folderChooser.showDialog(appContext.getApplicationWindow(), "Select");    /*I18N*/
             if (result != JFileChooser.APPROVE_OPTION) {
                 return;
             }
-            File selectedFile = folderChooser.getSelectedFile();
-            setOutputDirPath(selectedFile.getAbsolutePath());
+            Path selectedFile = folderChooser.getSelectedFile().toPath();
+            setOutputDirPath(selectedFile.toAbsolutePath().toString());
             try {
                 outputFileProperty.setValue(selectedFile);
                 appContext.getPreferences().setPropertyString(PROPERTY_NAME_LAST_OPEN_OUTPUT_DIR,
-                                                              selectedFile.getAbsolutePath());
+                                                              selectedFile.toAbsolutePath().toString());
 
             } catch (ValidationException ve) {
                 // not expected to ever come here

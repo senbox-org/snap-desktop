@@ -16,7 +16,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -44,11 +44,11 @@ class AddCsvFileAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         PropertyMap preferences = appContext.getPreferences();
         final SnapFileChooser fileChooser = getFileChooser(
-                preferences.getPropertyString(LAST_OPEN_CSV_DIR, SystemUtils.getUserHomeDir().getPath()));
+                preferences.getPropertyString(LAST_OPEN_CSV_DIR, SystemUtils.getUserHomeDir().toString()));
         int answer = fileChooser.showDialog(parent, "Select");
         if (answer == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            preferences.setPropertyString(LAST_OPEN_CSV_DIR, selectedFile.getParent());
+            Path selectedFile = fileChooser.getSelectedFile().toPath();
+            preferences.setPropertyString(LAST_OPEN_CSV_DIR, selectedFile.getParent().toString());
             try {
                 final List<SimpleFeature> extendedFeatures = PixExOpUtils.extractFeatures(selectedFile);
                 for (SimpleFeature extendedFeature : extendedFeatures) {
@@ -94,7 +94,7 @@ class AddCsvFileAction extends AbstractAction {
     private SnapFileChooser getFileChooser(String lastDir) {
         final SnapFileChooser fileChooser = new SnapFileChooser();
         fileChooser.setFileFilter(new SnapFileFilter("CSV", new String[]{".csv", ".txt", ".ascii"}, "CSV files"));
-        fileChooser.setCurrentDirectory(new File(lastDir));
+        fileChooser.setCurrentDirectory(Path.of(lastDir).toFile());
         return fileChooser;
     }
 }

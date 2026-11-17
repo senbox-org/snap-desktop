@@ -41,7 +41,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.Component;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -140,9 +140,9 @@ class PixelExtractionDialog extends ModelessDialog implements ParameterUpdater {
                     continue;
                 }
                 try {
-                    final TreeSet<File> fileSet = new TreeSet<>();
+                    final TreeSet<Path> fileSet = new TreeSet<>();
                     WildcardMatcher.glob(inputPath, fileSet);
-                    for (File file : fileSet) {
+                    for (Path file : fileSet) {
                         final Product product = ProductIO.readProduct(file);
                         if (product != null) {
                             return product;
@@ -200,7 +200,7 @@ class PixelExtractionDialog extends ModelessDialog implements ParameterUpdater {
         }
         parametersForm.setExpression(expression);
         Object outputDirObject = parameterMap.get("outputDir");
-        if (outputDirObject instanceof  File) {
+        if (outputDirObject instanceof  Path) {
             ioForm.setOutputDirPath(outputDirObject.toString());
         }
         Object exportExpressionResultObject = parameterMap.get("exportExpressionResult");

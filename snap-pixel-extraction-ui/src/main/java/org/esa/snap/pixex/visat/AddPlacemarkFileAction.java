@@ -28,9 +28,10 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 class AddPlacemarkFileAction extends AbstractAction {
@@ -52,32 +53,23 @@ class AddPlacemarkFileAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         PropertyMap preferences = appContext.getPreferences();
         String lastDir = preferences.getPropertyString(LAST_OPEN_PLACEMARK_DIR,
-                                                       SystemUtils.getUserHomeDir().getPath());
+                                                       SystemUtils.getUserHomeDir().toString());
         final JFileChooser fileChooser = new JFileChooser();
         fileChooser.addChoosableFileFilter(PlacemarkIO.createPlacemarkFileFilter());
         fileChooser.setFileFilter(PlacemarkIO.createTextFileFilter());
 
-        fileChooser.setCurrentDirectory(new File(lastDir));
+        fileChooser.setCurrentDirectory(Path.of(lastDir).toFile());
         int answer = fileChooser.showDialog(parentComponent, "Select");
         if (answer == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            preferences.setPropertyString(LAST_OPEN_PLACEMARK_DIR, selectedFile.getParent());
-            FileReader reader = null;
-            try {
-                reader = new FileReader(selectedFile);
+            Path selectedFile = fileChooser.getSelectedFile().toPath();
+            preferences.setPropertyString(LAST_OPEN_PLACEMARK_DIR, selectedFile.getParent().toString());
+             try (Reader reader = Files.newBufferedReader(selectedFile)){
                 final List<Placemark> placemarks = PlacemarkIO.readPlacemarks(reader, null, PinDescriptor.getInstance());
                 for (Placemark placemark : placemarks) {
                     tableModel.addPlacemark(placemark);
                 }
             } catch (IOException ioe) {
                 appContext.handleError(String.format("Error occurred while reading file: %s", selectedFile), ioe);
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException ignored) {
-                    }
-                }
             }
         }
 
