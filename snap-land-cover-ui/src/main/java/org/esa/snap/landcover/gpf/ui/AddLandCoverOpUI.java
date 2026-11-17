@@ -34,13 +34,14 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * User interface for AddLandCoverOp
@@ -51,7 +52,7 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
     private final Map<String, DefaultMutableTreeNode> folderMap = new HashMap<>();
     final JTree landCoverNamesTree = new JTree(landCoverNamesRoot);
 
-    final JList<File> externalFileList = new JList<>();
+    final JList<Path> externalFileList = new JList<>();
     private final JButton externalFileBrowseButton = new JButton("...");
 
     final JComboBox<String> resamplingMethodCombo = new JComboBox<>(ResamplingFactory.resamplingNames);
@@ -70,7 +71,7 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
 
         externalFileBrowseButton.addActionListener(e -> {
 
-            final File[] files = getSelectedFiles();
+            final Path[] files = getSelectedFiles();
             if(files != null) {
                 externalFileList.removeAll();
                 externalFileList.setListData(files);
@@ -111,14 +112,14 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         landCoverNamesTree.expandRow(0);
     }
 
-    private static File[] getSelectedFiles() {
+    private static Path[] getSelectedFiles() {
         final JFileChooser fileChooser = createFileChooserDialog(lastLandcoverPathKey);
         int result = fileChooser.showOpenDialog(SnapApp.getDefault().getMainFrame());
         if (fileChooser.getCurrentDirectory() != null) {
             SnapApp.getDefault().getPreferences().put(lastLandcoverPathKey, fileChooser.getCurrentDirectory().getPath());
         }
         if (result == JFileChooser.APPROVE_OPTION) {
-            return fileChooser.getSelectedFiles();
+            return Stream.of(fileChooser.getSelectedFiles()).map(java.io.File::toPath).toArray(Path[]::new);
         }
         return null;
     }
@@ -128,8 +129,8 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         chooser.setAcceptAllFileFilterUsed(true);
         chooser.setMultiSelectionEnabled(true);
 
-        final String lastDir = SnapApp.getDefault().getPreferences().get(preferencesKey, SystemUtils.getUserHomeDir().getPath());
-        chooser.setCurrentDirectory(new File(lastDir));
+        final String lastDir = SnapApp.getDefault().getPreferences().get(preferencesKey, SystemUtils.getUserHomeDir().toString());
+        chooser.setCurrentDirectory(Path.of(lastDir).toFile());
 
         final Iterator<ProductReaderPlugIn> iterator = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
         java.util.List<SnapFileFilter> sortedFileFilters = SnapFileFilter.getSortedFileFilters(iterator);
@@ -160,14 +161,14 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         }
         resamplingMethodCombo.setSelectedItem(paramMap.get("resamplingMethod"));
 
-        final File[] files = (File[]) paramMap.get("externalFiles");
+        final Path[] files = (Path[]) paramMap.get("externalFiles");
         if (files != null) {
             externalFileList.setListData(files);
         } else {
             // backward compatibility
-            final File file = (File) paramMap.get("externalFile");
+            final Path file = (Path) paramMap.get("externalFile");
             if(file != null) {
-                externalFileList.setListData(new File[] {file});
+                externalFileList.setListData(new Path[] {file});
             }
         }
         if(externalFileList.getModel().getSize() > 0) {
@@ -197,7 +198,7 @@ public class AddLandCoverOpUI extends BaseOperatorUI {
         }
         paramMap.put("resamplingMethod", resamplingMethodCombo.getSelectedItem());
         if (!externalFileList.getSelectedValuesList().isEmpty()) {
-            final File[] files = externalFileList.getSelectedValuesList().toArray(new File[0]);
+            final Path[] files = externalFileList.getSelectedValuesList().toArray(new Path[0]);
             paramMap.put("externalFiles", files);
         }
     }

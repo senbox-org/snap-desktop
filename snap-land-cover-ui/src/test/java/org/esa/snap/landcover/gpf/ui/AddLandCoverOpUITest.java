@@ -1,18 +1,23 @@
 package org.esa.snap.landcover.gpf.ui;
 
 import com.bc.ceres.annotation.STTM;
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.graphbuilder.gpf.ui.UIValidation;
 import org.esa.snap.ui.AppContext;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.swing.*;
-import java.io.File;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class AddLandCoverOpUITest {
 
@@ -49,7 +54,8 @@ public class AddLandCoverOpUITest {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("landCoverNames", new String[]{"Model1", "Model2"});
         paramMap.put("resamplingMethod", "Nearest");
-        paramMap.put("externalFiles", new File[]{new File("file1"), new File("file2")});
+        Path tempDir = IOHelper.createATempDir();
+        paramMap.put("externalFiles", new Path[]{tempDir.resolve("file1"), tempDir.resolve("file2")});
 
         addLandCoverOpUI.CreateOpTab("AddLandCover", paramMap, appContext);
         addLandCoverOpUI.initParameters();
