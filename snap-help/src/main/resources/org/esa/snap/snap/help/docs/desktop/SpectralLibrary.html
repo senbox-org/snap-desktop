@@ -125,6 +125,9 @@
             Select one or more profiles in the table and use
             <b>Apply Spectral Noise Reduction for selected Profiles</b>.
             A dialog opens where the filter method and its parameters can be configured.
+            Available methods are Savitzky-Golay, Gaussian, Box, Ricker Wavelet, and Trapezoid.
+            Ricker Wavelet uses an EnMAP-compatible width default of <code>1.0</code>; Trapezoid uses width
+            <code>3.0</code> and slope <code>1.0</code>.
             The smoothed profiles can either be stored in the current active library or in a newly created library.
             New profile names are created by appending a suffix such as <code>_smoothed</code>.
         </li>
@@ -214,6 +217,13 @@
             <b>GeoJSON (*.geojson)</b> - A text-based format compatible with the EnMAP-Box spectral
             library GeoJSON format. Each profile is stored as a GeoJSON Feature, including spectral
             data, bad band information, custom attributes, and optional point geometry.
+        </li>
+        <li>
+            <b>GeoPackage (*.gpkg)</b> - An EnMAP-Box-compatible spatial database format. Each
+            layer and spectral-profile field is imported as a separate library; if a field contains
+            profiles with different wavelength axes, separate libraries are created for each axis.
+            All imported libraries are retained and the first one (ordered by layer and field name)
+            becomes active.
         </li>
         <li>
             <b>Spectral Library CSV (*.csv)</b> - A tabular text format compatible with the EcoSIS
