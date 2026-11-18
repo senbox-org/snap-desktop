@@ -44,8 +44,8 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Set;
@@ -88,8 +88,8 @@ final class PerformancePanel extends javax.swing.JPanel {
     private static Path getUserDirPathFromString(String userDirString) {
         Path userDirPath = null;
         try {
-            File userDirAsFile = new File(userDirString);
-            userDirPath = FileUtils.getPathFromURI(userDirAsFile.toURI());
+            final Path userDirAsFile = Path.of(userDirString);
+            userDirPath = FileUtils.getPathFromURI(userDirAsFile.toUri());
         } catch (IOException e) {
             SystemUtils.LOG.log(Level.WARNING, "Cannot convert performance parameters to PATH: {0}", userDirString);
         }
@@ -572,8 +572,8 @@ final class PerformancePanel extends javax.swing.JPanel {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnValue = fileChooser.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedDir = fileChooser.getSelectedFile();
-            cachePathTextField.setText(selectedDir.getAbsolutePath());
+            final Path selectedDir = fileChooser.getSelectedFile().toPath();
+            cachePathTextField.setText(selectedDir.toAbsolutePath().toString());
             cachePathTextField.setForeground(CURRENT_VALUES_COLOR);
             controller.changed();
         }
@@ -665,8 +665,8 @@ final class PerformancePanel extends javax.swing.JPanel {
     boolean valid() {
         boolean isValid = true;
 
-        File userDir = new File(cachePathTextField.getText());
-        if(userDir.exists() && !userDir.isDirectory()) {
+        final Path userDir = Path.of(cachePathTextField.getText());
+        if(Files.exists(userDir) && !Files.isDirectory(userDir)) {
             cachePathTextField.setForeground(ERROR_VALUES_COLOR);
             isValid = false;
         } else {

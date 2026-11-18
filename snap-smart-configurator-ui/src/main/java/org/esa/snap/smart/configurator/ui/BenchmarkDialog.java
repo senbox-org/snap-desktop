@@ -16,13 +16,11 @@
 
 package org.esa.snap.smart.configurator.ui;
 
-import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.core.SubProgressMonitor;
-import com.bc.ceres.core.VirtualDir;
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.gpf.Operator;
 import org.esa.snap.core.gpf.common.WriteOp;
-import org.esa.snap.core.gpf.internal.OperatorContext;
 import org.esa.snap.core.gpf.internal.OperatorExecutor;
 import org.esa.snap.core.gpf.internal.OperatorProductReader;
 import org.esa.snap.core.gpf.ui.DefaultSingleTargetProductDialog;
@@ -34,7 +32,6 @@ import org.esa.snap.smart.configurator.Benchmark;
 import org.esa.snap.smart.configurator.BenchmarkSingleCalculus;
 import org.esa.snap.smart.configurator.ConfigurationOptimizer;
 import org.esa.snap.smart.configurator.PerformanceParameters;
-import org.esa.snap.smart.configurator.StoredGraphOp;
 import org.esa.snap.ui.AppContext;
 import org.netbeans.api.progress.ProgressUtils;
 import org.openide.DialogDisplayer;
@@ -42,13 +39,17 @@ import org.openide.NotifyDescriptor;
 import org.openide.util.Cancellable;
 
 import javax.media.jai.JAI;
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
-import java.io.File;
+import java.awt.BorderLayout;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -260,7 +261,7 @@ public class BenchmarkDialog extends DefaultSingleTargetProductDialog {
                 //load old params (before benchmark)
                 benchmarkModel.loadBenchmarkPerfParams(currentBenchmarkSingleCalcul);
                 //delete benchmark TMP directory
-                VirtualDir.deleteFileTree(new File(tmpdirPath));
+                IOHelper.deleteFileTree(Path.of(tmpdirPath));
             }
 
             managePostBenchmark();
