@@ -32,17 +32,42 @@ import org.esa.snap.core.util.math.Range;
 import org.esa.snap.ui.product.ProductExpressionPane;
 import org.esa.snap.ui.tool.ToolButtonFactory;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ComboBoxEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Set;
 
 public class RGBImageProfilePane extends JPanel {
 
@@ -70,7 +95,7 @@ public class RGBImageProfilePane extends JPanel {
     private AbstractAction saveAsAction;
     private AbstractAction deleteAction;
     private boolean settingRgbaExpressions;
-    private File lastDir;
+    private Path lastDir;
     protected JCheckBox storeInProductCheck;
     private JLabel referencedRastersAreCompatibleLabel;
 
@@ -340,8 +365,8 @@ public class RGBImageProfilePane extends JPanel {
         if (snapFileChooser.getSelectedFile() == null) {
             return;
         }
-        final File file = snapFileChooser.getSelectedFile();
-        lastDir = file.getParentFile();
+        final Path file = snapFileChooser.getSelectedFile().toPath();
+        lastDir = file.getParent();
         if (status != SnapFileChooser.APPROVE_OPTION) {
             return;
         }
@@ -373,13 +398,13 @@ public class RGBImageProfilePane extends JPanel {
             profile.setRgbaExpressions(rgbaExpressions);
         } catch (IOException e) {
             AbstractDialog.showErrorDialog(this,
-                    String.format("Failed to open RGB-profile '%s':\n%s", file.getName(), e.getMessage()),
+                    String.format("Failed to open RGB-profile '%s':\n%s", file.getFileName(), e.getMessage()),
                     "Open RGB-Image Profile");
             return;
         }
         if (profile == null) {
             AbstractDialog.showErrorDialog(this,
-                    String.format("Invalid RGB-Profile '%s'.", file.getName()),
+                    String.format("Invalid RGB-Profile '%s'.",file.getFileName().toString()),
                     "Open RGB-Image Profile");
             return;
         }
@@ -396,7 +421,7 @@ public class RGBImageProfilePane extends JPanel {
     }
 
     private void performSaveAs() {
-        File file = promptForSaveFile();
+        final Path file = promptForSaveFile();
         if (file == null) {
             return;
         }
@@ -428,7 +453,7 @@ public class RGBImageProfilePane extends JPanel {
             profile.store(file);
         } catch (IOException e) {
             AbstractDialog.showErrorDialog(this,
-                    "Failed to save RGB-profile '" + file.getName() + "':\n"
+                    "Failed to save RGB-profile '" + file.getFileName() + "':\n"
                             + e.getMessage(),
                     "Open RGB-Image Profile");
             return;
@@ -438,26 +463,26 @@ public class RGBImageProfilePane extends JPanel {
         addNewProfile(profile);
     }
 
-    private File promptForSaveFile() {
+    private Path promptForSaveFile() {
         final SnapFileChooser snapFileChooser = new SnapFileChooser(getProfilesDir());
         snapFileChooser.setFileFilter(new SnapFileFilter("RGB-PROFILE", ".rgb", "RGB-Image Profile Files"));
 
-        File selectedFile;
+        Path selectedFile;
         while (true) {
             final int status = snapFileChooser.showSaveDialog(this);
             if (snapFileChooser.getSelectedFile() == null) {
                 selectedFile = null;
                 break;
             }
-            selectedFile = snapFileChooser.getSelectedFile();
-            lastDir = selectedFile.getParentFile();
+            selectedFile = snapFileChooser.getSelectedFile().toPath();
+            lastDir = selectedFile.getParent();
             if (status != SnapFileChooser.APPROVE_OPTION) {
                 selectedFile = null;
                 break;
             }
-            if (selectedFile.exists()) {
+            if (Files.exists(selectedFile)) {
                 final int answer = JOptionPane.showConfirmDialog(RGBImageProfilePane.this,
-                        "The file '" + selectedFile.getName()
+                        "The file '" + selectedFile.getFileName()
                                 + "' already exists.\n" +
                                 "So you really want to overwrite it?",
                         "Safe RGB-Profile As",
@@ -483,7 +508,7 @@ public class RGBImageProfilePane extends JPanel {
         }
     }
 
-    private File getProfilesDir() {
+    private Path getProfilesDir() {
         if (lastDir != null) {
             return lastDir;
         } else {

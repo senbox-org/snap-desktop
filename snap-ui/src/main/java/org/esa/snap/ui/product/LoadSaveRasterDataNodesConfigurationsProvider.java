@@ -1,5 +1,6 @@
 package org.esa.snap.ui.product;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.tool.ToolButtonFactory;
@@ -12,10 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,10 +52,10 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static File getBandSetsDataDir() {
-        File file = new File(SystemUtils.getAuxDataPath().toFile(), "band_sets");
-        if (!file.exists()) {
-            file.mkdirs();
+    private static Path getBandSetsDataDir() {
+        final Path file = SystemUtils.getAuxDataPath().resolve("band_sets");
+        if (!Files.exists(file)) {
+            IOHelper.createDirectories(file);
         }
         return file;
     }
@@ -64,12 +64,12 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            File currentDirectory = getBandSetsDataDir();
-            JFileChooser fileChooser = new JFileChooser(currentDirectory);
+            final Path currentDirectory = getBandSetsDataDir();
+            JFileChooser fileChooser = new JFileChooser(currentDirectory.toFile());
             if (fileChooser.showOpenDialog(component.getParent()) == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
+                final Path file = fileChooser.getSelectedFile().toPath();
                 try {
-                    BufferedReader reader = new BufferedReader(new FileReader(file));
+                    BufferedReader reader = Files.newBufferedReader(file);
                     List<String> bandNameList = new ArrayList<>();
                     String readBandName;
                     while ((readBandName = reader.readLine()) != null) {
@@ -89,18 +89,18 @@ public class LoadSaveRasterDataNodesConfigurationsProvider {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            File currentDirectory = getBandSetsDataDir();
-            JFileChooser fileChooser = new JFileChooser(currentDirectory);
-            File suggestedFile = new File(currentDirectory + File.separator + "config.txt");
+            final Path currentDirectory = getBandSetsDataDir();
+            JFileChooser fileChooser = new JFileChooser(currentDirectory.toFile());
+            Path suggestedFile = Path.of(currentDirectory + IOHelper.PATH_SEPARATOR + "config.txt");
             int fileCounter = 1;
-            while (suggestedFile.exists()) {
-                suggestedFile = new File("config" + fileCounter + ".txt");
+            while (Files.exists(suggestedFile)) {
+                suggestedFile = Path.of("config" + fileCounter + ".txt");
             }
-            fileChooser.setSelectedFile(suggestedFile);
+            fileChooser.setSelectedFile(suggestedFile.toFile());
             if (fileChooser.showSaveDialog(component.getParent()) == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
+                final Path file = fileChooser.getSelectedFile().toPath();
                 try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                    BufferedWriter writer = new BufferedWriter(Files.newBufferedWriter(file));
                     String[] bandNames = component.getRasterDataNodeNamesToWrite();
                     for (String bandName : bandNames) {
                         writer.write(bandName + "\n");

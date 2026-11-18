@@ -23,12 +23,11 @@ import org.esa.snap.ui.SnapFileChooser;
 
 import javax.swing.JOptionPane;
 import java.awt.Component;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,14 +163,11 @@ public class DiagramGraphIO {
                                             String title,
                                             SnapFileFilter[] fileFilters,
                                             PropertyMap preferences) {
-        File selectedFile = selectGraphFile(parentComponent, title, fileFilters, preferences, true);
+        final Path selectedFile = selectGraphFile(parentComponent, title, fileFilters, preferences, true);
         if (selectedFile != null) {
             try {
-                FileReader fileReader = new FileReader(selectedFile);
-                try {
+                try (Reader fileReader = Files.newBufferedReader(selectedFile)) {
                     return readGraphs(fileReader);
-                } finally {
-                    fileReader.close();
                 }
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(parentComponent, "I/O error: " + e.getMessage());
@@ -189,15 +185,12 @@ public class DiagramGraphIO {
             JOptionPane.showMessageDialog(parentComponent, "Nothing to save.");
             return;
         }
-        File selectedFile = selectGraphFile(parentComponent, title, fileFilters, preferences, false);
+        final Path selectedFile = selectGraphFile(parentComponent, title, fileFilters, preferences, false);
         if (selectedFile != null) {
 
             try {
-                FileWriter fileWriter = new FileWriter(selectedFile);
-                try {
+                try (Writer fileWriter = Files.newBufferedWriter(selectedFile)) {
                     writeGraphs(graphs, fileWriter);
-                } finally {
-                    fileWriter.close();
                 }
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(parentComponent, "I/O error: " + e.getMessage());
@@ -205,13 +198,13 @@ public class DiagramGraphIO {
         }
     }
 
-    private static File selectGraphFile(Component parentComponent,
+    private static Path selectGraphFile(Component parentComponent,
                                         String title,
                                         SnapFileFilter[] fileFilters,
                                         PropertyMap preferences,
                                         boolean open) {
         String lastDirPath = preferences.getPropertyString(DIAGRAM_GRAPH_IO_LAST_DIR_KEY, ".");
-        SnapFileChooser fileChooser = new SnapFileChooser(new File(lastDirPath));
+        SnapFileChooser fileChooser = new SnapFileChooser(Path.of(lastDirPath));
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.setDialogTitle(title);
         for (SnapFileFilter fileFilter : fileFilters) {
@@ -223,12 +216,12 @@ public class DiagramGraphIO {
         } else {
             fileChooser.setDialogType(SnapFileChooser.SAVE_DIALOG);
         }
-        File selectedFile;
+        Path selectedFile;
         while (true) {
             int i = fileChooser.showDialog(parentComponent, null);
             if (i == SnapFileChooser.APPROVE_OPTION) {
-                selectedFile = fileChooser.getSelectedFile();
-                if (open || !selectedFile.exists()) {
+                selectedFile = fileChooser.getSelectedFile().toPath();
+                if (open || !Files.exists(selectedFile)) {
                     break;
                 }
                 i = JOptionPane.showConfirmDialog(parentComponent,
@@ -249,7 +242,7 @@ public class DiagramGraphIO {
             }
         }
         if (selectedFile != null) {
-            preferences.setPropertyString(DIAGRAM_GRAPH_IO_LAST_DIR_KEY, selectedFile.getParent());
+            preferences.setPropertyString(DIAGRAM_GRAPH_IO_LAST_DIR_KEY, selectedFile.getParent().toString());
         }
         return selectedFile;
     }

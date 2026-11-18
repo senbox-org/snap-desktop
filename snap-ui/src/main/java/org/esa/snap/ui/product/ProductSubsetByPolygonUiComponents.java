@@ -12,7 +12,7 @@ import org.locationtech.jts.geom.Polygon;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.logging.Logger;
 
 /**
@@ -147,7 +147,7 @@ public class ProductSubsetByPolygonUiComponents {
         fileChooser.setMultiSelectionEnabled(true);
         final int result = fileChooser.showOpenDialog(this.hostComponent);
         if (result == JFileChooser.APPROVE_OPTION) {
-            final File vectorFile = fileChooser.getSelectedFile();
+            final Path vectorFile = fileChooser.getSelectedFile().toPath();
             importGeometryFromVectorFile(vectorFile, targetProductMetadata);
         }
     }
@@ -166,10 +166,10 @@ public class ProductSubsetByPolygonUiComponents {
      *                              <ul>PNX (*.pnx)</ul>
      * @param targetProductMetadata the metadata of the product for which the polygon will be loaded
      */
-    public void importGeometryFromVectorFile(File vectorFile, MetadataInspector.Metadata targetProductMetadata) {
+    public void importGeometryFromVectorFile(Path vectorFile, MetadataInspector.Metadata targetProductMetadata) {
         try {
             readGeometryFromVectorFile(this.productSubsetByPolygon, vectorFile, targetProductMetadata);
-            this.vectorFileField.setText(vectorFile.getAbsolutePath());
+            this.vectorFileField.setText(vectorFile.toAbsolutePath().toString());
             printPixelPolygonOnField(this.productSubsetByPolygon.getSubsetPolygon());
             printGeoPolygonOnField(this.productSubsetByPolygon.getSubsetGeoPolygon());
         } catch (Exception e) {
@@ -233,7 +233,7 @@ public class ProductSubsetByPolygonUiComponents {
         }
     }
 
-    private void readGeometryFromVectorFile(final ProductSubsetByPolygon productSubsetByPolygon, final File vectorFile, final MetadataInspector.Metadata targetProductMetadata) throws Exception {
+    private void readGeometryFromVectorFile(final ProductSubsetByPolygon productSubsetByPolygon, final Path vectorFile, final MetadataInspector.Metadata targetProductMetadata) throws Exception {
         final ProgressMonitorSwingWorker<Object, Object> worker = new ProgressMonitorSwingWorker<>(this.hostComponent, "Loading vector data") {
             @Override
             protected Object doInBackground(ProgressMonitor pm) throws Exception {

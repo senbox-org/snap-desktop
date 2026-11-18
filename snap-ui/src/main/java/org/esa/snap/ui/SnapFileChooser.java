@@ -22,7 +22,6 @@ import org.esa.snap.core.util.converters.RectangleConverter;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
 import org.esa.snap.runtime.Config;
-import org.esa.snap.vfs.NioFile;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepositoriesController;
 import org.esa.snap.vfs.preferences.model.VFSRemoteFileRepository;
 import org.esa.snap.vfs.remote.VFSPath;
@@ -46,9 +45,11 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -78,12 +79,12 @@ public class SnapFileChooser extends JFileChooser {
         this(null, fsv);
     }
 
-    public SnapFileChooser(File currentDirectory) {
+    public SnapFileChooser(Path currentDirectory) {
         this(currentDirectory, null);
     }
 
-    public SnapFileChooser(File currentDirectory, FileSystemView fsv) {
-        super(currentDirectory, fsv);
+    public SnapFileChooser(Path currentDirectory, FileSystemView fsv) {
+        super(currentDirectory == null ? null : currentDirectory.toFile(), fsv);
 
         snapPreferences = Config.instance("snap").preferences();
         resizeHandler = new ResizeHandler();
@@ -120,14 +121,22 @@ public class SnapFileChooser extends JFileChooser {
     }
 
     @Override
-    public Icon getIcon(File f) {
+    public Icon getIcon(java.io.File f) {
+        try {
+            return getIcon(f.toPath());
+        } catch (InvalidPathException e) {
+            return super.getIcon(f);
+        }
+    }
+
+    public Icon getIcon(Path f) {
         Icon icon = null;
         if (f != null) {
-            if (f instanceof NioFile && f.toPath() instanceof VFSPath) {
-                icon = getFileSystemView().getSystemIcon(f);
+            if (f instanceof VFSPath) {
+                icon = getFileSystemView().getSystemIcon(f.toFile());
             } else {
-                icon = super.getIcon(f);
-                if (f.isDirectory() && isCompoundDocument(f)) {
+                icon = super.getIcon(f.toFile());
+                if (Files.isDirectory(f) && isCompoundDocument(f)) {
                     return new CompoundDocumentIcon(icon);
                 }
             }
@@ -136,8 +145,20 @@ public class SnapFileChooser extends JFileChooser {
     }
 
     @Override
-    public boolean isTraversable(File f) {
-        return f.isDirectory() && !isCompoundDocument(f);
+    public boolean isTraversable(java.io.File f) {
+        return isTraversable(f.toPath());
+    }
+
+    public Path[] getSelectedFilesPaths() {
+        final List<Path> paths = new ArrayList<>();
+        for(java.io.File f : getSelectedFiles()) {
+            paths.add(f.toPath());
+        }
+        return paths.toArray(new Path[0]);
+    }
+
+    public boolean isTraversable(Path f) {
+        return Files.isDirectory(f) && !isCompoundDocument(f);
     }
 
     /**
@@ -187,9 +208,9 @@ public class SnapFileChooser extends JFileChooser {
      * @return The current filename, or {@code null}.
      */
     public String getCurrentFilename() {
-        File selectedFile = getSelectedFile();
-        if (selectedFile != null) {
-            return selectedFile.getName();
+        if (getSelectedFile() != null) {
+            final Path selectedFile = getSelectedFile().toPath();
+            return selectedFile.getFileName().toString();
         }
         return null;
     }
@@ -221,7 +242,7 @@ public class SnapFileChooser extends JFileChooser {
         }
 
         if (currentFilename != null && currentFilename.length() > 0) {
-            setSelectedFile(new File(getCurrentDirectory(), currentFilename));
+            setSelectedFile(getCurrentDirectory().toPath().resolve(currentFilename).toFile());
         }
     }
 
@@ -264,13 +285,25 @@ public class SnapFileChooser extends JFileChooser {
     }
 
     @Override
-    public String getName(File f) {
+    public String getName(java.io.File f) {
+        try {
+            return getName(f.toPath());
+        } catch (InvalidPathException | UnsupportedOperationException e) {
+            final String displayName = getFileSystemView().getSystemDisplayName(f);
+            if (displayName != null && !displayName.trim().isEmpty()) {
+                return displayName;
+            }
+            return super.getName(f);
+        }
+    }
+
+    public String getName(Path f) {
         String filename = null;
         if (f != null) {
-            if (f instanceof NioFile && f.toPath() instanceof VFSPath) {
-                filename = getFileSystemView().getSystemDisplayName(f);
+            if (f instanceof VFSPath) {
+                filename = getFileSystemView().getSystemDisplayName(f.toFile());
             } else {
-                filename = super.getName(f);
+                filename = super.getName(f.toFile());
             }
         }
         return filename;
@@ -298,8 +331,8 @@ public class SnapFileChooser extends JFileChooser {
 
         addPropertyChangeListener(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY, evt -> {
             Object newValue = evt.getNewValue();
-            if (newValue instanceof File) {
-                lastFilename = ((File) newValue).getName();
+            if (newValue instanceof Path newPathValue) {
+                lastFilename = newPathValue.getFileName().toString();
             }
         });
         addPropertyChangeListener(JFileChooser.FILE_FILTER_CHANGED_PROPERTY, evt -> {
@@ -321,7 +354,7 @@ public class SnapFileChooser extends JFileChooser {
 
     }
 
-    private boolean isCompoundDocument(File file) {
+    private boolean isCompoundDocument(Path file) {
         final FileFilter[] filters = getChoosableFileFilters();
         for (FileFilter fileFilter : filters) {
             if (fileFilter instanceof SnapFileFilter) {
@@ -335,15 +368,15 @@ public class SnapFileChooser extends JFileChooser {
     }
 
     private void ensureSelectedFileHasValidExtension() {
-        File selectedFile = getSelectedFile();
-        if (selectedFile != null) {
+        if (getSelectedFile() != null) {
+            Path selectedFile = getSelectedFile().toPath();
             SnapFileFilter mff = getSnapFileFilter();
             if (mff != null
                     && mff.getDefaultExtension() != null
                     && !mff.checkExtension(selectedFile)) {
                 selectedFile = FileUtils.exchangeExtension(selectedFile, mff.getDefaultExtension());
-                Debug.trace("mod. selected file: " + selectedFile.getPath());
-                setSelectedFile(selectedFile);
+                Debug.trace("mod. selected file: " + selectedFile);
+                setSelectedFile(selectedFile.toFile());
             }
         }
     }

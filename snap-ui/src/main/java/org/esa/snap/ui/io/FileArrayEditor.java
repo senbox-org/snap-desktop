@@ -34,7 +34,7 @@ import javax.swing.JScrollPane;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -48,11 +48,11 @@ public class FileArrayEditor {
     private static final Dimension LIST_PREFERRED_SIZE = new Dimension(500, 200);
 
     private JPanel basePanel;
-    private JFileChooser fileDialog;
+    private SnapFileChooser fileDialog;
     private FileArrayEditorListener listener;
 
-    private final JList<File> listComponent;
-    private final List<File> fileList;
+    private final JList<Path> listComponent;
+    private final List<Path> fileList;
     private final EditorParent parent;
     private final String label;
 
@@ -91,22 +91,22 @@ public class FileArrayEditor {
     /**
      * Sets the list of files to be edited. The list currently held is overwritten.
      *
-     * @param files {@code List} of {@code File}s to be set
+     * @param files {@code List} of {@code Path}s to be set
      */
-    public void setFiles(final List<File> files) {
+    public void setFiles(final List<Path> files) {
         Guardian.assertNotNull("files", files);
         fileList.clear();
         fileList.addAll(files);
-        listComponent.setListData(fileList.toArray(new File[fileList.size()]));
+        listComponent.setListData(fileList.toArray(new Path[0]));
         notifyListener();
     }
 
     /**
      * Retrieves the list of files currently edited
      *
-     * @return a {@code List} of currently edited {@code File}s
+     * @return a {@code List} of currently edited {@code Path}s
      */
-    public List<File> getFiles() {
+    public List<Path> getFiles() {
         return fileList;
     }
 
@@ -199,20 +199,20 @@ public class FileArrayEditor {
 
     private void onAddButton() {
         fileDialog = getFileDialogSafe();
-        final File userInputDir = parent.getUserInputDir();
+        final Path userInputDir = parent.getUserInputDir();
         final int retVal;
 
-        fileDialog.setCurrentDirectory(userInputDir);
+        fileDialog.setCurrentDirectory(userInputDir.toFile());
         retVal = fileDialog.showOpenDialog(basePanel);
 
         if (retVal == JFileChooser.APPROVE_OPTION) {
-            File[] selected = fileDialog.getSelectedFiles();
+            final Path[] selected = fileDialog.getSelectedFilesPaths();
 
             fileList.addAll(Arrays.asList(selected));
 
-            listComponent.setListData(fileList.toArray(new File[fileList.size()]));
+            listComponent.setListData(fileList.toArray(new Path[0]));
             notifyListener();
-            parent.setUserInputDir(fileDialog.getCurrentDirectory());
+            parent.setUserInputDir(fileDialog.getCurrentDirectory().toPath());
         }
     }
 
@@ -221,9 +221,9 @@ public class FileArrayEditor {
      */
 
     private void onRemoveButton() {
-        final List<File> selectedFiles = listComponent.getSelectedValuesList();
+        final List<Path> selectedFiles = listComponent.getSelectedValuesList();
         selectedFiles.forEach(fileList::remove);
-        listComponent.setListData(fileList.toArray(new File[fileList.size()]));
+        listComponent.setListData(fileList.toArray(new Path[fileList.size()]));
         notifyListener();
     }
 
@@ -231,7 +231,7 @@ public class FileArrayEditor {
      * Retrieves the file chooser object. If none is present, an object is constructed
      */
 
-    private JFileChooser getFileDialogSafe() {
+    private SnapFileChooser getFileDialogSafe() {
         if (fileDialog == null) {
             fileDialog = createFileChooserDialog();
         }
@@ -239,8 +239,8 @@ public class FileArrayEditor {
         return fileDialog;
     }
 
-    protected JFileChooser createFileChooserDialog() {
-        final JFileChooser chooser = new SnapFileChooser();
+    protected SnapFileChooser createFileChooserDialog() {
+        final SnapFileChooser chooser = new SnapFileChooser();
         chooser.setAcceptAllFileFilterUsed(true);
         chooser.setMultiSelectionEnabled(true);
 
@@ -258,19 +258,19 @@ public class FileArrayEditor {
 
     private void notifyListener() {
         if ((listener != null)) {
-            listener.updatedList(fileList.toArray(new File[fileList.size()]));
+            listener.updatedList(fileList.toArray(new Path[fileList.size()]));
         }
     }
 
     public interface EditorParent {
 
-        File getUserInputDir();
+        Path getUserInputDir();
 
-        void setUserInputDir(File newDir);
+        void setUserInputDir(Path newDir);
     }
 
     public interface FileArrayEditorListener {
 
-        void updatedList(File[] files);
+        void updatedList(Path[] files);
     }
 }

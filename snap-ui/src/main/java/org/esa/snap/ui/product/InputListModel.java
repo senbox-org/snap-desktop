@@ -24,7 +24,8 @@ import org.esa.snap.core.util.SystemUtils;
 import javax.swing.AbstractListModel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -63,9 +64,9 @@ class InputListModel extends AbstractListModel<Object> {
             list.clear();
             fireIntervalRemoved(this, 0, endIndex);
         }
-        final File[] files = new File[elements.length];
+        final Path[] files = new Path[elements.length];
         for (int i = 0; i < files.length; i++) {
-            files[i] = new File(elements[i]);
+            files[i] = Path.of(elements[i]);
         }
         addElements((Object[]) getSourceProducts());
         addElements((Object[]) files);
@@ -77,9 +78,9 @@ class InputListModel extends AbstractListModel<Object> {
         }
         final int startIndex = list.size();
         for (Object element : elements) {
-            if (!(element instanceof File || element instanceof Product)) {
+            if (!(element instanceof Path || element instanceof Product)) {
                 throw new IllegalStateException(
-                        "Only java.io.File or Product allowed.");
+                        "Only java.nio.file.Path or Product allowed.");
             }
             if (mayAdd(element)) {
                 list.add(element);
@@ -123,8 +124,8 @@ class InputListModel extends AbstractListModel<Object> {
         final List<String> files = new ArrayList<>();
         final List<Product> products = new ArrayList<>();
         for (Object element : list) {
-            if (element instanceof File) {
-                files.add(((File) element).getPath());
+            if (element instanceof Path elementPath) {
+                files.add(elementPath.toString());
             } else if (element instanceof Product) {
                 products.add((Product) element);
             }
@@ -144,14 +145,14 @@ class InputListModel extends AbstractListModel<Object> {
             return true;
         }
 
-        File file = (File) element;
-        return file.isDirectory() || !alreadyContained(file);
+        final Path file = (Path) element;
+        return Files.isDirectory(file) || !alreadyContained(file);
     }
 
-    private boolean alreadyContained(File file) {
+    private boolean alreadyContained(Path file) {
         for (Product sourceProduct : sourceProducts) {
-            File fileLocation = sourceProduct.getFileLocation();
-            if (fileLocation != null && fileLocation.getAbsolutePath().equals(file.getAbsolutePath())) {
+            final Path fileLocation = sourceProduct.getFileLocation();
+            if (fileLocation != null && fileLocation.toAbsolutePath().toString().equals(file.toAbsolutePath().toString())) {
                 return true;
             }
         }

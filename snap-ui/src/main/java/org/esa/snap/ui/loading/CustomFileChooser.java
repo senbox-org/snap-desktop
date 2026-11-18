@@ -1,6 +1,7 @@
 package org.esa.snap.ui.loading;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esa.snap.core.util.io.SnapFileFilter;
 
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -13,9 +14,8 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -79,8 +79,7 @@ public class CustomFileChooser extends JFileChooser {
     }
 
     public Path getSelectedPath() {
-        File file = super.getSelectedFile();
-        return Paths.get(file.toURI());
+        return super.getSelectedFile().toPath();
     }
 
     public void setCurrentDirectoryPath(Path directoryPath) {
@@ -167,7 +166,7 @@ public class CustomFileChooser extends JFileChooser {
         return fileChooser;
     }
 
-    private static class CustomFileFilter extends FileFilter {
+    private static class CustomFileFilter extends SnapFileFilter {
 
         private final String extension;
         private final String description;
@@ -184,11 +183,11 @@ public class CustomFileChooser extends JFileChooser {
         }
 
         @Override
-        public boolean accept(File file) {
-            if (file.isDirectory()) {
+        public boolean accept(Path file) {
+            if (Files.isDirectory(file)) {
                 return true;
             }
-            return StringUtils.endsWithIgnoreCase(file.getName(), this.extension);
+            return StringUtils.endsWithIgnoreCase(file.getFileName().toString(), this.extension);
         }
 
         @Override

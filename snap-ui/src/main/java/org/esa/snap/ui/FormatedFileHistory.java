@@ -19,7 +19,7 @@ import org.esa.snap.core.dataio.DecodeQualification;
 import org.esa.snap.core.dataio.ProductReaderPlugIn;
 import org.esa.snap.core.util.Guardian;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * <code>FileHistory</code> is a fixed-size array for the pathes of files opened/saved by a user. If a new file is added
@@ -46,7 +46,7 @@ public class FormatedFileHistory extends FileHistory {
     @Override
     protected boolean isValidItem(String item) {
         if (super.isValidItem(item)) {
-            final File file = new File(item);
+            final Path file = Path.of(item);
             return _productReaderPlugIn.getDecodeQualification(file) != DecodeQualification.UNABLE;
         }
         return false;

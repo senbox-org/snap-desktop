@@ -17,7 +17,7 @@
 package org.esa.snap.ui;
 
 import javax.swing.JFileChooser;
-import java.io.File;
+import java.nio.file.Path;
 import java.lang.reflect.Constructor;
 
 /**
@@ -47,25 +47,25 @@ public class FileChooserFactory {
         return Holder.instance;
     }
 
-    public JFileChooser createFileChooser(File currentDirectory) {
+    public JFileChooser createFileChooser(Path currentDirectory) {
         JFileChooser fileChooser = createChooser(fileChooserClass, currentDirectory);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         return fileChooser;
     }
 
-    public JFileChooser createDirChooser(File currentDirectory) {
+    public JFileChooser createDirChooser(Path currentDirectory) {
         JFileChooser dirChooser = createChooser(dirChooserClass, currentDirectory);
         dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         return dirChooser;
     }
 
-    private JFileChooser createChooser(Class<?> chooserClass, File currentDirectory) {
+    private JFileChooser createChooser(Class<?> chooserClass, Path currentDirectory) {
         JFileChooser fileChooser;
         try {
-            Constructor<?> constructor = chooserClass.getConstructor(File.class);
+            Constructor<?> constructor = chooserClass.getConstructor(Path.class);
             fileChooser = (JFileChooser) constructor.newInstance(currentDirectory);
         } catch (Throwable e) {
-            fileChooser = new JFileChooser(currentDirectory);
+            fileChooser = new JFileChooser(currentDirectory.toFile());
         }
         return fileChooser;
     }

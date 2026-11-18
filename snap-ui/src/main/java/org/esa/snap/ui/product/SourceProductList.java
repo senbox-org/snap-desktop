@@ -44,7 +44,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Enables clients to create a component for choosing source products. The list of source products can arbitrarily be
@@ -56,7 +56,7 @@ import java.io.File;
  * <li>recursive directories anywhere in the file system</li>
  * </ul>
  * <p>
- * The file paths the user chooses are stored as objects of type {@link java.io.File} within the property that is passed
+ * The file paths the user chooses are stored as objects of type {@link java.nio.file.Path} within the property that is passed
  * into the constructor. Products that are chosen from the product tree can be retrieved via
  * {@link #getSourceProducts()}. So, clients of these must take care that the value in the given property is taken into
  * account as well as the return value of that method.
@@ -329,8 +329,8 @@ public class SourceProductList extends ComponentAdapter {
                                                       boolean cellHasFocus) {
             JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             String text;
-            if (value instanceof File) {
-                text = ((File) value).getAbsolutePath();
+            if (value instanceof Path valuePath) {
+                text = valuePath.toAbsolutePath().toString();
             } else {
                 text = ((ProductNode) value).getDisplayName();
             }

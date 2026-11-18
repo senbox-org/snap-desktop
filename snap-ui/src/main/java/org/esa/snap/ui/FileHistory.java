@@ -15,7 +15,8 @@
  */
 package org.esa.snap.ui;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * <code>FileHistory</code> is a fixed-size array for the pathes of files opened/saved by a user. If a new file is added
@@ -34,7 +35,7 @@ public class FileHistory extends UserInputHistory {
     @Override
     protected boolean isValidItem(String item) {
         if (item != null && item.length() > 0) {
-            return new File(item).exists();
+            return Files.exists(Path.of(item));
         }
         return false;
     }

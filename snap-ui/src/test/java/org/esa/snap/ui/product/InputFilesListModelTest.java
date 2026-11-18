@@ -23,7 +23,7 @@ import org.esa.snap.core.datamodel.Product;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,17 +49,18 @@ public class InputFilesListModelTest {
 
     @Test
     public void testAddAndRemove() throws ValidationException {
-        listModel.addElements(new File("."));
-        listModel.addElements(new File("."));
+        final Path dotPath = Path.of(".");
+        listModel.addElements(dotPath);
+        listModel.addElements(dotPath);
         assertEquals(1, listModel.getSize());
 
         listModel.removeElementsAt(new int[]{0});
         assertEquals(0, listModel.getSize());
 
-        List<File> files = new ArrayList<>();
-        files.add(new File("abc"));
-        files.add(new File("def"));
-        files.add(new File("ghi"));
+        List<Path> files = new ArrayList<>();
+        files.add(Path.of("abc"));
+        files.add(Path.of("def"));
+        files.add(Path.of("ghi"));
         listModel.addElements(files.toArray());
         assertEquals(3, listModel.getSize());
         assertEquals(3, ((String[]) property.getValue()).length);
@@ -85,8 +86,8 @@ public class InputFilesListModelTest {
 
     @Test
     public void testClear() throws Exception {
-        listModel.addElements(new File("abc"));
-        listModel.addElements(new File("def"));
+        listModel.addElements(Path.of("abc"));
+        listModel.addElements(Path.of("def"));
         listModel.addElements(new Product("def", "producttype", 10, 10));
         listModel.addElements(new Product("dummy", "producttype", 10, 10));
         assertEquals(4, listModel.getSize());
@@ -133,7 +134,7 @@ public class InputFilesListModelTest {
         final String[] values = {"h", "i"};
         property.setValue(values);
         assertEquals(2, listModel.getSize());
-        assertEquals("h", ((File)listModel.getElementAt(0)).getPath());
-        assertEquals("i", ((File)listModel.getElementAt(1)).getPath());
+        assertEquals("h", ((Path)listModel.getElementAt(0)).toString());
+        assertEquals("i", ((Path)listModel.getElementAt(1)).toString());
     }
 }

@@ -29,7 +29,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,12 +58,12 @@ class AddFileAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final PropertyMap preferences = appContext.getPreferences();
-        String lastDir = preferences.getPropertyString(propertyNameLastOpenInputDir, SystemUtils.getUserHomeDir().getPath());
+        String lastDir = preferences.getPropertyString(propertyNameLastOpenInputDir, SystemUtils.getUserHomeDir().toString());
         String lastFormat = preferences.getPropertyString(propertyNameLastOpenedFormat, ALL_FILES_FORMAT);
         String formatNames = preferences.getPropertyString(propertyNameFormatNames, null);
 
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(lastDir));
+        fileChooser.setCurrentDirectory(Path.of(lastDir).toFile());
         fileChooser.setDialogTitle("Select product(s)");
         fileChooser.setMultiSelectionEnabled(true);
 

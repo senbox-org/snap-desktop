@@ -15,14 +15,15 @@
  */
 package org.esa.snap.ui;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.GlobalTestConfig;
 import org.esa.snap.GlobalTestTools;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.prefs.Preferences;
 
 import static org.esa.snap.core.util.Guardian.assertTrue;
@@ -39,28 +40,28 @@ import static org.junit.Assert.assertNull;
  */
 public class FileHistoryTest {
 
-    private File _a;
-    private File _b;
-    private File _c;
-    private File _d;
-    private File _e;
+    private Path _a;
+    private Path _b;
+    private Path _c;
+    private Path _d;
+    private Path _e;
 
     @Before
     public void setUp() {
         GlobalTestTools.deleteTestDataOutputDirectory();
-        _a = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "A.dim");
-        _b = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "B.dim");
-        _c = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "C.dim");
-        _d = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "D.dim");
-        _e = new File(GlobalTestConfig.getSnapTestDataOutputDirectory(), "E.dim");
+        _a = GlobalTestConfig.getSnapTestDataOutputDirectory().resolve("A.dim");
+        _b = GlobalTestConfig.getSnapTestDataOutputDirectory().resolve("B.dim");
+        _c = GlobalTestConfig.getSnapTestDataOutputDirectory().resolve("C.dim");
+        _d = GlobalTestConfig.getSnapTestDataOutputDirectory().resolve("D.dim");
+        _e = GlobalTestConfig.getSnapTestDataOutputDirectory().resolve("E.dim");
         try {
-            _a.getParentFile().mkdirs();
-            _a.createNewFile();
-            _b.createNewFile();
-            //_c.createNewFile(); should not be created
-            _d.createNewFile();
-            _e.createNewFile();
-        } catch (IOException e) {
+            IOHelper.createDirectories(_a.getParent());
+            IOHelper.createFile(_a);
+            IOHelper.createFile(_b);
+            //IOHelper.createFile(_c); should not be created
+            IOHelper.createFile(_d);
+            IOHelper.createFile(_e);
+        } catch (Exception e) {
         }
     }
 
@@ -71,19 +72,19 @@ public class FileHistoryTest {
 
     @Test
     public void testFileHistory() {
-        assertTrue(_a.getAbsolutePath() + " does not exist", _a.exists());
-        assertTrue(_b.getAbsolutePath() + " does not exist", _b.exists());
-        assertTrue(_c.getAbsolutePath() + " does exist", !_c.exists()); // should not exist
-        assertTrue(_d.getAbsolutePath() + " deos not exist", _d.exists());
-        assertTrue(_e.getAbsolutePath() + " deos not exist", _e.exists());
+        assertTrue(_a.toAbsolutePath() + " does not exist", Files.exists(_a));
+        assertTrue(_b.toAbsolutePath() + " does not exist", Files.exists(_b));
+        assertTrue(_c.toAbsolutePath() + " does exist", !Files.exists(_c)); // should not exist
+        assertTrue(_d.toAbsolutePath() + " deos not exist", Files.exists(_d));
+        assertTrue(_e.toAbsolutePath() + " deos not exist", Files.exists(_e));
         final String propertyKey = "recent.files.";
         final Preferences preferences = new DummyPreferences();
         preferences.putInt(propertyKey + ".length", 3);
-        preferences.put(propertyKey + ".0", _a.getAbsolutePath());
-        preferences.put(propertyKey + ".1", _b.getAbsolutePath());
-        preferences.put(propertyKey + ".2", _c.getAbsolutePath());
-        preferences.put(propertyKey + ".3", _d.getAbsolutePath());
-        preferences.put(propertyKey + ".4", _e.getAbsolutePath());
+        preferences.put(propertyKey + ".0", _a.toAbsolutePath().toString());
+        preferences.put(propertyKey + ".1", _b.toAbsolutePath().toString());
+        preferences.put(propertyKey + ".2", _c.toAbsolutePath().toString());
+        preferences.put(propertyKey + ".3", _d.toAbsolutePath().toString());
+        preferences.put(propertyKey + ".4", _e.toAbsolutePath().toString());
 
         //create and init new FileHistory
         final FileHistory history = new FileHistory(9, propertyKey);
@@ -99,28 +100,28 @@ public class FileHistoryTest {
         assertEquals(2, history.getNumEntries());
         String[] files = history.getEntries();
         assertEquals(2, files.length);
-        assertEquals(_a.getAbsolutePath(), files[0]);
-        assertEquals(_b.getAbsolutePath(), files[1]);
+        assertEquals(_a.toAbsolutePath().toString(), files[0]);
+        assertEquals(_b.toAbsolutePath().toString(), files[1]);
 
-        //Add new File to existin two files
-        history.push(_d.getAbsolutePath());
-
-        assertEquals(3, history.getNumEntries());
-        files = history.getEntries();
-        assertEquals(3, files.length);
-        assertEquals(_d.getAbsolutePath(), files[0]);
-        assertEquals(_a.getAbsolutePath(), files[1]);
-        assertEquals(_b.getAbsolutePath(), files[2]);
-
-        //Add new File to existing three files
-        history.push(_e.getAbsolutePath());
+        //Add new Path to existin two files
+        history.push(_d.toAbsolutePath().toString());
 
         assertEquals(3, history.getNumEntries());
         files = history.getEntries();
         assertEquals(3, files.length);
-        assertEquals(_e.getAbsolutePath(), files[0]);
-        assertEquals(_d.getAbsolutePath(), files[1]);
-        assertEquals(_a.getAbsolutePath(), files[2]);
+        assertEquals(_d.toAbsolutePath().toString(), files[0]);
+        assertEquals(_a.toAbsolutePath().toString(), files[1]);
+        assertEquals(_b.toAbsolutePath().toString(), files[2]);
+
+        //Add new Path to existing three files
+        history.push(_e.toAbsolutePath().toString());
+
+        assertEquals(3, history.getNumEntries());
+        files = history.getEntries();
+        assertEquals(3, files.length);
+        assertEquals(_e.toAbsolutePath().toString(), files[0]);
+        assertEquals(_d.toAbsolutePath().toString(), files[1]);
+        assertEquals(_a.toAbsolutePath().toString(), files[2]);
 
         //decreace num max files
         history.setMaxNumEntries(2);
@@ -128,15 +129,15 @@ public class FileHistoryTest {
         assertEquals(2, history.getNumEntries());
         files = history.getEntries();
         assertEquals(2, files.length);
-        assertEquals(_e.getAbsolutePath(), files[0]);
-        assertEquals(_d.getAbsolutePath(), files[1]);
+        assertEquals(_e.toAbsolutePath().toString(), files[0]);
+        assertEquals(_d.toAbsolutePath().toString(), files[1]);
 
         //copy values to properties
         history.copyInto(preferences);
 
         assertEquals(2, preferences.getInt(propertyKey + ".length", -1));
-        assertEquals(_e.getAbsolutePath(), preferences.get(propertyKey + ".0", null));
-        assertEquals(_d.getAbsolutePath(), preferences.get(propertyKey + ".1", null));
+        assertEquals(_e.toAbsolutePath().toString(), preferences.get(propertyKey + ".0", null));
+        assertEquals(_d.toAbsolutePath().toString(), preferences.get(propertyKey + ".1", null));
         assertNull(preferences.get(propertyKey + ".2", null));
         assertNull(preferences.get(propertyKey + ".3", null));
         assertNull(preferences.get(propertyKey + ".4", null));

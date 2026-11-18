@@ -27,7 +27,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 
 /**
  * @author Thomas Storm
@@ -65,9 +66,9 @@ class AddDirectoryAction extends AbstractAction {
         final FolderChooser folderChooser = new FolderChooser();
 
         final PropertyMap preferences = appContext.getPreferences();
-        String lastDir = preferences.getPropertyString(lastDirProperty, SystemUtils.getUserHomeDir().getPath());
+        String lastDir = preferences.getPropertyString(lastDirProperty, SystemUtils.getUserHomeDir().toString());
         if (lastDir != null) {
-            folderChooser.setCurrentDirectory(new File(lastDir));
+            folderChooser.setCurrentDirectory(Path.of(lastDir).toFile());
         }
         folderChooser.setMultiSelectionEnabled(!recursive);
 
@@ -84,22 +85,22 @@ class AddDirectoryAction extends AbstractAction {
         }
         final String pattern = dialog.getPattern();
 
-        File[] selectedDirs;
+        Path[] selectedDirs;
         if (recursive) {
-            File selectedDir = folderChooser.getSelectedFolder();
-            lastDir = selectedDir.getAbsolutePath();
-            selectedDir = new File(selectedDir, "**");
-            selectedDir = new File(selectedDir, pattern);
-            selectedDirs = new File[]{selectedDir};
+            Path selectedDir = folderChooser.getSelectedFolder().toPath();
+            lastDir = selectedDir.toAbsolutePath().toString();
+            selectedDir = selectedDir.resolve("**");
+            selectedDir = selectedDir.resolve(pattern);
+            selectedDirs = new Path[]{selectedDir};
         } else {
-            final File[] selectedPaths = folderChooser.getSelectedFiles();
+            final Path[] selectedPaths = Stream.of(folderChooser.getSelectedFiles()).map(java.io.File::toPath).toArray(Path[]::new);
             if (selectedPaths.length > 0) {
-                lastDir = selectedPaths[0].getAbsolutePath();
+                lastDir = selectedPaths[0].toAbsolutePath().toString();
             }
-            selectedDirs = new File[selectedPaths.length];
+            selectedDirs = new Path[selectedPaths.length];
             for (int i = 0; i < selectedPaths.length; i++) {
-                File selectedFile = selectedPaths[i];
-                selectedDirs[i] = new File(selectedFile, pattern);
+                Path selectedFile = selectedPaths[i];
+                selectedDirs[i] = selectedFile.resolve(pattern);
             }
         }
         preferences.setPropertyString(lastDirProperty, lastDir);
