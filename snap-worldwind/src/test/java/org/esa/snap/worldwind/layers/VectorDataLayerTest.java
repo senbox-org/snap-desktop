@@ -125,10 +125,10 @@ public class VectorDataLayerTest {
         final int installsBefore = layer.getInstallCount();
         final int conversionsBefore = layer.getConversionCount();
 
-        onEDT(() -> node.getFeatureCollection().add(PlainFeatureFactory.createPlainFeature(
-                node.getFeatureType(), "a", square(10.2, 49.9), null)));
-        onEDT(() -> {
-            // hold the EDT until the conversion is done and its result waits to be installed, then change the node
+        // hold the EDT until the conversion is done and its result waits to be installed, then change the node;
+        // queued with the change, right behind the submission of its conversion, so that the result cannot be
+        // installed before the EDT is held
+        final Runnable hold = () -> {
             final long end = System.currentTimeMillis() + 10000;
             while (layer.getConversionCount() == conversionsBefore && System.currentTimeMillis() < end) {
                 Thread.onSpinWait();
@@ -142,7 +142,13 @@ public class VectorDataLayerTest {
             }
             node.getFeatureCollection().add(PlainFeatureFactory.createPlainFeature(
                     node.getFeatureType(), "b", square(10.4, 49.9), null));
+        };
+        onEDT(() -> {
+            node.getFeatureCollection().add(PlainFeatureFactory.createPlainFeature(
+                    node.getFeatureType(), "a", square(10.2, 49.9), null));
+            SwingUtilities.invokeLater(hold);
         });
+        onEDT(() -> { }); // the EDT has been held
         assertTrue(layer.awaitPendingConversions(10000));
 
         assertEquals("only the latest result is installed", 1, layer.getInstallCount() - installsBefore);
