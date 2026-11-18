@@ -68,7 +68,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -323,15 +322,15 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         return contentPanel;
     }
 
-    public void setData(List<File> sourceProductFiles, File slaveGraphFile, String slaveProductsFormaName) {
+    public void setData(List<Path> sourceProductFiles, Path slaveGraphFile, String slaveProductsFormaName) {
         String[] sourceFiles = new String[sourceProductFiles.size()];
         int i = 0;
-        for (final File file : sourceProductFiles){
-            sourceFiles[i] = file.getPath();
+        for (final Path file : sourceProductFiles){
+            sourceFiles[i] = file.toString();
             ++i;
         }
         setListItems(sourceFiles, SOURCE_PRODUCT_FILES_PROPERTY);
-        setPropertyValue(slaveGraphFile.getPath(), SLAVE_GRAPH_FILE_PATH_PROPERTY);
+        setPropertyValue(slaveGraphFile.toString(), SLAVE_GRAPH_FILE_PATH_PROPERTY);
         setPropertyValue(slaveProductsFormaName, SLAVE_PRODUCTS_FORMAT_NAME_PROPERTY);
     }
 
@@ -608,7 +607,7 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
 
         canSaveTargetProductBinding.setPropertyValue(this.canSaveTargetProductCheckBox.isSelected());
         openTargetProductBinding.setPropertyValue(this.openTargetProductCheckBox.isSelected());
-        String homeDirPath = org.esa.snap.core.util.SystemUtils.getUserHomeDir().getPath();
+        String homeDirPath = org.esa.snap.core.util.SystemUtils.getUserHomeDir().toString();
         String targetProductFolderPath = this.appContext.getPreferences().getPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, homeDirPath);
         targetProductFolderPathBinding.setPropertyValue(targetProductFolderPath);
         if (org.esa.snap.core.util.StringUtils.contains(availableFormatNames, ProductIO.DEFAULT_FORMAT_NAME)) {
@@ -900,9 +899,9 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
 
                             boolean openTargetProductInApplication = (Boolean) parameterMap.get(OPEN_TARGET_PRODUCT_PROPERTY);
                             if (canSaveTargetProduct) {
-                                File targetProductFile = buildTargetProductFile(masterProductFormatName, masterProductFolderPath, masterProductFileName);
+                                final Path targetProductFile = buildTargetProductFile(masterProductFormatName, masterProductFolderPath, masterProductFileName);
                                 operatatorParameters.put(MASTER_GRAPH_FILE_PATH_PROPERTY, masterGraphFilePath);
-                                operatatorParameters.put(MASTER_PRODUCT_FILE_PATH_PROPERTY, targetProductFile.getAbsolutePath());
+                                operatatorParameters.put(MASTER_PRODUCT_FILE_PATH_PROPERTY, targetProductFile.toAbsolutePath());
                                 operatatorParameters.put(MASTER_PRODUCT_FORMAT_NAME_PROPERTY, masterProductFormatName);
 
                                 // save the target product folder path into the preferences
@@ -995,16 +994,16 @@ public class RemoteExecutionDialog extends AbstractModalDialog {
         }
     }
 
-    private static File buildTargetProductFile(String targetProductFormatName, String targetProductFolderPath, String targetProductFileName) {
+    private static Path buildTargetProductFile(String targetProductFormatName, String targetProductFolderPath, String targetProductFileName) {
         TargetProductSelectorModel targetProductSelectorModel = new TargetProductSelectorModel();
         targetProductSelectorModel.setFormatName(targetProductFormatName);
-        targetProductSelectorModel.setProductDir(new File(targetProductFolderPath));
+        targetProductSelectorModel.setProductDir(Path.of(targetProductFolderPath));
         targetProductSelectorModel.setProductName(targetProductFileName);
         return targetProductSelectorModel.getProductFile();
     }
 
     private static Path getRemoteTopologyFilePath() {
-        Path cepFolderPath = org.esa.snap.core.util.SystemUtils.getApplicationDataDir().toPath().resolve("cloud-exploitation-platform");
+        Path cepFolderPath = org.esa.snap.core.util.SystemUtils.getApplicationDataDir().resolve("cloud-exploitation-platform");
         return cepFolderPath.resolve("remote-topology.json");
     }
 
