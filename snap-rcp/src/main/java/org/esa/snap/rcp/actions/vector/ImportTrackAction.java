@@ -16,9 +16,6 @@
 
 package org.esa.snap.rcp.actions.vector;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
@@ -42,6 +39,9 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -60,10 +60,10 @@ import org.openide.util.WeakListeners;
 
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.AUTO;
 
@@ -130,7 +130,7 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        final File file =
+        final Path file =
                 Dialogs.requestFileForOpen(Bundle.CTL_ImportSeadasTrackActionName(), false, null, "importTrack.lastDir");
         if (file == null) {
             return;
@@ -178,8 +178,8 @@ public class ImportTrackAction extends AbstractSnapAction implements ContextAwar
         setEnabled(state);
     }
 
-    private static FeatureCollection<SimpleFeatureType, SimpleFeature> readTrack(File file, GeoCoding geoCoding) throws IOException {
-        try (Reader reader = new FileReader(file)) {
+    private static FeatureCollection<SimpleFeatureType, SimpleFeature> readTrack(Path file, GeoCoding geoCoding) throws IOException {
+        try (Reader reader = Files.newBufferedReader(file)) {
             return readTrack(reader, geoCoding);
         }
     }

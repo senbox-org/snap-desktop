@@ -1,6 +1,10 @@
 package org.esa.snap.rcp.spectrallibrary.controller;
 
-import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralProfileTableModel;
 import org.esa.snap.rcp.spectrallibrary.model.UiStatus;
@@ -19,11 +23,14 @@ import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.api.SpectralLibraryService;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.io.csv.util.CsvTable;
-import org.esa.snap.speclib.model.*;
+import org.esa.snap.speclib.model.AttributeDef;
+import org.esa.snap.speclib.model.AttributeType;
 import org.esa.snap.speclib.model.AttributeValue;
+import org.esa.snap.speclib.model.SpectralAxis;
+import org.esa.snap.speclib.model.SpectralLibrary;
+import org.esa.snap.speclib.model.SpectralProfile;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 import org.esa.snap.speclib.util.noise.SpectralNoiseKernelFactory;
-import org.esa.snap.speclib.util.resampling.SpectralResamplingSensor;
 import org.esa.snap.speclib.util.resampling.SpectralResponseFunction;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -32,13 +39,26 @@ import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import java.awt.Color;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.IntSupplier;
@@ -1000,7 +1020,7 @@ public class SpectralLibraryController {
         }, "Extracting spectra from geometry...", sourceKeys);
     }
 
-    public boolean exportActiveLibraryToFile(File file) {
+    public boolean exportActiveLibraryToFile(Path file) {
         Optional<UUID> idOpt = vm.getActiveLibraryId();
         if (idOpt.isEmpty() || file == null) {
             return false;
@@ -1030,8 +1050,8 @@ public class SpectralLibraryController {
                     lib.getId(), lib.getName(), lib.getAxis(),
                     lib.getDefaultYUnit().orElse(null),
                     enriched, lib.getSchema());
-            io.write(toWrite, file.toPath());
-            vm.setStatus(UiStatus.info("Exported: " + file.getName()));
+            io.write(toWrite, file);
+            vm.setStatus(UiStatus.info("Exported: " + file.getFileName()));
             return true;
         } catch (Exception ex) {
             vm.setStatus(UiStatus.error("Export failed: " + ex.getMessage()));
@@ -1039,12 +1059,12 @@ public class SpectralLibraryController {
         }
     }
 
-    public Optional<SpectralLibrary> importLibraryFromFile(File file) {
+    public Optional<SpectralLibrary> importLibraryFromFile(Path file) {
         if (file == null) {
             return Optional.empty();
         }
         try {
-            SpectralLibrary imported = io.read(file.toPath());
+            SpectralLibrary imported = io.read(file);
             String yUnit = imported.getDefaultYUnit().orElse("value");
             SpectralLibrary persisted = service.createLibrary(
                     imported.getName(),
@@ -1071,7 +1091,7 @@ public class SpectralLibraryController {
             reloadLibraries();
             vm.setActiveLibraryId(persisted.getId());
             refreshActiveLibraryProfiles();
-            vm.setStatus(UiStatus.info("Imported: " + file.getName() + " (" + added + " profiles)"));
+            vm.setStatus(UiStatus.info("Imported: " + file.getFileName() + " (" + added + " profiles)"));
             return Optional.of(persisted);
         } catch (Exception ex) {
             vm.setStatus(UiStatus.error("Import failed: " + ex.getMessage()));

@@ -1,8 +1,8 @@
 package org.esa.snap.rcp.actions.file;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.vfs.NioPaths;
 
-import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,7 +40,7 @@ class RecentPaths {
         }
         String value = Stream
                 .concat(Stream.of(path), getAsStream().filter(p -> !p.equals(path)))
-                .collect(Collectors.joining(File.pathSeparator));
+                .collect(Collectors.joining(IOHelper.PATH_SEPARATOR));
         preferences.put(key, value);
         flush();
     }
@@ -65,7 +65,7 @@ class RecentPaths {
             return Stream.empty();
         }
         return Arrays
-                .stream(value.split(File.pathSeparator))
+                .stream(value.split(IOHelper.PATH_SEPARATOR))
                 .map(this::convertToPath)
                 .filter(Objects::nonNull)
                 .map(Path::toString);

@@ -18,13 +18,17 @@ package org.esa.snap.rcp.mask;
 
 import com.bc.ceres.binding.Property;
 import com.bc.ceres.binding.PropertyContainer;
-import com.bc.ceres.multilevel.MultiLevelImage;
 import com.bc.ceres.grender.Viewport;
+import com.bc.ceres.multilevel.MultiLevelImage;
 import org.esa.snap.core.dataio.dimap.DimapProductConstants;
 import org.esa.snap.core.dataio.dimap.spi.DimapPersistable;
 import org.esa.snap.core.dataio.dimap.spi.DimapPersistence;
-import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.core.datamodel.Mask.ImageType;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.core.dataop.barithm.BandArithmetic;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.jexp.ParseException;
@@ -52,19 +56,35 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
@@ -432,21 +452,21 @@ class MaskFormActions {
         private void importMasks() {
             final JFileChooser fileChooser = new SnapFileChooser();
             fileChooser.setDialogTitle("Import Masks from file");
-            final FileFilter bmdFilter = new SnapFileFilter("BITMASK_DEFINITION_FILE", ".bmd",
+            final SnapFileFilter bmdFilter = new SnapFileFilter("BITMASK_DEFINITION_FILE", ".bmd",
                     "Bitmask definition files (*.bmd)");
             fileChooser.addChoosableFileFilter(bmdFilter);
-            final FileFilter bmdxFilter = new SnapFileFilter("BITMASK_DEFINITION_FILE_XML", ".bmdx",
+            final SnapFileFilter bmdxFilter = new SnapFileFilter("BITMASK_DEFINITION_FILE_XML", ".bmdx",
                     "Bitmask definition xml files (*.bmdx)");
             fileChooser.addChoosableFileFilter(bmdxFilter);
-            final FileFilter xmlFilter = new SnapFileFilter("XML", ".xml", "XML files (*.xml)");
+            final SnapFileFilter xmlFilter = new SnapFileFilter("XML", ".xml", "XML files (*.xml)");
             fileChooser.setFileFilter(xmlFilter);
-            fileChooser.setCurrentDirectory(getDirectory());
+            fileChooser.setCurrentDirectory(getDirectory().toFile());
             fileChooser.setMultiSelectionEnabled(true);
             if (fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(maskTopComponent)) == JFileChooser.APPROVE_OPTION) {
-                final File file = fileChooser.getSelectedFile();
-                if (file != null) {
-                    setDirectory(file.getAbsoluteFile().getParentFile());
-                    if (file.canRead()) {
+                if (fileChooser.getSelectedFile() != null) {
+                    final Path file = fileChooser.getSelectedFile().toPath();
+                    setDirectory(file.toAbsolutePath().getParent());
+                    if (Files.isReadable(file)) {
                         if (bmdFilter.accept(file)) {
                             importMaskFromBmd(file);
                         } else if (bmdxFilter.accept(file)) {
@@ -460,10 +480,10 @@ class MaskFormActions {
             }
         }
 
-        private void importMaskFromBmd(File file) {
+        private void importMaskFromBmd(Path file) {
             final PropertyMap propertyMap = new DefaultPropertyMap();
             try {
-                propertyMap.load(file.toPath()); // Overwrite existing values
+                propertyMap.load(file); // Overwrite existing values
                 final String name = propertyMap.getPropertyString("bitmaskName", "bitmask");
                 final String description = propertyMap.getPropertyString("bitmaskDesc", null);
                 final String expression = propertyMap.getPropertyString("bitmaskExpr", "");
@@ -476,10 +496,10 @@ class MaskFormActions {
             }
         }
 
-        private void importMasksFromBmdx(File file) {
-            try {
+        private void importMasksFromBmdx(Path file) {
+            try (Reader fileReader = Files.newBufferedReader(file)) {
                 final SAXBuilder saxBuilder = new SAXBuilder();
-                final Document document = saxBuilder.build(file);
+                final Document document = saxBuilder.build(fileReader);
                 final Element rootElement = document.getRootElement();
                 @SuppressWarnings({"unchecked"}) final List<Element> children = rootElement.getChildren(DimapProductConstants.TAG_BITMASK_DEFINITION);
                 final Product product = getMaskForm().getProduct();
@@ -494,10 +514,10 @@ class MaskFormActions {
             }
         }
 
-        private void importMasksFromXml(File file) {
-            try {
+        private void importMasksFromXml(Path file) {
+            try (Reader fileReader = Files.newBufferedReader(file)) {
                 final SAXBuilder saxBuilder = new SAXBuilder();
-                final Document document = saxBuilder.build(file);
+                final Document document = saxBuilder.build(fileReader);
                 final Element rootElement = document.getRootElement();
                 @SuppressWarnings({"unchecked"}) final List<Element> children = rootElement.getChildren(DimapProductConstants.TAG_MASK);
                 final Product product = getMaskForm().getProduct();
@@ -556,16 +576,16 @@ class MaskFormActions {
                 fileChooser.setDialogTitle(ACTION_NAME);
                 final FileFilter fileFilter = new SnapFileFilter("XML", ".xml", "XML files (*.xml)");
                 fileChooser.setFileFilter(fileFilter);
-                final File targetDirectory = getDirectory();
-                fileChooser.setCurrentDirectory(targetDirectory);
-                fileChooser.setSelectedFile(new File(targetDirectory, masks[0].getName()));
+                final Path targetDirectory = getDirectory();
+                fileChooser.setCurrentDirectory(targetDirectory.toFile());
+                fileChooser.setSelectedFile(targetDirectory.resolve(masks[0].getName()).toFile());
                 final int result = fileChooser.showSaveDialog(SwingUtilities.getWindowAncestor(maskTopComponent));
                 dialogApproved = result == JFileChooser.APPROVE_OPTION;
                 if (dialogApproved) {
-                    File file = fileChooser.getSelectedFile();
-                    if (file != null) {
+                    if (fileChooser.getSelectedFile() != null) {
+                        Path file = fileChooser.getSelectedFile().toPath();
                         if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(ACTION_NAME, file))) {
-                            setDirectory(file.getAbsoluteFile().getParentFile());
+                            setDirectory(file.toAbsolutePath().getParent());
                             file = FileUtils.ensureExtension(file, ".xml");
                             writeXml(file, document);
                         }
@@ -672,23 +692,13 @@ class MaskFormActions {
             return masksExported;
         }
 
-        private void writeXml(File file, Document document) {
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter(file);
+        private void writeXml(Path file, Document document) {
+            try (Writer writer = Files.newBufferedWriter(file)){
                 final Format format = Format.getPrettyFormat();
                 final XMLOutputter outputter = new XMLOutputter(format);
                 outputter.output(document, writer);
             } catch (IOException e) {
                 showErrorDialog("Failed to export mask(s): " + e.getMessage());
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
-                        // ignore
-                    }
-                }
             }
         }
     }

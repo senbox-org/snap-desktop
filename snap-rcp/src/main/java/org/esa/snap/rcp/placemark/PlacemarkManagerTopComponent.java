@@ -7,7 +7,22 @@ import com.bc.ceres.swing.selection.SelectionChangeListener;
 import eu.esa.snap.netbeans.docwin.WindowUtilities;
 import org.esa.snap.core.dataio.placemark.PlacemarkData;
 import org.esa.snap.core.dataio.placemark.PlacemarkIO;
-import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.PinDescriptor;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.PlacemarkDescriptor;
+import org.esa.snap.core.datamodel.PlacemarkNameFactory;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductManager;
+import org.esa.snap.core.datamodel.ProductNode;
+import org.esa.snap.core.datamodel.ProductNodeEvent;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.ProductNodeListener;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.util.Guardian;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.SystemUtils;
@@ -18,7 +33,11 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.rcp.util.SelectionSupport;
 import org.esa.snap.rcp.windows.ProductSceneViewTopComponent;
 import org.esa.snap.runtime.Config;
-import org.esa.snap.ui.*;
+import org.esa.snap.ui.AbstractDialog;
+import org.esa.snap.ui.DecimalCellEditor;
+import org.esa.snap.ui.DecimalTableCellRenderer;
+import org.esa.snap.ui.ModalDialog;
+import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.color.ColorTableCellEditor;
 import org.esa.snap.ui.color.ColorTableCellRenderer;
 import org.esa.snap.ui.product.AbstractPlacemarkTableModel;
@@ -30,22 +49,50 @@ import org.openide.awt.UndoRedo;
 import org.openide.util.HelpCtx;
 import org.openide.windows.TopComponent;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
@@ -600,17 +647,17 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         setComponentName(fileChooser, "Import");
         fileChooser.addChoosableFileFilter(PlacemarkIO.createTextFileFilter());
         fileChooser.setFileFilter(PlacemarkIO.createPlacemarkFileFilter());
-        fileChooser.setCurrentDirectory(getIODir());
+        fileChooser.setCurrentDirectory(getIODir().toFile());
         int result = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(this));
         if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            if (file != null) {
-                setIODir(file.getAbsoluteFile().getParentFile());
+            if (fileChooser.getSelectedFile() != null) {
+                final Path file = fileChooser.getSelectedFile().toPath();
+                setIODir(file.toAbsolutePath().getParent());
                 GeoCoding geoCoding = null;
                 if (product != null) {
                     geoCoding = product.getSceneGeoCoding();
                 }
-                return PlacemarkIO.readPlacemarks(new FileReader(file), geoCoding, placemarkDescriptor);
+                return PlacemarkIO.readPlacemarks(Files.newBufferedReader(file), geoCoding, placemarkDescriptor);
             }
         }
         return Collections.emptyList();
@@ -623,15 +670,15 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
         fileChooser.addChoosableFileFilter(PlacemarkIO.createTextFileFilter());
         fileChooser.addChoosableFileFilter(PlacemarkIO.createKmzFileFilter());
         fileChooser.setFileFilter(PlacemarkIO.createPlacemarkFileFilter());
-        final File ioDir = getIODir();
-        fileChooser.setCurrentDirectory(ioDir);
-        fileChooser.setSelectedFile(new File(ioDir, placemarkDescriptor.getRoleName()));
+        final Path ioDir = getIODir();
+        fileChooser.setCurrentDirectory(ioDir.toFile());
+        fileChooser.setSelectedFile(ioDir.resolve(placemarkDescriptor.getRoleName()).toFile());
         int result = fileChooser.showSaveDialog(SwingUtilities.getWindowAncestor(this));
         if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            if (file != null) {
+            if (fileChooser.getSelectedFile() != null) {
+                Path file = fileChooser.getSelectedFile().toPath();
                 if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(getTitle(), file))) {
-                    setIODir(file.getAbsoluteFile().getParentFile());
+                    setIODir(file.toAbsolutePath().getParent());
                     SnapFileFilter snapFileFilter = fileChooser.getSnapFileFilter();
                     String fileExtension = FileUtils.getExtension(file);
                     if (fileExtension == null || !StringUtils.contains(snapFileFilter.getExtensions(), fileExtension)) {
@@ -640,16 +687,16 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                     try {
                         String formatName = snapFileFilter.getFormatName();
                         if (formatName.equals(PlacemarkIO.createPlacemarkFileFilter().getFormatName())) {
-                            try (FileWriter writer = new FileWriter(file)) {
+                            try (Writer writer = Files.newBufferedWriter(file)) {
                                 final List<Placemark> placemarkList = getPlacemarksForExport();
                                 PlacemarkIO.writePlacemarksFile(writer, placemarkList);
                             }
                         } else if (formatName.equals(PlacemarkIO.createTextFileFilter().getFormatName())) {
-                            try (Writer writer = new FileWriter(file)) {
+                            try (Writer writer = Files.newBufferedWriter(file)) {
                                 writePlacemarkDataTableText(writer);
                             }
                         } else if (formatName.equals(PlacemarkIO.createKmzFileFilter().getFormatName())) {
-                            try (OutputStream outStream = new FileOutputStream(file)) {
+                            try (OutputStream outStream = Files.newOutputStream(file)) {
                                 final List<Placemark> placemarkList = getPlacemarksForExport();
                                 List<PlacemarkData> placemarkData = getExtraDataFromTable(placemarkList);
                                 PlacemarkIO.writePlacemarkKmzFile(outStream, placemarkData, ProgressMonitor.NULL);
@@ -826,19 +873,19 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 StringUtils.firstLetterUp(placemarkDescriptor.getRoleLabel())));
         setComponentName(fileChooser, "Export_Data_Table");
         fileChooser.setFileFilter(PlacemarkIO.createTextFileFilter());
-        final File ioDir = getIODir();
-        fileChooser.setCurrentDirectory(ioDir);
-        fileChooser.setSelectedFile(new File(ioDir, "Data"));
+        final Path ioDir = getIODir();
+        fileChooser.setCurrentDirectory(ioDir.toFile());
+        fileChooser.setSelectedFile(ioDir.resolve("Data").toFile());
         int result = fileChooser.showSaveDialog(SwingUtilities.getWindowAncestor(this));
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            if (file != null) {
+            if (fileChooser.getSelectedFile() != null) {
+                Path file = fileChooser.getSelectedFile().toPath();
                 if (Boolean.TRUE.equals(Dialogs.requestOverwriteDecision(getTitle(), file))) {
-                    setIODir(file.getAbsoluteFile().getParentFile());
+                    setIODir(file.toAbsolutePath().getParent());
                     file = FileUtils.ensureExtension(file, PlacemarkIO.FILE_EXTENSION_FLAT_TEXT);
                     try {
-                        try (Writer writer = new FileWriter(file)) {
+                        try (Writer writer = Files.newBufferedWriter(file)) {
                             writePlacemarkDataTableText(writer);
                         }
                     } catch (IOException ignored) {
@@ -880,16 +927,16 @@ public class PlacemarkManagerTopComponent extends TopComponent implements UndoRe
                 additionalColumnNames);
     }
 
-    private void setIODir(File dir) {
+    private void setIODir(Path dir) {
         if (preferences != null && dir != null) {
-            preferences.put(PREFERENCE_KEY_PIN_IO_DIR, dir.getPath());
+            preferences.put(PREFERENCE_KEY_PIN_IO_DIR, dir.toString());
         }
     }
 
-    private File getIODir() {
-        File dir = SystemUtils.getUserHomeDir();
+    private Path getIODir() {
+        Path dir = SystemUtils.getUserHomeDir();
         if (preferences != null) {
-            dir = new File(preferences.get(PREFERENCE_KEY_PIN_IO_DIR, dir.getPath()));
+            dir = Path.of(preferences.get(PREFERENCE_KEY_PIN_IO_DIR, dir.toString()));
         }
         return dir;
     }

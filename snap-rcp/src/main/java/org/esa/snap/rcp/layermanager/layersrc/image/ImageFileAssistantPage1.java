@@ -54,8 +54,9 @@ import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
 
@@ -82,7 +83,7 @@ class ImageFileAssistantPage1 extends AbstractLayerSourceAssistantPage {
         if (imageFilePath == null) {
             return false;
         }
-        return new File(imageFilePath).exists() && (worldFilePath == null || new File(worldFilePath).exists());
+        return Files.exists(Path.of(imageFilePath)) && (worldFilePath == null || Files.exists(Path.of(worldFilePath)));
     }
 
     @Override
@@ -243,7 +244,7 @@ class ImageFileAssistantPage1 extends AbstractLayerSourceAssistantPage {
         public void actionPerformed(ActionEvent e) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.addChoosableFileFilter(filter);
-            fileChooser.setCurrentDirectory(getLastDirectory());
+            fileChooser.setCurrentDirectory(getLastDirectory().toFile());
 
             LayerSourcePageContext pageContext = getContext();
             fileChooser.showOpenDialog(pageContext.getWindow());
@@ -251,7 +252,7 @@ class ImageFileAssistantPage1 extends AbstractLayerSourceAssistantPage {
                 String filePath = fileChooser.getSelectedFile().getPath();
                 imageHistoryModel.setSelectedItem(filePath);
                 Preferences preferences = SnapApp.getDefault().getPreferences();
-                preferences.put(LAST_DIR, fileChooser.getCurrentDirectory().getAbsolutePath());
+                preferences.put(LAST_DIR, fileChooser.getCurrentDirectory().toPath().toAbsolutePath().toString());
                 onFileSelected(pageContext, filePath);
                 pageContext.updateState();
             }
@@ -259,12 +260,12 @@ class ImageFileAssistantPage1 extends AbstractLayerSourceAssistantPage {
 
         protected abstract void onFileSelected(LayerSourcePageContext pageContext, String filePath);
 
-        private File getLastDirectory() {
+        private Path getLastDirectory() {
             Preferences preferences = SnapApp.getDefault().getPreferences();
             String dirPath = preferences.get(LAST_DIR, System.getProperty("user.home"));
-            File lastDir = new File(dirPath);
-            if (!lastDir.isDirectory()) {
-                lastDir = new File(System.getProperty("user.home"));
+            Path lastDir = Path.of(dirPath);
+            if (!Files.isDirectory(lastDir)) {
+                lastDir = Path.of(System.getProperty("user.home"));
             }
             return lastDir;
         }
@@ -276,7 +277,7 @@ class ImageFileAssistantPage1 extends AbstractLayerSourceAssistantPage {
         @Override
         public void actionPerformed(ActionEvent e) {
             String imageFilePath = (String) imageFileBox.getSelectedItem();
-            if (imageFilePath == null || !new File(imageFilePath).isFile()) {
+            if (imageFilePath == null || !Files.isRegularFile(Path.of(imageFilePath))) {
                 return;
             }
 
@@ -286,7 +287,7 @@ class ImageFileAssistantPage1 extends AbstractLayerSourceAssistantPage {
             getContext().setPropertyValue(ImageFileLayerSource.PROPERTY_NAME_IMAGE_FILE_PATH, imageFilePath);
             String worldFilePath = createWorldFilePath(imageFilePath);
 
-            if (new File(worldFilePath).isFile()) {
+            if (Files.isRegularFile((Path.of(worldFilePath)))) {
                 worldFileField.setText(worldFilePath);
             } else {
                 worldFileField.setText(null);

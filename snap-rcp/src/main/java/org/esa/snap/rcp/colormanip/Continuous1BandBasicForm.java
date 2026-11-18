@@ -129,7 +129,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     private boolean hidden = false;
 
     Continuous1BandBasicForm(final ColorManipulationForm parentForm, final Boolean[] basicSwitcherIsActive) {
-        ColorPaletteManager.getDefault().loadAvailableColorPalettes(parentForm.getIODir().toFile());
+        ColorPaletteManager.getDefault().loadAvailableColorPalettes(parentForm.getIODir());
 
         this.parentForm = parentForm;
         this.basicSwitcherIsActive = basicSwitcherIsActive;
@@ -475,7 +475,7 @@ public class Continuous1BandBasicForm implements ColorManipulationChildForm {
     @Override
     public void updateFormModel(ColorFormModel formModel) {
         if (!hidden) {
-            ColorPaletteManager.getDefault().loadAvailableColorPalettes(parentForm.getIODir().toFile());
+            ColorPaletteManager.getDefault().loadAvailableColorPalettes(parentForm.getIODir());
             colorPaletteChooser.reloadPalettes();
         }
 

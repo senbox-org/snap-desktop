@@ -243,8 +243,8 @@ public abstract class ChartPagePanel extends PagePanel {
         backgroundPanel.add(rightPanel, BorderLayout.EAST);
 
         JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.add(backgroundPanel, new Integer(0));
-        layeredPane.add(hideAndShowButton, new Integer(1));
+        layeredPane.add(backgroundPanel, Integer.valueOf(0));
+        layeredPane.add(hideAndShowButton, Integer.valueOf(1));
         add(layeredPane);
     }
 

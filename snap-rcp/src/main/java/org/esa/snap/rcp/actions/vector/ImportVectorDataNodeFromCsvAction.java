@@ -39,9 +39,10 @@ import org.openide.util.WeakListeners;
 
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @ActionID(category = "File", id = "ImportVectorDataNodeFromCsvAction" )
 @ActionRegistration(displayName = "#CTL_ImportVectorDataNodeFromCsvActionText", lazy = false )
@@ -119,17 +120,11 @@ public class ImportVectorDataNodeFromCsvAction extends AbstractImportVectorDataN
     private class DefaultVectorDataNodeReader implements VectorDataNodeImporter.VectorDataNodeReader {
 
         @Override
-        public VectorDataNode readVectorDataNode(File file, Product product, ProgressMonitor pm) throws IOException {
-            FileReader reader = null;
-            try {
+        public VectorDataNode readVectorDataNode(Path file, Product product, ProgressMonitor pm) throws IOException {
+            try (Reader reader = Files.newBufferedReader(file);){
                 CoordinateReferenceSystem modelCrs = product.getSceneCRS();
-                reader = new FileReader(file);
-                return VectorDataNodeReader.read(file.getName(), reader, product, crsProvider, placemarkDescriptorProvider,
+                return VectorDataNodeReader.read(file.getFileName().toString(), reader, product, crsProvider, placemarkDescriptorProvider,
                                                  modelCrs, VectorDataNodeIO.DEFAULT_DELIMITER_CHAR, pm);
-            } finally {
-                if (reader != null) {
-                    reader.close();
-                }
             }
         }
     }

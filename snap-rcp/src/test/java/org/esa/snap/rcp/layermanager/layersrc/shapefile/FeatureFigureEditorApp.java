@@ -41,8 +41,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +99,7 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
     }
 
     @Override
-    protected void loadFigureCollection(File file, FigureCollection figureCollection) throws IOException {
+    protected void loadFigureCollection(Path file, FigureCollection figureCollection) throws IOException {
         FeatureSource<SimpleFeatureType, SimpleFeature> featureFeatureSource;
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureTypeSimpleFeatureFeatureCollection;
         featureFeatureSource = getFeatureSource(file);
@@ -119,7 +119,7 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
     }
 
     @Override
-    protected void storeFigureCollection(FigureCollection figureCollection, File file) throws IOException {
+    protected void storeFigureCollection(FigureCollection figureCollection, Path file) throws IOException {
 
         Figure[] figures = figureCollection.getFigures();
         Map<Class<?>, List<SimpleFeature>> featureListMap = new HashMap<>();
@@ -138,9 +138,9 @@ public class FeatureFigureEditorApp extends FigureEditorApp {
         }
     }
 
-    private static FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource(File file) throws IOException {
+    private static FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource(Path file) throws IOException {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put(ShapefileDataStoreFactory.URLP.key, file.toURI().toURL());
+        map.put(ShapefileDataStoreFactory.URLP.key, file.toUri().toURL());
         map.put(ShapefileDataStoreFactory.CREATE_SPATIAL_INDEX.key, Boolean.TRUE);
         DataStore shapefileStore = DataStoreFinder.getDataStore(map);
         String typeName = shapefileStore.getTypeNames()[0]; // Shape files do only have one type name

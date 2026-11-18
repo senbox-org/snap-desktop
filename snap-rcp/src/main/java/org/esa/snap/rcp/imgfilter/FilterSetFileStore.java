@@ -1,14 +1,17 @@
 package org.esa.snap.rcp.imgfilter;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import com.thoughtworks.xstream.XStream;
 import org.esa.snap.rcp.imgfilter.model.FilterSet;
 import org.esa.snap.rcp.imgfilter.model.FilterSetStore;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -18,30 +21,25 @@ import java.util.List;
  */
 public class FilterSetFileStore implements FilterSetStore {
 
-    final File filtersDir;
+    final Path filtersDir;
 
-    public FilterSetFileStore(File filtersDir) {
+    public FilterSetFileStore(Path filtersDir) {
         this.filtersDir = filtersDir;
     }
 
     public List<FilterSet> loadFilterSetModels() throws IOException {
         XStream xStream = FilterSet.createXStream();
 
-        File[] files = filtersDir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".xml");
-            }
-        });
+        final Collection<Path> files = IOHelper.listFiles(filtersDir, path -> path.getFileName().toString().endsWith(".xml"));
         ArrayList<FilterSet> list = new ArrayList<>();
         if (files == null) {
             return list;
         }
         IOException ioe = null;
-        for (File file : files) {
-            try {
+        for (Path file : files) {
+            try (InputStream is = Files.newInputStream(file)) {
                 FilterSet filterSet = new FilterSet();
-                xStream.fromXML(file, filterSet);
+                xStream.fromXML(is, filterSet);
                 list.add(filterSet);
             } catch (Exception e) {
                 ioe = new IOException(e);
@@ -57,12 +55,12 @@ public class FilterSetFileStore implements FilterSetStore {
 
     @Override
     public void storeFilterSetModel(FilterSet filterSet) throws IOException {
-        if (!filtersDir.exists() && !filtersDir.mkdirs()) {
+        if (!Files.exists(filtersDir) && !IOHelper.createDirectories(filtersDir)) {
             throw new IOException("Failed to create directory\n" + filtersDir);
         }
-        File file = new File(filtersDir, filterSet.getName().toLowerCase() + "-filters.xml");
+        final Path file = filtersDir.resolve(filterSet.getName().toLowerCase() + "-filters.xml");
         XStream xStream = FilterSet.createXStream();
-        try (FileWriter fileWriter = new FileWriter(file)) {
+        try (Writer fileWriter = Files.newBufferedWriter(file)) {
             xStream.toXML(filterSet, fileWriter);
         }
     }

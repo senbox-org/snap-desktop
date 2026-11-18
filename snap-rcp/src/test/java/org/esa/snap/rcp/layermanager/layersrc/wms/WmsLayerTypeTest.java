@@ -15,7 +15,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.awt.*;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -29,7 +29,7 @@ public class WmsLayerTypeTest {
     @BeforeClass
     public static void beforeClass() {
         Product product = new Product("P", "T", 10, 10);
-        product.setFileLocation(new File(String.format("out/%s.dim", product.getName())));
+        product.setFileLocation(Path.of(String.format("out/%s.dim", product.getName())));
 
         band = new VirtualBand("V", ProductData.TYPE_INT32, 10, 10, "42");
         product.addBand(band);

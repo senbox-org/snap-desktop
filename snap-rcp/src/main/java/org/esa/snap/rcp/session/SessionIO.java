@@ -18,11 +18,10 @@ package org.esa.snap.rcp.session;
 
 import com.bc.ceres.core.Assert;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * The Session I/O class is used to store and restore sessions.
@@ -43,19 +42,19 @@ public abstract class SessionIO {
         SessionIO.instance = instance;
     }
 
-    public Session readSession(File file)  throws Exception {
+    public Session readSession(Path file)  throws Exception {
         Assert.notNull(file, "file");
-        try (FileReader reader = new FileReader(file)) {
+        try (Reader reader = Files.newBufferedReader(file)) {
             return readSession(reader);
         }
     }
 
     public abstract Session readSession(Reader reader) throws Exception;
 
-    public void writeSession(Session session, File file)  throws Exception {
+    public void writeSession(Session session, Path file)  throws Exception {
         Assert.notNull(session, "session");
         Assert.notNull(file, "file");
-        try (FileWriter writer = new FileWriter(file)) {
+        try (Writer writer = Files.newBufferedWriter(file)) {
             writeSession(session, writer);
         }
     }

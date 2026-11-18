@@ -1,12 +1,11 @@
 package org.esa.snap.rcp.session;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.core.util.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -20,13 +19,13 @@ public class XStreamSessionIOTest {
 
     @Before
     public void setUp() throws IOException {
-        tempDirectory = Files.createTempDirectory("xstream_test");
+        tempDirectory = IOHelper.createATempDir("xstream_test");
     }
 
     @After
     public void tearDown()  {
         if (tempDirectory != null) {
-            FileUtils.deleteTree(tempDirectory.toFile());
+            FileUtils.deleteTree(tempDirectory);
         }
     }
 
@@ -48,10 +47,10 @@ public class XStreamSessionIOTest {
 
         XStreamSessionIO xStreamSessionIO = new XStreamSessionIO();
 
-        File file = new File(tempDirectory.toFile(), "test,xml");
+        final Path file = tempDirectory.resolve("test,xml");
         xStreamSessionIO.writeSession(session, file);
 
-        Session readSession = xStreamSessionIO.readSession(new FileReader(file));
+        Session readSession = xStreamSessionIO.readSession(Files.newBufferedReader(file));
 
         assertEquals("heffalump", readSession.modelVersion);
 

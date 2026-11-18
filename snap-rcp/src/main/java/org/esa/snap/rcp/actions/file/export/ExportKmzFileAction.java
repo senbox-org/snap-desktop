@@ -20,7 +20,16 @@ import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.ImageEncoder;
-import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.CrsGeoCoding;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.ImageLegend;
+import org.esa.snap.core.datamodel.MapGeoCoding;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.dataop.maptransf.IdentityTransformDescriptor;
 import org.esa.snap.core.dataop.maptransf.MapTransformDescriptor;
 import org.esa.snap.core.util.Debug;
@@ -37,14 +46,24 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.*;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.HelpCtx;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFileChooser;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -95,13 +114,13 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
     static String getLastDir() {
         return Config.instance().load().preferences().get(
                 IMAGE_EXPORT_DIR_PREFERENCES_KEY,
-                SystemUtils.getUserHomeDir().getPath());
+                SystemUtils.getUserHomeDir().toString());
     }
 
-    static void setLastDir(File currentDirectory) {
+    static void setLastDir(Path currentDirectory) {
         Config.instance().load().preferences().put(
                 IMAGE_EXPORT_DIR_PREFERENCES_KEY,
-                currentDirectory.getPath());
+                currentDirectory.toString());
     }
 
     private static RenderedImage createImageLegend(RasterDataNode raster) {
@@ -245,7 +264,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
     private void exportImage(ProductSceneView sceneView) {
         SnapApp snapApp = SnapApp.getDefault();
         final String lastDir = getLastDir();
-        final File currentDir = new File(lastDir);
+        final Path currentDir = Path.of(lastDir);
 
         final SnapFileChooser fileChooser = new SnapFileChooser();
 
@@ -255,7 +274,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
                 KMZ_FORMAT_DESCRIPTION[1],
                 KMZ_FORMAT_DESCRIPTION[2]);
 
-        fileChooser.setCurrentDirectory(currentDir);
+        fileChooser.setCurrentDirectory(currentDir.toFile());
         fileChooser.addChoosableFileFilter(kmzFileFilter);
         fileChooser.setAcceptAllFileFilterUsed(false);
 
@@ -274,19 +293,22 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
         }
 
         int result = fileChooser.showSaveDialog(snapApp.getMainFrame());
-        File file = fileChooser.getSelectedFile();
         fileChooser.addPropertyChangeListener(evt -> {
             // @todo never comes here, why?
             Debug.trace(evt.toString());
         });
-        final File currentDirectory = fileChooser.getCurrentDirectory();
-        if (currentDirectory != null) {
+        if (fileChooser.getCurrentDirectory() != null) {
+            final Path currentDirectory = fileChooser.getCurrentDirectory().toPath();
             setLastDir(currentDirectory);
         }
         if (result != JFileChooser.APPROVE_OPTION) {
             return;
         }
-        if (file == null || file.getName().isEmpty()) {
+        if (fileChooser.getSelectedFile() == null) {
+            return;
+        }
+        Path file = fileChooser.getSelectedFile().toPath();
+        if (file.getFileName().toString().isEmpty()) {
             return;
         }
 
@@ -302,9 +324,9 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
 
         private final SnapApp snapApp;
         private final ProductSceneView view;
-        private final File file;
+        private final Path file;
 
-        SaveKMLSwingWorker(SnapApp snapApp, String message, ProductSceneView view, File file) {
+        SaveKMLSwingWorker(SnapApp snapApp, String message, ProductSceneView view, Path file) {
             super(snapApp.getMainFrame(), message);
             this.snapApp = snapApp;
             this.view = view;
@@ -314,7 +336,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
         @Override
         protected Object doInBackground(ProgressMonitor pm) throws Exception {
             try {
-                final String message = String.format("Saving image as %s...", file.getPath());
+                final String message = String.format("Saving image as %s...", file.toString());
                 pm.beginTask(message, view.isRGB() ? 4 : 3);
                 snapApp.setStatusBarMessage(message);
                 snapApp.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -322,7 +344,7 @@ public class ExportKmzFileAction extends AbstractAction implements HelpCtx.Provi
                         view.getProduct().getSceneRasterHeight());
                 RenderedImage image = ExportImageAction.createImage(view, true, dimension, true, true);
                 pm.worked(1);
-                try (ZipOutputStream outStream = new ZipOutputStream(new FileOutputStream(file))) {
+                try (ZipOutputStream outStream = new ZipOutputStream(Files.newOutputStream(file))) {
                     outStream.putNextEntry(new ZipEntry(OVERLAY_KML));
                     final String kmlContent = formatKML(view, OVERLAY_PNG);
                     outStream.write(kmlContent.getBytes());

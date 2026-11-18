@@ -1,18 +1,31 @@
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.ColorManipulationDefaults;
+import org.esa.snap.core.datamodel.ColorPaletteDef;
+import org.esa.snap.core.datamodel.ColorSchemeInfo;
+import org.esa.snap.core.datamodel.ImageInfo;
+import org.esa.snap.core.datamodel.Stx;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.math.Histogram;
 import org.esa.snap.core.util.math.Range;
 import org.esa.snap.ui.product.ProductSceneView;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_GENERAL_CUSTOM_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_GENERAL_LOG_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_GENERAL_LOG_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_GENERAL_RANGE_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_RANGE_PERCENTILE_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_AUTO_APPLY_KEY;
 
 /**
  * Panel handling general layer preferences. Sub-panel of the "Layer"-panel.
@@ -116,7 +129,7 @@ public class ColorSchemeUtils {
     }
 
 
-    public static File getDefaultCpd(PropertyMap configuration) {
+    public static Path getDefaultCpd(PropertyMap configuration) {
 
         String filename = null;
 
@@ -140,12 +153,12 @@ public class ColorSchemeUtils {
             }
         }
 
-        File auxDir = ColorSchemeUtils.getColorPalettesAuxDataDir().toFile();
+        final Path auxDir = ColorSchemeUtils.getColorPalettesAuxDataDir();
 
         if (filename != null) {
-            File defaultCpd = new File(auxDir, filename);
+            Path defaultCpd = auxDir.resolve(filename);
 
-            if (defaultCpd.exists()) {
+            if (Files.exists(defaultCpd)) {
                 return defaultCpd;
             }
         }
@@ -160,7 +173,7 @@ public class ColorSchemeUtils {
 
         boolean imageInfoSet = false;
 
-        File defaultCpdFile = getDefaultCpd(configuration);
+        final Path defaultCpdFile = getDefaultCpd(configuration);
 
         ColorSchemeInfo colorSchemeInfo = ColorSchemeManager.getDefault().getNoneColorSchemeInfo();
         productSceneView.getImageInfo().setColorSchemeInfo(colorSchemeInfo);
@@ -168,7 +181,7 @@ public class ColorSchemeUtils {
 
         ColorPaletteDef colorPaletteDef = null;
 
-        if (defaultCpdFile.exists()) {
+        if (defaultCpdFile != null && Files.exists(defaultCpdFile)) {
             try {
                 colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(defaultCpdFile);
 
@@ -350,10 +363,10 @@ public class ColorSchemeUtils {
 
         ColorPaletteDef colorPaletteDef = null;
 
-        File auxDir = ColorSchemeUtils.getColorPalettesAuxDataDir().toFile();
+        final Path auxDir = ColorSchemeUtils.getColorPalettesAuxDataDir();
 
         if (cpdFileName != null) {
-            File cpdFile = new File(auxDir, cpdFileName);
+            Path cpdFile = auxDir.resolve(cpdFileName);
             try {
                 if (cpdFileName.endsWith("cpt")) {
                     colorPaletteDef = ColorPaletteDef.loadCpt(cpdFile);

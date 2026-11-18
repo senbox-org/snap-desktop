@@ -1,11 +1,13 @@
 package org.esa.snap.rcp.colormanip;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.util.SystemUtils;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,28 +29,26 @@ class ColorPaletteManager {
         cpdNames = new ArrayList<>();
     }
 
-    public void loadAvailableColorPalettes(File palettesDir) {
+    public void loadAvailableColorPalettes(Path palettesDir) {
         cpdNames.clear();
         cpdList.clear();
 
-        final File[] files = palettesDir.listFiles((dir, name) -> {
-            return name.toLowerCase().endsWith(".cpd") || name.toLowerCase().endsWith(".cpt");
-        });
+        final Collection<Path> files = IOHelper.listFiles(palettesDir, dir -> dir.getFileName().toString().toLowerCase().endsWith(".cpd") || dir.getFileName().toString().toLowerCase().endsWith(".cpt"));
         if (files != null) {
-            for (File file : files) {
+            for (Path file : files) {
                 try {
                     ColorPaletteDef newCpd;
 
-                    if (file.getName().endsWith("cpt")) {
+                    if (file.getFileName().toString().endsWith("cpt")) {
                         newCpd = ColorPaletteDef.loadCpt(file);
                     } else {
                         newCpd = ColorPaletteDef.loadColorPaletteDef(file);
                     }
                     cpdList.add(newCpd);
-                    cpdNames.add(file.getName());
+                    cpdNames.add(file.getFileName().toString());
                 } catch (IOException e) {
                     final Logger logger = SystemUtils.LOG;
-                    logger.warning("Unable to load color palette definition from file '" + file.getAbsolutePath() + "'");
+                    logger.warning("Unable to load color palette definition from file '" + file.toAbsolutePath() + "'");
                     logger.log(Level.INFO, e.getMessage(), e);
                 }
             }

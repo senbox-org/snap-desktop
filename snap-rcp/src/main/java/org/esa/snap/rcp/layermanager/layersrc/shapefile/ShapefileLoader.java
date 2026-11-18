@@ -49,7 +49,7 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.awt.Color;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 
 /**
@@ -80,7 +80,7 @@ class ShapefileLoader extends ProgressMonitorSwingWorker<Layer, Object> {
             final ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
             final Geometry clipGeometry = FeatureUtils.createGeoBoundaryPolygon(sceneView.getProduct());
 
-            File file = new File((String) context.getPropertyValue(ShapefileLayerSource.PROPERTY_NAME_FILE_PATH));
+            final Path file = Path.of((String) context.getPropertyValue(ShapefileLayerSource.PROPERTY_NAME_FILE_PATH));
             FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = getFeatureCollection(file);
             CoordinateReferenceSystem featureCrs = (CoordinateReferenceSystem) context.getPropertyValue(
                     ShapefileLayerSource.PROPERTY_NAME_FEATURE_COLLECTION_CRS);
@@ -91,13 +91,13 @@ class ShapefileLoader extends ProgressMonitorSwingWorker<Layer, Object> {
 
             final LayerType type = LayerTypeRegistry.getLayerType(FeatureLayerType.class.getName());
             final PropertySet configuration = type.createLayerConfig(sceneView);
-            configuration.setValue(FeatureLayerType.PROPERTY_NAME_FEATURE_COLLECTION_URL, file.toURI().toURL());
+            configuration.setValue(FeatureLayerType.PROPERTY_NAME_FEATURE_COLLECTION_URL, file.toUri().toURL());
             configuration.setValue(FeatureLayerType.PROPERTY_NAME_FEATURE_COLLECTION, featureCollection);
             configuration.setValue(FeatureLayerType.PROPERTY_NAME_FEATURE_COLLECTION_CRS, featureCrs);
             configuration.setValue(FeatureLayerType.PROPERTY_NAME_FEATURE_COLLECTION_CLIP_GEOMETRY, clipGeometry);
             configuration.setValue(FeatureLayerType.PROPERTY_NAME_SLD_STYLE, selectedStyle);
             Layer featureLayer = type.createLayer(sceneView, configuration);
-            featureLayer.setName(file.getName());
+            featureLayer.setName(file.getFileName().toString());
             featureLayer.setVisible(true);
             return featureLayer;
         } finally {
@@ -105,11 +105,11 @@ class ShapefileLoader extends ProgressMonitorSwingWorker<Layer, Object> {
         }
     }
 
-    private FeatureCollection<SimpleFeatureType, SimpleFeature> getFeatureCollection(File file) throws IOException {
+    private FeatureCollection<SimpleFeatureType, SimpleFeature> getFeatureCollection(Path file) throws IOException {
         Object featureCollectionValue = context.getPropertyValue(ShapefileLayerSource.PROPERTY_NAME_FEATURE_COLLECTION);
         FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection;
         if (featureCollectionValue == null) {
-            featureCollection = FeatureUtils.getFeatureSource(file.toURI().toURL()).getFeatures();
+            featureCollection = FeatureUtils.getFeatureSource(file.toUri().toURL()).getFeatures();
         } else {
             featureCollection = (FeatureCollection<SimpleFeatureType, SimpleFeature>) featureCollectionValue;
         }
@@ -125,7 +125,7 @@ class ShapefileLoader extends ProgressMonitorSwingWorker<Layer, Object> {
         return selectedStyle;
     }
 
-    private Style[] getStyles(File file, FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection) {
+    private Style[] getStyles(Path file, FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection) {
         Style[] styles = (Style[]) context.getPropertyValue(ShapefileLayerSource.PROPERTY_NAME_STYLES);
         if (styles == null || styles.length == 0) {
             styles = createStyle(file, featureCollection.getSchema());
@@ -134,7 +134,7 @@ class ShapefileLoader extends ProgressMonitorSwingWorker<Layer, Object> {
         return styles;
     }
 
-    private static Style[] createStyle(File shapeFile, FeatureType schema) {
+    private static Style[] createStyle(Path shapeFile, FeatureType schema) {
         final Style[] styles = SLDUtils.loadSLD(shapeFile);
         if (styles != null && styles.length > 0) {
             return styles;

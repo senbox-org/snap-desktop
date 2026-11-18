@@ -31,7 +31,7 @@ import javax.media.jai.operator.FileLoadDescriptor;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
-import java.io.File;
+import java.nio.file.Path;
 
 @LayerTypeMetadata(name = "ImageFileLayerType",
                    aliasNames = {"org.esa.snap.rcp.layermanager.layersrc.image.ImageFileLayerType"})
@@ -42,9 +42,9 @@ public class ImageFileLayerType extends ImageLayer.Type {
 
     @Override
     public Layer createLayer(LayerContext ctx, PropertySet configuration) {
-        final File file = (File) configuration.getValue(PROPERTY_NAME_IMAGE_FILE);
+        final Path file = configuration.getValue(PROPERTY_NAME_IMAGE_FILE);
         final AffineTransform transform = (AffineTransform) configuration.getValue(PROPERTY_NAME_WORLD_TRANSFORM);
-        RenderedImage image = FileLoadDescriptor.create(file.getPath(), null, true, null);
+        RenderedImage image = FileLoadDescriptor.create(file.toString(), null, true, null);
         final Rectangle2D modelBounds = DefaultMultiLevelModel.getModelBounds(transform, image);
         final DefaultMultiLevelModel model = new DefaultMultiLevelModel(1, transform, modelBounds);
         final MultiLevelSource multiLevelSource = new DefaultMultiLevelSource(image, model);
@@ -55,7 +55,7 @@ public class ImageFileLayerType extends ImageLayer.Type {
     public PropertySet createLayerConfig(LayerContext ctx) {
         final PropertyContainer template = new PropertyContainer();
 
-        final Property filePathModel = Property.create(PROPERTY_NAME_IMAGE_FILE, File.class);
+        final Property filePathModel = Property.create(PROPERTY_NAME_IMAGE_FILE, Path.class);
         filePathModel.getDescriptor().setNotNull(true);
         template.addProperty(filePathModel);
 

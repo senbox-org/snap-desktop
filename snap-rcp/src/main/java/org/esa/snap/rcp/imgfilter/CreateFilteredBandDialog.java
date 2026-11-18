@@ -10,7 +10,7 @@ import org.esa.snap.rcp.imgfilter.model.StandardFilters;
 import org.esa.snap.rcp.util.Dialogs;
 import org.esa.snap.ui.ModalDialog;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -130,8 +130,8 @@ public class CreateFilteredBandDialog extends ModalDialog implements FilterSetFo
     }
 
 
-    private File getFiltersDir() {
-        return new File(SystemUtils.getAuxDataPath().toFile(), "image_filters");
+    private Path getFiltersDir() {
+        return SystemUtils.getAuxDataPath().resolve("image_filters");
     }
 
     public static class DialogData {

@@ -22,8 +22,10 @@ import com.bc.ceres.binding.PropertyDescriptor;
 import com.bc.ceres.binding.PropertySet;
 import com.bc.ceres.binding.dom.DefaultDomElement;
 import com.bc.ceres.binding.dom.DomElement;
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerType;
+import java.lang.reflect.Array;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
@@ -32,9 +34,6 @@ import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.io.File;
-import java.lang.reflect.Array;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertSame;
@@ -64,7 +63,7 @@ public abstract class AbstractLayerConfigurationPersistencyTest {
 
     protected static Product createTestProduct(String name, String type) {
         Product product = new Product(name, type, 10, 10);
-        product.setFileLocation(new File(String.format("out/%s.dim", name)));
+        product.setFileLocation(IOHelper.createATempDir().resolve(String.format("out/%s.dim", name)));
 
         return product;
     }

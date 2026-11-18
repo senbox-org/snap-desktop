@@ -23,7 +23,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -68,11 +68,11 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
     private JSpinner geoCoordSouthLatSpinner;
 
     private MetadataInspector metadataInspector;
-    private File file;
+    private Path file;
     private ProductSubsetDef productSubsetDef;
     private final ProductSubsetByPolygonUiComponents productSubsetByPolygonUiComponents = new ProductSubsetByPolygonUiComponents(this.getJDialog());
 
-    public ProductAdvancedDialog(Window parent, String title, MetadataInspector metadataInspector, File file) {
+    public ProductAdvancedDialog(Window parent, String title, MetadataInspector metadataInspector, Path file) {
         super(parent, title, true, null);
 
         updatingUI = new AtomicBoolean(false);
@@ -343,7 +343,7 @@ public class ProductAdvancedDialog extends AbstractModalDialog {
     private void readProductMetadataAsync() {
         LoadingIndicator loadingIndicator = getLoadingIndicator();
         int threadId = getNewCurrentThreadId();
-        ReadProductInspectorTimerRunnable runnable = new ReadProductInspectorTimerRunnable(loadingIndicator, threadId, metadataInspector, file.toPath()) {
+        ReadProductInspectorTimerRunnable runnable = new ReadProductInspectorTimerRunnable(loadingIndicator, threadId, metadataInspector, file) {
             @Override
             protected void onSuccessfullyFinish(MetadataInspector.Metadata result) {
                 onSuccessfullyLoadingProductMetadata(result);

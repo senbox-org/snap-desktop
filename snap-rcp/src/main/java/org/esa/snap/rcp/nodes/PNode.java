@@ -20,7 +20,7 @@ import org.openide.nodes.Sheet;
 import org.openide.util.WeakListeners;
 
 import javax.swing.Action;
-import java.io.File;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -101,9 +101,9 @@ public class PNode extends PNNode<Product> implements PreferenceChangeListener {
 
         Sheet.Set set = new Sheet.Set();
         set.setDisplayName("Product Properties");
-        set.put(new PropertySupport.ReadOnly<File>("fileLocation", File.class, "File", "File location") {
+        set.put(new PropertySupport.ReadOnly<>("fileLocation", Path.class, "File", "File location") {
             @Override
-            public File getValue() {
+            public Path getValue() {
                 return getProduct().getFileLocation();
             }
         });

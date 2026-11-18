@@ -5,9 +5,9 @@ import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.util.SystemUtils;
 
 import java.awt.Desktop;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.FileSystem;
@@ -110,7 +110,7 @@ public class ContextWebSearch {
 
     private void loadConfig() throws IOException {
         Path file = getConfigPath();
-        try (FileReader reader = new FileReader(file.toFile())) {
+        try (Reader reader = Files.newBufferedReader(file)) {
             config.load(reader);
         }
     }

@@ -1,6 +1,7 @@
 package org.esa.snap.rcp.actions.file.export;
 
 import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.core.datamodel.*;
 import org.esa.snap.core.util.FeatureUtils;
 import org.esa.snap.core.util.io.FileUtils;
@@ -16,7 +17,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -30,16 +32,14 @@ import static org.junit.Assert.*;
 public class ExportGeometryActionTest {
 
     private static Product product;
-    private static File tempDir;
+    private static Path tempDir;
 
     @BeforeClass
     public static void setUpTestClass() throws Exception {
         product = new Product("world", "myWorld", 20, 10);
         product.setSceneGeoCoding(new CrsGeoCoding(DefaultGeographicCRS.WGS84, 20, 10, -180, 90, 18, 18, 0.0, 0.0));
-        File tempTempFile = File.createTempFile("temp", null);
-        tempDir = new File(tempTempFile.getParentFile(), "ExportGeometryActionTest");
-        tempDir.mkdir();
-        tempTempFile.delete();
+        tempDir = IOHelper.createATempDir().resolve("ExportGeometryActionTest");
+        Files.createDirectory(tempDir);
     }
 
     @AfterClass
@@ -92,11 +92,12 @@ public class ExportGeometryActionTest {
     }
 
     private void doExportImport(ArrayList<SimpleFeature> features, Class<? extends Geometry> geomType) throws IOException {
-        File tempFile = File.createTempFile("pins", null, tempDir);
+        final Path tempFile = tempDir.resolve("pins");
+        Files.createDirectories(tempFile);
         try {
             ExportGeometryAction.writeEsriShapefile(geomType, features, tempFile);
-            assertTrue(tempFile.exists());
-            VectorDataNode vectorDataNode = readIn(new File(String.format("%s_%s.shp", tempFile.getAbsolutePath(), geomType.getSimpleName())), product);
+            assertTrue(Files.exists(tempFile));
+            VectorDataNode vectorDataNode = readIn(Path.of(String.format("%s_%s.shp", tempFile.toAbsolutePath(), geomType.getSimpleName())), product);
             assertEquals(1, vectorDataNode.getFeatureCollection().getCount());
             try (SimpleFeatureIterator readFeatures = vectorDataNode.getFeatureCollection().features()) {
                 while (readFeatures.hasNext()) {
@@ -108,14 +109,14 @@ public class ExportGeometryActionTest {
             t.printStackTrace();
             fail(String.format("Throwable '%s: %s' not expected", t.getClass().getSimpleName(), t.getMessage()));
         } finally {
-            boolean deleted = tempFile.delete();
+            boolean deleted = Files.deleteIfExists(tempFile);
             if (!deleted) {
-                tempFile.deleteOnExit();
+                IOHelper.deleteOnExit(tempFile);
             }
         }
     }
 
-    private VectorDataNode readIn(File file, Product product) throws IOException {
+    private VectorDataNode readIn(Path file, Product product) throws IOException {
         DefaultFeatureCollection featureCollection = FeatureUtils.loadShapefileForProduct(file,
                 product,
                 new DummyFeatureCrsProvider(),

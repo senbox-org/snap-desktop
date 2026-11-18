@@ -71,12 +71,12 @@ class LicensesAboutBox extends JPanel {
         );
 
         JComponent licensesComponent;
-        Path licensesFile = getApplicationHomeDir().toPath().resolve(THIRD_PARTY_LICENSE_DEFAULT_FILE_NAME);
+        Path licensesFile = getApplicationHomeDir().resolve(THIRD_PARTY_LICENSE_DEFAULT_FILE_NAME);
         try {
             JTable table = createLicensesTable(licensesFile);
             licensesComponent = createScrollPane(table);
         } catch (IOException e) {
-            String msg = "Error: Cloud not read licenses from " + licensesFile.toAbsolutePath().toString();
+            String msg = "Error: Cloud not read licenses from " + licensesFile.toAbsolutePath();
             LOG.log(Level.WARNING, msg, e);
             JLabel msgLabel = new JLabel(msg);
             msgLabel.setVerticalAlignment(SwingConstants.TOP);

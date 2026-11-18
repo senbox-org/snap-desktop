@@ -32,10 +32,10 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,26 +58,26 @@ class ExportStatisticsAsCsvAction extends AbstractAction {
         PrintStream metadataOutputStream = null;
         PrintStream csvOutputStream = null;
         String exportDir = SnapApp.getDefault().getPreferences().get(PROPERTY_KEY_EXPORT_DIR, null);
-        File baseDir = null;
+        Path baseDir = null;
         if (exportDir != null) {
-            baseDir = new File(exportDir);
+            baseDir = Path.of(exportDir);
         }
         SnapFileChooser fileChooser = new SnapFileChooser(baseDir);
         final SnapFileFilter snapFileFilter = new SnapFileFilter("CSV", new String[]{".csv", ".txt"}, "CSV files");
         fileChooser.setFileFilter(snapFileFilter);
-        File outputAsciiFile;
+        Path outputAsciiFile;
         int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());
         if (result == JFileChooser.APPROVE_OPTION) {
-            outputAsciiFile = fileChooser.getSelectedFile();
-            SnapApp.getDefault().getPreferences().put(PROPERTY_KEY_EXPORT_DIR, outputAsciiFile.getParent());
+            outputAsciiFile = fileChooser.getSelectedFile().toPath();
+            SnapApp.getDefault().getPreferences().put(PROPERTY_KEY_EXPORT_DIR, outputAsciiFile.getParent().toString());
         } else {
             return;
         }
         try {
-            final File metadataFile = new File(outputAsciiFile.getParent(),
+            final Path metadataFile = outputAsciiFile.getParent().resolve(
                                                FileUtils.getFilenameWithoutExtension(outputAsciiFile) + "_metadata.txt");
-            metadataOutputStream = new PrintStream(new FileOutputStream(metadataFile));
-            csvOutputStream = new PrintStream(new FileOutputStream(outputAsciiFile));
+            metadataOutputStream = new PrintStream(Files.newOutputStream(metadataFile));
+            csvOutputStream = new PrintStream(Files.newOutputStream(outputAsciiFile));
 
             CsvStatisticsWriter csvStatisticsWriter = new CsvStatisticsWriter(csvOutputStream);
             final MetadataWriter metadataWriter = new MetadataWriter(metadataOutputStream);

@@ -9,17 +9,26 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.Rule;
+import org.geotools.styling.SLD;
 import org.geotools.styling.Stroke;
-import org.geotools.styling.*;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.Symbolizer;
 import org.geotools.xml.styling.SLDParser;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 
-import java.awt.*;
-import java.io.File;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,8 +37,8 @@ import java.util.Set;
 public class SLDUtils {
     private static final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
 
-    public static File getSLDFile(File shapeFile) {
-        String filename = shapeFile.getAbsolutePath();
+    public static Path getSLDFile(Path shapeFile) {
+        String filename = shapeFile.toAbsolutePath().toString();
         if (filename.endsWith(".shp") || filename.endsWith(".dbf")
                 || filename.endsWith(".shx")) {
             filename = filename.substring(0, filename.length() - 4);
@@ -39,21 +48,21 @@ public class SLDUtils {
             filename = filename.substring(0, filename.length() - 4);
             filename += ".SLD";
         }
-        return new File(filename);
+        return Path.of(filename);
     }
 
-    public static Style[] loadSLD(File shapeFile) {
-        File sld = getSLDFile(shapeFile);
-        if (sld.exists()) {
+    public static Style[] loadSLD(Path shapeFile) {
+        final Path sld = getSLDFile(shapeFile);
+        if (Files.exists(sld)) {
             return createFromSLD(sld);
         } else {
             return new Style[0];
         }
     }
 
-    public static Style[] createFromSLD(File sld) {
+    public static Style[] createFromSLD(Path sld) {
         try {
-            SLDParser stylereader = new SLDParser(styleFactory, sld.toURI().toURL());
+            SLDParser stylereader = new SLDParser(styleFactory, sld.toUri().toURL());
             return stylereader.readXML();
         } catch (IOException e) {
             e.printStackTrace();

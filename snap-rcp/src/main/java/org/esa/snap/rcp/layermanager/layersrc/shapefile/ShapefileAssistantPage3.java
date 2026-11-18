@@ -43,7 +43,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
 
@@ -76,7 +76,7 @@ class ShapefileAssistantPage3 extends AbstractLayerSourceAssistantPage {
 
         LayerSourcePageContext context = getContext();
         String filePath = (String) context.getPropertyValue(ShapefileLayerSource.PROPERTY_NAME_FILE_PATH);
-        String fileName = new File(filePath).getName();
+        String fileName = Path.of(filePath).getFileName().toString();
 
         infoLabel = new JLabel();
 

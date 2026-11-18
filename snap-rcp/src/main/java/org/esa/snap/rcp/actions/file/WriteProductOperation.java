@@ -17,7 +17,7 @@ import org.netbeans.api.progress.ProgressHandle;
 import org.openide.util.Cancellable;
 import org.openide.util.NbBundle;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import static org.esa.snap.rcp.preferences.general.WriteOptionsController.DEFAULT_VALUE_SAVE_INCREMENTAL;
 import static org.esa.snap.rcp.preferences.general.WriteOptionsController.DEFAULT_VALUE_SAVE_PRODUCT_ANNOTATIONS;
@@ -38,7 +38,7 @@ public class WriteProductOperation implements Runnable, Cancellable {
     private final Product product;
     private final Boolean incremental;
     private final ProgressHandleMonitor pm;
-    private final File fileLocation;
+    private final Path fileLocation;
     private final String formatName;
     private Boolean status;
 
@@ -46,7 +46,7 @@ public class WriteProductOperation implements Runnable, Cancellable {
         this(product, product.getFileLocation(), DimapProductConstants.DIMAP_FORMAT_NAME, incremental);
     }
 
-    public WriteProductOperation(Product product, File fileLocation, String formatName, Boolean incremental) {
+    public WriteProductOperation(Product product, Path fileLocation, String formatName, Boolean incremental) {
         Assert.notNull(product, "product");
         Assert.notNull(fileLocation, "fileLocation");
         Assert.notNull(formatName, "formatName");
@@ -133,7 +133,7 @@ public class WriteProductOperation implements Runnable, Cancellable {
 
         if (saveOk != null && saveOk) {
             product.setModified(false);
-            OpenProductAction.getRecentProductPaths().add(fileLocation.getPath());
+            OpenProductAction.getRecentProductPaths().add(fileLocation.toString());
         } else {
             if (metadataRoot != null) {
                 final MetadataElement[] elementsArray = new MetadataElement[metadataElementBackup.size()];
@@ -148,7 +148,7 @@ public class WriteProductOperation implements Runnable, Cancellable {
     }
 
     private static Boolean writeProduct(Product product,
-                                        File file,
+                                        Path file,
                                         String formatName,
                                         boolean incremental,
                                         ProgressMonitor pm) {

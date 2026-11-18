@@ -37,7 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
@@ -71,7 +71,7 @@ public class OpenSessionAction extends AbstractAction {
                 return;
             }
         }
-        final File sessionFile = Dialogs.requestFileForOpen(TITLE, false,
+        final Path sessionFile = Dialogs.requestFileForOpen(TITLE, false,
                                                             SessionManager.getDefault().getSessionFileFilter(),
                                                             LAST_SESSION_DIR_KEY);
         if (sessionFile == null) {
@@ -81,7 +81,7 @@ public class OpenSessionAction extends AbstractAction {
         openSession(sessionFile);
     }
 
-    public void openSession(File sessionFile) {
+    public void openSession(Path sessionFile) {
         final SessionManager manager = SessionManager.getDefault();
         manager.setSessionFile(sessionFile);
         CloseAllProductsAction closeProductAction = new CloseAllProductsAction();
@@ -94,9 +94,9 @@ public class OpenSessionAction extends AbstractAction {
     private static class OpenSessionWorker extends ProgressMonitorSwingWorker<RestoredSession, Object> {
 
         private final SessionManager app;
-        private final File sessionFile;
+        private final Path sessionFile;
 
-        public OpenSessionWorker(SessionManager app, File sessionFile) {
+        public OpenSessionWorker(SessionManager app, Path sessionFile) {
             super(SnapApp.getDefault().getMainFrame(), TITLE);
             this.app = app;
             this.sessionFile = sessionFile;
@@ -105,12 +105,12 @@ public class OpenSessionAction extends AbstractAction {
         @Override
         protected RestoredSession doInBackground(ProgressMonitor pm) throws Exception {
             final Session session = SessionIO.getInstance().readSession(sessionFile);
-            final File parentFile = sessionFile.getParentFile();
+            final Path parentFile = sessionFile.getParent();
             final URI rootURI;
             if (parentFile != null) {
-                rootURI = parentFile.toURI();
+                rootURI = parentFile.toUri();
             } else {
-                rootURI = new File(".").toURI();
+                rootURI = Path.of(".").toUri();
             }
             return session.restore(SnapApp.getDefault().getAppContext(), rootURI, pm, new SessionProblemSolver());
         }
@@ -198,8 +198,8 @@ public class OpenSessionAction extends AbstractAction {
 
         private class SessionProblemSolver implements Session.ProblemSolver {
             @Override
-            public Product solveProductNotFound(int id, File file) throws CanceledException {
-                final File[] newFile = new File[1];
+            public Product solveProductNotFound(int id, Path file) throws CanceledException {
+                final Path[] newFile = new Path[1];
                 final Dialogs.Answer[] answer = new Dialogs.Answer[1];
                 final String title = MessageFormat.format(TITLE + " - Resolving [{0}]", file);
                 final String msg = MessageFormat.format("Product [{0}] has been renamed or (re-)moved.\n" +

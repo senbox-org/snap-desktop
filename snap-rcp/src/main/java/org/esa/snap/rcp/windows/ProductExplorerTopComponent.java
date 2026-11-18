@@ -35,7 +35,7 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -178,10 +178,14 @@ public class ProductExplorerTopComponent extends TopComponent implements Explore
                 final Transferable transferable = dtde.getTransferable();
                 if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-                    final List<File> fileList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
-                    if (fileList.size() > 0) {
+                    final Object transferData = transferable.getTransferData(DataFlavor.javaFileListFlavor);
+                    if (transferData instanceof List<?> fileList && !fileList.isEmpty()) {
                         final OpenProductAction open = new OpenProductAction();
-                        open.setFiles(fileList.toArray(new File[fileList.size()]));
+                        final Path[] files = new Path[fileList.size()];
+                        for (int i = 0; i < fileList.size(); i++) {
+                            files[i] = (Path) fileList.get(i);
+                        }
+                        open.setFiles(files);
                         dtde.dropComplete(Boolean.TRUE.equals(open.execute()));
                     }
                 } else {

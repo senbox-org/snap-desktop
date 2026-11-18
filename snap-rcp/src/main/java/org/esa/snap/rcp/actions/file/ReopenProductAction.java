@@ -18,7 +18,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -49,7 +50,7 @@ public final class ReopenProductAction extends AbstractAction implements Present
     @Override
     public JMenuItem getMenuPresenter() {
 
-        List<File> openedFiles = OpenProductAction.getOpenedProductFiles();
+        final List<Path> openedFiles = OpenProductAction.getOpenedProductFiles();
         List<String> pathList = getRecentProductPaths().get();
 
         final Preferences preference = SnapApp.getDefault().getPreferences();
@@ -61,8 +62,8 @@ public final class ReopenProductAction extends AbstractAction implements Present
 
 
         pathList.stream().limit(maxFileList).forEach(path->{
-            File theFile = new File(path);
-            if (!openedFiles.contains(theFile) && theFile.exists()) {
+            final Path theFile = Path.of(path);
+            if (!openedFiles.contains(theFile) && Files.exists(theFile)) {
                 JMenuItem menuItem = new JMenuItem(path);
                 OpenProductAction openProductAction = new OpenProductAction();
                 openProductAction.setFile(theFile);

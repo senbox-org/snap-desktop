@@ -65,7 +65,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -132,7 +132,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
      * @param visatApp the VISAT application
      * @return the selected file, <code>null</code> means "Cancel"
      */
-    private static File promptForFile(String defaultFileName) {
+    private static Path promptForFile(String defaultFileName) {
         return Dialogs.requestFileForSave(Bundle.CTL_ExportGeometryAction_DialogTitle(), false,
                                           new SnapFileFilter(ESRI_SHAPEFILE, FILE_EXTENSION_SHAPEFILE, ESRI_SHAPEFILE),
                                           FILE_EXTENSION_SHAPEFILE,
@@ -145,7 +145,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
     // Private implementations for the "export Mask Pixels" command
     /////////////////////////////////////////////////////////////////////////
 
-    private static void exportVectorDataNode(VectorDataNode vectorNode, File file, ProgressMonitor pm) throws Exception {
+    private static void exportVectorDataNode(VectorDataNode vectorNode, Path file, ProgressMonitor pm) throws Exception {
 
 
         Map<Class<?>, List<SimpleFeature>> featureListMap = createGeometryToFeaturesListMap(vectorNode);
@@ -168,19 +168,19 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
         }
     }
 
-    static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, File file) throws IOException {
+    static void writeEsriShapefile(Class<?> geomType, List<SimpleFeature> features, Path file) throws IOException {
         String geomName = geomType.getSimpleName();
-        String basename = file.getName();
+        String basename = file.getFileName().toString();
         if (basename.endsWith(FILE_EXTENSION_SHAPEFILE)) {
             basename = basename.substring(0, basename.length() - 4);
         }
-        File file1 = new File(file.getParentFile(), basename + "_" + geomName + FILE_EXTENSION_SHAPEFILE);
+        final Path file1 = file.getParent().resolve(basename + "_" + geomName + FILE_EXTENSION_SHAPEFILE);
 
         SimpleFeature simpleFeature = features.get(0);
         SimpleFeatureType simpleFeatureType = changeGeometryType(simpleFeature.getType(), geomType);
 
         ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
-        Map<String, Serializable> map = Collections.singletonMap("url", file1.toURI().toURL());
+        Map<String, Serializable> map = Collections.singletonMap("url", file1.toUri().toURL());
         ShapefileDataStore dataStore = (ShapefileDataStore) factory.createNewDataStore(map);
         dataStore.createSchema(simpleFeatureType);
         String typeName = dataStore.getTypeNames()[0];
@@ -309,7 +309,7 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
             return;
         }
 
-        final File file = promptForFile(vectorDataNode.getName());
+        final Path file = promptForFile(vectorDataNode.getName());
         if (file == null) {
             return;
         }
@@ -326,9 +326,9 @@ public class ExportGeometryAction extends AbstractAction implements ContextAware
 
         private final SnapApp snapApp;
         private final VectorDataNode vectorDataNode;
-        private final File file;
+        private final Path file;
 
-        private ExportVectorNodeSwingWorker(SnapApp snapApp, VectorDataNode vectorDataNode, File file) {
+        private ExportVectorNodeSwingWorker(SnapApp snapApp, VectorDataNode vectorDataNode, Path file) {
             super(snapApp.getMainFrame(), Bundle.CTL_ExportGeometryAction_DialogTitle());
             this.snapApp = snapApp;
             this.vectorDataNode = vectorDataNode;

@@ -66,10 +66,11 @@ import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 import java.awt.Container;
 import java.awt.Rectangle;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -206,7 +207,7 @@ public class Session {
     }
 
     private static URI getFileLocationURI(URI rootURI, Product product) {
-        File file = product.getFileLocation();
+        final Path file = product.getFileLocation();
         return FileUtils.getRelativeUri(rootURI, file);
     }
 
@@ -298,8 +299,8 @@ public class Session {
             for (ProductRef productRef : productRefs) {
                 try {
                     Product product = null;
-                    File productFile = new File(rootURI.resolve(productRef.uri));
-                    if (productFile.exists()) {
+                    final Path productFile = Path.of(rootURI.resolve(productRef.uri));
+                    if (Files.exists(productFile)) {
                         final String productReaderPlugin = productRef.productReaderPlugin;
                         if (StringUtils.isNotNullAndNotEmpty(productReaderPlugin)) {
                             final Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
@@ -313,7 +314,7 @@ public class Session {
                             if (product == null) {
                                 SnapApp.getDefault().getLogger().log(Level.WARNING,
                                                                      "Could not find " + productReaderPlugin + ". " +
-                                                                             "Attempting to use other reader to open " + productFile.getName());
+                                                                             "Attempting to use other reader to open " + productFile.getFileName());
                             }
                         }
                         if (product == null) {
@@ -525,7 +526,7 @@ public class Session {
 
     public static interface ProblemSolver {
 
-        Product solveProductNotFound(int id, File file) throws CanceledException;
+        Product solveProductNotFound(int id, Path file) throws CanceledException;
     }
 
     @XStreamAlias("product")

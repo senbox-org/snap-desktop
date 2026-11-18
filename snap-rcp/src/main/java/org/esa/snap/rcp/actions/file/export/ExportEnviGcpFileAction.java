@@ -15,6 +15,7 @@
  */
 package org.esa.snap.rcp.actions.file.export;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
@@ -43,11 +44,12 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.*;
+import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.AUTO;
 
 /**
  * This actions exports ground control points of the selected product in a ENVI format.
@@ -123,12 +125,12 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
         if (result != JFileChooser.APPROVE_OPTION) {
             return;
         }
-        File file = fileChooser.getSelectedFile();
-        if (file == null || file.getName().equals("")) {
+        final Path file = fileChooser.getSelectedFile() == null ? null : fileChooser.getSelectedFile().toPath();
+        if (file == null || file.getFileName().toString().isEmpty()) {
             return;
         }
-        final File absoluteFile = FileUtils.ensureExtension(file.getAbsoluteFile(), GCP_FILE_EXTENSION);
-        String lastDirPath = absoluteFile.getParent();
+        final Path absoluteFile = FileUtils.ensureExtension(file.toAbsolutePath(), GCP_FILE_EXTENSION);
+        String lastDirPath = absoluteFile.getParent().toString();
         Config.instance().load().preferences().put(GCP_EXPORT_DIR_PREFERENCES_KEY, lastDirPath);
 
         final GeoCoding geoCoding = product.getSceneGeoCoding();
@@ -139,10 +141,10 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
         if (decision == null || !decision) {
             return;
         }
-        if (absoluteFile.exists()) {
-            absoluteFile.delete();
+        if (Files.exists(absoluteFile)) {
+            IOHelper.delete(absoluteFile);
         }
-        try (FileWriter writer = new FileWriter(absoluteFile)) {
+        try (Writer writer = Files.newBufferedWriter(absoluteFile)) {
             writer.write(createLineString("; ENVI Registration GCP File"));
             final int width = product.getSceneRasterWidth();
             final int height = product.getSceneRasterHeight();
@@ -184,12 +186,12 @@ public class ExportEnviGcpFileAction extends AbstractAction implements LookupLis
 
     private JFileChooser createFileChooser() {
         String lastDirPath = Config.instance().load().preferences().get(GCP_EXPORT_DIR_PREFERENCES_KEY,
-                                                                        SystemUtils.getUserHomeDir().getPath());
+                                                                        SystemUtils.getUserHomeDir().toString());
         SnapFileChooser fileChooser = new SnapFileChooser();
 
         HelpCtx.setHelpIDString(fileChooser, getHelpCtx().getHelpID());
         fileChooser.setAcceptAllFileFilterUsed(false);
-        fileChooser.setCurrentDirectory(new File(lastDirPath));
+        fileChooser.setCurrentDirectory(Path.of(lastDirPath).toFile());
 
         fileChooser.setFileFilter(
                 new SnapFileFilter(GCP_FILE_DESCRIPTION, GCP_FILE_EXTENSION, GCP_FILE_DESCRIPTION));

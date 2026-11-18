@@ -73,8 +73,8 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -655,8 +655,8 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         });
     }
 
-    private void setIODir(final File dir) {
-        ioDir = dir.toPath();
+    private void setIODir(final Path dir) {
+        ioDir = dir;
         Config.instance().preferences().put(PREFERENCES_KEY_IO_DIR, ioDir.toString());
     }
 
@@ -771,15 +771,20 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 
 
         final int result = fileChooser.showOpenDialog(getToolViewPaneControl());
-        final File file = fileChooser.getSelectedFile();
-        if (file != null && file.getParentFile() != null) {
-            setIODir(file.getParentFile());
+        final Path file;
+        if (fileChooser.getSelectedFile() != null) {
+            file = fileChooser.getSelectedFile().toPath();
+            if (file.getParent() != null) {
+                setIODir(file.getParent());
+            }
+        } else {
+            file = null;
         }
         if (result == JFileChooser.APPROVE_OPTION) {
-            if (file != null && file.canRead()) {
+            if (file != null && Files.isReadable(file)) {
                 try {
                     ColorPaletteDef colorPaletteDef;
-                    if (file.getName().endsWith(FILE_EXTENSION_CPT)) {
+                    if (file.getFileName().toString().endsWith(FILE_EXTENSION_CPT)) {
                         colorPaletteDef = ColorPaletteDef.loadCpt(file);
                     } else {
                         colorPaletteDef = ColorPaletteDef.loadColorPaletteDef(file);
@@ -865,9 +870,14 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
         fileChooser.addChoosableFileFilter(getOrCreateCptFileFilter());
         fileChooser.setCurrentDirectory(getIODir().toFile());
         final int result = fileChooser.showSaveDialog(getToolViewPaneControl());
-        File file = fileChooser.getSelectedFile();
-        if (file != null && file.getParentFile() != null) {
-            setIODir(file.getParentFile());
+        Path file;
+        if (fileChooser.getSelectedFile() != null) {
+            file = fileChooser.getSelectedFile().toPath();
+            if (file.getParent() != null) {
+                setIODir(file.getParent());
+            }
+        } else {
+            file = null;
         }
         if (result == JFileChooser.APPROVE_OPTION) {
             if (file != null) {
@@ -875,7 +885,7 @@ class ColorManipulationFormImpl implements SelectionSupport.Handler<ProductScene
 //                    file = FileUtils.ensureExtension(file, FILE_EXTENSION);
                     try {
                         final ColorPaletteDef colorPaletteDef = imageInfo.getColorPaletteDef();
-                        String path = file.getPath();
+                        String path = file.toString();
 
                         if (path.endsWith("." + FILE_EXTENSION_PAL)) {
                             ColorPaletteDef.storePal(colorPaletteDef, file);

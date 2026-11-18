@@ -48,7 +48,7 @@ public class ShowLogInExplorer extends AbstractAction {
 
     private void openLogFile() {
         String os = System.getProperty("os.name").toLowerCase();
-        Path userHomeDir = SystemUtils.getUserHomeDir().toPath();
+        Path userHomeDir = SystemUtils.getUserHomeDir();
         Path logDir = null;
         if (isLinuxOrMac(os)) {
             logDir = userHomeDir.resolve(".snap/system/var/log");

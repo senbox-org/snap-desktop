@@ -22,7 +22,7 @@ import org.esa.snap.rcp.util.Dialogs;
 import org.openide.windows.TopComponent;
 
 import javax.swing.JOptionPane;
-import java.io.File;
+import java.nio.file.Path;
 
 abstract class MaskIOAction extends MaskAction {
     private final TopComponent maskTopComponent;
@@ -38,12 +38,12 @@ abstract class MaskIOAction extends MaskAction {
         Dialogs.showMessage(maskTopComponent.getDisplayName() + " - Error", message, JOptionPane.ERROR_MESSAGE, null);
     }
 
-    void setDirectory(final File directory) {
-        SnapApp.getDefault().getPreferences().put("mask.io.dir", directory.getPath());
+    void setDirectory(final Path directory) {
+        SnapApp.getDefault().getPreferences().put("mask.io.dir", directory.toString());
     }
 
-    File getDirectory() {
-        File directory = SystemUtils.getUserHomeDir();
-        return new File(SnapApp.getDefault().getPreferences().get("mask.io.dir", directory.getPath()));
+    Path getDirectory() {
+        final Path directory = SystemUtils.getUserHomeDir();
+        return Path.of(SnapApp.getDefault().getPreferences().get("mask.io.dir", directory.toString()));
     }
 }

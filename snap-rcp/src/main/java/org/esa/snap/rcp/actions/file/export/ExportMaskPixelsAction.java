@@ -18,7 +18,14 @@ package org.esa.snap.rcp.actions.file.export;
 
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
-import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.GeoCoding;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Mask;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.TiePointGrid;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.core.util.io.FileUtils;
 import org.esa.snap.core.util.io.SnapFileFilter;
@@ -34,14 +41,33 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.*;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.HelpCtx;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
@@ -101,7 +127,7 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
      * @param visatApp the VISAT application
      * @return the selected file, <code>null</code> means "Cancel"
      */
-    private static File promptForFile(String defaultFileName) {
+    private static Path promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
         return Dialogs.requestFileForSave(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
                 false,
@@ -476,13 +502,13 @@ public class ExportMaskPixelsAction extends AbstractAction implements ContextAwa
             clipboardText = stringWriter.getBuffer();
         } else if (method == SelectExportMethodDialog.EXPORT_TO_FILE) {
             // Write into file, get file from user
-            final File file = promptForFile(createDefaultFileName(product, maskName));
+            final Path file = promptForFile(createDefaultFileName(product, maskName));
             if (file == null) {
                 return; // Cancel
             }
-            final FileWriter fileWriter;
+            final Writer fileWriter;
             try {
-                fileWriter = new FileWriter(file);
+                fileWriter = Files.newBufferedWriter(file);
             } catch (IOException e) {
                 Dialogs.showError(Bundle.CTL_ExportMaskPixelsAction_DialogTitle(),
                         ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());

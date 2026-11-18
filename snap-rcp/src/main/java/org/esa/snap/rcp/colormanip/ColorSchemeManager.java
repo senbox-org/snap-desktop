@@ -1,26 +1,36 @@
 package org.esa.snap.rcp.colormanip;
 
-import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.core.datamodel.ColorManipulationDefaults;
+import org.esa.snap.core.datamodel.ColorSchemeInfo;
 import org.esa.snap.core.util.PropertyMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import static org.esa.snap.core.datamodel.ColorManipulationDefaults.*;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_CATEGORIZE_DISPLAY_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_SHOW_DISABLED_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_SORT_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_SORT_KEY;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_DEFAULT;
+import static org.esa.snap.core.datamodel.ColorManipulationDefaults.PROPERTY_SCHEME_VERBOSE_KEY;
 
 /**
  * Manages all the color schemes
@@ -37,8 +47,8 @@ public class ColorSchemeManager {
 
     private ArrayList<ColorSchemeLookupInfo> colorSchemeLookupInfos = new ArrayList<ColorSchemeLookupInfo>();
 
-    private File colorSchemesFile = null;
-    private File colorSchemeLutFile = null;
+    private Path colorSchemesFile = null;
+    private Path colorSchemeLutFile = null;
 
     private JComboBox jComboBox = null;
     private boolean jComboBoxShouldFire = true;
@@ -50,8 +60,8 @@ public class ColorSchemeManager {
     private ColorSchemeInfo dividerAdditionalSchemes = null;
 
 
-    private File colorPaletteAuxDir = null;
-    private File colorSchemesAuxDir = null;
+    private Path colorPaletteAuxDir = null;
+    private Path colorSchemesAuxDir = null;
 
     private boolean verbose = true;
     private boolean showDisabled = false;
@@ -82,8 +92,8 @@ public class ColorSchemeManager {
 
             Path getColorSchemesAuxDir = ColorSchemeUtils.getColorSchemesAuxDataDir();
             if (getColorSchemesAuxDir != null) {
-                this.colorSchemesAuxDir = getColorSchemesAuxDir.toFile();
-                if (!colorSchemesAuxDir.exists()) {
+                this.colorSchemesAuxDir = getColorSchemesAuxDir;
+                if (!Files.exists(colorSchemesAuxDir)) {
                     return;
                 }
             } else {
@@ -92,18 +102,18 @@ public class ColorSchemeManager {
 
             Path getColorPalettesAuxDir = ColorSchemeUtils.getColorPalettesAuxDataDir();
             if (getColorPalettesAuxDir != null) {
-                this.colorPaletteAuxDir = getColorPalettesAuxDir.toFile();
-                if (!colorPaletteAuxDir.exists()) {
+                this.colorPaletteAuxDir = getColorPalettesAuxDir;
+                if (!Files.exists(colorPaletteAuxDir)) {
                     return;
                 }
             } else {
                 return;
             }
 
-            colorSchemesFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEMES_FILENAME);
-            colorSchemeLutFile = new File(this.colorSchemesAuxDir, ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME);
+            colorSchemesFile = this.colorSchemesAuxDir.resolve(ColorManipulationDefaults.COLOR_SCHEMES_FILENAME);
+            colorSchemeLutFile = this.colorSchemesAuxDir.resolve(ColorManipulationDefaults.COLOR_SCHEME_LOOKUP_FILENAME);
 
-            if (colorSchemesFile.exists() && colorSchemeLutFile.exists()) {
+            if (Files.exists(colorSchemesFile) && Files.exists(colorSchemeLutFile)) {
                 createPrimaryAndAdditionalColorSchemeInfos();
 
                 setjComboBoxNoneEntryName(COLOR_SCHEME_NONE_LABEL);
@@ -314,7 +324,7 @@ public class ColorSchemeManager {
         jComboBox = new JComboBox();
         jComboBox.setEditable(false);
         if (colorSchemeLutFile != null) {
-            jComboBox.setToolTipText("To modify see file: " + colorSchemesAuxDir + "/" + colorSchemesFile.getName());
+            jComboBox.setToolTipText("To modify see file: " + colorSchemesAuxDir + "/" + colorSchemesFile.getFileName());
         }
 
         jComboBox.setMaximumRowCount(15);
@@ -322,13 +332,13 @@ public class ColorSchemeManager {
     }
 
 
-    private Document getFileDocument(File file) {
+    private Document getFileDocument(Path file) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         Document dom = null;
 
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
-            dom = db.parse(new FileInputStream(file));
+            dom = db.parse(Files.newInputStream(file));
         } catch (ParserConfigurationException pce) {
             pce.printStackTrace();
         } catch (SAXException se) {
@@ -374,8 +384,8 @@ public class ColorSchemeManager {
                     Double min;
                     Double max;
                     boolean logScaled;
-                    File standardCpdFile;
-                    File colorBlindCpdFile;
+                    Path standardCpdFile;
+                    Path colorBlindCpdFile;
                     boolean enabled;
                     boolean divider;
                     boolean primaryScheme;
@@ -420,8 +430,8 @@ public class ColorSchemeManager {
 
                         if (validEntry) {
                             if (standardCpdFilename != null) {
-                                standardCpdFile = new File(colorPaletteAuxDir, standardCpdFilename);
-                                if (standardCpdFile == null || !standardCpdFile.exists()) {
+                                standardCpdFile = colorPaletteAuxDir.resolve(standardCpdFilename);
+                                if (!Files.exists(standardCpdFile)) {
                                     validEntry = false;
                                 }
                             } else {
@@ -431,8 +441,8 @@ public class ColorSchemeManager {
 
                         if (validEntry) {
                             if (universalCpdFilename != null) {
-                                colorBlindCpdFile = new File(colorPaletteAuxDir, universalCpdFilename);
-                                if (colorBlindCpdFile == null || !colorBlindCpdFile.exists()) {
+                                colorBlindCpdFile = colorPaletteAuxDir.resolve(universalCpdFilename);
+                                if (!Files.exists(colorBlindCpdFile)) {
                                     validEntry = false;
                                 }
                             } else {
@@ -775,9 +785,9 @@ public class ColorSchemeManager {
             String standardFilename = colorSchemeInfo.getCpdFilename(false);
 
             if (standardFilename != null && standardFilename.length() > 0) {
-                File standardFile = new File(colorPaletteAuxDir, standardFilename);
+                final Path standardFile = colorPaletteAuxDir.resolve(standardFilename);
 
-                if (standardFile == null || !standardFile.exists()) {
+                if (!Files.exists(standardFile)) {
                     standardFileMessage = "Scheme standard file '" + standardFilename + "' does not exist<br>";
                 }
             } else {
@@ -787,9 +797,9 @@ public class ColorSchemeManager {
             String universalFilename = colorSchemeInfo.getCpdFilename(true);
 
             if (universalFilename != null && universalFilename.length() > 0) {
-                File universalFile = new File(colorPaletteAuxDir, universalFilename);
+                final Path universalFile = colorPaletteAuxDir.resolve(universalFilename);
 
-                if (universalFile == null || !universalFile.exists()) {
+                if (!Files.exists(universalFile)) {
                     universalFileMessage = "Scheme universal file '" + universalFilename + "' does not exist<br>";
                 }
             } else {

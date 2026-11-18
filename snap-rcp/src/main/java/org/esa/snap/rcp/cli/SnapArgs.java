@@ -1,6 +1,5 @@
 package org.esa.snap.rcp.cli;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;

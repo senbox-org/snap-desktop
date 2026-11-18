@@ -3,7 +3,14 @@ package org.esa.snap.rcp.spectrallibrary.util;
 import com.bc.ceres.glayer.support.ImageLayer;
 import eu.esa.snap.core.datamodel.group.BandGroup;
 import eu.esa.snap.core.datamodel.group.BandGroupsManager;
-import org.esa.snap.core.datamodel.*;
+import org.esa.snap.core.datamodel.Band;
+import org.esa.snap.core.datamodel.PixelPos;
+import org.esa.snap.core.datamodel.Placemark;
+import org.esa.snap.core.datamodel.Product;
+import org.esa.snap.core.datamodel.ProductNodeGroup;
+import org.esa.snap.core.datamodel.ProductSpectralAxis;
+import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.core.datamodel.VectorDataNode;
 import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController;
 import org.esa.snap.rcp.spectrallibrary.controller.SpectralLibraryController.GeometryPreviewSource;
 import org.esa.snap.rcp.spectrallibrary.model.SpectralLibraryViewModel;
@@ -17,7 +24,11 @@ import org.esa.snap.rcp.spectrallibrary.wiring.EngineAccess;
 import org.esa.snap.speclib.io.CompositeSpectralLibraryIO;
 import org.esa.snap.speclib.io.SpectralLibraryIO;
 import org.esa.snap.speclib.io.SpectralLibraryIODelegate;
-import org.esa.snap.speclib.model.*;
+import org.esa.snap.speclib.model.AttributeDef;
+import org.esa.snap.speclib.model.AttributeValue;
+import org.esa.snap.speclib.model.SpectralAxis;
+import org.esa.snap.speclib.model.SpectralLibrary;
+import org.esa.snap.speclib.model.SpectralProfile;
 import org.esa.snap.speclib.util.SpectralLibraryAttributeValueParser;
 import org.esa.snap.ui.AbstractDialog;
 import org.esa.snap.ui.PixelPositionListener;
@@ -29,18 +40,35 @@ import org.esa.snap.ui.product.spectrum.SpectrumChooser;
 import org.esa.snap.ui.product.spectrum.SpectrumShapeProvider;
 import org.esa.snap.ui.product.spectrum.SpectrumStrokeProvider;
 import org.geotools.feature.FeatureIterator;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 
-import javax.swing.*;
+import javax.swing.JColorChooser;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -1016,35 +1044,35 @@ public class SpectralLibraryActionBinder {
             return;
         }
 
-        final File file = fileChooser.getSelectedFile();
-        if (!EngineAccess.libraryIO().canRead(file.toPath())) {
-            Optional<File> companion = resolveEnviCompanion(file);
+        final Path file = fileChooser.getSelectedFile().toPath();
+        if (!EngineAccess.libraryIO().canRead(file)) {
+            Optional<Path> companion = resolveEnviCompanion(file);
             if (companion.isPresent()) {
                 controller.importLibraryFromFile(companion.get());
-                vm.setStatus(UiStatus.info("Detected ENVI sidecar CSV — imported from companion " + companion.get().getName()));
+                vm.setStatus(UiStatus.info("Detected ENVI sidecar CSV — imported from companion " + companion.get().getFileName()));
                 return;
             }
-            vm.setStatus(UiStatus.warn("Unsupported file format: " + file.getName()));
+            vm.setStatus(UiStatus.warn("Unsupported file format: " + file.getFileName()));
             return;
         }
         controller.importLibraryFromFile(file);
     }
 
-    private Optional<File> resolveEnviCompanion(File file) {
+    private Optional<Path> resolveEnviCompanion(Path file) {
         if (file == null) {
             return Optional.empty();
         }
-        String name = file.getName();
+        String name = file.getFileName().toString();
         if (!name.toLowerCase(Locale.ROOT).endsWith(".csv")) {
             return Optional.empty();
         }
         String base = name.substring(0, name.length() - 4);
-        File dir = file.getParentFile();
+        final Path dir = file.getParent();
         if (dir == null) {
             return Optional.empty();
         }
-        File hdr = new File(dir, base + ".hdr");
-        if (hdr.exists() && EngineAccess.libraryIO().canRead(hdr.toPath())) {
+        final Path hdr = dir.resolve(base + ".hdr");
+        if (Files.exists(hdr) && EngineAccess.libraryIO().canRead(hdr)) {
             return Optional.of(hdr);
         }
         return Optional.empty();
@@ -1074,13 +1102,13 @@ public class SpectralLibraryActionBinder {
 
         String base = resolveExportBaseName();
         String defaultExtension = filters.getFirst().getExtensions()[0];
-        fileChooser.setSelectedFile(new File(base + "." + defaultExtension));
+        fileChooser.setSelectedFile(Path.of(base + "." + defaultExtension).toFile());
 
         int ok = fileChooser.showSaveDialog(panel);
         if (ok != JFileChooser.APPROVE_OPTION) {
             return;
         }
-        File file = ensureExtension(fileChooser.getSelectedFile(), (FileNameExtensionFilter) fileChooser.getFileFilter());
+        final Path file = ensureExtension(fileChooser.getSelectedFile().toPath(), (FileNameExtensionFilter) fileChooser.getFileFilter());
 
         controller.exportActiveLibraryToFile(file);
     }
@@ -1132,14 +1160,14 @@ public class SpectralLibraryActionBinder {
         return "spectral-library";
     }
 
-    private static File ensureExtension(File file, FileNameExtensionFilter filter) {
-        String name = file.getName().toLowerCase(Locale.ROOT);
+    private static Path ensureExtension(Path file, FileNameExtensionFilter filter) {
+        String name = file.getFileName().toString().toLowerCase(Locale.ROOT);
         for (String ext : filter.getExtensions()) {
             if (name.endsWith("." + ext)) {
                 return file;
             }
         }
-        return new File(file.getParentFile(), file.getName() + "." + filter.getExtensions()[0]);
+        return file.getParent().resolve(file.getFileName() + "." + filter.getExtensions()[0]);
     }
 
 

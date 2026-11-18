@@ -1,5 +1,6 @@
 package org.esa.snap.rcp.actions.file;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.apache.commons.math3.util.Pair;
 import org.esa.snap.core.dataio.DecodeQualification;
 import org.esa.snap.core.dataio.ProductIO;
@@ -16,13 +17,18 @@ import org.esa.snap.ui.GridBagUtils;
 import org.esa.snap.ui.SnapFileChooser;
 import org.esa.snap.ui.product.ProductSubsetDialog;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
-import java.io.File;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.GridBagConstraints;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +56,7 @@ public class ProductFileChooser extends SnapFileChooser {
     private boolean useAdvanced;
     private Product productToExport;
 
-    public ProductFileChooser(File currentDirectory) {
+    public ProductFileChooser(Path currentDirectory) {
         super(currentDirectory);
         setDialogType(OPEN_DIALOG);
     }
@@ -60,7 +66,7 @@ public class ProductFileChooser extends SnapFileChooser {
         if (productToExport != null) {
             String fileName = productToExport.getName();
             if (StringUtils.isNullOrEmpty(fileName) && productToExport.getFileLocation() != null) {
-                fileName = productToExport.getFileLocation().getName();
+                fileName = productToExport.getFileLocation().getFileName().toString();
             }
             setCurrentFilename(fileName);
         }
@@ -171,9 +177,13 @@ public class ProductFileChooser extends SnapFileChooser {
         if (isSubsetEnabled()) {
             subsetButton.setEnabled(getSelectedFile() != null || productToExport != null);
 
-            File file = getSelectedFile();
-            if (file != null && file.isFile()) {
-                long fileSize = Math.round(file.length() / (1024.0 * 1024.0));
+            if (getSelectedFile() != null) {
+                final Path file = getSelectedFile().toPath();
+                if (!Files.isRegularFile(file)) {
+                    sizeLabel.setText("");
+                    return;
+                }
+                long fileSize = Math.round(IOHelper.size(file) / (1024.0 * 1024.0));
                 if (fileSize >= 1) {
                     sizeLabel.setText("File size: " + fileSize + " M");
                 } else {
@@ -211,11 +221,11 @@ public class ProductFileChooser extends SnapFileChooser {
         Product product = null;
         String newProductName = null;
         if (getDialogType() == OPEN_DIALOG) {
-            File file = getSelectedFile();
-            if (file == null) {
+            if (getSelectedFile() == null) {
                 // Should not come here...
                 return;
             }
+            final Path file = getSelectedFile().toPath();
             try {
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 final FileFilter fileFilter = getFileFilter();
@@ -223,7 +233,7 @@ public class ProductFileChooser extends SnapFileChooser {
                 product = ProductIO.readProduct(file, formatName);
                 if (product == null) {
                     String msg = "The product could not be read.";
-                    String optionalMsg = file.isDirectory() ? "\nSelection points to a directory." : "";
+                    String optionalMsg = Files.isDirectory(file) ? "\nSelection points to a directory." : "";
                     Dialogs.showError(msg + optionalMsg);
                     return;
                 }
@@ -278,7 +288,7 @@ public class ProductFileChooser extends SnapFileChooser {
 
     private void openAdvancedDialog() {
         clearCurrentAdvancedProductOptions();
-        File inputFile = getSelectedFile();
+        final Path inputFile = getSelectedFile().toPath();
         boolean canceled = false;
         Pair<ProductReaderPlugIn, Boolean> foundPlugin = findPlugins(inputFile);
         if(foundPlugin != null){
@@ -318,7 +328,7 @@ public class ProductFileChooser extends SnapFileChooser {
         }
     }
 
-    private boolean openAdvancedProduct(MetadataInspector metadataInspector, File file) {
+    private boolean openAdvancedProduct(MetadataInspector metadataInspector, Path file) {
         try {
             ProductAdvancedDialog advancedDialog = new ProductAdvancedDialog(SnapApp.getDefault().getMainFrame(), "Advanced Options", metadataInspector, file);
             advancedDialog.show();
@@ -348,21 +358,7 @@ public class ProductFileChooser extends SnapFileChooser {
         return newProductName;
     }
 
-    public static Path convertInputToPath(Object input) {
-        if (input == null) {
-            throw new NullPointerException();
-        } else if (input instanceof File) {
-            return ((File) input).toPath();
-        } else if (input instanceof Path) {
-            return (Path) input;
-        } else if (input instanceof String) {
-            return Paths.get((String) input);
-        } else {
-            throw new IllegalArgumentException("Unknown input '" + input + "'.");
-        }
-    }
-
-    private Pair<ProductReaderPlugIn, Boolean> findPlugins(File file){
+    private Pair<ProductReaderPlugIn, Boolean> findPlugins(Path file){
         Pair<ProductReaderPlugIn, Boolean> result = null;
         final Map<DecodeQualification, List<ProductOpener.PluginEntry>> plugins = ProductOpener.getPluginsForFile(file);
         final String fileFormatName;

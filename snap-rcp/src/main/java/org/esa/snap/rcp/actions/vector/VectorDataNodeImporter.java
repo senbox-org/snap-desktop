@@ -36,7 +36,7 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.openide.util.HelpCtx;
 
 import javax.swing.JFileChooser;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
@@ -68,20 +68,20 @@ public class VectorDataNodeImporter implements HelpCtx.Provider {
         fileChooser.setFileFilter(filter);
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setMultiSelectionEnabled(true);
-        fileChooser.setCurrentDirectory(getIODir(preferences));
+        fileChooser.setCurrentDirectory(getIODir(preferences).toFile());
         final int result = fileChooser.showOpenDialog(snapApp.getMainFrame());
         if (result == JFileChooser.APPROVE_OPTION) {
-            final File[] files = fileChooser.getSelectedFiles();
+            final var files = fileChooser.getSelectedFiles();
             if (files != null && files.length > 0) {
-                setIODir(preferences, files[0].getAbsoluteFile().getParentFile());
-                for(File file : files) {
-                    importGeometry(snapApp, file);
+                setIODir(preferences, files[0].toPath().toAbsolutePath().getParent());
+                for(var file : files) {
+                    importGeometry(snapApp, file.toPath());
                 }
             }
         }
     }
 
-    private void importGeometry(final SnapApp snapApp, final File file) {
+    private void importGeometry(final SnapApp snapApp, final Path file) {
         final Product product = snapApp.getSelectedProduct(AUTO);
         if (product == null) {
             return;
@@ -166,9 +166,9 @@ public class VectorDataNodeImporter implements HelpCtx.Provider {
         return name;
     }
 
-    private File getIODir(final Preferences preferences) {
-        final File dir = SystemUtils.getUserHomeDir();
-        return new File(preferences.get(shapeIoDirPreferencesKey, dir.getPath()));
+    private Path getIODir(final Preferences preferences) {
+        final Path dir = SystemUtils.getUserHomeDir();
+        return Path.of(preferences.get(shapeIoDirPreferencesKey, dir.toString()));
     }
 
     public String getDialogTitle() {
@@ -182,11 +182,11 @@ public class VectorDataNodeImporter implements HelpCtx.Provider {
 
     public interface VectorDataNodeReader {
 
-        VectorDataNode readVectorDataNode(File file, Product product, ProgressMonitor pm) throws IOException;
+        VectorDataNode readVectorDataNode(Path file, Product product, ProgressMonitor pm) throws IOException;
     }
 
     private VectorDataNode readGeometry(final SnapApp snapApp,
-                                        final File file,
+                                        final Path file,
                                         final Product product)
             throws IOException, ExecutionException, InterruptedException {
 
@@ -206,9 +206,9 @@ public class VectorDataNodeImporter implements HelpCtx.Provider {
         return worker.get();
     }
 
-    private void setIODir(final Preferences preferences, final File dir) {
+    private void setIODir(final Preferences preferences, final Path dir) {
         if (dir != null) {
-            preferences.put(shapeIoDirPreferencesKey, dir.getPath());
+            preferences.put(shapeIoDirPreferencesKey, dir.toString());
         }
     }
 

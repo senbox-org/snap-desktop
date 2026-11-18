@@ -36,9 +36,10 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +48,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import static com.bc.ceres.swing.TableLayout.*;
+import static com.bc.ceres.swing.TableLayout.cell;
 
 /**
  * @author Norman Fomferra
@@ -67,7 +68,7 @@ class MagicWandForm {
     private AbstractButton undoButton;
     private BindingContext bindingContext;
 
-    private File settingsFile;
+    private Path settingsFile;
     private JLabel infoLabel;
     private AbstractButton minusButton;
     private AbstractButton plusButton;
@@ -78,7 +79,7 @@ class MagicWandForm {
         this.interactor = interactor;
     }
 
-    public File getSettingsFile() {
+    public Path getSettingsFile() {
         return settingsFile;
     }
 
@@ -322,7 +323,7 @@ class MagicWandForm {
 
     private void openSettings(Component parent) {
         if (proceedWithUnsavedChanges()) {
-            File settingsFile = getFile(parent, this.settingsFile, true);
+            final Path settingsFile = getFile(parent, this.settingsFile, true);
             if (settingsFile == null) {
                 return;
             }
@@ -340,7 +341,7 @@ class MagicWandForm {
         }
     }
 
-    private void saveSettings(Component parent, File settingsFile) {
+    private void saveSettings(Component parent, Path settingsFile) {
         if (settingsFile == null) {
             settingsFile = getFile(parent, this.settingsFile, false);
             if (settingsFile == null) {
@@ -348,7 +349,7 @@ class MagicWandForm {
             }
         }
         try {
-            try (FileWriter writer = new FileWriter(settingsFile)) {
+            try (Writer writer = Files.newBufferedWriter(settingsFile)) {
                 writer.write(createXStream().toXML(interactor.getModel()));
             }
             this.settingsFile = settingsFile;
@@ -368,25 +369,25 @@ class MagicWandForm {
         return xStream;
     }
 
-    private static File getFile(Component parent, File file, boolean open) {
+    private static Path getFile(Component parent, Path file, boolean open) {
         JFileChooser fileChooser = new JFileChooser(Preferences.userRoot().get(PREFERENCES_KEY_LAST_DIR, System.getProperty("user.home")));
         if (file != null) {
-            fileChooser.setSelectedFile(file);
+            fileChooser.setSelectedFile(file.toFile());
         } else {
-            fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory(), "magic-wand-settings.xml"));
+            fileChooser.setSelectedFile(fileChooser.getCurrentDirectory().toPath().resolve("magic-wand-settings.xml").toFile());
         }
         while (true) {
             int resp = open ? fileChooser.showOpenDialog(parent) : fileChooser.showSaveDialog(parent);
-            File settingsFile = fileChooser.getSelectedFile();
+            final Path settingsFile = fileChooser.getSelectedFile().toPath();
             Preferences.userRoot().put(PREFERENCES_KEY_LAST_DIR, fileChooser.getCurrentDirectory().getPath());
             if (resp != JFileChooser.APPROVE_OPTION) {
                 return null;
             }
-            if (open || !settingsFile.exists()) {
+            if (open || !Files.exists(settingsFile)) {
                 return settingsFile;
             }
             String msg = MessageFormat.format("Settings file ''{0}'' already exists." +
-                                                      "\nOverwrite?", settingsFile.getName());
+                                                      "\nOverwrite?", settingsFile.getFileName());
             int resp2 = JOptionPane.showConfirmDialog(parent, msg,
                                                       "File exists", JOptionPane.YES_NO_CANCEL_OPTION);
             if (resp2 == JOptionPane.YES_OPTION) {
@@ -494,8 +495,8 @@ class MagicWandForm {
 
     private boolean proceedWithUnsavedChanges() {
         if (settingsFile != null && interactor.isModelModified()) {
-            String msg = MessageFormat.format("You have unsaved changes." +
-                                                      "\nProceed anyway?", settingsFile.getName());
+            String msg = MessageFormat.format("You have unsaved changes on ''{0}'' file." +
+                                                      "\nProceed anyway?", settingsFile.getFileName());
             int resp = JOptionPane.showConfirmDialog(interactor.getOptionsWindow(), msg,
                                                      "New Settings", JOptionPane.YES_NO_OPTION);
             return resp == JOptionPane.YES_OPTION;

@@ -37,12 +37,14 @@ import org.openide.util.HelpCtx;
 import org.openide.util.LookupListener;
 
 import javax.media.jai.operator.BandSelectDescriptor;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public abstract class AbstractExportImageAction extends AbstractAction implements LookupListener, ContextAwareAction, HelpCtx.Provider {
     public static final String IMAGE_EXPORT_DIR_PREFERENCES_KEY = "user.image.export.dir";
@@ -93,14 +95,14 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
             return;
         }
         final String lastDir = Config.instance().preferences().get(IMAGE_EXPORT_DIR_PREFERENCES_KEY,
-                SystemUtils.getUserHomeDir().getPath());
+                SystemUtils.getUserHomeDir().toString());
 
-        final File currentDir = new File(lastDir);
+        final Path currentDir = Path.of(lastDir);
 
         final SnapFileChooser fileChooser = new SnapFileChooser();
 
         HelpCtx.setHelpIDString(fileChooser, getHelpCtx().getHelpID());
-        fileChooser.setCurrentDirectory(currentDir);
+        fileChooser.setCurrentDirectory(currentDir.toFile());
         for (int i = 0; i < filters.length; i++) {
             SnapFileFilter filter = filters[i];
             Debug.trace("export image: supported format " + (i + 1) + ": " + filter.getFormatName());
@@ -122,19 +124,19 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
         }
 
         int result = fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame());
-        File file = fileChooser.getSelectedFile();
+        final Path file = fileChooser.getSelectedFile() == null ? null : fileChooser.getSelectedFile().toPath();
         fileChooser.addPropertyChangeListener(evt -> {
             // @todo never comes here, why?
             Debug.trace(evt.toString());
         });
-        final File currentDirectory = fileChooser.getCurrentDirectory();
-        if (currentDirectory != null) {
-            Config.instance().preferences().put(IMAGE_EXPORT_DIR_PREFERENCES_KEY, currentDirectory.getPath());
+        if (fileChooser.getCurrentDirectory() != null) {
+            final Path currentDirectory = fileChooser.getCurrentDirectory().toPath();
+            Config.instance().preferences().put(IMAGE_EXPORT_DIR_PREFERENCES_KEY, currentDirectory.toString());
         }
         if (result != JFileChooser.APPROVE_OPTION) {
             return;
         }
-        if (file == null || file.getName().equals("")) {
+        if (file == null || file.getFileName().toString().isEmpty()) {
             return;
         }
         final boolean entireImageSelected = isEntireImageSelected();
@@ -158,7 +160,7 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
         }
     }
 
-    protected void exportImage(final String imageFormat, final ProductSceneView view, final boolean entireImageSelected, final File file) {
+    protected void exportImage(final String imageFormat, final ProductSceneView view, final boolean entireImageSelected, final Path file) {
         final SaveImageSwingWorker worker = new SaveImageSwingWorker(SnapApp.getDefault(), "Save Image", imageFormat, view,
                 entireImageSelected, file);
         worker.executeWithBlocking();
@@ -176,11 +178,11 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
         private final String imageFormat;
         private final ProductSceneView view;
         private final boolean entireImageSelected;
-        private final File file;
+        private final Path file;
         private final SnapApp snapApp;
 
         SaveImageSwingWorker(SnapApp snapApp, String message, String imageFormat, ProductSceneView view,
-                             boolean entireImageSelected, File file) {
+                             boolean entireImageSelected, Path file) {
             super(snapApp.getMainFrame(), message);
             this.snapApp = snapApp;
             this.imageFormat = imageFormat;
@@ -192,7 +194,7 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
         @Override
         protected Object doInBackground(ProgressMonitor pm) throws Exception {
             try {
-                final String message = "Saving image as " + file.getPath() + "...";
+                final String message = "Saving image as " + file.toString() + "...";
                 pm.beginTask(message, 1);
                 snapApp.setStatusBarMessage(message);
                 snapApp.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -210,7 +212,7 @@ public abstract class AbstractExportImageAction extends AbstractAction implement
                     if ("JPEG".equalsIgnoreCase(imageFormat)) {
                         image = BandSelectDescriptor.create(image, new int[]{0, 1, 2}, null);
                     }
-                    try (OutputStream stream = new FileOutputStream(file)) {
+                    try (OutputStream stream = Files.newOutputStream(file)) {
                         ImageEncoder encoder = ImageCodec.createImageEncoder(imageFormat, stream, null);
                         encoder.encode(image);
                     }

@@ -35,7 +35,8 @@ import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 import java.util.Iterator;
@@ -150,7 +151,7 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
             return null;
         }
         Preferences preferences = SnapApp.getDefault().getPreferences();
-        ProductFileChooser fc = new ProductFileChooser(new File(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
+        ProductFileChooser fc = new ProductFileChooser(Path.of(preferences.get(ProductOpener.PREFERENCES_KEY_LAST_PRODUCT_DIR, ".")));
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setSubsetEnabled(true);
         fc.setAdvancedEnabled(false);
@@ -162,19 +163,19 @@ public class ExportProductAction extends AbstractAction implements HelpCtx.Provi
             return null;
         }
 
-        File newFile = fc.getSelectedFile();
-        if (newFile == null) {
+        if (fc.getSelectedFile() == null) {
             // cancelled
             return null;
         }
+        final Path newFile = fc.getSelectedFile().toPath();
 
-        if (newFile.isFile() && !newFile.canWrite()) {
+        if (Files.isRegularFile(newFile) && !Files.isWritable(newFile)) {
             Dialogs.showWarning(getDisplayName(),
                                 MessageFormat.format("The product\n" +
                                                          "''{0}''\n" +
                                                          "exists and cannot be overwritten, because it is read only.\n" +
                                                          "Please choose another file or remove the write protection.",
-                                                         newFile.getPath()),
+                                                         newFile.toString()),
                                 null);
             return false;
         }

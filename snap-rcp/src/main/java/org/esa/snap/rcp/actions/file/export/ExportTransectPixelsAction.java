@@ -65,11 +65,12 @@ import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -185,13 +186,13 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
             clipboardText = stringWriter.getBuffer();
         } else if (method == SelectExportMethodDialog.EXPORT_TO_FILE) {
             // Write into file, get file from user
-            final File file = promptForFile(createDefaultFileName(raster));
+            final Path file = promptForFile(createDefaultFileName(raster));
             if (file == null) {
                 return; // Cancel
             }
-            final FileWriter fileWriter;
+            final Writer fileWriter;
             try {
-                fileWriter = new FileWriter(file);
+                fileWriter = Files.newBufferedWriter(file);
             } catch (IOException e) {
                 Dialogs.showError(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
                                   ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());
@@ -287,7 +288,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
      *
      * @return the selected file, {@code null} means "Cancel"
      */
-    private static File promptForFile(String defaultFileName) {
+    private static Path promptForFile(String defaultFileName) {
         final SnapFileFilter fileFilter = new SnapFileFilter("TXT", "txt", "Text");
         return Dialogs.requestFileForSave(Bundle.CTL_ExportTransectPixelsAction_DialogTitle(),
                                           false,
@@ -380,7 +381,7 @@ public class ExportTransectPixelsAction extends AbstractAction implements Contex
                 Product product = bands[0].getProduct();
                 out.printf("# Product name: %s%n", product.getName());
                 if (product.getFileLocation() != null) {
-                    out.printf("# Product file location: %s%n", product.getFileLocation().getAbsolutePath());
+                    out.printf("# Product file location: %s%n", product.getFileLocation().toAbsolutePath());
                 }
             }
             out.println();

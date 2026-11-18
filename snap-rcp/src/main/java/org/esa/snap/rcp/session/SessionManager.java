@@ -2,7 +2,7 @@ package org.esa.snap.rcp.session;
 
 import org.esa.snap.core.util.io.SnapFileFilter;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * A session manager is handling the one and only active session file.
@@ -12,7 +12,7 @@ import java.io.File;
 public class SessionManager {
     private static SessionManager instance = new SessionManager();
 
-    private File sessionFile;
+    private Path sessionFile;
 
     public static SessionManager getDefault() {
         return instance;
@@ -24,11 +24,11 @@ public class SessionManager {
                                   "SNAP session files");
     }
 
-    public File getSessionFile() {
+    public Path getSessionFile() {
         return sessionFile;
     }
 
-    public void setSessionFile(File sessionFile) {
+    public void setSessionFile(Path sessionFile) {
         this.sessionFile = sessionFile;
     }
 

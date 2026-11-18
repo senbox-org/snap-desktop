@@ -58,11 +58,11 @@ import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -341,10 +341,10 @@ class BandMathsDialog extends ModalDialog {
     private ActionListener createLoadExpressionButtonListener() {
         return e -> {
             try {
-                final File file = Dialogs.requestFileForOpen(
+                final Path file = Dialogs.requestFileForOpen(
                         "Load Band Maths Expression", false, null, PREF_KEY_LAST_EXPRESSION_PATH);
                 if (file != null) {
-                    expression = new String(Files.readAllBytes(file.toPath()));
+                    expression = new String(Files.readAllBytes(file));
                     bindingContext.getBinding(PROPERTY_NAME_EXPRESSION).setPropertyValue(expression);
                     bindingContext.getBinding(PROPERTY_NAME_EXPRESSION).adjustComponents();
                 }
@@ -357,11 +357,11 @@ class BandMathsDialog extends ModalDialog {
     private ActionListener createSaveExpressionButtonListener() {
         return e -> {
             try {
-                final File file = Dialogs.requestFileForSave(
+                final Path file = Dialogs.requestFileForSave(
                         "Save Band Maths Expression", false, null, ".txt", "myExpression", null, PREF_KEY_LAST_EXPRESSION_PATH);
 
                 if (file != null) {
-                    final FileOutputStream out = new FileOutputStream(file.getAbsolutePath(), false);
+                    final OutputStream out = Files.newOutputStream(file.toAbsolutePath());
                     PrintStream p = new PrintStream(out);
                     p.print(getExpression());
                 }

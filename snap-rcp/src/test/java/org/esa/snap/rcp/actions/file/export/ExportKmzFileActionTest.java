@@ -18,13 +18,13 @@ public class ExportKmzFileActionTest {
         final String oldValue = Config.instance().load().preferences().get(AbstractExportImageAction.IMAGE_EXPORT_DIR_PREFERENCES_KEY, null);
 
         try {
-            final String expectedDefault = SystemUtils.getUserHomeDir().getPath();
+            final String expectedDefault = SystemUtils.getUserHomeDir().toString();
 
             String lastDir = ExportKmzFileAction.getLastDir();
             assertEquals(expectedDefault, lastDir);
 
             final Path newPath = Paths.get(expectedDefault).resolve("subDir");
-            ExportKmzFileAction.setLastDir(newPath.toFile());
+            ExportKmzFileAction.setLastDir(newPath);
 
             lastDir = ExportKmzFileAction.getLastDir();
             assertEquals(newPath.toString(), lastDir);

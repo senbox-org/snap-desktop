@@ -40,8 +40,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.prefs.Preferences;
 
 class ShapefileAssistantPage1 extends AbstractLayerSourceAssistantPage {
@@ -128,7 +129,7 @@ class ShapefileAssistantPage1 extends AbstractLayerSourceAssistantPage {
                 final String oldPath = (String) context.getPropertyValue(ShapefileLayerSource.PROPERTY_NAME_FILE_PATH);
                 if (!path.equals(oldPath)) {
                     context.setPropertyValue(ShapefileLayerSource.PROPERTY_NAME_FILE_PATH, path);
-                    final URL fileUrl = new File(path).toURI().toURL();
+                    final URL fileUrl = Path.of(path).toUri().toURL();
                     final FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = FeatureUtils.getFeatureSource(fileUrl);
                     context.setPropertyValue(ShapefileLayerSource.PROPERTY_NAME_FEATURE_COLLECTION, featureSource.getFeatures());
                     // clear other properties they are not valid anymore
@@ -167,25 +168,25 @@ class ShapefileAssistantPage1 extends AbstractLayerSourceAssistantPage {
             final FileNameExtensionFilter shapefileFilter = new FileNameExtensionFilter("ESRI Shapefile", "shp");
             fileChooser.addChoosableFileFilter(shapefileFilter);
             fileChooser.setFileFilter(shapefileFilter);
-            File lastDir = getLastDirectory();
-            fileChooser.setCurrentDirectory(lastDir);
+            final Path lastDir = getLastDirectory();
+            fileChooser.setCurrentDirectory(lastDir.toFile());
             LayerSourcePageContext pageContext = getContext();
             fileChooser.showOpenDialog(pageContext.getWindow());
             if (fileChooser.getSelectedFile() != null) {
                 String filePath = fileChooser.getSelectedFile().getPath();
                 fileHistoryModel.setSelectedItem(filePath);
                 Preferences preferences = SnapApp.getDefault().getPreferences();
-                preferences.put(PROPERTY_LAST_DIR, fileChooser.getCurrentDirectory().getAbsolutePath());
+                preferences.put(PROPERTY_LAST_DIR, fileChooser.getCurrentDirectory().toPath().toAbsolutePath().toString());
                 pageContext.updateState();
             }
         }
 
-        private File getLastDirectory() {
+        private Path getLastDirectory() {
             Preferences preferences = SnapApp.getDefault().getPreferences();
             String dirPath = preferences.get(PROPERTY_LAST_DIR, System.getProperty("user.home"));
-            File lastDir = new File(dirPath);
-            if (!lastDir.isDirectory()) {
-                lastDir = new File(System.getProperty("user.home"));
+            Path lastDir = Path.of(dirPath);
+            if (!Files.isDirectory(lastDir)) {
+                lastDir = Path.of(System.getProperty("user.home"));
             }
             return lastDir;
         }

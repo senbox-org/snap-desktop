@@ -12,7 +12,7 @@ import org.openide.util.Cancellable;
 import org.openide.util.RequestProcessor;
 
 import javax.swing.SwingUtilities;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,13 +21,13 @@ class ReadProductOperation implements Runnable {
 
     private static final Logger logger = Logger.getLogger(ReadProductOperation.class.getName());
 
-    private final File file;
+    private final Path file;
     private final String formatName;
     private ProgressWrapper ph;
     private ProductSubsetDef productSubsetDef = null;
     private ProductReaderPlugIn plugin = null;
 
-    public ReadProductOperation(File file, String formatName) {
+    public ReadProductOperation(Path file, String formatName) {
         Assert.notNull(file, "file");
         Assert.notNull(formatName, "formatName");
         this.file = file;
@@ -35,7 +35,7 @@ class ReadProductOperation implements Runnable {
         ph = PhWrapper.NULL;
     }
 
-    public File getFile() {
+    public Path getFile() {
         return file;
     }
 
@@ -68,7 +68,7 @@ class ReadProductOperation implements Runnable {
                     SwingUtilities.invokeLater(
                             () -> Dialogs.showError(Bundle.LBL_NoReaderFoundText() + String.format("%nFile '%s' can not be opened.", file)));
                 } else {
-                    OpenProductAction.getRecentProductPaths().add(file.getPath());
+                    OpenProductAction.getRecentProductPaths().add(file.toString());
                     SwingUtilities.invokeLater(() -> SnapApp.getDefault().getProductManager().addProduct(product));
                 }
             }

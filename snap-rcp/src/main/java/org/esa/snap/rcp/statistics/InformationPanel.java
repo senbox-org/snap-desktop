@@ -184,7 +184,7 @@ class InformationPanel extends TablePagePanel {
         addEntry("Product reader module:", getProductReaderModule(product), "");
 
         addEntry("Product file location:",
-                 product.getFileLocation() != null ? product.getFileLocation().getPath() : "Not yet saved", "");
+                 product.getFileLocation() != null ? product.getFileLocation().toString() : "Not yet saved", "");
         addEntry("Product scene width:", String.valueOf(product.getSceneRasterWidth()), "pixels");
         addEntry("Product scene height:", String.valueOf(product.getSceneRasterHeight()), "pixels");
 

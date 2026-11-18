@@ -25,7 +25,6 @@ import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.io.File;
 
 
 @ActionID(category = "File", id = "org.esa.snap.rcp.session.CloseSessionAction")
@@ -50,7 +49,7 @@ public class CloseSessionAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        sessionManager.setSessionFile((File) null);
+        sessionManager.setSessionFile(null);
         CloseAllProductsAction closeProductAction = new CloseAllProductsAction();
         closeProductAction.execute();
     }

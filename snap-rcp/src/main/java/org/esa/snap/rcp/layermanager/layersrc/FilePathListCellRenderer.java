@@ -21,7 +21,7 @@ import org.esa.snap.core.util.io.FileUtils;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import java.awt.Component;
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * A {@link javax.swing.ListCellRenderer} which replaces the beginning of the file path
@@ -51,7 +51,7 @@ public class FilePathListCellRenderer extends DefaultListCellRenderer {
         final String filePath = (String) value;
         if (filePath != null) {
             setToolTipText(filePath);
-            setText(FileUtils.getDisplayText(new File(filePath), maxLength));
+            setText(FileUtils.getDisplayText(Path.of(filePath), maxLength));
         }
         return this;
 

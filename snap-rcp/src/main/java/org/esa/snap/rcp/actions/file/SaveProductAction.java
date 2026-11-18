@@ -20,8 +20,9 @@ import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.lang.ref.WeakReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 
 /**
@@ -47,14 +48,14 @@ public final class SaveProductAction extends AbstractAction{
 
     static Boolean saveProduct(Product product) {
         Assert.notNull(product.getFileLocation());
-        final File file = product.getFileLocation();
-        if (file.isFile() && !file.canWrite()) {
+        final Path file = product.getFileLocation();
+        if (Files.isRegularFile(file) && !Files.isWritable(file)) {
             Dialogs.showWarning(Bundle.CTL_SaveProductActionName(),
                                 MessageFormat.format("The product\n" +
                                                      "''{0}''\n" +
                                                      "exists and cannot be overwritten, because it is read only.\n" +
                                                      "Please choose another file or remove the write protection.",
-                                                     file.getPath()),
+                                                     file.toString()),
                                 null);
             return false;
         }

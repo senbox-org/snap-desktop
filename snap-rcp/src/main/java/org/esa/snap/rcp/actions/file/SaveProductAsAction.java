@@ -25,7 +25,7 @@ import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
@@ -96,9 +96,9 @@ public final class SaveProductAsAction extends AbstractAction {
         String fileName = product.getName();
         if (StringUtils.isNullOrEmpty(fileName) && product.getFileLocation() != null) {
             // fallback
-            fileName = product.getFileLocation().getName();
+            fileName = product.getFileLocation().getFileName().toString();
         }
-        File newFile = Dialogs.requestFileForSave("Save Product As",
+        final Path newFile = Dialogs.requestFileForSave("Save Product As",
                                                   false,
                                                   DimapProductHelpers.createDimapFileFilter(),
                                                   DimapProductConstants.DIMAP_HEADER_FILE_EXTENSION,
@@ -111,7 +111,7 @@ public final class SaveProductAsAction extends AbstractAction {
         }
 
         String oldProductName = product.getName();
-        File oldFile = product.getFileLocation();
+        final Path oldFile = product.getFileLocation();
 
         //  For DIMAP products, check if file path has really changed
         //  if not, just save product
@@ -137,7 +137,7 @@ public final class SaveProductAsAction extends AbstractAction {
     }
 
 
-    private void attachNewDimapReaderInstance(Product product, File newFile) throws IOException {
+    private void attachNewDimapReaderInstance(Product product, Path newFile) throws IOException {
         DimapProductReader productReader = (DimapProductReader) ProductIO.getProductReader(DimapProductConstants.DIMAP_FORMAT_NAME);
         productReader.bindProduct(newFile, product);
         product.setProductReader(productReader);

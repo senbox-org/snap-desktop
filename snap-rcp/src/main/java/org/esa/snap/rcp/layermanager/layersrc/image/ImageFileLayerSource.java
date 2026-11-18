@@ -26,7 +26,7 @@ import org.esa.snap.ui.layer.LayerSourcePageContext;
 import org.esa.snap.ui.product.ProductSceneView;
 
 import java.awt.geom.AffineTransform;
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * A layer source for images.
@@ -82,7 +82,7 @@ public class ImageFileLayerSource implements LayerSource {
             ProductSceneView sceneView = SnapApp.getDefault().getSelectedProductSceneView();
             final ImageFileLayerType type = LayerTypeRegistry.getLayerType(ImageFileLayerType.class);
             final PropertySet configuration = type.createLayerConfig(sceneView);
-            configuration.setValue(ImageFileLayerType.PROPERTY_NAME_IMAGE_FILE, new File(imageFilePath));
+            configuration.setValue(ImageFileLayerType.PROPERTY_NAME_IMAGE_FILE, Path.of(imageFilePath));
             configuration.setValue(ImageFileLayerType.PROPERTY_NAME_WORLD_TRANSFORM, transform);
             Layer layer = type.createLayer(sceneView, configuration);
             layer.setName(FileUtils.getFilenameFromPath(imageFilePath));

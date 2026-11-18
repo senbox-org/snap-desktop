@@ -36,7 +36,7 @@ import org.openide.util.WeakListeners;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
@@ -94,12 +94,12 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
     public void saveSession(boolean saveAs) {
         final SessionManager app = SessionManager.getDefault();
 
-        File sessionFile = app.getSessionFile();
+        Path sessionFile = app.getSessionFile();
         if (sessionFile == null || saveAs) {
             sessionFile = Dialogs.requestFileForSave(TITLE, false,
                                                      SessionManager.getDefault().getSessionFileFilter(),
                                                      SessionManager.getDefault().getSessionFileFilter().getDefaultExtension(),
-                    sessionFile != null ? sessionFile.getName() : System.getProperty("user.name", "noname"),
+                    sessionFile != null ? sessionFile.getFileName().toString() : System.getProperty("user.name", "noname"),
                                                      null,
                                                      OpenSessionAction.LAST_SESSION_DIR_KEY);
 
@@ -125,7 +125,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
         }
     }
 
-    public void saveSessionAsQuitely(final File newSessionFile) {
+    public void saveSessionAsQuitely(final Path newSessionFile) {
         if (!saveProductsOrLetItBe(newSessionFile)) {
             return;
         }
@@ -139,7 +139,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
         }
     }
 
-    private boolean saveProductsOrLetItBe(File sessionFile) {
+    private boolean saveProductsOrLetItBe(Path sessionFile) {
         final Product[] products = SnapApp.getDefault().getProductManager().getProducts();
 
         for (Product product : products) {
@@ -153,8 +153,8 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
                 // Here: No == Cancel, its because we need a file location in the session XML
                 Dialogs.Answer answer = Dialogs.requestDecision(TITLE, message, false, null);
                 if (answer == Dialogs.Answer.YES) {
-                    File sessionDir = sessionFile.getAbsoluteFile().getParentFile();
-                    product.setFileLocation(new File(sessionDir, product.getName() + ".dim"));
+                    final Path sessionDir = sessionFile.toAbsolutePath().getParent();
+                    product.setFileLocation(sessionDir.resolve(product.getName() + ".dim"));
                     SaveProductAction saveProductAction = new SaveProductAction(product);
                     saveProductAction.execute();
                 } else {
@@ -186,7 +186,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
         return true;
     }
 
-    private static Session createSession(File sessionFile) {
+    private static Session createSession(Path sessionFile) {
         ArrayList<ProductNodeView> nodeViews = new ArrayList<ProductNodeView>();
 
 //        ######### 06.07.2015 ########
@@ -199,7 +199,7 @@ public class SaveSessionAction extends AbstractAction implements ContextAwareAct
 //                nodeViews.add((ProductNodeView) contentPane);
 //            }
 //        }
-        return new Session(sessionFile.getParentFile().toURI(),
+        return new Session(sessionFile.getParent().toUri(),
                 SnapApp.getDefault().getProductManager().getProducts(),
                 nodeViews.toArray(new ProductNodeView[nodeViews.size()]));
     }

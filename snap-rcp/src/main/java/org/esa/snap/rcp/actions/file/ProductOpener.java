@@ -16,13 +16,26 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.RequestProcessor;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import java.awt.Component;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 /**
@@ -39,17 +52,17 @@ public class ProductOpener {
     private String fileFormat;
     private boolean useAllFileFilter;
     private boolean subsetImportEnabled;
-    private File[] files;
+    private Path[] files;
     private boolean multiSelectionEnabled;
     private ProductSubsetDef productSubsetDef = null;
     private ProductReaderPlugIn plugin = null;
 
 
-    public void setFiles(File... files) {
+    public void setFiles(Path... files) {
         this.files = files;
     }
 
-    public File[] getFiles() {
+    public Path[] getFiles() {
         return files;
     }
 
@@ -86,7 +99,7 @@ public class ProductOpener {
     }
 
     public Boolean openProduct() {
-        File[] configuredFiles = getFiles();
+        final Path[] configuredFiles = getFiles();
         if (configuredFiles != null) {
             return openProductFilesCheckOpened(getFileFormat(), configuredFiles);
         }
@@ -122,9 +135,9 @@ public class ProductOpener {
         }
 
         Preferences preferences = SnapApp.getDefault().getPreferences();
-        String userHomePath = SystemUtils.getUserHomeDir().getAbsolutePath();
+        String userHomePath = SystemUtils.getUserHomeDir().toAbsolutePath().toString();
         Path recentPath = NioPaths.get(preferences.get(PREFERENCES_KEY_LAST_PRODUCT_DIR, userHomePath));
-        ProductFileChooser fc = new ProductFileChooser(recentPath.toFile());
+        ProductFileChooser fc = new ProductFileChooser(recentPath);
 
         fc.setSubsetEnabled(isSubsetImportEnabled());
         fc.setAdvancedEnabled(true);
@@ -149,15 +162,15 @@ public class ProductOpener {
             return null;
         }
 
-        File[] files = getSelectedFiles(fc);
+        final Path[] files = getSelectedFiles(fc);
 
         if (files == null || files.length == 0) {
             // cancelled
             return null;
         }
 
-        File currentDirectory = fc.getCurrentDirectory();
-        if (currentDirectory != null) {
+        if (fc.getCurrentDirectory() != null) {
+            final Path currentDirectory = fc.getCurrentDirectory().toPath();
             preferences.put(PREFERENCES_KEY_LAST_PRODUCT_DIR, currentDirectory.toString());
         }
 
@@ -179,24 +192,24 @@ public class ProductOpener {
         return openProductFilesCheckOpened(formatName, files);
     }
 
-    private File[] getSelectedFiles(ProductFileChooser fc) {
-        File[] files = new File[0];
+    private Path[] getSelectedFiles(ProductFileChooser fc) {
+        Path[] files = new Path[0];
         if (isMultiSelectionEnabled()) {
-            files = fc.getSelectedFiles();
+            files = fc.getSelectedFilesPaths();
         } else {
-            File file = fc.getSelectedFile();
-            if (file != null) {
-                files = new File[]{file};
+            if (fc.getSelectedFile() != null) {
+                final Path file = fc.getSelectedFile().toPath();
+                files = new Path[]{file};
             }
         }
         return files;
     }
 
-    private Boolean openProductFilesCheckOpened(final String formatName, final File... files) {
-        List<File> openedFiles = OpenProductAction.getOpenedProductFiles();
-        List<File> fileList = new ArrayList<>(Arrays.asList(files));
-        for (File file : files) {
-            if (!file.exists()) {
+    private Boolean openProductFilesCheckOpened(final String formatName, final Path... files) {
+        final List<Path> openedFiles = OpenProductAction.getOpenedProductFiles();
+        final List<Path> fileList = new ArrayList<>(Arrays.asList(files));
+        for (Path file : files) {
+            if (!Files.exists(file)) {
                 fileList.remove(file);
                 continue;
             }
@@ -216,7 +229,7 @@ public class ProductOpener {
         }
 
         RequestProcessor rp = new RequestProcessor("Opening Products", 4, true, true);
-        for (File file : fileList) {
+        for (Path file : fileList) {
             String fileFormatName;
             PluginEntry entry;
             if (formatName == null && plugin == null) {
@@ -251,7 +264,7 @@ public class ProductOpener {
             operation.setProductReaderPlugIn(plugin);
             RequestProcessor.Task task = rp.create(operation);
             // TODO (mp/20160830) - Cancellation is not working; the thread is not interrupted. Why?
-            ProgressHandle handle = ProgressHandleFactory.createHandle("Reading " + file.getName()/*, operation.createCancellable(task)*/);
+            ProgressHandle handle = ProgressHandleFactory.createHandle("Reading " + file.getFileName()/*, operation.createCancellable(task)*/);
             operation.attacheProgressHandle(handle);
             task.schedule(IMMEDIATELY);
         }
@@ -260,7 +273,7 @@ public class ProductOpener {
         return true;
     }
 
-    static Map<DecodeQualification, List<PluginEntry>> getPluginsForFile(File file) {
+    static Map<DecodeQualification, List<PluginEntry>> getPluginsForFile(Path file) {
         final Iterator<ProductReaderPlugIn> allReaderPlugIns = ProductIOPlugInManager.getInstance().getAllReaderPlugIns();
         final Map<DecodeQualification, List<PluginEntry>> possiblePlugIns = new HashMap<>();
         possiblePlugIns.put(DecodeQualification.INTENDED, new ArrayList<>());

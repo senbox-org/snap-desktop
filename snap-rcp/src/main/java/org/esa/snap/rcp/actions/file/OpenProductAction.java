@@ -15,7 +15,7 @@ import org.openide.util.NbBundle;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -53,26 +53,26 @@ public final class OpenProductAction extends AbstractAction {
         return new RecentPaths(SnapApp.getDefault().getPreferences(), PREFERENCES_KEY_RECENTLY_OPENED_PRODUCTS, true);
     }
 
-    static List<File> getOpenedProductFiles() {
+    static List<Path> getOpenedProductFiles() {
         return Arrays.stream(SnapApp.getDefault().getProductManager().getProducts())
                 .map(Product::getFileLocation)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    public File[] getFiles() {
+    public Path[] getFiles() {
         Object value = getValue("files");
-        if (value instanceof File[]) {
-            return (File[]) value;
+        if (value instanceof Path[]) {
+            return (Path[]) value;
         }
         return null;
     }
 
-    public void setFile(File file) {
+    public void setFile(Path file) {
         setFiles(file);
     }
 
-    public void setFiles(File... files) {
+    public void setFiles(Path... files) {
         putValue("files", files);
     }
 

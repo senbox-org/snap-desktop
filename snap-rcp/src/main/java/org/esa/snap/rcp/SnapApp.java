@@ -48,7 +48,6 @@ import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -452,7 +451,7 @@ public class SnapApp {
             }
         });
         if (SnapArgs.getDefault().getSessionFile() != null) {
-            File sessionFile = SnapArgs.getDefault().getSessionFile().toFile();
+            final Path sessionFile = SnapArgs.getDefault().getSessionFile();
             if (sessionFile != null) {
                 new OpenSessionAction().openSession(sessionFile);
             }
@@ -460,7 +459,7 @@ public class SnapApp {
         List<Path> fileList = SnapArgs.getDefault().getFileList();
         if (!fileList.isEmpty()) {
             OpenProductAction productAction = new OpenProductAction();
-            File[] files = fileList.stream().map(Path::toFile).filter(Objects::nonNull).toArray(File[]::new);
+            final Path[] files = fileList.toArray(Path[]::new);
             productAction.setFiles(files);
             productAction.execute();
         }
@@ -573,12 +572,12 @@ public class SnapApp {
     }
 
     private String getProductPath(Product product) {
-        File fileLocation = product.getFileLocation();
+        final Path fileLocation = product.getFileLocation();
         if (fileLocation != null) {
             try {
-                return fileLocation.getCanonicalPath();
+                return fileLocation.toRealPath().toString();
             } catch (IOException e) {
-                return fileLocation.getAbsolutePath();
+                return fileLocation.toAbsolutePath().toString();
             }
         } else {
             return "not saved";

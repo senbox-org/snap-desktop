@@ -46,11 +46,12 @@ import javax.swing.SwingWorker;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 
 
@@ -101,10 +102,10 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
      * @param defaultFileName The default file name.
      * @return The selected file, {@code null} means "Cancel".
      */
-    private static File promptForFile(String defaultFileName) {
+    private static Path promptForFile(String defaultFileName) {
         // Loop while the user does not want to overwrite a selected, existing file
         // or if the user presses "Cancel"
-        File file = null;
+        Path file = null;
         while (file == null) {
             file = Dialogs.requestFileForSave(DLG_TITLE,
                                               false,
@@ -114,7 +115,7 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
                                               "exportMetadata.lastDir");
             if (file == null) {
                 return null; // Cancel
-            } else if (file.exists()) {
+            } else if (Files.exists(file)) {
                 int status = JOptionPane.showConfirmDialog(SnapApp.getDefault().getMainFrame(),
                                                            "The file '" + file + "' already exists.\n" + /*I18N*/
                                                                    "Overwrite it?",
@@ -181,13 +182,13 @@ public class ExportMetadataAction extends AbstractAction implements HelpCtx.Prov
         } else if (method == SelectExportMethodDialog.EXPORT_TO_FILE) {
             // Write into file, get file from user
             MetadataViewTopComponent metadataViewTopComponent = new MetadataViewTopComponent(productMetadata);
-            final File file = promptForFile(createDefaultFileName(metadataViewTopComponent));
+            final Path file = promptForFile(createDefaultFileName(metadataViewTopComponent));
             if (file == null) {
                 return; // Cancel
             }
-            final FileWriter fileWriter;
+            final Writer fileWriter;
             try {
-                fileWriter = new FileWriter(file);
+                fileWriter = Files.newBufferedWriter(file);
             } catch (IOException e) {
                 Dialogs.showError(DLG_TITLE,
                                       ERR_MSG_BASE + "Failed to create file '" + file + "':\n" + e.getMessage());

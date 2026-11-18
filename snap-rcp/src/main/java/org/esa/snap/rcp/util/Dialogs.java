@@ -17,7 +17,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import java.awt.BorderLayout;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.prefs.Preferences;
 
@@ -222,8 +223,8 @@ public class Dialogs {
      * <code>False</code> if the user does not want to overwrite the existing file.<br>
      * <code>null</code> if the user canceled the operation.<br>
      */
-    public static Boolean requestOverwriteDecision(String title, File file) {
-        if (!file.exists()) {
+    public static Boolean requestOverwriteDecision(String title, Path file) {
+        if (!Files.exists(file)) {
             return Boolean.TRUE;
         }
         Answer answer = requestDecision(getDialogTitle(title),
@@ -243,17 +244,17 @@ public class Dialogs {
      * @param preferencesKey the key under which the last directory the user visited is stored
      * @return the file selected by the user or <code>null</code> if the user canceled file selection
      */
-    public static File requestFileForOpen(String title,
+    public static Path requestFileForOpen(String title,
                                           boolean dirsOnly,
                                           FileFilter fileFilter,
                                           String preferencesKey) {
         Assert.notNull(preferencesKey, "preferencesKey");
 
-        String lastDir = getPreferences().get(preferencesKey, SystemUtils.getUserHomeDir().getPath());
-        File currentDir = new File(lastDir);
+        String lastDir = getPreferences().get(preferencesKey, SystemUtils.getUserHomeDir().toString());
+        final Path currentDir = Path.of(lastDir);
 
         SnapFileChooser fileChooser = new SnapFileChooser();
-        fileChooser.setCurrentDirectory(currentDir);
+        fileChooser.setCurrentDirectory(currentDir.toFile());
         if (fileFilter != null) {
             fileChooser.setFileFilter(fileFilter);
         }
@@ -264,8 +265,8 @@ public class Dialogs {
             getPreferences().put(preferencesKey, fileChooser.getCurrentDirectory().getPath());
         }
         if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            if (file == null || file.getName().equals("")) {
+            final Path file = fileChooser.getSelectedFile() == null ? null : fileChooser.getSelectedFile().toPath();
+            if (file == null || file.getFileName().toString().isEmpty()) {
                 return null;
             }
             return file;
@@ -286,7 +287,7 @@ public class Dialogs {
      * @param preferenceKey    The key under which the last directory the user visited is stored.
      * @return The file selected by the user or <code>null</code> if the user cancelled the file selection.
      */
-    public static File requestFileForSave(String title,
+    public static Path requestFileForSave(String title,
                                           boolean dirsOnly,
                                           FileFilter fileFilter,
                                           String defaultExtension,
@@ -297,12 +298,12 @@ public class Dialogs {
         // Loop while the user does not want to overwrite a selected, existing file
         // or if the user presses "Cancel"
         //
-        File file;
+        Path file;
         do {
             file = requestFileForSave2(title, dirsOnly, fileFilter, defaultExtension, fileName, accessory, preferenceKey);
             if (file == null) {
                 return null; // Cancelled
-            } else if (file.exists()) {
+            } else if (Files.exists(file)) {
                 Boolean overwrite = requestOverwriteDecision(title, file);
                 if (overwrite == null) {
                     return null;
@@ -314,7 +315,7 @@ public class Dialogs {
         return file;
     }
 
-    private static File requestFileForSave2(String title,
+    private static Path requestFileForSave2(String title,
                                             boolean dirsOnly,
                                             FileFilter fileFilter,
                                             String defaultExtension,
@@ -324,16 +325,16 @@ public class Dialogs {
 
         Assert.notNull(preferenceKey, "preferenceKey");
 
-        String lastDir = getPreferences().get(preferenceKey, SystemUtils.getUserHomeDir().getPath());
-        File currentDir = new File(lastDir);
+        String lastDir = getPreferences().get(preferenceKey, SystemUtils.getUserHomeDir().toString());
+        final Path currentDir = Path.of(lastDir);
 
         SnapFileChooser fileChooser = new SnapFileChooser();
-        fileChooser.setCurrentDirectory(currentDir);
+        fileChooser.setCurrentDirectory(currentDir.toFile());
         if (fileFilter != null) {
             fileChooser.setFileFilter(fileFilter);
         }
         if (fileName != null) {
-            fileChooser.setSelectedFile(new File(FileUtils.exchangeExtension(fileName, defaultExtension)));
+            fileChooser.setSelectedFile(Path.of(FileUtils.exchangeExtension(fileName, defaultExtension)).toFile());
         }
         fileChooser.setDialogTitle(getDialogTitle(title));
         fileChooser.setFileSelectionMode(dirsOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
@@ -345,17 +346,17 @@ public class Dialogs {
             getPreferences().put(preferenceKey, fileChooser.getCurrentDirectory().getPath());
         }
         if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            if (file == null || file.getName().equals("")) {
+            final Path file = fileChooser.getSelectedFile() == null ? null : fileChooser.getSelectedFile().toPath();
+            if (file == null || file.getFileName().toString().isEmpty()) {
                 return null;
             }
-            String path = file.getPath();
+            String path = file.toString();
             if (defaultExtension != null) {
                 if (!path.toLowerCase().endsWith(defaultExtension.toLowerCase())) {
                     path = path.concat(defaultExtension);
                 }
             }
-            return new File(path);
+            return Path.of(path);
         }
         return null;
     }

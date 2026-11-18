@@ -53,7 +53,7 @@ public class SnapArgsProcessor implements ArgsProcessor {
         for (String arg : args) {
             Path file = Paths.get(arg);
             if (Files.exists(file)) {
-                if (file.toFile() != null && SessionManager.getDefault().getSessionFileFilter().accept(file.toFile())) {
+                if (SessionManager.getDefault().getSessionFileFilter().accept(file)) {
                     if (sessionFile != null) {
                         throw new CommandException(errorExitCode, "Only a single SNAP session file can be given.");
                     }

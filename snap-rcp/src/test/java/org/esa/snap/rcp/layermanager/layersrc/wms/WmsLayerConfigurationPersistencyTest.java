@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.Dimension;
-import java.io.File;
+import java.nio.file.Path;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -53,7 +53,7 @@ public class WmsLayerConfigurationPersistencyTest {
     @Before
     public void setup() {
         Product product = new Product("P", "T", 10, 10);
-        product.setFileLocation(new File(String.format("out/%s.dim", product.getName())));
+        product.setFileLocation(Path.of(String.format("out/%s.dim", product.getName())));
 
         band = new VirtualBand("V", ProductData.TYPE_INT32, 10, 10, "42");
         product.addBand(band);

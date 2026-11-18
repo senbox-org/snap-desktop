@@ -42,7 +42,7 @@ import org.openide.util.WeakListeners;
 
 import javax.swing.Action;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 
 @ActionID(category = "File", id = "ImportVectorDataNodeFromShapefileAction")
@@ -120,7 +120,7 @@ public class ImportVectorDataNodeFromShapefileAction extends AbstractImportVecto
     class VdnShapefileReader implements VectorDataNodeImporter.VectorDataNodeReader {
 
         @Override
-        public VectorDataNode readVectorDataNode(File file, Product product, ProgressMonitor pm) throws IOException {
+        public VectorDataNode readVectorDataNode(Path file, Product product, ProgressMonitor pm) throws IOException {
 
             DefaultFeatureCollection featureCollection = FeatureUtils.loadShapefileForProduct(file,
                                                                                               product,

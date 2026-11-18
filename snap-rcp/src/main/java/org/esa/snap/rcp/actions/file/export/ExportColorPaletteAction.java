@@ -46,9 +46,10 @@ import javax.swing.Action;
 import javax.swing.JFileChooser;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
@@ -100,10 +101,15 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
         SnapFileFilter fileFilter1 = new SnapFileFilter("CSV", ".csv", "CSV files"); // I18N
         SnapFileFilter fileFilter2 = new SnapFileFilter("TXT", ".txt", "Text files"); // I18N
         JFileChooser fileChooser = new JFileChooser();
-        File lastDir = new File(getPreferences().getPropertyString(KEY_LAST_OPEN, "."));
-        fileChooser.setCurrentDirectory(lastDir);
+        final Path lastDir = Path.of(getPreferences().getPropertyString(KEY_LAST_OPEN, "."));
+        fileChooser.setCurrentDirectory(lastDir.toFile());
         RasterDataNode raster = getSelectedRaster();
-        fileChooser.setSelectedFile(new File(lastDir, raster.getName() + "-palette.csv"));
+        if (raster == null) {
+            Dialogs.showError(Bundle.CTL_ExportColorPaletteAction_DialogTitle(),
+                    "Failed to export " + NamingConvention.COLOR_LOWER_CASE + " palette:\nraster is NULL");
+            return;
+        }
+        fileChooser.setSelectedFile(lastDir.resolve(raster.getName() + "-palette.csv").toFile());
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.addChoosableFileFilter(fileFilter1);
         fileChooser.addChoosableFileFilter(fileFilter2);
@@ -112,8 +118,8 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
         fileChooser.setDialogTitle(Bundle.CTL_ExportColorPaletteAction_DialogTitle());
         if (fileChooser.showSaveDialog(SnapApp.getDefault().getMainFrame()) == JFileChooser.APPROVE_OPTION
                 && fileChooser.getSelectedFile() != null) {
-            getPreferences().setPropertyString(KEY_LAST_OPEN, fileChooser.getCurrentDirectory().getAbsolutePath());
-            File file = fileChooser.getSelectedFile();
+            getPreferences().setPropertyString(KEY_LAST_OPEN, fileChooser.getCurrentDirectory().toPath().toAbsolutePath().toString());
+            Path file = fileChooser.getSelectedFile().toPath();
             if (fileChooser.getFileFilter() instanceof SnapFileFilter) {
                 SnapFileFilter fileFilter = (SnapFileFilter) fileChooser.getFileFilter();
                 file = FileUtils.ensureExtension(file, fileFilter.getDefaultExtension());
@@ -142,13 +148,13 @@ public class ExportColorPaletteAction extends AbstractAction implements LookupLi
         setEnabled(getSelectedImageInfo() != null);
     }
 
-    private static void writeColorPalette(RasterDataNode raster, File file) throws IOException {
-        try (FileWriter writer = new FileWriter(file)) {
+    private static void writeColorPalette(RasterDataNode raster, Path file) throws IOException {
+        try (Writer writer = Files.newBufferedWriter(file)) {
             writeColorPalette(raster, writer);
         }
     }
 
-    private static void writeColorPalette(RasterDataNode raster, FileWriter writer) throws IOException {
+    private static void writeColorPalette(RasterDataNode raster, Writer writer) throws IOException {
         ImageInfo imageInfo = raster.getImageInfo();
         final ColorPaletteDef paletteDef = imageInfo.getColorPaletteDef();
         final Color[] colorPalette = ImageManager.createColorPalette(imageInfo);
