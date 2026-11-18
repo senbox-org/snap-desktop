@@ -10,7 +10,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
-import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
@@ -138,11 +137,11 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public File getChild(File parent, String fileName) {
-        if (isVirtualFileItem(parent)) {
+    public java.io.File getChild(java.io.File parent, String fileName) {
+        if (isVirtualFileItem(parent.toPath())) {
             Path path = parent.toPath();
-            File[] children = getVirtualFiles(path, false);
-            for (File child : children) {
+            java.io.File[] children = getVirtualFiles(path, false);
+            for (java.io.File child : children) {
                 if (child.getName().equals(fileName)) {
                     return child;
                 }
@@ -155,13 +154,13 @@ public class VirtualFileSystemView extends FileSystemView {
     /**
      * Checks if {@code f} represents a real directory or file as opposed to a special folder such as {@code "Desktop"}. Used by UI classes to decide if a folder is selectable when doing directory choosing.
      *
-     * @param file a {@code File} object
+     * @param file a {@code Path} object
      * @return {@code true} if {@code f} is a real file or directory.
      * @since 1.4
      */
     @Override
-    public boolean isFileSystem(File file) {
-        if (isVirtualFileItem(file)) {
+    public boolean isFileSystem(java.io.File file) {
+        if (isVirtualFileItem(file.toPath())) {
             return isFileSystem(file.toPath());
         }
         return this.defaultFileSystemView.isFileSystem(file);
@@ -171,15 +170,15 @@ public class VirtualFileSystemView extends FileSystemView {
      * Creates a new folder with a default folder name.
      */
     @Override
-    public File createNewFolder(File containingDir) throws IOException {
-        if (isVirtualFileItem(containingDir)) {
-            File newFolder = createFileObject(containingDir, NEW_FOLDER_STRING);
+    public java.io.File createNewFolder(java.io.File containingDir) throws IOException {
+        if (isVirtualFileItem(containingDir.toPath())) {
+            Path newFolder = createFileObject(containingDir, NEW_FOLDER_STRING).toPath();
             int i = 1;
-            while (Files.exists(newFolder.toPath())) {
-                newFolder = createFileObject(containingDir, MessageFormat.format(NEW_FOLDER_NEXT_STRING, i++));
+            while (Files.exists(newFolder)) {
+                newFolder = createFileObject(containingDir, MessageFormat.format(NEW_FOLDER_NEXT_STRING, i++)).toPath();
             }
-            Files.createDirectory(newFolder.toPath());
-            return newFolder;
+            Files.createDirectory(newFolder);
+            return newFolder.toFile();
         }
         return this.defaultFileSystemView.createNewFolder(containingDir);
     }
@@ -195,19 +194,19 @@ public class VirtualFileSystemView extends FileSystemView {
      * @see #isFileSystemRoot
      */
     @Override
-    public boolean isRoot(File file) {
-        if (isVirtualFileItem(file)) {
+    public boolean isRoot(java.io.File file) {
+        if (isVirtualFileItem(file.toPath())) {
             return isVirtualRoot(file.toPath());
         }
         return this.defaultFileSystemView.isRoot(file);
     }
 
-    private File[] getOSRoots() {
-        File[] osRoots = this.defaultFileSystemView.getRoots();
+    private java.io.File[] getOSRoots() {
+        java.io.File[] osRoots = this.defaultFileSystemView.getRoots();
         if (SystemUtils.IS_OS_WINDOWS) {
             try {
                 Class<?> nativeOsFileClass = Class.forName("sun.awt.shell.ShellFolder");
-                osRoots = (File[]) nativeOsFileClass.getMethod("get", String.class).invoke(null, "fileChooserComboBoxFolders");
+                osRoots = (java.io.File[]) nativeOsFileClass.getMethod("get", String.class).invoke(null, "fileChooserComboBoxFolders");
             } catch (Exception ignored) {
                 //leave default
             }
@@ -219,11 +218,11 @@ public class VirtualFileSystemView extends FileSystemView {
      * Gets all root directories on this system. For example, on OpenStack Swift, this would be the container directories.
      */
     @Override
-    public File[] getRoots() {
-        File[] defaultRoots = getOSRoots();
+    public java.io.File[] getRoots() {
+        java.io.File[] defaultRoots = getOSRoots();
 
         Collection<VirtualFileSystemHelper> virtualFileSystemViews = this.vfsFileSystemViews.values();
-        File[] roots = new File[defaultRoots.length + virtualFileSystemViews.size()];
+        java.io.File[] roots = new java.io.File[defaultRoots.length + virtualFileSystemViews.size()];
         System.arraycopy(defaultRoots, 0, roots, 0, defaultRoots.length);
         Iterator<VirtualFileSystemHelper> it = virtualFileSystemViews.iterator();
         int index = defaultRoots.length;
@@ -243,11 +242,11 @@ public class VirtualFileSystemView extends FileSystemView {
      * @return the array of files
      */
     @Override
-    public File[] getFiles(File dir, boolean useFileHiding) {
-        if (isVirtualFileItem(dir)) {
+    public java.io.File[] getFiles(java.io.File dir, boolean useFileHiding) {
+        if (isVirtualFileItem(dir.toPath())) {
             return getVirtualFiles(dir.toPath(), useFileHiding);
         }
-        File[] localFiles = this.defaultFileSystemView.getFiles(dir, useFileHiding);
+        java.io.File[] localFiles = this.defaultFileSystemView.getFiles(dir, useFileHiding);
         return fixPaths(localFiles, useFileHiding);
     }
 
@@ -259,11 +258,11 @@ public class VirtualFileSystemView extends FileSystemView {
      * {@code null} if {@code dir} is {@code null}
      */
     @Override
-    public File getParentDirectory(File dir) {
+    public java.io.File getParentDirectory(java.io.File dir) {
         if (dir == null) {
             return null;
         }
-        if (isVirtualFileItem(dir)) {
+        if (isVirtualFileItem(dir.toPath())) {
             if (!Files.exists(dir.toPath())) {
                 return null;
             }
@@ -276,7 +275,7 @@ public class VirtualFileSystemView extends FileSystemView {
             }
             Path p = parentPath;
             if (!Files.exists(p)) {
-                File ppsf = parentPath.getParent().toFile();
+                Path ppsf = parentPath.getParent();
                 if (!isFileSystem(ppsf)) {
                     p = createFileSystemRoot(p.toFile()).toPath();
                 }
@@ -292,7 +291,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * @return the home directory
      */
     @Override
-    public File getHomeDirectory() {
+    public java.io.File getHomeDirectory() {
         return this.defaultFileSystemView.getHomeDirectory();
     }
 
@@ -303,7 +302,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public File getDefaultDirectory() {
+    public java.io.File getDefaultDirectory() {
         return this.defaultFileSystemView.getDefaultDirectory();
     }
 
@@ -311,7 +310,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * Returns whether a file is hidden or not.
      */
     @Override
-    public boolean isHiddenFile(File file) {
+    public boolean isHiddenFile(java.io.File file) {
         return this.defaultFileSystemView.isHiddenFile(file);
     }
 
@@ -324,8 +323,8 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public boolean isFileSystemRoot(File dir) {
-        if (isVirtualFileItem(dir)) {
+    public boolean isFileSystemRoot(java.io.File dir) {
+        if (isVirtualFileItem(dir.toPath())) {
             return isVirtualRoot(dir.toPath());
         }
         return this.defaultFileSystemView.isFileSystemRoot(dir);
@@ -341,8 +340,8 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public boolean isDrive(File dir) {
-        if (isVirtualFileItem(dir)) {
+    public boolean isDrive(java.io.File dir) {
+        if (isVirtualFileItem(dir.toPath())) {
             return false;
         }
         return this.defaultFileSystemView.isDrive(dir);
@@ -358,8 +357,8 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public boolean isFloppyDrive(File dir) {
-        if (isVirtualFileItem(dir)) {
+    public boolean isFloppyDrive(java.io.File dir) {
+        if (isVirtualFileItem(dir.toPath())) {
             return false;
         }
         return this.defaultFileSystemView.isFloppyDrive(dir);
@@ -375,8 +374,8 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public boolean isComputerNode(File dir) {
-        if (isVirtualFileItem(dir)) {
+    public boolean isComputerNode(java.io.File dir) {
+        if (isVirtualFileItem(dir.toPath())) {
             return false;
         }
         return this.defaultFileSystemView.isComputerNode(dir);
@@ -386,7 +385,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * Returns a File object constructed from the given path string.
      */
     @Override
-    public File createFileObject(String path) {
+    public java.io.File createFileObject(String path) {
         Path filePath = NioPaths.get(path);
         return filePath.toFile();
     }
@@ -395,7 +394,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * Returns a File object constructed in dir from the given filename.
      */
     @Override
-    public File createFileObject(File dir, String filename) {
+    public java.io.File createFileObject(java.io.File dir, String filename) {
         Path filePath = dir.toPath().resolve(filename);
         return filePath.toFile();
     }
@@ -408,7 +407,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    protected File createFileSystemRoot(File file) {
+    protected java.io.File createFileSystemRoot(java.io.File file) {
         throw new UnsupportedOperationException();
     }
 
@@ -423,8 +422,8 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public Icon getSystemIcon(File file) {
-        if (isVirtualFileItem(file)) {
+    public Icon getSystemIcon(java.io.File file) {
+        if (isVirtualFileItem(file.toPath())) {
             AbstractRemoteFileSystem remoteFileSystem = (AbstractRemoteFileSystem) file.toPath().getFileSystem();
             if (remoteFileSystem.getRoot().equals(file.toPath())) {
                 return vfsRootIcon;
@@ -448,8 +447,8 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public String getSystemDisplayName(File file) {
-        if (isVirtualFileItem(file)) {
+    public String getSystemDisplayName(java.io.File file) {
+        if (isVirtualFileItem(file.toPath())) {
             return file.toPath().getFileName().toString();
         }
         return this.defaultFileSystemView.getSystemDisplayName(file);
@@ -466,8 +465,8 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public String getSystemTypeDescription(File file) {
-        if (isVirtualFileItem(file)) {
+    public String getSystemTypeDescription(java.io.File file) {
+        if (isVirtualFileItem(file.toPath())) {
             return null;
         }
         return this.defaultFileSystemView.getSystemTypeDescription(file);
@@ -484,54 +483,54 @@ public class VirtualFileSystemView extends FileSystemView {
      * @since 1.4
      */
     @Override
-    public Boolean isTraversable(File file) {
-        if (isVirtualFileItem(file)) {
-            return isFileSystemRoot(file) || isComputerNode(file) || file.isDirectory();
+    public Boolean isTraversable(java.io.File file) {
+        if (isVirtualFileItem(file.toPath())) {
+            return isFileSystemRoot(file) || isComputerNode(file) || Files.isDirectory(file.toPath());
         }
         return this.defaultFileSystemView.isTraversable(file);
     }
 
     /**
      * Returns whether the specified file denotes a shell interpreted link which
-     * can be obtained by the {@link #getLinkLocation(File)}.
+     * can be obtained by the {@link #getLinkLocation(java.io.File)}.
      *
      * @param file a file
      * @return whether this is a link
      * @throws NullPointerException if {@code file} equals {@code null}
      * @throws SecurityException if the caller does not have necessary
      *                           permissions
-     * @see #getLinkLocation(File)
+     * @see #getLinkLocation(java.io.File)
      * @since 9
      */
-    public boolean isLink(File file) {
+    public boolean isLink(java.io.File file) {
         return false;
     }
 
     /**
-     * Converts given file paths from native class for OS used by FSW (which is considered to not use NIO API) to base {@code File}.
+     * Converts given file paths from native class for OS used by FSW (which is considered to not use NIO API) to base {@code java.io.File}.
      * Fix the issue with large paths (>256 characters) on Windows OS. (the goal)
      */
-    private File[] fixPaths(File[] filesPaths, boolean useFileHiding) {
-        List<File> files = new ArrayList<>();
-        for (File filePath : filesPaths) {
+    private java.io.File[] fixPaths(java.io.File[] filesPaths, boolean useFileHiding) {
+        final List<java.io.File> files = new ArrayList<>();
+        for (java.io.File filePath : filesPaths) {
             if (!useFileHiding || !isHiddenFile(filePath)) {
                 String windowsShareStartPath = "\\\\";
-                if (filePath.getPath().startsWith(windowsShareStartPath)) { // is a Windows network path
-                    String[] fParts = filePath.getPath().split(windowsShareStartPath);
+                if (filePath.toString().startsWith(windowsShareStartPath)) { // is a Windows network path
+                    String[] fParts = filePath.toString().split(windowsShareStartPath);
                     if (fParts.length == 4) {
                         String host = fParts[2];
                         String share = fParts[3];
                         filePath = NioPaths.get(windowsShareStartPath + host + '\\' + share).toFile();
                     }
                 } else {
-                    filePath = new File(filePath.getPath());
+                    filePath = NioPaths.get(filePath.toString()).toFile();
                 }
-                if (filePath.exists()) {
+                if (Files.exists(filePath.toPath())) {
                     files.add(filePath);
                 }
             }
         }
-        return files.toArray(new File[0]);
+        return files.toArray(new java.io.File[0]);
     }
 
     /**
@@ -540,8 +539,8 @@ public class VirtualFileSystemView extends FileSystemView {
      * @param file the path
      * @return {@code True} if the given file path is VFS path
      */
-    private boolean isVirtualFileItem(File file) {
-        String scheme = file.toURI().getScheme();
+    private boolean isVirtualFileItem(Path file) {
+        String scheme = file.toUri().getScheme();
         for (VirtualFileSystemHelper vfsFileSystemView : this.vfsFileSystemViews.values()) {
             URI uriRoot = vfsFileSystemView.getRoot().toUri();
             if (uriRoot.getScheme().equals(scheme)) {
@@ -568,7 +567,7 @@ public class VirtualFileSystemView extends FileSystemView {
      * @param useFileHiding the hiding flag
      * @return the array of VFS files
      */
-    private File[] getVirtualFiles(Path dirPath, boolean useFileHiding) {
+    private java.io.File[] getVirtualFiles(Path dirPath, boolean useFileHiding) {
         String pathName = dirPath.toString();
         DirectoryStream<Path> stream = null;
         try {
@@ -576,14 +575,14 @@ public class VirtualFileSystemView extends FileSystemView {
             if (vfsFileSystemView != null) {
                 return vfsFileSystemView.getRootDirectories();
             }
-            List<File> files = new ArrayList<>();
+            List<java.io.File> files = new ArrayList<>();
             if (!isVirtualRoot(dirPath) && Files.isDirectory(dirPath)) {
                 DirectoryStream.Filter<Path> filter = entry -> !(useFileHiding && Files.isHidden(entry));
                 stream = Files.newDirectoryStream(dirPath, filter);
                 for (Path path : stream) {
                     files.add(path.toFile());
                 }
-                return files.toArray(new File[0]);
+                return files.toArray(new java.io.File[0]);
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Unable to get files. Details: " + ex.getMessage(), ex);
@@ -597,6 +596,6 @@ public class VirtualFileSystemView extends FileSystemView {
                 }
             }
         }
-        return new File[0];
+        return new java.io.File[0];
     }
 }

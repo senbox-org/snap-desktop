@@ -7,7 +7,6 @@ import org.esa.snap.vfs.remote.AbstractRemoteFileSystem;
 import org.esa.snap.vfs.remote.AbstractRemoteFileSystemProvider;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -47,12 +46,12 @@ public class VirtualFileSystemHelper {
         return this.fileSystem.getRoot();
     }
 
-    public File[] getRootDirectories() {
-        List<File> roots = new ArrayList<>();
+    public java.io.File[] getRootDirectories() {
+        List<java.io.File> roots = new ArrayList<>();
         for (Path p : this.fileSystem.getRootDirectories()) {
             roots.add(new VFSFileSystemRoot(p));
         }
-        return roots.toArray(new File[0]);
+        return roots.toArray(new java.io.File[0]);
     }
 
     /**
