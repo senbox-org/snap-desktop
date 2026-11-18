@@ -60,6 +60,11 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-ui</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.esa.snap</groupId>
+            <artifactId>ceres-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>
