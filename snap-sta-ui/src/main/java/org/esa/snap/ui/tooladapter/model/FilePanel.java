@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Created by jcoravu on 10/6/2016.
@@ -58,21 +58,21 @@ public class FilePanel extends JPanel {
         this.textField.addFocusListener(focusListener);
     }
 
-    public File showFileChooserDialog(int selectionMode, FileFilter filter) {
+    public Path showFileChooserDialog(int selectionMode, FileFilter filter) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(selectionMode);
         String filePath = textField.getText();
         if (!StringUtils.isNullOrEmpty(filePath)) {
-            File currentFile = new File(filePath);
-            fileChooser.setSelectedFile(currentFile);
+            final Path currentFile = Path.of(filePath);
+            fileChooser.setSelectedFile(currentFile.toFile());
         }
         if (filter != null) {
             fileChooser.setFileFilter(filter);
         }
         int resultState = fileChooser.showDialog(FilePanel.this, "Select");
         if (resultState == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
-            textField.setText(fileChooser.getSelectedFile().getAbsolutePath());
-            return fileChooser.getSelectedFile();
+            textField.setText(fileChooser.getSelectedFile().toPath().toAbsolutePath().toString());
+            return fileChooser.getSelectedFile().toPath();
         }
         return null;
     }

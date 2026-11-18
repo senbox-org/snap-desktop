@@ -50,7 +50,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -192,7 +192,7 @@ class ToolExecutionForm extends JTabbedPane {
      *
      * @return  The target product file
      */
-    public File getTargetProductFile() {
+    public Path getTargetProductFile() {
         return targetProductSelector.getModel().getProductFile();
     }
 
@@ -261,9 +261,9 @@ class ToolExecutionForm extends JTabbedPane {
         if (!operatorDescriptor.isHandlingOutputName()) {
             Object value = property.getValue();
             if (value != null) {
-                File file = operatorDescriptor.resolveVariables(new File(property.getValueAsText()));
+                Path file = operatorDescriptor.resolveVariables(Path.of(property.getValueAsText()));
                 if (!file.isAbsolute()) {
-                    file = new File(operatorDescriptor.getWorkingDir(), file.getAbsolutePath());
+                    file = Path.of(operatorDescriptor.getWorkingDir()).resolve(file.toAbsolutePath());
                 }
                 String productName = FileUtils.getFilenameWithoutExtension(file);
                 if (fileExtension == null) {
@@ -303,22 +303,22 @@ class ToolExecutionForm extends JTabbedPane {
                 final TargetProductSelectorModel targetProductSelectorModel = targetProductSelector.getModel();
                 productName += TARGET_PRODUCT_NAME_SUFFIX;
                 targetProductSelectorModel.setProductName(productName);
-                String workingDir = operatorDescriptor.getWorkingDir();
+                final Path workingDir = Path.of(operatorDescriptor.getWorkingDir());
                 if (value != null) {
-                    File oldValue = operatorDescriptor.resolveVariables(value instanceof File ? (File) value : new File((String) value));
+                    final Path oldValue = operatorDescriptor.resolveVariables(value instanceof Path path? path : Path.of((String) value));
                     if (fileExtension == null)
                         fileExtension = TIF_EXTENSION;
-                    File current;
-                    File parent;
-                    if (oldValue != null && (parent = oldValue.getParentFile()) != null) {
-                        current = new File(parent.getAbsolutePath(), productName + fileExtension);
+                    Path current;
+                    Path parent;
+                    if (oldValue != null && (parent = oldValue.getParent()) != null) {
+                        current = parent.toAbsolutePath().resolve(productName + fileExtension);
                     } else {
-                        current = new File(workingDir, productName + fileExtension);
+                        current = workingDir.resolve(productName + fileExtension);
                     }
                     propertySet.setValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, current);
                 } else {
                     try {
-                        targetProperty.setValue(new File(workingDir, productName + TIF_EXTENSION));
+                        targetProperty.setValue(workingDir.resolve(productName + TIF_EXTENSION));
                     } catch (ValidationException ignored) {
                     }
                 }

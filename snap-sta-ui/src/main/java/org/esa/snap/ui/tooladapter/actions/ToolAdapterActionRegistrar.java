@@ -17,6 +17,7 @@
  */
 package org.esa.snap.ui.tooladapter.actions;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.core.gpf.GPF;
 import org.esa.snap.core.gpf.OperatorSpi;
 import org.esa.snap.core.gpf.OperatorSpiRegistry;
@@ -34,7 +35,6 @@ import org.openide.modules.OnStart;
 import org.openide.modules.OnStop;
 import org.openide.modules.Places;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -207,8 +207,8 @@ public class ToolAdapterActionRegistrar {
         @Override
         public void run() {
             OperatorSpiRegistry spiRegistry = GPF.getDefaultInstance().getOperatorSpiRegistry();
-            Path jarPaths = Paths.get(Places.getUserDirectory().getAbsolutePath(), "modules");
-            Map<String, File> jarAdapters = Files.exists(jarPaths) ? getJarAdapters(jarPaths.toFile()) : null;
+            Path jarPaths = Paths.get(Places.getUserDirectory().toPath().toAbsolutePath().toString(), "modules");
+            Map<String, Path> jarAdapters = Files.exists(jarPaths) ? getJarAdapters(jarPaths) : null;
             if (spiRegistry != null) {
                 Collection<OperatorSpi> operatorSpis = spiRegistry.getOperatorSpis();
                 if (operatorSpis != null) {
@@ -238,16 +238,16 @@ public class ToolAdapterActionRegistrar {
             }
         }
 
-        private Map<String, File> getJarAdapters(File fromPath) {
-            Map<String, File> output = new HashMap<>();
-            if (fromPath != null && fromPath.exists()) {
+        private Map<String, Path> getJarAdapters(Path fromPath) {
+            Map<String, Path> output = new HashMap<>();
+            if (fromPath != null && Files.exists(fromPath)) {
                 String descriptionKeyName = "OpenIDE-Module-Short-Description";
                 Attributes.Name typeKey = new Attributes.Name("OpenIDE-Module-Type");
-                File[] files = fromPath.listFiles((dir, name) -> name.endsWith("jar"));
+                final Collection<Path> files = IOHelper.listFiles(fromPath, dir -> dir.getFileName().toString().endsWith("jar"));
                 if (files != null) {
                     try {
-                        for (File file : files) {
-                            JarFile jarFile = new JarFile(file);
+                        for (Path file : files) {
+                            JarFile jarFile = new JarFile(file.toFile());
                             Manifest manifest = jarFile.getManifest();
                             if (manifest != null) {
                                 Attributes manifestEntries = manifest.getMainAttributes();

@@ -17,6 +17,7 @@
  */
 package org.esa.snap.utils;
 
+import com.bc.ceres.core.runtime.internal.IOHelper;
 import org.esa.snap.core.gpf.OperatorException;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterIO;
@@ -24,10 +25,16 @@ import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterRegistry;
 import org.esa.snap.modules.ModulePackager;
 import org.openide.modules.Places;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
-import java.util.Arrays;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,20 +63,19 @@ public enum AdapterWatcher {
             monitoredPaths = new HashMap<>();
             jarAliases = new HashMap<>();
             Path adaptersFolder = ToolAdapterIO.getAdaptersPath();
-            File userDirectory = Places.getUserDirectory();
-            Path nbUserModulesPath = Paths.get(userDirectory != null ? userDirectory.getAbsolutePath() : "", "modules");
+            final Path userDirectory = Places.getUserDirectory() == null ? null : Places.getUserDirectory().toPath();
+            Path nbUserModulesPath = Paths.get(userDirectory != null ? userDirectory.toAbsolutePath().toString() : "", "modules");
             if (!Files.exists(nbUserModulesPath)) {
                 Files.createDirectory(nbUserModulesPath);
             }
             readMap();
             monitorPath(adaptersFolder);
             monitorPath(nbUserModulesPath);
-            File[] jars = nbUserModulesPath.toFile().listFiles(pathname -> pathname.getName().toLowerCase().endsWith("jar"));
+            final Collection<Path> jars = IOHelper.listFiles(nbUserModulesPath, pathname -> pathname.getFileName().toString().toLowerCase().endsWith("jar"));
             if (jars != null) {
-                Arrays.stream(jars)
-                        .forEach(f -> {
+                jars.forEach(f -> {
                             try {
-                                processJarFile(f.toPath());
+                                processJarFile(f);
                             } catch (Exception ex) {
                                 logger.warning(ex.getMessage());
                             }
@@ -196,7 +202,7 @@ public enum AdapterWatcher {
 
     private void folderDeleted(Path folder) {
         if (folder != null) {
-            String alias = folder.toFile().getName();
+            String alias = folder.getFileName().toString();
             ToolAdapterOperatorDescriptor operatorDescriptor = ToolAdapterRegistry.INSTANCE.findByAlias(alias);
             if (operatorDescriptor != null) {
                 ToolAdapterIO.removeOperator(operatorDescriptor);
@@ -243,7 +249,7 @@ public enum AdapterWatcher {
         Path destination = null;
         String aliasOrName = null;
         try {
-            aliasOrName = ModulePackager.getAdapterAlias(jarFile.toFile());
+            aliasOrName = ModulePackager.getAdapterAlias(jarFile);
         } catch (IOException ignored) {
         }
         if (aliasOrName != null) {
@@ -251,20 +257,20 @@ public enum AdapterWatcher {
             destination = ToolAdapterIO.getAdaptersPath().resolve(aliasOrName);
             try {
                 if (!Files.exists(destination)) {
-                    ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
+                    ModulePackager.unpackAdapterJar(jarFile, destination);
                 } else {
                     Path versionFile = destination.resolve("version.txt");
                     if (Files.exists(versionFile)) {
                         String versionText = new String(Files.readAllBytes(versionFile));
-                        String jarVersion = ModulePackager.getAdapterVersion(jarFile.toFile());
+                        String jarVersion = ModulePackager.getAdapterVersion(jarFile);
                         if (jarVersion != null && !versionText.equals(jarVersion)) {
-                            ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
+                            ModulePackager.unpackAdapterJar(jarFile, destination);
                             logger.fine(String.format("The adapter with the name %s and version %s was replaced by version %s", aliasOrName, versionText, jarVersion));
                         } else {
                             logger.fine(String.format("An adapter with the name %s and version %s already exists", aliasOrName, versionText));
                         }
                     } else {
-                        ModulePackager.unpackAdapterJar(jarFile.toFile(), destination.toFile());
+                        ModulePackager.unpackAdapterJar(jarFile, destination);
                     }
                 }
             } catch (Exception e) {

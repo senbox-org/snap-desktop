@@ -17,7 +17,14 @@
  */
 package org.esa.snap.ui.tooladapter.dialogs;
 
-import com.bc.ceres.binding.*;
+import com.bc.ceres.binding.ConversionException;
+import com.bc.ceres.binding.DefaultPropertySetDescriptor;
+import com.bc.ceres.binding.Property;
+import com.bc.ceres.binding.PropertyContainer;
+import com.bc.ceres.binding.PropertyDescriptor;
+import com.bc.ceres.binding.PropertySet;
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.binding.converters.ArrayConverter;
 import com.bc.ceres.binding.converters.FloatConverter;
 import com.bc.ceres.binding.converters.IntegerConverter;
@@ -25,7 +32,12 @@ import com.bc.ceres.binding.converters.NumberConverter;
 import com.bc.ceres.swing.binding.Binding;
 import com.bc.ceres.swing.binding.BindingContext;
 import com.bc.ceres.swing.binding.ComponentAdapter;
-import com.bc.ceres.swing.binding.internal.*;
+import com.bc.ceres.swing.binding.internal.CheckBoxEditor;
+import com.bc.ceres.swing.binding.internal.DirectoryEditor;
+import com.bc.ceres.swing.binding.internal.FileEditor;
+import com.bc.ceres.swing.binding.internal.MultiSelectionEditor;
+import com.bc.ceres.swing.binding.internal.SingleSelectionEditor;
+import com.bc.ceres.swing.binding.internal.TextComponentAdapter;
 import org.esa.snap.core.gpf.annotations.ParameterDescriptorFactory;
 import org.esa.snap.core.gpf.descriptor.ToolAdapterOperatorDescriptor;
 import org.esa.snap.core.gpf.descriptor.ToolParameterDescriptor;
@@ -37,11 +49,28 @@ import org.esa.snap.ui.ModalDialog;
 import org.esa.snap.ui.tooladapter.actions.EscapeAction;
 import org.esa.snap.ui.tooladapter.model.OperatorParametersTable;
 
-import javax.swing.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.io.File;
-import java.util.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -57,8 +86,8 @@ public class ToolParameterEditorDialog extends ModalDialog {
     private static final Map<String, Class<?>> typesMap = new LinkedHashMap<String, Class<?>>();
     static {
         typesMap.put("String", String.class);
-        typesMap.put("File", File.class);
-        typesMap.put("Folder", File.class);
+        typesMap.put("File", Path.class);
+        typesMap.put("Folder", Path.class);
         typesMap.put("Integer", Integer.class);
         typesMap.put("Decimal", Float.class);
         typesMap.put("List", String[].class);
@@ -135,11 +164,11 @@ public class ToolParameterEditorDialog extends ModalDialog {
         addTextPropertyEditor(mainPanel, "Alias: ", "alias", 1, "The 'Alias' field is required.");
 
         String itemNameToSelect = null;
-        if (this.parameter.getDataType() == File.class) {
+        if (this.parameter.getDataType() == Path.class) {
             itemNameToSelect = "File";
             if (this.parameter.getDefaultValue() != null) {
-                File f = new File(this.parameter.getDefaultValue());
-                if (f.isDirectory()) {
+                final Path f = Path.of(this.parameter.getDefaultValue());
+                if (Files.isDirectory(f)) {
                     itemNameToSelect = "Folder";
                 }
             }
@@ -522,9 +551,9 @@ public class ToolParameterEditorDialog extends ModalDialog {
     }
 
     private void changeFolderDataType(String defaultValue) {
-        File file = null;
+        Path file = null;
         if (!StringUtils.isNullOrEmpty(defaultValue)) {
-            file = new File(defaultValue);
+            file = Path.of(defaultValue);
         }
         Property property = getProperty();
         try {
@@ -537,9 +566,9 @@ public class ToolParameterEditorDialog extends ModalDialog {
     }
 
     private void changeFileDataType(String defaultValue) {
-        File file = null;
+        Path file = null;
         if (!StringUtils.isNullOrEmpty(defaultValue)) {
-            file = new File(defaultValue);
+            file = Path.of(defaultValue);
         }
         Property property = getProperty();
         try {

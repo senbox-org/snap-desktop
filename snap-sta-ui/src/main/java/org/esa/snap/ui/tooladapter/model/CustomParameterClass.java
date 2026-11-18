@@ -19,7 +19,7 @@ package org.esa.snap.ui.tooladapter.model;
 
 import org.esa.snap.core.gpf.operators.tooladapter.ToolAdapterConstants;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Enum-like class holding the possible types of operator parameters
@@ -35,27 +35,27 @@ public class CustomParameterClass {
     /**
      * Represents a template file that is supposed to be executed before the actual tool execution
      */
-    public static final CustomParameterClass BeforeTemplateFileClass = new CustomParameterClass(File.class, ToolAdapterConstants.TEMPLATE_BEFORE_MASK);
+    public static final CustomParameterClass BeforeTemplateFileClass = new CustomParameterClass(Path.class, ToolAdapterConstants.TEMPLATE_BEFORE_MASK);
     /**
      * Represents a template file that is supposed to be executed after the actual tool execution
      */
-    public static final CustomParameterClass AfterTemplateFileClass = new CustomParameterClass(File.class, ToolAdapterConstants.TEMPLATE_AFTER_MASK);
+    public static final CustomParameterClass AfterTemplateFileClass = new CustomParameterClass(Path.class, ToolAdapterConstants.TEMPLATE_AFTER_MASK);
     /**
      * Represents a the template file of the actual tool execution
      */
-    public static final CustomParameterClass TemplateFileClass = new CustomParameterClass(File.class, ToolAdapterConstants.TEMPLATE_PARAM_MASK);
+    public static final CustomParameterClass TemplateFileClass = new CustomParameterClass(Path.class, ToolAdapterConstants.TEMPLATE_PARAM_MASK);
     /**
      * Represents a file parameter
      */
-    public static final CustomParameterClass RegularFileClass = new CustomParameterClass(File.class, ToolAdapterConstants.REGULAR_PARAM_MASK);
+    public static final CustomParameterClass RegularFileClass = new CustomParameterClass(Path.class, ToolAdapterConstants.REGULAR_PARAM_MASK);
     /**
      * Represents a folder parameter
      */
-    public static final CustomParameterClass FolderClass = new CustomParameterClass(File.class, ToolAdapterConstants.FOLDER_PARAM_MASK);
+    public static final CustomParameterClass FolderClass = new CustomParameterClass(Path.class, ToolAdapterConstants.FOLDER_PARAM_MASK);
     /**
      * Represents a file list parameter
      */
-    public static final CustomParameterClass FileListClass = new CustomParameterClass(File[].class, ToolAdapterConstants.REGULAR_PARAM_MASK);
+    public static final CustomParameterClass FileListClass = new CustomParameterClass(Path[].class, ToolAdapterConstants.REGULAR_PARAM_MASK);
     /**
      * Represents a string/text parameter
      */

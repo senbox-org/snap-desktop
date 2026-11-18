@@ -40,7 +40,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -502,9 +501,9 @@ public class ToolAdaptersManagementDialog extends ModelessDialog {
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             file = value.toString();
             SwingUtilities.invokeLater(() -> {
-                fileChooser.setSelectedFile(new File(file));
+                fileChooser.setSelectedFile(Path.of(file).toFile());
                 if (fileChooser.showOpenDialog(button) == JFileChooser.APPROVE_OPTION) {
-                    file = fileChooser.getSelectedFile().getAbsolutePath();
+                    file = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
                 }
                 fireEditingStopped();
             });

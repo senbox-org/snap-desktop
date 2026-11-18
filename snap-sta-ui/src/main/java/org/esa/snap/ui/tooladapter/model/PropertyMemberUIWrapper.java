@@ -101,7 +101,7 @@ public abstract class PropertyMemberUIWrapper implements FocusListener {
                 ((JTextField) UIComponent).setText(value.toString());
             }
             if (UIComponent instanceof JFileChooser) {
-                ((JFileChooser) UIComponent).setSelectedFile(new File(value.toString()));
+                ((JFileChooser) UIComponent).setSelectedFile(Path.of(value.toString()));
             }
             if (UIComponent instanceof JComboBox) {
                 ((JComboBox) UIComponent).setSelectedItem(value);

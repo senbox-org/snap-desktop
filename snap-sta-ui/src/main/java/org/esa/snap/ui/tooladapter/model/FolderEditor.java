@@ -9,7 +9,7 @@ import com.bc.ceres.swing.binding.internal.TextComponentAdapter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Folder picker editor.
@@ -20,7 +20,7 @@ public class FolderEditor extends PropertyEditor {
 
     @Override
     public boolean isValidFor(PropertyDescriptor propertyDescriptor) {
-        return File.class.isAssignableFrom(propertyDescriptor.getType())
+        return Path.class.isAssignableFrom(propertyDescriptor.getType())
                 && Boolean.TRUE.equals(propertyDescriptor.getAttribute("directory"));
     }
 
@@ -38,18 +38,20 @@ public class FolderEditor extends PropertyEditor {
         etcButton.addActionListener(e -> {
             final JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            File currentFolder = (File) binding.getPropertyValue();
+            final Path currentFolder = (Path) binding.getPropertyValue();
             if (currentFolder != null) {
-                fileChooser.setSelectedFile(currentFolder);
+                fileChooser.setSelectedFile(currentFolder.toFile());
             } else {
-                File selectedFolder = null;
+                Path selectedFolder = null;
                 Object value = propertyDescriptor.getDefaultValue();
-                if (value instanceof File) {
-                    selectedFolder = (File) propertyDescriptor.getDefaultValue();
+                if (value instanceof Path valuePath) {
+                    selectedFolder = valuePath;
                 } else if (value != null) {
-                    selectedFolder = new File(value.toString());
+                    selectedFolder = Path.of(value.toString());
                 }
-                fileChooser.setSelectedFile(selectedFolder);
+                if (selectedFolder != null) {
+                    fileChooser.setSelectedFile(selectedFolder.toFile());
+                }
             }
             int i = fileChooser.showDialog(editorPanel, "Select");
             if (i == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {

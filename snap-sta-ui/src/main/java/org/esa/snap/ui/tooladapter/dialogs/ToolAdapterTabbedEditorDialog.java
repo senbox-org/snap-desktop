@@ -457,7 +457,7 @@ public class ToolAdapterTabbedEditorDialog extends AbstractAdapterEditor {
                 installer.setCallback(() -> {
                     if (modifiedBundle.isInstalled()) {
                         Path path = newOperatorDescriptor.resolveVariables(modifiedBundle.getTargetLocation())
-                                .toPath()
+                                
                                 .resolve(FileUtils.getFilenameWithoutExtension(modifiedBundle.getEntryPoint()));
                         SwingUtilities.invokeLater(() -> {
                             progressHandle.finish();

@@ -37,7 +37,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -149,7 +149,7 @@ public class UIUtils {
         if (JTextComponent.class.isAssignableFrom(component.getClass())) {
             JTextComponent castedComponent = (JTextComponent) component;
             String text;
-            if (File.class.isAssignableFrom(property.getType())) {
+            if (Path.class.isAssignableFrom(property.getType())) {
                 text = promptText != null ? promptText :
                         String.format(FILE_FIELD_PROMPT, separateWords(property.getName()));
             } else {

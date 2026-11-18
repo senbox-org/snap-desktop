@@ -52,7 +52,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -101,9 +100,9 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
 
     private OperatorTask operatorTask;
 
-    private Logger logger;
+    private final Logger logger;
 
-    private List<String> warnings;
+    private final List<String> warnings;
 
     private static final String helpID = "sta_execution";
 
@@ -248,16 +247,16 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     protected boolean canApply() {
         warnings.clear();
         try {
-            Path toolLocation = operatorDescriptor.resolveVariables(operatorDescriptor.getMainToolFileLocation()).toPath();
+            Path toolLocation = operatorDescriptor.resolveVariables(operatorDescriptor.getMainToolFileLocation());
             if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
                 warnings.add(logAndReturn(String.format("Path does not exist: '%s'", toolLocation)));
             }
-            Path workLocation = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir()).toPath();
+            Path workLocation = operatorDescriptor.resolveVariables(operatorDescriptor.getWorkingDir());
             if (!(Files.exists(workLocation))) {
                 warnings.add(logAndReturn("Working path does not exist: '%s'", workLocation));
             }
             ParameterDescriptor[] parameterDescriptors = operatorDescriptor.getParameterDescriptors();
-            if (parameterDescriptors != null && parameterDescriptors.length > 0) {
+            if (parameterDescriptors != null) {
                 for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
                     Class<?> dataType = parameterDescriptor.getDataType();
                     String paramName = parameterDescriptor.getName();
@@ -265,7 +264,7 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
                         Object value = parameterSupport.getParameterMap().get(paramName);
                         String currentValue = value != null ? value.toString() : null;
                         try {
-                            if (File.class.isAssignableFrom(dataType) &&
+                            if (Path.class.isAssignableFrom(dataType) &&
                                     (parameterDescriptor.isNotNull() || parameterDescriptor.isNotEmpty()) &&
                                     (currentValue == null || currentValue.isEmpty() || !Files.exists(Paths.get(currentValue)))) {
                                 warnings.add(logAndReturn("Path does not exist: '%s'", currentValue == null ? "null" : currentValue));
@@ -316,14 +315,14 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
     private boolean validateUserInput() {
         boolean isValid = true;
         if(!operatorDescriptor.isHandlingOutputName()) {
-            File productDir = null;//targetProductSelector.getModel().getProductDir();
+            Path productDir = null;//targetProductSelector.getModel().getProductDir();
             Object value = form.getPropertyValue(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE);
-            if (value != null && value instanceof File) {
-                value = operatorDescriptor.resolveVariables((File)value);
-                productDir = ((File) value).getParentFile();
-                appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, ((File) value).getAbsolutePath());
+            if (value instanceof Path inputPath) {
+                value = operatorDescriptor.resolveVariables(inputPath);
+                productDir = ((Path) value).getParent();
+                appContext.getPreferences().setPropertyString(SaveProductAsAction.PREFERENCES_KEY_LAST_PRODUCT_DIR, ((Path) value).toAbsolutePath().toString());
             }
-            isValid = (productDir != null) && productDir.exists();
+            isValid = (productDir != null) && Files.exists(productDir);
             if (!isValid) {
                 warnings.add("Target product folder is not accessible or does not exist");
             }
@@ -419,8 +418,8 @@ public class ToolAdapterExecutionDialog extends SingleTargetProductDialog {
      */
     private class OperatorTask implements Runnable, Cancellable {
 
-        private Operator operator;
-        private Consumer<Product> callbackMethod;
+        private final Operator operator;
+        private final Consumer<Product> callbackMethod;
         private boolean hasCompleted;
 
         /**

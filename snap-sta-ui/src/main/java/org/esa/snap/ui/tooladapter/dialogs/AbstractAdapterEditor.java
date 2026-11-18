@@ -89,7 +89,6 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -196,7 +195,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
     VariablesTable varTable;
     BundleForm bundleForm;
     Map<String, AnchorLabel> anchorLabels = new HashMap<>();
-    private JPanel errorPanel;
+    private final JPanel errorPanel;
     Callable<Void> downloadAction;
 
     static AbstractAdapterEditor createEditorDialog(AppContext appContext, JDialog parent, ToolAdapterOperatorDescriptor operatorDescriptor, OperationType operation) {
@@ -230,12 +229,12 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
         }
         if (newOperatorDescriptor.getToolParameterDescriptors().stream().filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE)).count() == 0){
-            ToolParameterDescriptor parameterDescriptor = new ToolParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE, File[].class);
+            ToolParameterDescriptor parameterDescriptor = new ToolParameterDescriptor(ToolAdapterConstants.TOOL_SOURCE_PRODUCT_FILE, Path[].class);
             parameterDescriptor.setDescription("Input file");
             newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
         }
         if (newOperatorDescriptor.getToolParameterDescriptors().stream().filter(p -> p.getName().equals(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE)).count() == 0){
-            ToolParameterDescriptor parameterDescriptor = new ToolParameterDescriptor(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, File.class);
+            ToolParameterDescriptor parameterDescriptor = new ToolParameterDescriptor(ToolAdapterConstants.TOOL_TARGET_PRODUCT_FILE, Path.class);
             parameterDescriptor.setDescription("Output file");
             parameterDescriptor.setNotNull(false);
             newOperatorDescriptor.getToolParameterDescriptors().add(parameterDescriptor);
@@ -332,7 +331,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
 
     private boolean shouldValidate() {
         String value = NbPreferences.forModule(Dialogs.class).get(ToolAdapterOptionsController.PREFERENCE_KEY_VALIDATE_ON_SAVE, null);
-        return value != null && Boolean.parseBoolean(value);
+        return Boolean.parseBoolean(value);
     }
 
     @Override
@@ -346,18 +345,18 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         /* Verify the existence of the tool executable */
         if (shouldValidate()) {
             String fileLocation = newOperatorDescriptor.getMainToolFileLocation();
-            File file = null;
+            Path file = null;
             if (fileLocation != null) {
-                file = new File(fileLocation);
+                file = Path.of(fileLocation);
                 // should not come here unless, somehow, the property value was not set by binding
                 Object value = bindingContext.getBinding(ToolAdapterConstants.MAIN_TOOL_FILE_LOCATION).getPropertyValue();
                 if (value != null) {
-                    file = value instanceof File ? (File) value : new File(value.toString());
+                    file = value instanceof Path inputPath? inputPath : Path.of(value.toString());
                 }
             }
             boolean problemFound = file == null;
             if (!problemFound) {
-                Path toolLocation = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getMainToolFileLocation()).toPath();
+                Path toolLocation = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getMainToolFileLocation());
                 if (!(Files.exists(toolLocation) && Files.isExecutable(toolLocation))) {
                     problemFound = true;
                 }
@@ -377,9 +376,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 }
             }
             /* Verify the existence of the working directory */
-            File workingDir = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getWorkingDir());
+            final Path workingDir = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getWorkingDir());
             anchorLabel = anchorLabels.get(ToolAdapterConstants.WORKING_DIR);
-            if (!(workingDir != null && workingDir.exists() && workingDir.isDirectory())) {
+            if (!(workingDir != null && Files.exists(workingDir) && Files.isDirectory(workingDir))) {
                 if (Arrays.stream(errorPanel.getComponents()).noneMatch(anchorLabel::equals)) {
                     errorPanel.add(anchorLabel);
                     anchorLabel.markError();
@@ -414,13 +413,13 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                 }
             }
 
-            /* Verify the existence of files for File parameter values that are marked as Not Null or Not Empty */
+            /* Verify the existence of files for Path parameter values that are marked as Not Null or Not Empty */
             ParameterDescriptor[] parameterDescriptors = newOperatorDescriptor.getParameterDescriptors();
-            if (parameterDescriptors != null && parameterDescriptors.length > 0) {
+            if (parameterDescriptors != null) {
                 for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
                     Class<?> dataType = parameterDescriptor.getDataType();
                     String defaultValue = parameterDescriptor.getDefaultValue();
-                    if (File.class.isAssignableFrom(dataType) &&
+                    if (Path.class.isAssignableFrom(dataType) &&
                             (parameterDescriptor.isNotNull() || parameterDescriptor.isNotEmpty()) &&
                             (defaultValue == null || defaultValue.isEmpty() || !Files.exists(Paths.get(defaultValue)))) {
                         Dialogs.showWarning(String.format(Bundle.MSG_Inexistem_Parameter_Value_Text(),
@@ -451,9 +450,9 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         }
         /* In case of local bundle, verify the existence of the bundle file */
         if(newOperatorDescriptor.getBundle().getLocation().equals(BundleLocation.LOCAL)) {
-            File bundleFile = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getBundle().getSource());
+            final Path bundleFile = newOperatorDescriptor.resolveVariables(newOperatorDescriptor.getBundle().getSource());
 
-            if (!(bundleFile != null && bundleFile.exists() && !bundleFile.isDirectory())) {
+            if (!(bundleFile != null && Files.exists(bundleFile) && !Files.isDirectory(bundleFile))) {
                 Dialogs.showWarning(Bundle.MSG_Empty_Bundle_Key_Text());
                 return false;
             }
@@ -536,11 +535,11 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
                     super.hide();
                 } catch (TemplateException tex) {
                     logger.warning(tex.getMessage());
-                    Dialogs.showError("The adapter template contains errors [" + tex.toString() + "]!");
+                    Dialogs.showError("The adapter template contains errors [" + tex + "]!");
                     thrown = tex;
                 } catch (Exception e) {
                     logger.warning(e.getMessage());
-                    Dialogs.showError("There was an error on saving the operator; check the disk space and permissions and try again! " + e.toString());
+                    Dialogs.showError("There was an error on saving the operator; check the disk space and permissions and try again! " + e);
                     thrown = e;
                 } finally {
                     if (thrown != null) {
@@ -591,11 +590,11 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(getButton(ID_OTHER)) == JFileChooser.APPROVE_OPTION) {
-                File targetFolder = fileChooser.getSelectedFile();
+                final Path targetFolder = fileChooser.getSelectedFile().toPath();
                 newOperatorDescriptor.setSource(ToolAdapterOperatorDescriptor.SOURCE_PACKAGE);
                 onOK();
-                ModulePackager.packModule(newOperatorDescriptor, new File(targetFolder, newOperatorDescriptor.getAlias() + ".nbm"));
-                Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
+                ModulePackager.packModule(newOperatorDescriptor, targetFolder.resolve(newOperatorDescriptor.getAlias() + ".nbm"));
+                Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.toAbsolutePath()), null);
             }
         } catch (IOException e) {
             logger.warning(e.getMessage());
@@ -662,8 +661,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         JComponent editorComponent = editor.createEditorComponent(propertyDescriptor, bindingContext);
         editorComponent.setMaximumSize(new Dimension(editorComponent.getMaximumSize().width, controlHeight));
         editorComponent.setPreferredSize(new Dimension(editorComponent.getPreferredSize().width, controlHeight));
-        if (editorComponent instanceof JComboBox) {
-            JComboBox comboBox = (JComboBox)editorComponent;
+        if (editorComponent instanceof JComboBox comboBox) {
             comboBox.setEditable(isEditable);
             comboBox.setEnabled(isEditable);
         }
@@ -686,8 +684,7 @@ public abstract class AbstractAdapterEditor extends ModalDialog {
         propertyDescriptor.setValueSet(new ValueSet(values.toArray()));
         PropertyEditor editor = PropertyEditorRegistry.getInstance().findPropertyEditor(propertyDescriptor);
         JComponent editorComp = editor.createEditorComponent(propertyDescriptor, bindingContext);
-        if (editorComp instanceof JComboBox) {
-            JComboBox comboBox = (JComboBox)editorComp;
+        if (editorComp instanceof JComboBox comboBox) {
             comboBox.setEditable(true);
         }
         editorComp.setMaximumSize(new Dimension(editorComp.getMaximumSize().width, controlHeight));

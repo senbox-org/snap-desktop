@@ -47,7 +47,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -229,13 +229,13 @@ public class ModuleSuiteDialog extends ModalDialog {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(getButton(ID_OTHER)) == JFileChooser.APPROVE_OPTION) {
-                File targetFolder = fileChooser.getSelectedFile();
+                final Path targetFolder = fileChooser.getSelectedFile().toPath();
                 final String nbmName = this.descriptor.getName() + ".nbm";
                 ProgressWorker worker = new ProgressWorker("Export Module Suite", "Creating NetBeans module suite " + nbmName,
                         () -> {
                             try {
-                                ModulePackager.packModules(this.descriptor, new File(targetFolder, nbmName), bundles, selection);
-                                Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.getAbsolutePath()), null);
+                                ModulePackager.packModules(this.descriptor, targetFolder.resolve(nbmName), bundles, selection);
+                                Dialogs.showInformation(String.format(Bundle.MSG_Export_Complete_Text(), targetFolder.toAbsolutePath()), null);
                             } catch (IOException e) {
                                 SystemUtils.LOG.warning(e.getMessage());
                                 Dialogs.showError(e.getMessage());

@@ -15,13 +15,12 @@ import org.esa.snap.utils.SpringUtilities;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Editor for properties of type File[].
+ * Editor for properties of type Path[].
  *
  * @author Cosmin Cara
  */
@@ -29,14 +28,14 @@ public class FileListEditor extends PropertyEditor {
 
     @Override
     public boolean isValidFor(PropertyDescriptor propertyDescriptor) {
-        return File[].class.isAssignableFrom(propertyDescriptor.getType());
+        return Path[].class.isAssignableFrom(propertyDescriptor.getType());
     }
 
     @Override
     public JComponent createEditorComponent(PropertyDescriptor propertyDescriptor, BindingContext bindingContext) {
         JPanel panel = new JPanel(new SpringLayout());
-        DefaultListModel<File> listModel = new DefaultListModel<>();
-        JList<File> list = new JList<>(listModel);
+        DefaultListModel<Path> listModel = new DefaultListModel<>();
+        JList<Path> list = new JList<>(listModel);
         ComponentAdapter adapter = new ListSelectionAdapter(list) {
             public void valueChanged(ListSelectionEvent event) {
                 if (event.getValueIsAdjusting() || getBinding().isAdjustingComponents()) {
@@ -44,8 +43,8 @@ public class FileListEditor extends PropertyEditor {
                 }
                 final Property model = getBinding().getContext().getPropertySet().getProperty(getBinding().getPropertyName());
                 try {
-                    List<File> selectedValuesList = list.getSelectedValuesList();
-                    model.setValue(selectedValuesList.toArray(new File[selectedValuesList.size()]));
+                    List<Path> selectedValuesList = list.getSelectedValuesList();
+                    model.setValue(selectedValuesList.toArray(new Path[0]));
                     // Now model is in sync with UI
                     getBinding().clearProblem();
                 } catch (ValidationException e) {
@@ -63,8 +62,8 @@ public class FileListEditor extends PropertyEditor {
         addFileBtn.addActionListener(e -> {
             final JFileChooser fileChooser = new JFileChooser();
             int i = fileChooser.showDialog(panel, "Select");
-            final File selectedFile = fileChooser.getSelectedFile();
-            if (i == JFileChooser.APPROVE_OPTION && selectedFile != null) {
+            if (i == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null) {
+                final Path selectedFile = fileChooser.getSelectedFile().toPath();
                 listModel.addElement(selectedFile);
                 syncPropertyValue(binding, listModel);
             }
@@ -92,12 +91,12 @@ public class FileListEditor extends PropertyEditor {
         return panel;
     }
 
-    private void syncPropertyValue(Binding binding, DefaultListModel<File> listModel) {
+    private void syncPropertyValue(Binding binding, DefaultListModel<Path> listModel) {
         Object[] objects = listModel.toArray();
         binding.setPropertyValue(Arrays.stream(objects)
-                                        .map(item -> new File(item.toString()))
-                                        .collect(Collectors.toList())
-                                        .toArray(new File[objects.length]));
+                                        .map(item -> Path.of(item.toString()))
+                                        .toList()
+                                        .toArray(new Path[objects.length]));
     }
 
 }

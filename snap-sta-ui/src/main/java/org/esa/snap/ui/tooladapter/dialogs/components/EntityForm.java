@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
-import java.io.File;
+import java.nio.file.Path;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -141,7 +141,7 @@ public class EntityForm<T> {
                                                         .findFirst();
                 if (annotation.isPresent()) {
                     try {
-                        if (File.class.isAssignableFrom(this.entityType.getDeclaredField(field).getType())) {
+                        if (Path.class.isAssignableFrom(this.entityType.getDeclaredField(field).getType())) {
                             propertyContainer.getDescriptor(field).setAttribute("directory", true);
                         }
                     } catch (NoSuchFieldException e) {

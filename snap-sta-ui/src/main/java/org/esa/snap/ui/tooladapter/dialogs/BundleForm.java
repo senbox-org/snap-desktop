@@ -58,7 +58,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.nio.file.Path;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -341,7 +341,7 @@ public class BundleForm extends JPanel {
             });
             property = propertyContainer.getProperty("source");
             property.addPropertyChangeListener(evt -> {
-                bundle.setSource((File) evt.getNewValue());
+                bundle.setSource((Path) evt.getNewValue());
                 firePropertyChange(new PropertyChangeEvent(bundle, "source",
                                                            evt.getOldValue(), evt.getNewValue()));
             });

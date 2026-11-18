@@ -40,7 +40,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -159,7 +159,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         JPanel outFilePanel = new JPanel();
         final JLabel jLabel = new JLabel("Output File:");
         outFilePanel.add(jLabel);
-        File outputFile = this.modifiedParameter.getOutputFile();
+        Path outputFile = this.modifiedParameter.getOutputFile();
         outFileName = new JTextField(outputFile != null ? outputFile.toString() : "");
         outFileName.setPreferredSize(
                 new Dimension(filePathComponent.getPreferredSize().width + label.getPreferredSize().width - jLabel.getPreferredSize().width, 25));
@@ -186,17 +186,17 @@ public class TemplateParameterEditorDialog extends ModalDialog {
     private void updateFileAreaContent() {
         String result = null;
         try {
-            File file = getProperty().getValue();
+            Path file = getProperty().getValue();
             Template template = this.modifiedParameter.getTemplate();
             if (file != null) {
-                template.setName(file.getName());
+                template.setName(file.getFileName().toString());
             }
             if (!template.isInMemory()) {
                 if (file != null && !file.isAbsolute()) {
                     file = template.getPath();
                 }
-                if (file != null && file.exists()) {
-                    result = new String(Files.readAllBytes(file.toPath()));
+                if (file != null && Files.exists(file)) {
+                    result = new String(Files.readAllBytes(file));
                 }
             } else {
                 result = template.getContents();
@@ -220,7 +220,7 @@ public class TemplateParameterEditorDialog extends ModalDialog {
         Template template = this.modifiedParameter.getTemplate();
         this.modifiedParameter.setDefaultValue(template.getName());
         if (!StringUtils.isNullOrEmpty(outFileName.getText())) {
-            this.modifiedParameter.setOutputFile(new File(outFileName.getText()));
+            this.modifiedParameter.setOutputFile(Path.of(outFileName.getText()));
         }
 
         //save parameters

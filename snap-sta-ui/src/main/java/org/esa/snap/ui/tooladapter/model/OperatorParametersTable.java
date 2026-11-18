@@ -49,7 +49,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -202,8 +203,8 @@ public class OperatorParametersTable extends JTable {
                     case ToolAdapterConstants.TEMPLATE_AFTER_MASK:
                         filter = new FileFilter() {
                             @Override
-                            public boolean accept(File file) {
-                                return file.isDirectory() || file.getName().toLowerCase().endsWith(".vm");
+                            public boolean accept(java.io.File file) {
+                                return Files.isDirectory(file.toPath()) || file.toPath().getFileName().toString().toLowerCase().endsWith(".vm");
                             }
 
                             @Override
@@ -215,10 +216,10 @@ public class OperatorParametersTable extends JTable {
                     case ToolAdapterConstants.TEMPLATE_PARAM_MASK:
                         filter = new FileFilter() {
                             @Override
-                            public boolean accept(File file) {
-                                return file.isDirectory() ||
-                                        file.getName().toLowerCase().endsWith(".vm") ||
-                                        file.getName().toLowerCase().endsWith(".xml");
+                            public boolean accept(java.io.File file) {
+                                return Files.isDirectory(file.toPath()) ||
+                                        file.toPath().getFileName().toString().toLowerCase().endsWith(".vm") ||
+                                        file.toPath().getFileName().toString().toLowerCase().endsWith(".xml");
                             }
 
                             @Override
@@ -229,9 +230,9 @@ public class OperatorParametersTable extends JTable {
                         break;
                 }
 
-                File selectedFile = cellDefaultValueFile.showFileChooserDialog(selectionMode, filter);
+                Path selectedFile = cellDefaultValueFile.showFileChooserDialog(selectionMode, filter);
                 if (selectedFile != null) {
-                    descriptor.setDefaultValue(selectedFile.getAbsolutePath());
+                    descriptor.setDefaultValue(selectedFile.toAbsolutePath().toString());
                     fireTableRowsChanged();
                 }
             }
@@ -337,7 +338,7 @@ public class OperatorParametersTable extends JTable {
         } else if (descriptor.getDataType() == Boolean.class) {
             this.cellDefaultValueCheckBox.setSelected(Boolean.parseBoolean(defaultValue));
             setCurrentCellComponentEditor(clickedColumn, clickedRow, this.cellDefaultValueCheckBox);
-        } else if (descriptor.getDataType() == File.class) {
+        } else if (descriptor.getDataType() == Path.class) {
             this.cellDefaultValueFile.setText(defaultValue);
             setCurrentCellComponentEditor(clickedColumn, clickedRow, this.cellDefaultValueFile);
         } else if (descriptor.getDataType() == String[].class) {
@@ -633,7 +634,7 @@ public class OperatorParametersTable extends JTable {
         if (descriptor.getDataType() == String.class || descriptor.getDataType() == Integer.class || descriptor.getDataType() == Float.class) {
         } else if (descriptor.getDataType() == Boolean.class) {
         } else if (descriptor.getDataType() == String[].class) {
-        } else if (descriptor.getDataType() == File.class) {
+        } else if (descriptor.getDataType() == Path.class) {
         } else {
             this.propertiesValueUIDescriptorMap.put(descriptor, PropertyMemberUIWrapperFactory.buildPropertyWrapper("defaultValue", descriptor, operator, context, null));
         }
@@ -683,7 +684,7 @@ public class OperatorParametersTable extends JTable {
 
     public void showToolParameterEditorDialog(int rowIndex) {
         ToolParameterDescriptor descriptor = operator.getToolParameterDescriptors().get(rowIndex);
-        if (!descriptor.isParameter() && descriptor.getDataType().equals(File.class)) {
+        if (!descriptor.isParameter() && descriptor.getDataType().equals(Path.class)) {
             try {
                 TemplateParameterEditorDialog editor = new TemplateParameterEditorDialog(appContext,(TemplateParameterDescriptor) descriptor, operator);
                 int returnCode = editor.show();
@@ -930,7 +931,7 @@ public class OperatorParametersTable extends JTable {
                     } else if (descriptor.getDataType() == String[].class) {
                         this.textComponentRenderer.setText(defaultValue);
                         return this.textComponentRenderer;
-                    } else if (descriptor.getDataType() == File.class) {
+                    } else if (descriptor.getDataType() == Path.class) {
                         this.textComponentRenderer.setText(defaultValue);
                         return this.textComponentRenderer;
                     }
