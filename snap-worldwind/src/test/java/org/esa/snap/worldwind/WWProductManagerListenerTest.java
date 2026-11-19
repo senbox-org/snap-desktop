@@ -1,5 +1,6 @@
 package org.esa.snap.worldwind;
 
+import com.bc.ceres.annotation.STTM;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductManager;
 import org.junit.Test;
@@ -76,6 +77,34 @@ public class WWProductManagerListenerTest {
             assertEquals("EDT", thread);
         }
         assertNull(view.selected);
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testAdditionQueuedBeforeTheViewClosesIsSkipped() throws Exception {
+        final ProductManager productManager = new ProductManager();
+        final RecordingView view = new RecordingView();
+        final WWProductManagerListener listener = new WWProductManagerListener(view, () -> productManager);
+        productManager.addListener(listener);
+        final Product product = new Product("target", "T", 10, 10);
+
+        // a GPF dialog adds its target product from a worker thread while the user closes the view: the addition
+        // is queued for the EDT before the view disconnects
+        final Thread worker = new Thread(() -> productManager.addProduct(product));
+        SwingUtilities.invokeAndWait(() -> {
+            worker.start();
+            try {
+                worker.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            listener.detach();
+            productManager.removeListener(listener);
+        });
+        SwingUtilities.invokeAndWait(() -> { });
+
+        // the closed view would never hear of the product's removal, so it must not get the product
+        assertTrue(view.calls.isEmpty());
     }
 
     @Test

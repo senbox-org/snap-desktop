@@ -147,28 +147,26 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
             AppPanel.addReferenceLayers(layerList);
 
             if (productLayer != null && imageLayer != null) {
-                // a full-resolution image replaces the quicklook of its product
-                final DefaultProductLayer quicklookLayer = productLayer;
-                imageLayer.setImageShownListener((product, shown) -> quicklookLayer.setQuicklookVisible(product, !shown));
-                // switching a product off in the product list also hides its full-resolution image
-                productLayer.setProductVisibilityListener(imageLayer::setProductVisible);
-                // one opacity slider for quicklooks and full-resolution images; product images start opaque
-                productLayer.setOpacityListener(imageLayer::setOpacity);
-                productLayer.setOpacity(1.0);
+                // full-resolution images replace the quicklooks, follow the product list and the opacity slider
+                imageLayer.linkTo(productLayer);
             }
 
             // Put the pieces together.
             mainPane.add(wwjPanel, BorderLayout.CENTER);
 
             if (includeProductPanel && productLayer != null) {
-                productPanel = new ProductPanel(wwjPanel.getWwd(), productLayer);
+                productPanel = new ProductPanel(wwjPanel.getWwd(), productLayer, imageLayer);
                 mainPane.add(productPanel, BorderLayout.WEST);
 
                 productPanel.add(makeControlPanel(), BorderLayout.SOUTH);
 
                 productPanel.update(getWwd());
                 // outlines are installed asynchronously
-                productLayer.setChangeListener(() -> productPanel.update(getWwd()));
+                productLayer.setChangeListener(() -> {
+                    if (productPanel != null) {
+                        productPanel.update(getWwd());
+                    }
+                });
             }
             mainPane.revalidate();
 

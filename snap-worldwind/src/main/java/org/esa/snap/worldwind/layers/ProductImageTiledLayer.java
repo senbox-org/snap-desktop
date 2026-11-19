@@ -36,6 +36,7 @@ import org.esa.snap.worldwind.model.ProductTileRenderer;
 
 import java.awt.image.BufferedImage;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -79,6 +80,8 @@ class ProductImageTiledLayer extends TiledImageLayer {
     private final AtomicLong frames = new AtomicLong();
     // the first render failure of the layer is logged as a warning, later ones at FINE
     private final AtomicBoolean failureLogged = new AtomicBoolean();
+    // tiles put into WorldWind's texture memory cache, removed from it on disposal
+    private final Set<TileKey> installedTiles = ConcurrentHashMap.newKeySet();
 
     ProductImageTiledLayer(final ProductTileRenderer renderer, final GeoBounds bounds, final double resolutionDeg) {
         super(createLevelSet(bounds, resolutionDeg));
@@ -126,7 +129,25 @@ class ProductImageTiledLayer extends TiledImageLayer {
     public void dispose() {
         // pending render tasks see the flag and drop their tile
         disposed = true;
+        // the tiles of a replaced image (e.g. after every colour change) would otherwise occupy WorldWind's shared
+        // texture cache until evicted, pushing out the tiles still shown
+        for (TileKey key : installedTiles) {
+            TextureTile.getMemoryCache().remove(key);
+        }
+        installedTiles.clear();
         super.dispose();
+    }
+
+    /**
+     * A hidden layer requests no tiles, so tiles queued before it was hidden would never become stale: they are
+     * dropped here instead of rendering in the shared queue.
+     */
+    @Override
+    public void setEnabled(final boolean enabled) {
+        if (!enabled) {
+            frames.addAndGet(2);
+        }
+        super.setEnabled(enabled);
     }
 
     boolean isDisposed() {
@@ -205,7 +226,17 @@ class ProductImageTiledLayer extends TiledImageLayer {
             return false;
         }
         installTexture(tile, image);
+        installedTiles.add(tile.getTileKey());
+        if (disposed) {
+            // disposed while the texture was installed
+            TextureTile.getMemoryCache().remove(tile.getTileKey());
+            return false;
+        }
         return true;
+    }
+
+    boolean hasInstalledTile(final TileKey key) {
+        return installedTiles.contains(key);
     }
 
     BufferedImage renderTile(final TextureTile tile) {

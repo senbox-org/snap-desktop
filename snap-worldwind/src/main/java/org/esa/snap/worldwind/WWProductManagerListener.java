@@ -33,6 +33,9 @@ public class WWProductManagerListener implements ProductManager.Listener {
 
     private final WWView wwView;
     private final Supplier<ProductManager> productManager;
+    // set when the view stops following the product manager; additions queued before are then skipped, as the view
+    // would never hear of the product's removal
+    private volatile boolean detached;
 
     public WWProductManagerListener(final WWView wwView) {
         this(wwView, () -> SnapApp.getDefault().getProductManager());
@@ -47,7 +50,7 @@ public class WWProductManagerListener implements ProductManager.Listener {
     public void productAdded(ProductManager.Event event) {
         final Product product = event.getProduct();
         runOnEDT(() -> {
-            if (!productManager.get().contains(product)) {
+            if (detached || !productManager.get().contains(product)) {
                 return;
             }
             wwView.setProducts(new Product[]{product});
@@ -64,6 +67,14 @@ public class WWProductManagerListener implements ProductManager.Listener {
             }
             wwView.removeProduct(product);
         });
+    }
+
+    /**
+     * Stops passing additions to the view, including those already queued for the EDT. Removals still pass: they
+     * are harmless and keep the view from holding on to closed products.
+     */
+    public void detach() {
+        detached = true;
     }
 
     private static void runOnEDT(final Runnable runnable) {

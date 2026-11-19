@@ -331,7 +331,13 @@ public class ProductImageLayerTest {
     public void testOneOpacitySliderSetsQuicklooksAndImages() throws Exception {
         final DefaultProductLayer productLayer = new DefaultProductLayer();
         final ProductImageLayer imageLayer = new ProductImageLayer();
-        productLayer.setOpacityListener(imageLayer::setOpacity);
+        // as the analysis view sets all its layers before linking them
+        productLayer.setOpacity(0.8);
+        imageLayer.setOpacity(0.8);
+        imageLayer.linkTo(productLayer);
+        assertEquals("images start opaque", 1.0, imageLayer.getOpacity(), 1e-9);
+        assertEquals(1.0, productLayer.getOpacity(), 1e-9);
+
         final Product product = createProduct("p", true);
         onEDT(() -> {
             imageLayer.addProduct(product, null);
@@ -347,11 +353,66 @@ public class ProductImageLayerTest {
         assertNull("no second slider", panels[1]);
         final JSlider slider = findSlider(panels[0]);
         assertNotNull(slider);
+        assertEquals("the slider shows the opacity of both layers", 100, slider.getValue());
 
         onEDT(() -> slider.setValue(40));
         assertEquals(0.4, productLayer.getOpacity(), 1e-9);
         assertEquals(0.4, imageLayer.getOpacity(), 1e-9);
         assertEquals(0.4, imageLayer.getImage(product).tiledLayer.getOpacity(), 1e-9);
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testNewImageTakesTheCurrentOpacity() throws Exception {
+        final ProductImageLayer layer = new ProductImageLayer();
+        final Product product = createProduct("p", true);
+        layer.setOpacity(0.3);
+        onEDT(() -> {
+            layer.addProduct(product, null);
+            layer.setSelectedSceneView(mockView(product.getBand("a")));
+        });
+        assertTrue(layer.awaitPendingImages(10000));
+
+        assertEquals(0.3, layer.getImage(product).tiledLayer.getOpacity(), 1e-9);
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testLinkedLayersHideTheImageOfAProductHiddenInTheList() throws Exception {
+        final DefaultProductLayer productLayer = new DefaultProductLayer();
+        final ProductImageLayer imageLayer = new ProductImageLayer();
+        imageLayer.linkTo(productLayer);
+        final Product product = createProduct("p", true);
+        onEDT(() -> {
+            productLayer.addProduct(product, null);
+            imageLayer.addProduct(product, null);
+            imageLayer.setSelectedSceneView(mockView(product.getBand("a")));
+        });
+        assertTrue(productLayer.awaitPendingOutlines(10000));
+        assertTrue(imageLayer.awaitPendingImages(10000));
+        assertFalse("the image replaces the quicklook", productLayer.isQuicklookVisible(product));
+
+        final String name = productLayer.getProductNames()[0];
+        onEDT(() -> productLayer.setProductVisible(name, false));
+        assertFalse(imageLayer.getImage(product).tiledLayer.isEnabled());
+        onEDT(() -> productLayer.setProductVisible(name, true));
+        assertTrue(imageLayer.getImage(product).tiledLayer.isEnabled());
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testVisibilityOfAnUnknownProductIsIgnored() throws Exception {
+        final ProductImageLayer layer = new ProductImageLayer();
+        final Product product = createProduct("p", true);
+        onEDT(() -> {
+            layer.setProductVisible(product, false);
+            layer.addProduct(product, null);
+            layer.setSelectedSceneView(mockView(product.getBand("a")));
+        });
+        assertTrue(layer.awaitPendingImages(10000));
+
+        assertTrue(layer.isProductVisible(product));
+        assertTrue(layer.getImage(product).tiledLayer.isEnabled());
     }
 
     private static JSlider findSlider(final Container container) {

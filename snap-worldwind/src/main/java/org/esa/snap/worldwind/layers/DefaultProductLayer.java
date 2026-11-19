@@ -110,7 +110,6 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         Path[] bandLineList;
         String bandName;
         PointPlacemark bandLabel;
-        SurfaceImage bandImage;
     }
 
     public DefaultProductLayer() {
@@ -163,42 +162,39 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     }
 
     public void setOpacity(String name, double opacity) {
-        final ProductOutline outline = outlineTable.get(name);
-        if (outline != null) {
-            if(outline.image != null) {
-                outline.image.setOpacity(opacity);
-            } else {
-                for(BandOutline bandOutline : outline.bandOutlines) {
-                    if(bandOutline.bandImage != null) {
-                        bandOutline.bandImage.setOpacity(opacity);
-                    }
-                }
-            }
+        final ProductOutline outline = getOutline(name);
+        if (outline != null && outline.image != null) {
+            outline.image.setOpacity(opacity);
         }
     }
 
+    /**
+     * @return the opacity of the quicklook of a product, 1 for a product without quicklook and 0 for an unknown one
+     */
     public double getOpacity(String name) {
-        final ProductOutline outline = outlineTable.get(name);
-        if (outline != null) {
-            if(outline.image != null) {
-                return outline.image.getOpacity();
-            } else {
-                for(BandOutline bandOutline : outline.bandOutlines) {
-                    if(bandOutline.bandImage != null) {
-                        return bandOutline.bandImage.getOpacity();
-                    }
-                }
-            }
-            return 1;
+        final ProductOutline outline = getOutline(name);
+        if (outline == null) {
+            return 0;
         }
-        return 0;
+        return outline.image != null ? outline.image.getOpacity() : 1;
+    }
+
+    private ProductOutline getOutline(final String name) {
+        return name != null ? outlineTable.get(name) : null;
+    }
+
+    /**
+     * @return true if the product has been added to this layer (its outline may still be being computed)
+     */
+    public boolean hasProduct(final Product product) {
+        return product != null && productKeys.containsKey(product);
     }
 
     /**
      * Shows or hides everything drawn for one product: outlines, labels and image.
      */
     public void setProductVisible(final String name, final boolean visible) {
-        final ProductOutline outline = outlineTable.get(name);
+        final ProductOutline outline = getOutline(name);
         if (outline == null || outline.visible == visible) {
             return;
         }
@@ -247,20 +243,11 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     }
 
     private static List<SurfaceImage> getQuicklooks(final ProductOutline outline) {
-        final List<SurfaceImage> list = new ArrayList<>();
-        if (outline.image != null) {
-            list.add(outline.image);
-        }
-        for (BandOutline bandOutline : outline.bandOutlines) {
-            if (bandOutline.bandImage != null) {
-                list.add(bandOutline.bandImage);
-            }
-        }
-        return list;
+        return outline.image != null ? Collections.singletonList(outline.image) : Collections.emptyList();
     }
 
     public boolean isProductVisible(final String name) {
-        final ProductOutline outline = outlineTable.get(name);
+        final ProductOutline outline = getOutline(name);
         return outline != null && outline.visible;
     }
 
@@ -379,7 +366,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         }
 
         if (enableSurfaceImages && outline.label != null && canAddSurfaceImage(product)) {
-            addSurfaceImage(product, name, wwd);
+            addSurfaceImage(product, name, outline, wwd);
         }
         if (wwd != null) {
             wwd.redraw();
@@ -397,9 +384,6 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         for (BandOutline bandOutline : outline.bandOutlines) {
             Collections.addAll(list, bandOutline.bandLineList);
             list.add(bandOutline.bandLabel);
-            if (bandOutline.bandImage != null) {
-                list.add(bandOutline.bandImage);
-            }
         }
         if (outline.label != null) {
             list.add(outline.label);
@@ -436,8 +420,10 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         return product.getSceneGeoCoding() != null && InputProductValidator.isMapProjected(product);
     }
 
-    private void addSurfaceImage(final Product product, final String name, final WorldWindowGLCanvas wwd) {
+    private void addSurfaceImage(final Product product, final String name, final ProductOutline outline,
+                                 final WorldWindowGLCanvas wwd) {
 
+        pendingTasks.incrementAndGet();
         final SwingWorker<SurfaceImage, Object> worker = new SwingWorker<>() {
 
             @Override
@@ -457,9 +443,7 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                                                                             band.getImageInfo(com.bc.ceres.core.ProgressMonitor.NULL),
                                                                             com.bc.ceres.core.ProgressMonitor.NULL);
 
-                    final SurfaceImage si = new SurfaceImage(image, corners);
-                    si.setOpacity(getOpacity());
-                    return si;
+                    return new SurfaceImage(image, corners);
                 } finally {
                     newProduct.dispose();
                 }
@@ -467,6 +451,14 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
             @Override
             public void done() {
+                try {
+                    install();
+                } finally {
+                    pendingTasks.decrementAndGet();
+                }
+            }
+
+            private void install() {
                 final SurfaceImage si;
                 try {
                     si = get();
@@ -474,11 +466,13 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
                     SystemUtils.LOG.log(Level.WARNING, "WorldWind: unable to create the quicklook of " + name, e);
                     return;
                 }
-                final ProductOutline outline = outlineTable.get(name);
-                if (si == null || outline == null) {
-                    // nothing to show, or the product was removed in the meantime
+                if (si == null || outlineTable.get(name) != outline) {
+                    // nothing to show, or the product was removed in the meantime (and perhaps added again, with
+                    // a new outline that gets its own quicklook)
                     return;
                 }
+                // the opacity may have been changed while the quicklook was made
+                si.setOpacity(getOpacity());
                 outline.image = si;
                 if (outline.visible && isQuicklookVisible(product)) {
                     addRenderable(si);

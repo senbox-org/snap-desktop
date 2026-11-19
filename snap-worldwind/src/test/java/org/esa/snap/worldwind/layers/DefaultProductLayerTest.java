@@ -8,6 +8,7 @@ import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductData;
+import org.esa.snap.core.datamodel.VirtualBand;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class DefaultProductLayerTest {
@@ -186,6 +188,104 @@ public class DefaultProductLayerTest {
             layer.setProductVisible(name, true);
         });
         assertEquals("only changes are reported", "[p=false, p=true]", reported.toString());
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testReshownProductKeepsItsQuicklookHiddenBehindTheImage() throws Exception {
+        final DefaultProductLayer layer = new DefaultProductLayer();
+        layer.setEnableSurfaceImages(true);
+        final Product product = createProduct("p", 10.0, 50.0, 0.1);
+        product.addBand(new VirtualBand("v", ProductData.TYPE_FLOAT32, 100, 50, "X"));
+
+        final DefaultProductLayer withoutQuicklooks = new DefaultProductLayer();
+        onEDT(() -> {
+            layer.addProduct(product, null);
+            withoutQuicklooks.addProduct(product, null);
+        });
+        // waits for the quicklook too
+        assertTrue(layer.awaitPendingOutlines(10000));
+        assertTrue(withoutQuicklooks.awaitPendingOutlines(10000));
+        final String name = layer.getProductNames()[0];
+        final int total = layer.getRenderableCount();
+        assertEquals("the quicklook was made", withoutQuicklooks.getRenderableCount() + 1, total);
+
+        // a full-resolution image is shown instead of the quicklook
+        onEDT(() -> layer.setQuicklookVisible(product, false));
+        assertEquals(total - 1, layer.getRenderableCount());
+
+        onEDT(() -> layer.setProductVisible(name, false));
+        assertEquals(0, layer.getRenderableCount());
+        onEDT(() -> layer.setProductVisible(name, true));
+        assertEquals("the quicklook does not cover the image again", total - 1, layer.getRenderableCount());
+
+        // the image is gone: the quicklook comes back
+        onEDT(() -> layer.setQuicklookVisible(product, true));
+        assertEquals(total, layer.getRenderableCount());
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testRenamedProductVisibilityIsStillReported() throws Exception {
+        final DefaultProductLayer layer = new DefaultProductLayer();
+        final Product product = createProduct("p", 10.0, 50.0, 0.1);
+        final List<String> reported = new ArrayList<>();
+        layer.setProductVisibilityListener((p, visible) -> reported.add(p.getName() + "=" + visible));
+        onEDT(() -> layer.addProduct(product, null));
+        assertTrue(layer.awaitPendingOutlines(10000));
+        final String name = layer.getProductNames()[0];
+
+        product.setName("renamed");
+        onEDT(() -> layer.setProductVisible(name, false));
+
+        assertEquals("[renamed=false]", reported.toString());
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testUnknownOrNullProductNames() throws Exception {
+        final DefaultProductLayer layer = new DefaultProductLayer();
+        final List<String> reported = new ArrayList<>();
+        layer.setProductVisibilityListener((p, visible) -> reported.add(p.getName()));
+
+        onEDT(() -> {
+            layer.setProductVisible("unknown", false);
+            layer.setProductVisible(null, false);
+            layer.setOpacity(null, 0.5);
+        });
+        assertFalse(layer.isProductVisible(null));
+        assertEquals(0, layer.getOpacity(null), 0.0);
+        assertFalse(layer.hasProduct(null));
+        assertTrue(reported.isEmpty());
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testRasterOfADeselectedProductIsForgotten() throws Exception {
+        final DefaultProductLayer layer = new DefaultProductLayer();
+        final Product p1 = createProduct("p1", 10.0, 50.0, 0.1);
+        final Product p2 = createProduct("p2", 30.0, 50.0, 0.1);
+
+        onEDT(() -> {
+            layer.addProduct(p1, null);
+            layer.setSelectedProduct(p1);
+            layer.setSelectedRaster(p1.getBand("b1"));
+            // selecting the product of the raster again keeps it
+            layer.setSelectedProduct(p1);
+        });
+        assertSame(p1.getBand("b1"), layer.selectedRaster);
+
+        onEDT(() -> layer.setSelectedProduct(p2));
+        assertNull("a raster of another product", layer.selectedRaster);
+
+        // as the views close a selected product: the selection is cleared first, then the product removed
+        onEDT(() -> {
+            layer.setSelectedProduct(p1);
+            layer.setSelectedRaster(p1.getBand("b1"));
+            layer.setSelectedProduct(null);
+            layer.removeProduct(p1);
+        });
+        assertNull("the closed product is not kept through its raster", layer.selectedRaster);
     }
 
     @Test

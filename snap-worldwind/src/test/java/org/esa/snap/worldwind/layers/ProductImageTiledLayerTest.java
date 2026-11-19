@@ -1,5 +1,6 @@
 package org.esa.snap.worldwind.layers;
 
+import com.bc.ceres.annotation.STTM;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.layers.TextureTile;
 import org.esa.snap.worldwind.model.GeoBounds;
@@ -211,6 +212,55 @@ public class ProductImageTiledLayerTest {
         release.countDown();
         awaitRenders(renders, 1);
         assertEquals(1, renders.get());
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testHidingTheLayerDropsItsQueuedTiles() throws Exception {
+        final AtomicInteger renders = new AtomicInteger();
+        final ProductTileRenderer renderer = mock(ProductTileRenderer.class);
+        when(renderer.render(anyDouble(), anyDouble(), anyDouble(), anyDouble(), anyInt(), anyInt())).thenAnswer(i -> {
+            renders.incrementAndGet();
+            return null;
+        });
+        final TestLayer layer = new TestLayer(renderer);
+        final TextureTile tile = tile(layer, 3, 5);
+
+        final CountDownLatch release = blockRenderThreads();
+        layer.submit(layer.createRenderTask(tile));
+        // a hidden layer draws no frames, so the tile would otherwise never become stale
+        layer.setEnabled(false);
+        release.countDown();
+        Thread.sleep(500);
+        assertEquals("dropped", 0, renders.get());
+
+        // shown again and asked for, it is rendered
+        layer.setEnabled(true);
+        layer.submit(layer.createRenderTask(tile));
+        awaitRenders(renders, 1);
+        assertEquals(1, renders.get());
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testDisposalRemovesTheTilesFromTheTextureCache() {
+        final ProductImageTiledLayer layer = new ProductImageTiledLayer(
+                renderer(new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB)), new GeoBounds(45, 46, 10, 11), 0.01) {
+            @Override
+            void installTexture(final TextureTile tile, final BufferedImage image) {
+                // as the real one, without the OpenGL texture data
+                TextureTile.getMemoryCache().add(tile.getTileKey(), tile);
+            }
+        };
+        final TextureTile tile = tile(layer, 3, 5);
+        layer.createRenderTask(tile).run();
+        assertTrue(layer.hasInstalledTile(tile.getTileKey()));
+        assertTrue(TextureTile.getMemoryCache().contains(tile.getTileKey()));
+
+        layer.dispose();
+
+        assertFalse(TextureTile.getMemoryCache().contains(tile.getTileKey()));
+        assertFalse(layer.hasInstalledTile(tile.getTileKey()));
     }
 
     @Test

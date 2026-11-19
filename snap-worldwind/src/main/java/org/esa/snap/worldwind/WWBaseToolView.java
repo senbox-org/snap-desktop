@@ -24,7 +24,6 @@ import org.esa.snap.core.datamodel.GeoCoding;
 import org.esa.snap.core.datamodel.GeoPos;
 import org.esa.snap.core.datamodel.PixelPos;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.core.datamodel.ProductNode;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.util.SystemUtils;
@@ -60,7 +59,7 @@ public abstract class WWBaseToolView extends ToolTopComponent implements WWView 
     protected AppPanel wwjPanel = null;
     private Position eyePosition = null;
 
-    private ProductManager.Listener productManagerListener;
+    private WWProductManagerListener productManagerListener;
     private SelectionSupport.Handler<ProductNode> productNodeHandler;
     private SelectionSupport.Handler<RasterDataNode> rasterHandler;
     private SelectionSupport.Handler<ProductSceneView> sceneViewHandler;
@@ -142,6 +141,7 @@ public abstract class WWBaseToolView extends ToolTopComponent implements WWView 
             return;
         }
         final SnapApp snapApp = SnapApp.getDefault();
+        productManagerListener.detach();
         snapApp.getProductManager().removeListener(productManagerListener);
         snapApp.getSelectionSupport(ProductNode.class).removeHandler(productNodeHandler);
         snapApp.getSelectionSupport(RasterDataNode.class).removeHandler(rasterHandler);
@@ -340,7 +340,8 @@ public abstract class WWBaseToolView extends ToolTopComponent implements WWView 
             try {
                 wwLayer.removeProduct(product);
             } catch (Exception e) {
-                SystemUtils.LOG.log(Level.WARNING, "WorldWind unable to remove product " + product.getName(), e);
+                // reported like a failed addition: a layer that cannot remove a product keeps it alive
+                SnapApp.getDefault().handleError("WorldWind unable to remove product " + product.getName(), e);
             }
         }
 

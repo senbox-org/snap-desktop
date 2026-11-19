@@ -54,6 +54,13 @@ import java.util.logging.Level;
  * Each product shows the image of its last selected image view: the view's rasters with its colour settings.
  * Colour changes in the view refresh the image. The tiles are rendered on demand by a
  * {@link ProductImageTiledLayer} per product. Products are added and removed, and views selected, on the EDT.
+ * <p>
+ * The layer state is not synchronized: it is changed on the EDT and read by {@link #doRender}, which WorldWind calls
+ * on the EDT too, as its AWT canvas (JOGL's default AWT threading) draws on the EDT.
+ * <p>
+ * This layer is independent of the "Products" layer: switching that layer off hides the outlines and quicklooks, not
+ * the full-resolution images, which have their own entry in the layer list. Hiding a single product in the product
+ * list hides both (see {@link #linkTo}).
  */
 public class ProductImageLayer extends BaseLayer implements WWLayer {
 
@@ -106,6 +113,28 @@ public class ProductImageLayer extends BaseLayer implements WWLayer {
         this.imageShownListener = listener;
     }
 
+    /**
+     * Makes this layer and the product layer of a view work as one:
+     * <ul>
+     * <li>a full-resolution image replaces the quicklook of its product,</li>
+     * <li>hiding a product in the product list also hides its image,</li>
+     * <li>the product layer's opacity slider sets the opacity of the images too; both start opaque.</li>
+     * </ul>
+     */
+    public void linkTo(final DefaultProductLayer productLayer) {
+        setImageShownListener((product, shown) -> productLayer.setQuicklookVisible(product, !shown));
+        productLayer.setProductVisibilityListener(this::setProductVisible);
+        productLayer.setOpacityListener(this::setOpacity);
+        productLayer.setOpacity(1.0);
+    }
+
+    /**
+     * @return the products of this layer, whether or not they show an image
+     */
+    public List<Product> getProducts() {
+        return new ArrayList<>(products);
+    }
+
     @Override
     public boolean isComplementary() {
         return true;
@@ -127,11 +156,14 @@ public class ProductImageLayer extends BaseLayer implements WWLayer {
         final ProductNodeListenerAdapter listener = new ProductNodeListenerAdapter() {
             @Override
             public void nodeRemoved(final ProductNodeEvent event) {
-                // the image cannot be shown without its rasters
-                final ProductImage image = images.get(product);
-                if (image != null && Arrays.asList(image.rasters).contains(event.getSourceNode())) {
-                    runOnEDT(() -> removeImage(product));
-                }
+                // the image cannot be shown without its rasters. Node events may come from any thread, and the
+                // images are only accessed on the EDT.
+                runOnEDT(() -> {
+                    final ProductImage image = images.get(product);
+                    if (image != null && Arrays.asList(image.rasters).contains(event.getSourceNode())) {
+                        removeImage(product);
+                    }
+                });
             }
         };
         product.addProductNodeListener(listener);
