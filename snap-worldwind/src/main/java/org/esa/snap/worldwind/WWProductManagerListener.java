@@ -20,35 +20,68 @@ import org.esa.snap.core.datamodel.ProductManager;
 import org.esa.snap.rcp.SnapApp;
 
 import javax.swing.*;
+import java.util.function.Supplier;
 
 /**
  * WWProductManagerListener
+ * <p>
+ * Product events may be fired from any thread (e.g. the GPF dialogs add and remove their target product from a
+ * worker thread). Both additions and removals are therefore handled on the EDT. A removal that overtakes its
+ * addition is safe because the addition is skipped once the product is no longer in the product manager.
  */
 public class WWProductManagerListener implements ProductManager.Listener {
 
     private final WWView wwView;
+    private final Supplier<ProductManager> productManager;
+    // set when the view stops following the product manager; additions queued before are then skipped, as the view
+    // would never hear of the product's removal
+    private volatile boolean detached;
 
     public WWProductManagerListener(final WWView wwView) {
+        this(wwView, () -> SnapApp.getDefault().getProductManager());
+    }
+
+    WWProductManagerListener(final WWView wwView, final Supplier<ProductManager> productManager) {
         this.wwView = wwView;
+        this.productManager = productManager;
     }
 
     @Override
     public void productAdded(ProductManager.Event event) {
-        new Thread(() -> {
-            final Product product = event.getProduct();
-            SwingUtilities.invokeLater(() -> {
-                wwView.setProducts(SnapApp.getDefault().getProductManager().getProducts());
-                wwView.setSelectedProduct(product);
-            });
-        }).start();
+        final Product product = event.getProduct();
+        runOnEDT(() -> {
+            if (detached || !productManager.get().contains(product)) {
+                return;
+            }
+            wwView.setProducts(new Product[]{product});
+            wwView.setSelectedProduct(product);
+        });
     }
 
     @Override
     public void productRemoved(ProductManager.Event event) {
         final Product product = event.getProduct();
-        if (wwView.getSelectedProduct() == product) {
-            wwView.setSelectedProduct(null);
+        runOnEDT(() -> {
+            if (wwView.getSelectedProduct() == product) {
+                wwView.setSelectedProduct(null);
+            }
+            wwView.removeProduct(product);
+        });
+    }
+
+    /**
+     * Stops passing additions to the view, including those already queued for the EDT. Removals still pass: they
+     * are harmless and keep the view from holding on to closed products.
+     */
+    public void detach() {
+        detached = true;
+    }
+
+    private static void runOnEDT(final Runnable runnable) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            runnable.run();
+        } else {
+            SwingUtilities.invokeLater(runnable);
         }
-        wwView.removeProduct(product);
     }
 }

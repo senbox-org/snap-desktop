@@ -15,50 +15,43 @@
  */
 package org.esa.snap.worldwind;
 
-import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
-import gov.nasa.worldwind.event.SelectListener;
-import gov.nasa.worldwind.layers.Layer;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.LayerList;
-import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
-import gov.nasa.worldwindx.examples.WMSLayersPanel;
+import org.esa.snap.core.datamodel.GeoPos;
+import org.esa.snap.core.datamodel.Placemark;
 import org.esa.snap.core.datamodel.Product;
-import org.esa.snap.core.datamodel.ProductNode;
-import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.rcp.SnapApp;
-import org.esa.snap.rcp.util.Dialogs;
+import org.esa.snap.ui.product.ProductSceneView;
 import org.esa.snap.worldwind.layers.DefaultProductLayer;
-import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
+import org.esa.snap.worldwind.layers.ImageViewSyncLayer;
+import org.esa.snap.worldwind.layers.ProductImageLayer;
 import org.esa.snap.worldwind.layers.WWLayer;
 import org.esa.snap.worldwind.layers.WWLayerDescriptor;
 import org.esa.snap.worldwind.layers.WWLayerRegistry;
+import org.esa.snap.worldwind.model.ImageViewGeoUtils;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Window;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.net.URISyntaxException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
-
-import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
 
 @TopComponent.Description(
         preferredID = "WWAnalysisToolView",
@@ -90,25 +83,11 @@ import static org.esa.snap.rcp.SnapApp.SelectionSourceHint.VIEW;
  */
 public class WWAnalysisToolView extends WWBaseToolView implements WWView {
 
-    private LayerPanel layerPanel = null;
     private ProductPanel productPanel = null;
-
-    private final Dimension wmsPanelSize = new Dimension(400, 600);
-
-    private final JTabbedPane tabbedPane = new JTabbedPane();
-    private int previousTabIndex = 0;
+    private final GlobeCursorSync globeCursorSync = new GlobeCursorSync();
 
     private static final boolean includeStatusBar = true;
-    private static final boolean includeLayerPanel = false;
     private static final boolean includeProductPanel = true;
-    private static final boolean includeWMSPanel = false;
-
-    private static final String[] servers = new String[]
-            {
-                    "http://neowms.sci.gsfc.nasa.gov/wms/wms",
-                    //"http://mapserver.flightgear.org/cgi-bin/landcover",
-                    "http://wms.jpl.nasa.gov/wms.cgi"
-            };
 
     public WWAnalysisToolView() {
         setDisplayName("WorldWind Analysis");
@@ -125,192 +104,192 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
         final JPanel mainPane = new JPanel(new BorderLayout(4, 4));
         mainPane.setSize(new Dimension(300, 300));
 
-        // world wind canvas
-        initialize(mainPane);
+        // world wind canvas, created on the EDT once this component exists
+        SwingUtilities.invokeLater(() -> initialize(mainPane));
 
         return mainPane;
     }
 
-    private static void insertTiledLayer(final WorldWindow wwd, final Layer layer) {
-        int position = 0;
-        final LayerList layers = wwd.getModel().getLayers();
-        for (Layer l : layers) {
-            if (l instanceof PlaceNameLayer) {
-                position = layers.indexOf(l);
-                break;
-            }
-        }
-        layers.add(position, layer);
-    }
-
     private void initialize(final JPanel mainPane) {
-        SystemUtils.LOG.info("INITIALIZE IN WWAnalysisToolView CALLED" + " includeLayerPanel " + includeLayerPanel +
-                " includeProductPanel " + includeProductPanel);
+        SystemUtils.LOG.fine("INITIALIZE IN WWAnalysisToolView CALLED includeProductPanel " + includeProductPanel);
 
-        // share resources from existing WorldWind Canvas
-        WorldWindowGLCanvas shareWith = findWorldWindView();
+        try {
+            // share resources from existing WorldWind Canvas
+            final WorldWindowGLCanvas shareWith = findWorldWindView();
 
-        final WWView toolView = this;
-        final SwingWorker worker = new SwingWorker() {
-            @Override
-            protected Object doInBackground() {
-                // Create the WorldWindow.
-                try {
+            createWWPanel(shareWith, includeStatusBar, false, false);
+            wwjPanel.addLayerPanelLayer();
 
-                    createWWPanel(shareWith, includeStatusBar, false, false);
-                    wwjPanel.addLayerPanelLayer();
-                    wwjPanel.addElevation();
+            final LayerList layerList = getWwd().getModel().getLayers();
+            AppPanel.enableLayer(layerList, "Bing Imagery");
 
-                    // Put the pieces together.
-                    mainPane.add(wwjPanel, BorderLayout.CENTER);
+            DefaultProductLayer productLayer = null;
+            ProductImageLayer imageLayer = null;
+            final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
+            for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
+                if (layerDescriptor.showIn3DToolView()) {
+                    final WWLayer wwLayer = layerDescriptor.createWWLayer();
+                    LayerConfiguration.insertBelowOverlays(layerList, wwLayer);
 
-                    final LayerList layerList = getWwd().getModel().getLayers();
+                    wwLayer.setOpacity(0.8);
+                    // CHANGED: otherwise the objects in the product layer won't react to the select listener
+                    // wwLayer.setPickEnabled(false);
 
-                    final Layer bingLayer = layerList.getLayerByName("Bing Imagery");
-                    bingLayer.setEnabled(true);
-
-//                    final OSMMapnikLayer streetLayer = new OSMMapnikLayer();
-//                    streetLayer.setOpacity(0.7);
-//                    streetLayer.setEnabled(false);
-//                    streetLayer.setName("Open Street Map");
-//                    insertTiledLayer(getWwd(), streetLayer);
-
-                    final WWLayerDescriptor[] wwLayerDescriptors = WWLayerRegistry.getInstance().getWWLayerDescriptors();
-                    for (WWLayerDescriptor layerDescriptor : wwLayerDescriptors) {
-                        if (layerDescriptor.showIn3DToolView()) {
-                            final WWLayer wwLayer = layerDescriptor.createWWLayer();
-                            insertTiledLayer(getWwd(), wwLayer);
-
-                            wwLayer.setOpacity(0.8);
-                            // CHANGED: otherwise the objects in the product layer won't react to the select listener
-                            // wwLayer.setPickEnabled(false);
-
-                            if (wwLayer instanceof DefaultProductLayer) {
-                                ((DefaultProductLayer) wwLayer).setEnableSurfaceImages(true);
-                            }
-                        }
+                    if (wwLayer instanceof DefaultProductLayer) {
+                        productLayer = (DefaultProductLayer) wwLayer;
+                        productLayer.setEnableSurfaceImages(true);
+                    } else if (wwLayer instanceof ProductImageLayer) {
+                        imageLayer = (ProductImageLayer) wwLayer;
                     }
+                }
+            }
 
-                    // Instead of the default Place Name layer we use special implementation to replace
-                    // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
-                    final Layer placeNameLayer = layerList.getLayerByName("Place Names");
-                    layerList.remove(placeNameLayer);
+            AppPanel.addReferenceLayers(layerList);
 
-                    final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
-                    layerList.add(fixingPlaceNameLayer);
-                    fixingPlaceNameLayer.setEnabled(true);
+            if (productLayer != null && imageLayer != null) {
+                // full-resolution images replace the quicklooks, follow the product list and the opacity slider
+                imageLayer.linkTo(productLayer);
+            }
 
-                    if (includeLayerPanel) {
-                        layerPanel = new LayerPanel(wwjPanel.getWwd(), null);
-                        mainPane.add(layerPanel, BorderLayout.WEST);
+            // Put the pieces together.
+            mainPane.add(wwjPanel, BorderLayout.CENTER);
 
-                        layerPanel.add(makeControlPanel(), BorderLayout.SOUTH);
-                        layerPanel.update(getWwd());
-                    }
-                    if (includeProductPanel) {
-                        Layer layer = layerList.getLayerByName("Products");
+            if (includeProductPanel && productLayer != null) {
+                productPanel = new ProductPanel(wwjPanel.getWwd(), productLayer, imageLayer);
+                mainPane.add(productPanel, BorderLayout.WEST);
 
-                        productPanel = new ProductPanel(wwjPanel.getWwd(), (DefaultProductLayer) layer);
-                        mainPane.add(productPanel, BorderLayout.WEST);
+                productPanel.add(makeControlPanel(), BorderLayout.SOUTH);
 
-                        productPanel.add(makeControlPanel(), BorderLayout.SOUTH);
-
+                productPanel.update(getWwd());
+                // outlines are installed asynchronously
+                productLayer.setChangeListener(() -> {
+                    if (productPanel != null) {
                         productPanel.update(getWwd());
                     }
-                    if (includeWMSPanel) {
-                        tabbedPane.add(new JPanel());
-                        tabbedPane.setTitleAt(0, "+");
-                        tabbedPane.addChangeListener(new ChangeListener() {
-                            public void stateChanged(ChangeEvent changeEvent) {
-                                if (tabbedPane.getSelectedIndex() != 0) {
-                                    previousTabIndex = tabbedPane.getSelectedIndex();
-                                    return;
-                                }
-
-                                final String server = JOptionPane.showInputDialog("Enter WMS server URL");
-                                if (server == null || server.length() < 1) {
-                                    tabbedPane.setSelectedIndex(previousTabIndex);
-                                    return;
-                                }
-
-                                // Respond by adding a new WMSLayerPanel to the tabbed pane.
-                                if (addTab(tabbedPane.getTabCount(), server.trim()) != null)
-                                    tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-                            }
-                        });
-
-                        // Create a tab for each server and add it to the tabbed panel.
-                        for (int i = 0; i < servers.length; i++) {
-                            addTab(i + 1, servers[i]); // i+1 to place all server tabs to the right of the Add Server tab
-                        }
-
-                        // Display the first server pane by default.
-                        tabbedPane.setSelectedIndex(tabbedPane.getTabCount() > 0 ? 1 : 0);
-                        previousTabIndex = tabbedPane.getSelectedIndex();
-
-                        mainPane.add(tabbedPane, BorderLayout.EAST);
-                    }
-
-                    wwjPanel.getWwd().addSelectListener(new SelectListener() {
-
-                        public void selected(SelectEvent event) {
-                            /*
-                            System.out.println("event.getTopObject() " + event.getTopObject());
-                            if (event.getTopObject() instanceof AnalyticSurface.AnalyticSurfaceObject) {
-                                System.out.println("pick point: " + event.getPickPoint());
-                                Point pickPoint = event.getPickPoint();
-                                if (pickPoint != null) {
-                                    System.out.println("position: " + wwjPanel.getWwd().getView().computePositionFromScreenPoint(pickPoint.getX(), pickPoint.getY()));
-                                }
-
-                                //AnalyticSurface surface = (AnalyticSurface) event.getTopObject();
-                                //System.out.println("dimensions " + surface.getDimensions());
-                                //System.out.println("getCorners " + surface.getSector().getCorners());
-                            }
-                            */
-                            final List<WWLayer> layerList = getWWLayers();
-                            for (WWLayer wwLayer : layerList) {
-                                wwLayer.updateInfoAnnotation(event);
-                            }
-                        }
-                    });
-
-                    // update world map window with the information of the currently activated product scene view.
-                    final SnapApp snapApp = SnapApp.getDefault();
-                    snapApp.getProductManager().addListener(new WWProductManagerListener(toolView));
-                    snapApp.getSelectionSupport(ProductNode.class).addHandler((oldValue, newValue) -> {
-                        if (newValue != null) {
-                            setSelectedProduct(newValue.getProduct());
-                        } else {
-                            setSelectedProduct(null);
-                        }
-                    });
-
-                    snapApp.getSelectionSupport(RasterDataNode.class).addHandler((oldValue, newValue) -> {
-                        setSelectedRaster(newValue);
-                    });
-
-                    setProducts(snapApp.getProductManager().getProducts());
-                    setSelectedProduct(snapApp.getSelectedProduct(VIEW));
-
-                } catch (Throwable e) {
-                    SnapApp.getDefault().handleError("Unable to initialize WWAnalysisToolView: " + e.getMessage(), e);
-                }
-                return null;
+                });
             }
-        };
-        worker.execute();
+            mainPane.revalidate();
+
+            wwjPanel.getWwd().addSelectListener(event -> {
+                final List<WWLayer> wwLayers = getWWLayers();
+                for (WWLayer wwLayer : wwLayers) {
+                    wwLayer.updateInfoAnnotation(event);
+                }
+                if (event.getEventAction().equals(SelectEvent.LEFT_CLICK)) {
+                    selectPlacemarkInView(ImageViewSyncLayer.getPlacemark(event.getTopObject()));
+                }
+            });
+            installImageViewSync(wwjPanel.getWwd());
+
+            // update world map window with the information of the currently activated product scene view.
+            connectToSnap();
+
+        } catch (Throwable e) {
+            productPanel = null;
+            showInitError(mainPane, "WorldWind Analysis View", e);
+        }
+    }
+
+    /**
+     * Globe to image view synchronisation: the globe cursor in the image views, and a context menu to place pins
+     * and centre the image view.
+     */
+    private void installImageViewSync(final WorldWindowGLCanvas wwd) {
+        wwd.addPositionListener(event -> {
+            final Position position = event.getPosition();
+            globeCursorSync.setGlobePosition(position != null ?
+                    new GeoPos(position.getLatitude().degrees, position.getLongitude().degrees) : null);
+        });
+        wwd.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(final MouseEvent e) {
+                globeCursorSync.clear();
+            }
+
+            @Override
+            public void mousePressed(final MouseEvent e) {
+                showPopup(e);
+            }
+
+            @Override
+            public void mouseReleased(final MouseEvent e) {
+                showPopup(e);
+            }
+
+            private void showPopup(final MouseEvent e) {
+                final Position position = wwd.getCurrentPosition();
+                if (e.isPopupTrigger() && position != null) {
+                    createPopupMenu(new GeoPos(position.getLatitude().degrees, position.getLongitude().degrees))
+                            .show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
+    }
+
+    private JPopupMenu createPopupMenu(final GeoPos geoPos) {
+        final JPopupMenu menu = new JPopupMenu();
+        final Product product = getSelectedProduct();
+        final JMenuItem placePin = new JMenuItem("Place Pin Here");
+        placePin.setEnabled(product != null && ImageViewGeoUtils.toPixel(product.getSceneGeoCoding(),
+                product.getSceneRasterWidth(), product.getSceneRasterHeight(), geoPos) != null);
+        placePin.addActionListener(e -> ImageViewSyncLayer.placePin(product, geoPos));
+        menu.add(placePin);
+
+        final ProductSceneView view = SnapApp.getDefault().getSelectedProductSceneView();
+        final JMenuItem centreView = new JMenuItem("Centre Image View Here");
+        centreView.setEnabled(view != null && view.getRaster() != null &&
+                                      ImageViewGeoUtils.toRasterPixel(view.getRaster(), geoPos) != null);
+        centreView.addActionListener(e -> ImageViewSyncLayer.centreView(view, geoPos));
+        menu.add(centreView);
+        return menu;
+    }
+
+    private void selectPlacemarkInView(final Placemark placemark) {
+        if (placemark == null || placemark.getProduct() == null) {
+            return;
+        }
+        final ProductSceneView selected = SnapApp.getDefault().getSelectedProductSceneView();
+        if (ImageViewSyncLayer.selectInView(placemark, selected)) {
+            return;
+        }
+        for (ProductSceneView view : GlobeCursorSync.findOpenViews()) {
+            if (ImageViewSyncLayer.selectInView(placemark, view)) {
+                return;
+            }
+        }
+    }
+
+    @Override
+    protected void componentClosed() {
+        globeCursorSync.clear();
+        super.componentClosed();
+    }
+
+    private static void addLeftAligned(final JPanel panel, final JComponent component) {
+        component.setAlignmentX(LEFT_ALIGNMENT);
+        panel.add(component);
     }
 
     private JPanel makeControlPanel() {
 
-        final JPanel controlPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        final JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
         controlPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+
+        final JCheckBox syncCursor = new JCheckBox("Sync cursor with image views", globeCursorSync.isEnabled());
+        syncCursor.addActionListener(e -> globeCursorSync.setEnabled(syncCursor.isSelected()));
+        addLeftAligned(controlPanel, syncCursor);
 
         final List<WWLayer> layerList = getWWLayers();
         for (WWLayer wwLayer : layerList) {
-            controlPanel.add(wwLayer.getControlPanel(getWwd()));
+            final JPanel layerControlPanel = wwLayer.getControlPanel(getWwd());
+            if (layerControlPanel != null) {
+                addLeftAligned(controlPanel, layerControlPanel);
+            }
         }
+
+        addLeftAligned(controlPanel, new ExternalDataPanel(getWwd()));
+        addLeftAligned(controlPanel, new MeasurePanel(getWwd()));
 
         return controlPanel;
     }
@@ -337,28 +316,5 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
 
         if (productPanel != null)
             productPanel.update(getWwd());
-    }
-
-    private WMSLayersPanel addTab(final int position, final String server) {
-        // Add a server to the tabbed dialog.
-        try {
-            final WMSLayersPanel layersPanel = new WMSLayersPanel(wwjPanel.getWwd(), server, wmsPanelSize);
-            this.tabbedPane.add(layersPanel, BorderLayout.CENTER);
-            final String title = layersPanel.getServerDisplayString();
-            this.tabbedPane.setTitleAt(position, title != null && title.length() > 0 ? title : server);
-
-            // Add a listener to notice wms layer selections and tell the layer panel to reflect the new state.
-            layersPanel.addPropertyChangeListener("LayersPanelUpdated", new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                    layerPanel.update(wwjPanel.getWwd());
-                }
-            });
-
-            return layersPanel;
-        } catch (URISyntaxException e) {
-            Dialogs.showError("Invalid Server URL", "Server URL is invalid");
-            tabbedPane.setSelectedIndex(previousTabIndex);
-            return null;
-        }
     }
 }

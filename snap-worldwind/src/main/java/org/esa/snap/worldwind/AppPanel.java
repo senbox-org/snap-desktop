@@ -15,17 +15,11 @@
  */
 package org.esa.snap.worldwind;
 
-import gov.nasa.worldwind.Configuration;
+import gov.nasa.worldwind.BasicModel;
 import gov.nasa.worldwind.Model;
-import gov.nasa.worldwind.WorldWind;
-import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.avlist.AVList;
-import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
-import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.EarthFlat;
-import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Earth.LandsatI3WMSLayer;
 import gov.nasa.worldwind.layers.Layer;
@@ -33,32 +27,24 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
 import gov.nasa.worldwind.layers.StarsLayer;
 import gov.nasa.worldwind.layers.WorldMapLayer;
-import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
-import gov.nasa.worldwind.terrain.CompoundElevationModel;
-import gov.nasa.worldwind.terrain.WMSBasicElevationModel;
-import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.PlacemarkClutterFilter;
 import gov.nasa.worldwind.util.StatusBar;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
-import gov.nasa.worldwind.wms.CapabilitiesRequest;
 import gov.nasa.worldwindx.examples.ClickAndGoSelectListener;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import org.esa.snap.worldwind.layers.NaturalEarthLayers;
 
 import javax.swing.JPanel;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.BorderLayout;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * World Wind App Panel
  */
 public class AppPanel extends JPanel {
+
+    // display name of the Landsat layer in SNAP's layer configuration
+    public static final String LANDSAT_LAYER_NAME = "i-cubed Landsat";
+
     private WorldWindowGLCanvas wwd = null;
     private StatusBar statusBar = null;
 
@@ -77,8 +63,10 @@ public class AppPanel extends JPanel {
         this.wwd = new WorldWindowGLCanvas(shareWith);
         this.wwd.setModel(model);
         this.wwd.setView(flatWorld ? new FlatOrbitView() : new BasicOrbitView());
+        // local DEM files as terrain, if chosen in the preferences
+        LocalDemTerrain.attach(model.getGlobe(), this.wwd);
 
-        // Setup a select listener for the worldmap click-and-go feature
+        // Setup a select listener for the worldmap click-and-go feature (no effect without a world map layer)
         this.wwd.addSelectListener(new ClickAndGoSelectListener(wwd, WorldMapLayer.class));
 
         this.wwd.getSceneController().setClutterFilter(new PlacemarkClutterFilter());
@@ -93,19 +81,19 @@ public class AppPanel extends JPanel {
     }
 
     /**
-     * Creates the default model as described in the current worldwind properties. This is the expensive part of
+     * Creates the model from SNAP's layer configuration, not WorldWind's defaults. This is the expensive part of
      * setting up a WorldWind view (configuration, globe, layers) and does not touch Swing or OpenGL, so it may be
      * called from a background thread.
      */
     public static Model createModel(final boolean flatWorld, final boolean removeExtraLayers) {
-        final Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
-        m.setGlobe(flatWorld ? new EarthFlat() : new Earth());
+        final Model m = new BasicModel(flatWorld ? new EarthFlat() : new Earth(), LayerConfiguration.createLayers());
 
         if (removeExtraLayers) {
             final LayerList layerList = m.getLayers();
             for (Layer layer : layerList) {
                 if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer ||
-                        layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer)
+                        layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer ||
+                        LANDSAT_LAYER_NAME.equals(layer.getName()))
                     layerList.remove(layer);
             }
         }
@@ -116,14 +104,6 @@ public class AppPanel extends JPanel {
         wwd.getModel().getLayers().add(new LayerPanelLayer(getWwd()));
     }
 
-    public void addElevation() {
-        try {
-            final ElevationModel em = makeElevationModel();
-            wwd.getModel().getGlobe().setElevationModel(em);
-        } catch (Exception ignore) {
-        }
-    }
-
     public final WorldWindowGLCanvas getWwd() {
         return wwd;
     }
@@ -132,49 +112,21 @@ public class AppPanel extends JPanel {
         return statusBar;
     }
 
-    private static ElevationModel makeElevationModel() throws URISyntaxException, ParserConfigurationException,
-            IOException, SAXException {
-        final URI serverURI = new URI("http://www.nasa.network.com/elev");
-
-        final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        docBuilderFactory.setNamespaceAware(true);
-        if (Configuration.getJavaVersion() >= 1.6) {
-            try {
-                docBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            } catch (ParserConfigurationException e) {   // Note it and continue on. Some Java5 parsers don't support the feature.
-                String message = Logging.getMessage("XML.NonvalidatingNotSupported");
-                Logging.logger().finest(message);
-            }
+    /**
+     * Enables a layer of the default configuration if it exists.
+     */
+    public static void enableLayer(final LayerList layerList, final String name) {
+        final Layer layer = layerList.getLayerByName(name);
+        if (layer != null) {
+            layer.setEnabled(true);
         }
-        final DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+    }
 
-        // Request the capabilities document from the server.
-        final CapabilitiesRequest req = new CapabilitiesRequest(serverURI);
-        final Document doc = docBuilder.parse(req.toString());
-
-        // Parse the DOM as a capabilities document.
-        // CHANGED
-        //final Capabilities caps = Capabilities.parse(doc);
-        final WMSCapabilities caps = new WMSCapabilities(doc);
-
-        final double HEIGHT_OF_MT_EVEREST = 8850d; // meters
-        final double DEPTH_OF_MARIANAS_TRENCH = -11000d; // meters
-
-        // Set up and instantiate the elevation model
-        final AVList params = new AVListImpl();
-        params.setValue(AVKey.LAYER_NAMES, "|srtm3");
-        params.setValue(AVKey.TILE_WIDTH, 150);
-        params.setValue(AVKey.TILE_HEIGHT, 150);
-        params.setValue(AVKey.LEVEL_ZERO_TILE_DELTA, LatLon.fromDegrees(20, 20));
-        params.setValue(AVKey.NUM_LEVELS, 8);
-        params.setValue(AVKey.NUM_EMPTY_LEVELS, 0);
-        params.setValue(AVKey.ELEVATION_MIN, DEPTH_OF_MARIANAS_TRENCH);
-        params.setValue(AVKey.ELEVATION_MAX, HEIGHT_OF_MT_EVEREST);
-
-        final CompoundElevationModel cem = new CompoundElevationModel();
-        cem.addElevationModel(new WMSBasicElevationModel(caps, params));
-
-        return cem;
+    /**
+     * Adds the offline country borders and place names (Natural Earth) as overlays.
+     */
+    public static void addReferenceLayers(final LayerList layerList) {
+        NaturalEarthLayers.addTo(layerList);
     }
 
     private static class MinimalStatusBar extends StatusBar {

@@ -12,8 +12,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The panel containing the earth globe.
@@ -103,15 +106,12 @@ public abstract class WorldMapPanelWrapper extends JPanel {
     public void setEyePosition(Path2D.Double polygonPath) {
         if (this.currentWorldMap != null) {
             if (this.currentWorldMap == this.worldMap3DPanel) {
-                Rectangle2D rectangleBounds = polygonPath.getBounds2D();
-                if (rectangleBounds == null) {
-                    throw new NullPointerException("The rectangle bounds is null.");
-                }
                 Position eyePosition = this.worldMap3DPanel.getView().getEyePosition();
                 if (eyePosition == null) {
                     throw new NullPointerException("The eye position is null.");
                 }
-                Position position = Position.fromDegrees(rectangleBounds.getCenterY(), rectangleBounds.getCenterX(), eyePosition.getElevation());
+                Point2D.Double centre = FootprintUtils.getCentre(polygonPath);
+                Position position = Position.fromDegrees(centre.getY(), centre.getX(), eyePosition.getElevation());
                 this.worldMap3DPanel.getView().setEyePosition(position);
                 this.worldMap3DPanel.redrawNow();
             } else if (this.currentWorldMap == this.worldMap2DPanel) {
@@ -145,6 +145,9 @@ public abstract class WorldMapPanelWrapper extends JPanel {
     }
 
     private void processLeftMouseClick(MouseEvent mouseEvent) {
+        if (mouseEvent.isConsumed() || this.currentWorldMap.isDrawingPolygon()) {
+            return; // a click drawing the polygon selection
+        }
         Point.Double clickedPoint = this.currentWorldMap.convertPointToDegrees(mouseEvent.getPoint());
         if (clickedPoint != null) {
             List<Path2D.Double> polygonPaths = this.polygonsLayerModel.findPolygonsContainsPoint(clickedPoint.getX(), clickedPoint.getY());
@@ -155,7 +158,8 @@ public abstract class WorldMapPanelWrapper extends JPanel {
     private void processRightMouseClick(MouseEvent mouseEvent) {
         WorldMap worldMap = (WorldMap)mouseEvent.getSource();
         JMenuItem selectionMenuItem;
-        if (worldMap.getSelectedArea() != null) {
+        JMenuItem polygonMenuItem = null;
+        if (worldMap.getSelectedArea() != null || worldMap.isDrawingPolygon()) {
             selectionMenuItem = new JMenuItem("Clear selection");
             selectionMenuItem.addActionListener(new ActionListener() {
                 @Override
@@ -175,13 +179,21 @@ public abstract class WorldMapPanelWrapper extends JPanel {
                     inputWorldMap.enableSelection();
                 }
             });
+            polygonMenuItem = new JMenuItem("Start polygon selection (double-click to close)");
+            polygonMenuItem.addActionListener(actionEvent -> worldMap.enablePolygonSelection());
         }
         selectionMenuItem.putClientProperty(selectionMenuItem, worldMap);
 
         JMenu viewMenu = new JMenu("View");
         if (worldMap == this.worldMap2DPanel) {
-            viewMenu.add(buildView3DGlobe());
-            viewMenu.add(buildView3DFlatEarth());
+            if (this.worldMap3DPanel != null) {
+                viewMenu.add(buildView3DGlobe());
+                viewMenu.add(buildView3DFlatEarth());
+            } else {
+                JMenuItem unavailableMenuItem = new JMenuItem("3D view unavailable (OpenGL could not be initialised)");
+                unavailableMenuItem.setEnabled(false);
+                viewMenu.add(unavailableMenuItem);
+            }
         } else if (worldMap == this.worldMap3DPanel) {
             if (this.worldMap3DPanel.isGlobeEarth()) {
                 viewMenu.add(buildView3DFlatEarth());
@@ -199,6 +211,9 @@ public abstract class WorldMapPanelWrapper extends JPanel {
         }
         JPopupMenu popup = new JPopupMenu();
         popup.add(selectionMenuItem);
+        if (polygonMenuItem != null) {
+            popup.add(polygonMenuItem);
+        }
         popup.add(viewMenu);
         popup.show((JPanel)worldMap, mouseEvent.getX(), mouseEvent.getY());
     }
@@ -274,10 +289,16 @@ public abstract class WorldMapPanelWrapper extends JPanel {
             this.worldMap3DPanel = worldMap3DPanel;
             this.worldMap3DPanel.setOpaque(false);
             this.worldMap3DPanel.addMouseListener(mouseAdapter);
+            // OpenGL problems (missing GL functions, driver failures) are only reported through this listener;
+            // fall back to the 2D map instead of leaving a blank panel
+            this.worldMap3DPanel.addRenderingExceptionListener(throwable -> SwingUtilities.invokeLater(() -> fallbackTo2D(throwable)));
             worldMapPanel = this.worldMap3DPanel;
         }
         Integer lastWorldMapPanelId = this.persistencePreferences.getPropertyInt(PREFERENCES_KEY_LAST_WORLD_MAP_PANEL, null);
-        if (lastWorldMapPanelId != null) {
+        if (lastWorldMapPanelId != null && this.worldMap3DPanel == null) {
+            // the 3D panel is not available: whatever was saved, only the 2D map can be shown
+            worldMapPanel = this.worldMap2DPanel;
+        } else if (lastWorldMapPanelId != null) {
             if (lastWorldMapPanelId.intValue() == WORLD_MAP_2D_FLAT_EARTH) {
                 worldMapPanel = this.worldMap2DPanel;
             } else if (lastWorldMapPanelId.intValue() == WORLD_MAP_3D_FLAT_EARTH) {
@@ -289,5 +310,17 @@ public abstract class WorldMapPanelWrapper extends JPanel {
             }
         }
         addWorldMapPanel(worldMapPanel, null);
+    }
+
+    private void fallbackTo2D(Throwable throwable) {
+        if (this.worldMap3DPanel == null) {
+            return;
+        }
+        Logger.getLogger(WorldMapPanelWrapper.class.getName()).log(Level.WARNING, "The 3D world map failed to render; switching to the 2D world map.", throwable);
+        WorldMap3DPanel failedPanel = this.worldMap3DPanel;
+        this.worldMap3DPanel = null;
+        if (this.currentWorldMap == failedPanel) {
+            addWorldMapPanel(this.worldMap2DPanel, WORLD_MAP_2D_FLAT_EARTH);
+        }
     }
 }

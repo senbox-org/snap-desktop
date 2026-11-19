@@ -24,7 +24,7 @@ public class PolygonsLayerModel {
         Iterator<CustomPolyline> it1 = this.renderables.iterator();
         while (it1.hasNext()) {
             CustomPolyline polyline = it1.next();
-            if (polyline.getPath().contains(longitude, latitude)) {
+            if (FootprintUtils.contains(polyline.getPath(), longitude, latitude)) {
                 polygonPaths.add(polyline.getPath());
             }
         }

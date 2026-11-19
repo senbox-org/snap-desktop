@@ -20,5 +20,12 @@ public interface WorldMap {
 
     public void disableSelection();
 
+    /**
+     * Starts drawing a polygon area of interest: each click adds a vertex, a double click closes the polygon.
+     */
+    public void enablePolygonSelection();
+
+    public boolean isDrawingPolygon();
+
     public Rectangle2D getSelectedArea();
 }
