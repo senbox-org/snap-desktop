@@ -1,5 +1,6 @@
 package org.esa.snap.worldwind.layers;
 
+import com.bc.ceres.annotation.STTM;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
@@ -165,6 +166,26 @@ public class DefaultProductLayerTest {
 
         onEDT(() -> layer.setProductVisible(names[1], true));
         assertEquals(total, layer.getRenderableCount());
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testProductVisibilityIsReportedWithTheProduct() throws Exception {
+        final DefaultProductLayer layer = new DefaultProductLayer();
+        final Product product = createProduct("p", 10.0, 50.0, 0.1);
+        final List<String> reported = new ArrayList<>();
+        layer.setProductVisibilityListener((p, visible) -> reported.add(p.getName() + "=" + visible));
+
+        onEDT(() -> layer.addProduct(product, null));
+        assertTrue(layer.awaitPendingOutlines(10000));
+        final String name = layer.getProductNames()[0];
+
+        onEDT(() -> {
+            layer.setProductVisible(name, false);
+            layer.setProductVisible(name, false);
+            layer.setProductVisible(name, true);
+        });
+        assertEquals("only changes are reported", "[p=false, p=true]", reported.toString());
     }
 
     @Test

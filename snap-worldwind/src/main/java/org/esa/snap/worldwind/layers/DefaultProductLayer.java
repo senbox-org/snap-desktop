@@ -44,8 +44,6 @@ import org.esa.snap.engine_utilities.eo.GeoUtils;
 import org.esa.snap.engine_utilities.gpf.InputProductValidator;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
@@ -63,6 +61,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.DoubleConsumer;
 import java.util.logging.Level;
 
 /**
@@ -92,6 +92,8 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
     private final Map<Product, String> productKeys = Collections.synchronizedMap(new IdentityHashMap<>());
     private final AtomicInteger pendingTasks = new AtomicInteger();
     private Runnable changeListener;
+    private BiConsumer<Product, Boolean> productVisibilityListener;
+    private DoubleConsumer opacityListener;
     // products whose quicklook is hidden, e.g. because a full-resolution image is shown instead
     private final Set<Product> hiddenQuicklooks = Collections.newSetFromMap(new IdentityHashMap<>());
 
@@ -126,6 +128,14 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         this.changeListener = listener;
     }
 
+    /**
+     * @param listener called when a product is shown or hidden with {@link #setProductVisible}, so that what other
+     *                 layers draw for it (e.g. its full-resolution image) can follow
+     */
+    public void setProductVisibilityListener(final BiConsumer<Product, Boolean> listener) {
+        this.productVisibilityListener = listener;
+    }
+
     public String[] getProductNames() {
         final List<String> list = new ArrayList<>(outlineTable.keySet());
         Collections.sort(list);
@@ -139,6 +149,17 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         for (String name : outlineTable.keySet()) {
             setOpacity(name, opacity);
         }
+        if (opacityListener != null) {
+            opacityListener.accept(opacity);
+        }
+    }
+
+    /**
+     * @param listener called with the new opacity whenever the layer opacity is set, so that other layers drawing
+     *                 product images (the full-resolution images) follow the same opacity
+     */
+    public void setOpacityListener(final DoubleConsumer listener) {
+        this.opacityListener = listener;
     }
 
     public void setOpacity(String name, double opacity) {
@@ -183,6 +204,9 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
         }
         outline.visible = visible;
         final Product product = findProduct(name);
+        if (product != null && productVisibilityListener != null) {
+            productVisibilityListener.accept(product, visible);
+        }
         final List<SurfaceImage> hidden = product != null && hiddenQuicklooks.contains(product) ?
                 getQuicklooks(outline) : Collections.emptyList();
         for (Renderable r : getRenderables(outline)) {
@@ -751,19 +775,14 @@ public class DefaultProductLayer extends BaseLayer implements WWLayer {
 
     @Override
     public JPanel getControlPanel(final WorldWindowGLCanvas wwd) {
-        final JSlider opacitySlider = new JSlider();
-        opacitySlider.setMaximum(100);
-        opacitySlider.setValue((int) (getOpacity() * 100));
-        opacitySlider.setEnabled(true);
-        opacitySlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                int value = opacitySlider.getValue();
-                setOpacity(value / 100d);
-                wwd.repaint();
+        // also sets the opacity of the full-resolution images, through the opacity listener
+        final JSlider opacitySlider = new JSlider(0, 100, (int) Math.round(getOpacity() * 100));
+        opacitySlider.addChangeListener(e -> {
+            setOpacity(opacitySlider.getValue() / 100d);
+            if (wwd != null) {
+                wwd.redraw();
             }
         });
-
-        //theSelectedObjectLabel = new JLabel("Selected: ");
 
         final JPanel opacityPanel = new JPanel(new BorderLayout(5, 5));
         opacityPanel.add(new JLabel("Image Opacity"), BorderLayout.WEST);

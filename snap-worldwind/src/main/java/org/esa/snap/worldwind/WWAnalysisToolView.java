@@ -140,8 +140,6 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                         productLayer.setEnableSurfaceImages(true);
                     } else if (wwLayer instanceof ProductImageLayer) {
                         imageLayer = (ProductImageLayer) wwLayer;
-                        // full-resolution images are opaque by default; the quicklooks keep the layer opacity
-                        imageLayer.setOpacity(1.0);
                     }
                 }
             }
@@ -152,6 +150,11 @@ public class WWAnalysisToolView extends WWBaseToolView implements WWView {
                 // a full-resolution image replaces the quicklook of its product
                 final DefaultProductLayer quicklookLayer = productLayer;
                 imageLayer.setImageShownListener((product, shown) -> quicklookLayer.setQuicklookVisible(product, !shown));
+                // switching a product off in the product list also hides its full-resolution image
+                productLayer.setProductVisibilityListener(imageLayer::setProductVisible);
+                // one opacity slider for quicklooks and full-resolution images; product images start opaque
+                productLayer.setOpacityListener(imageLayer::setOpacity);
+                productLayer.setOpacity(1.0);
             }
 
             // Put the pieces together.

@@ -1,5 +1,6 @@
 package org.esa.snap.worldwind.layers;
 
+import com.bc.ceres.annotation.STTM;
 import org.esa.snap.core.datamodel.Band;
 import org.esa.snap.core.datamodel.ColorPaletteDef;
 import org.esa.snap.core.datamodel.CrsGeoCoding;
@@ -14,7 +15,11 @@ import org.esa.snap.worldwind.model.GeoBounds;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
+import java.awt.Component;
+import java.awt.Container;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -24,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -268,6 +274,99 @@ public class ProductImageLayerTest {
         assertFalse(tiledLayer.getLevels().getFirstLevel().getCacheName().equals(
                 ProductImageLayer.createTiledLayer(new RasterDataNode[]{product.getBand("a")}, null)
                         .getLevels().getFirstLevel().getCacheName()));
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testHidingTheProductHidesItsImage() throws Exception {
+        final ProductImageLayer layer = new ProductImageLayer();
+        final Product product = createProduct("p", true);
+        final ProductSceneView view = mockView(product.getBand("a"));
+        onEDT(() -> {
+            layer.addProduct(product, null);
+            layer.setSelectedSceneView(view);
+        });
+        assertTrue(layer.awaitPendingImages(10000));
+        assertTrue(layer.getImage(product).tiledLayer.isEnabled());
+
+        onEDT(() -> layer.setProductVisible(product, false));
+        assertFalse(layer.isProductVisible(product));
+        assertFalse("hidden images are not drawn", layer.getImage(product).tiledLayer.isEnabled());
+
+        onEDT(() -> layer.setProductVisible(product, true));
+        assertTrue(layer.isProductVisible(product));
+        assertTrue(layer.getImage(product).tiledLayer.isEnabled());
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testHiddenProductStaysHiddenWhenItsImageIsReplaced() throws Exception {
+        final ProductImageLayer layer = new ProductImageLayer();
+        final Product product = createProduct("p", true);
+        final ProductSceneView viewA = mockView(product.getBand("a"));
+        final ProductSceneView viewB = mockView(product.getBand("b"));
+        onEDT(() -> {
+            layer.addProduct(product, null);
+            layer.setProductVisible(product, false);
+            layer.setSelectedSceneView(viewA);
+        });
+        assertTrue(layer.awaitPendingImages(10000));
+        assertFalse("hidden before its image arrived", layer.getImage(product).tiledLayer.isEnabled());
+
+        onEDT(() -> layer.setSelectedSceneView(viewB));
+        assertTrue(layer.awaitPendingImages(10000));
+        assertSame(product.getBand("b"), layer.getImage(product).rasters[0]);
+        assertFalse(layer.getImage(product).tiledLayer.isEnabled());
+
+        // forgotten with the product
+        onEDT(() -> {
+            layer.removeProduct(product);
+            layer.addProduct(product, null);
+        });
+        assertTrue(layer.isProductVisible(product));
+    }
+
+    @Test
+    @STTM("SNAP-4380")
+    public void testOneOpacitySliderSetsQuicklooksAndImages() throws Exception {
+        final DefaultProductLayer productLayer = new DefaultProductLayer();
+        final ProductImageLayer imageLayer = new ProductImageLayer();
+        productLayer.setOpacityListener(imageLayer::setOpacity);
+        final Product product = createProduct("p", true);
+        onEDT(() -> {
+            imageLayer.addProduct(product, null);
+            imageLayer.setSelectedSceneView(mockView(product.getBand("a")));
+        });
+        assertTrue(imageLayer.awaitPendingImages(10000));
+
+        final JPanel[] panels = new JPanel[2];
+        onEDT(() -> {
+            panels[0] = productLayer.getControlPanel(null);
+            panels[1] = imageLayer.getControlPanel(null);
+        });
+        assertNull("no second slider", panels[1]);
+        final JSlider slider = findSlider(panels[0]);
+        assertNotNull(slider);
+
+        onEDT(() -> slider.setValue(40));
+        assertEquals(0.4, productLayer.getOpacity(), 1e-9);
+        assertEquals(0.4, imageLayer.getOpacity(), 1e-9);
+        assertEquals(0.4, imageLayer.getImage(product).tiledLayer.getOpacity(), 1e-9);
+    }
+
+    private static JSlider findSlider(final Container container) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JSlider) {
+                return (JSlider) component;
+            }
+            if (component instanceof Container) {
+                final JSlider slider = findSlider((Container) component);
+                if (slider != null) {
+                    return slider;
+                }
+            }
+        }
+        return null;
     }
 
     @Test

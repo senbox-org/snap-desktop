@@ -87,6 +87,8 @@ public class ProductImageLayer extends BaseLayer implements WWLayer {
     // the latest requested image of each product; an image built for an older request is discarded
     private final Map<Product, Integer> generations = new IdentityHashMap<>();
     private final Map<Product, ProductNodeListenerAdapter> nodeListeners = new IdentityHashMap<>();
+    // products switched off in the product list: their image is kept but not drawn
+    private final Set<Product> hiddenProducts = Collections.newSetFromMap(new IdentityHashMap<>());
     private final AtomicInteger pendingTasks = new AtomicInteger();
     private BiConsumer<Product, Boolean> imageShownListener;
     private WorldWindowGLCanvas wwd;
@@ -146,6 +148,7 @@ public class ProductImageLayer extends BaseLayer implements WWLayer {
             product.removeProductNodeListener(listener);
         }
         generations.remove(product);
+        hiddenProducts.remove(product);
         removeImage(product);
         if (selectedProduct == product) {
             selectedProduct = null;
@@ -236,7 +239,7 @@ public class ProductImageLayer extends BaseLayer implements WWLayer {
         image.tiledLayer = tiledLayer;
         tiledLayer.setName(getName() + " " + product.getName());
         tiledLayer.setOpacity(getOpacity());
-        tiledLayer.setEnabled(true);
+        tiledLayer.setEnabled(!hiddenProducts.contains(product));
         // tiles are rendered on WorldWind's task threads; redraw when one arrives
         tiledLayer.addPropertyChangeListener(evt -> firePropertyChange(AVKey.LAYER, null, this));
         images.put(product, image);
@@ -273,6 +276,30 @@ public class ProductImageLayer extends BaseLayer implements WWLayer {
                 imageShownListener.accept(product, enabled);
             }
         }
+    }
+
+    /**
+     * Shows or hides the image of one product, as its entry in the product list does. A hidden product keeps its
+     * image (and gets new ones when its view's colours change), so that showing it again needs no re-rendering.
+     */
+    public void setProductVisible(final Product product, final boolean visible) {
+        if (!products.contains(product)) {
+            return;
+        }
+        if (visible) {
+            hiddenProducts.remove(product);
+        } else {
+            hiddenProducts.add(product);
+        }
+        final ProductImage image = images.get(product);
+        if (image != null && image.tiledLayer != null) {
+            image.tiledLayer.setEnabled(visible);
+            redraw();
+        }
+    }
+
+    public boolean isProductVisible(final Product product) {
+        return !hiddenProducts.contains(product);
     }
 
     private void removeImage(final Product product) {
@@ -339,6 +366,7 @@ public class ProductImageLayer extends BaseLayer implements WWLayer {
 
     @Override
     public JPanel getControlPanel(final WorldWindowGLCanvas wwd) {
+        // the opacity is set by the product layer's slider
         return null;
     }
 
