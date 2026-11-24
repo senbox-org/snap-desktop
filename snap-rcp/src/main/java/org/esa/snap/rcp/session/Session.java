@@ -33,6 +33,8 @@ import com.bc.ceres.glayer.Layer;
 import com.bc.ceres.glayer.LayerContext;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
+import com.bc.ceres.glayer.support.ImageLayer;
+import com.bc.ceres.multilevel.MultiLevelSource;
 import com.bc.ceres.grender.Viewport;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
@@ -50,6 +52,10 @@ import org.esa.snap.core.datamodel.RGBImageProfile;
 import org.esa.snap.core.datamodel.RasterDataNode;
 import org.esa.snap.core.datamodel.VirtualBand;
 import org.esa.snap.core.layer.MaskCollectionLayerType;
+import eu.esa.snap.core.renderer.classfraction.ClassBandConfig;
+import eu.esa.snap.core.renderer.classfraction.ClassFractionImageLayerType;
+import eu.esa.snap.core.renderer.classfraction.ClassFractionRendererConfig;
+import eu.esa.snap.core.renderer.classfraction.ClassFractionRendererConfigJson;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.core.util.io.FileUtils;
@@ -144,10 +150,17 @@ public class Session {
             String expressionG = null;
             String expressionB = null;
             int productRefNo = 0;
+            String rendererType = null;
+            String rendererConfig = null;
 
             if (view instanceof ProductSceneView) {
                 ProductSceneView psv = (ProductSceneView) view;
-                if (psv.isRGB()) {
+                if (isClassFractionScene(psv)) {
+                    rendererType = ClassFractionImageLayerType.class.getName();
+                    rendererConfig = (String) psv.getBaseImageLayer().getConfiguration().getValue(ClassFractionImageLayerType.PROPERTY_NAME_CONFIG_JSON);
+                    productRefNo = psv.getRasters()[0].getProduct().getRefNo();
+                    viewName = psv.getSceneName();
+                } else if (psv.isRGB()) {
                     viewName = psv.getSceneName();
 
                     RasterDataNode[] rasters = psv.getRasters();
@@ -186,8 +199,14 @@ public class Session {
                                       expressionR,
                                       expressionG,
                                       expressionB,
+                                      rendererType,
+                                      rendererConfig,
                                       layerRefs);
         }
+    }
+
+    private static boolean isClassFractionScene(ProductSceneView view) {
+        return view.getBaseImageLayer().getLayerType() instanceof ClassFractionImageLayerType;
     }
 
     // todo - code duplication in RgbImageLayerType.java (nf 10.2009)
@@ -408,16 +427,30 @@ public class Session {
         return view.getBaseImageLayer().getId().equals(ref.id);
     }
 
-    private static ProductSceneView createSceneView(ViewRef viewRef,
-                                                    ProductManager productManager,
-                                                    PropertyMap applicationPreferences,
-                                                    ProgressMonitor pm) throws Exception {
+    static ProductSceneView createSceneView(ViewRef viewRef,
+                                            ProductManager productManager,
+                                            PropertyMap applicationPreferences,
+                                            ProgressMonitor pm) throws Exception {
         Product product = productManager.getProductByRefNo(viewRef.productRefNo);
         if (product == null) {
             throw new Exception("Unknown product reference number: " + viewRef.productRefNo);
         }
         ProductSceneImage sceneImage;
-        if (viewRef.productNodeName != null) {
+        if (ClassFractionImageLayerType.isRendererTypeName(viewRef.rendererType)) {
+            ClassFractionRendererConfig config = ClassFractionRendererConfigJson.decode(viewRef.rendererConfig);
+            List<RasterDataNode> rasters = new ArrayList<>();
+            for (ClassBandConfig band : config.getClassBandGroup().getBands()) {
+                RasterDataNode raster = product.getRasterDataNode(band.getBandName());
+                if (raster == null) {
+                    throw new Exception("Class renderer source is unresolved: " + band.getBandName());
+                }
+                rasters.add(raster);
+            }
+            ClassFractionImageLayerType layerType = new ClassFractionImageLayerType();
+            ImageLayer layer = layerType.createLayer(product, config);
+            MultiLevelSource source = layer.getConfiguration().getValue(ImageLayer.PROPERTY_NAME_MULTI_LEVEL_SOURCE);
+            sceneImage = new ProductSceneImage(viewRef.viewName, rasters.toArray(new RasterDataNode[0]), applicationPreferences, source, layer);
+        } else if (viewRef.productNodeName != null) {
             RasterDataNode node = product.getRasterDataNode(viewRef.productNodeName);
             if (node != null) {
                 sceneImage = new ProductSceneImage(node, applicationPreferences,
@@ -565,6 +598,8 @@ public class Session {
         String expressionR;
         String expressionG;
         String expressionB;
+        String rendererType;
+        String rendererConfig;
 
         @XStreamAlias("layers")
         LayerRef[] layerRefs;
@@ -580,6 +615,7 @@ public class Session {
                        ViewportDef viewportDef, int productRefNo,
                        String productNodeName, String viewName, String expressionR, String expressionG,
                        String expressionB,
+                       String rendererType, String rendererConfig,
                        LayerRef[] layerRefs) {
             this.id = id;
             this.type = type;
@@ -591,6 +627,8 @@ public class Session {
             this.expressionR = expressionR;
             this.expressionG = expressionG;
             this.expressionB = expressionB;
+            this.rendererType = rendererType;
+            this.rendererConfig = rendererConfig;
             this.layerRefs = layerRefs;
         }
 
