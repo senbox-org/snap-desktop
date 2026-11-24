@@ -102,6 +102,8 @@
     <mapID target="createFilteredBand" url="desktop/CreateFilteredBand.html"/>
     <mapID target="expressionEditor" url="desktop/ExpressionEditor.html"/>
     <mapID target="rgbImageProfile" url="desktop/RGBImageProfile.html"/>
+    <mapID target="classFractionRenderer" url="desktop/ClassFractionRenderer.html"/>
+    <mapID target="classFractionStatistics" url="desktop/ClassFractionStatistics.html"/>
     <mapID target="bandArithmetic" url="desktop/BandMaths.html"/>
     <mapID target="vectorDataManagement" url="desktop/VectorDataManagement.html"/>
     <mapID target="bandGroupsEditor" url="desktop/BandGroupEditor.html"/>

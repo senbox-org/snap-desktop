@@ -31,6 +31,9 @@
                     <tocitem text="Navigation Window" target="showNavigationWnd"/>
                     <tocitem text="Colour Manipulation" target="showColorManipulationWnd"/>
                     <tocitem text="RGB-Image Profile" target="rgbImageProfile"/>
+                    <tocitem text="Class Fraction / Probability Renderer" target="classFractionRenderer">
+                        <tocitem text="Statistics and ROI Analysis" target="classFractionStatistics"/>
+                    </tocitem>
                     <tocitem text="Mask Management" target="showMaskManagerWnd"/>
                 </tocitem>
                 <tocitem text="Analysis Tools">

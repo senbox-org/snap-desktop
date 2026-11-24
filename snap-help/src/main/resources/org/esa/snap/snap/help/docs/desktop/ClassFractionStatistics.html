@@ -1,0 +1,77 @@
+<!--
+  ~ Copyright (C) 2026
+  ~ This file is part of the Sentinel Application Platform (SNAP).
+  ~
+  ~ SNAP is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+-->
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Class Fraction / Probability Statistics</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;Class Fraction / Probability Statistics and ROI Analysis</td>
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg" border="0"></a></td>
+    </tr>
+</table>
+
+<h3>Class Fraction / Probability Statistics</h3>
+
+<p>
+    Open this dialog with <b>Show Statistics</b> in the Class Fraction / Probability Renderer dialog. Statistics use the
+    original configured source bands, never the rendered RGB image. Display scale is a display-only setting and has no
+    effect on the results.
+</p>
+
+<p align="center"><img src="images/ClassFractionStatisticsDialog.png"
+                       alt="Class Fraction / Probability Statistics dialog"></p>
+
+<h4>Common validity</h4>
+
+<p>
+    A selected pixel contributes to every class row only when every configured source band is valid according to the
+    validity policy chosen in the renderer dialog. The status line reports selected, common-valid, and excluded pixels.
+    This makes rows directly comparable. The <em>Show in View</em> setting does not affect statistics.
+</p>
+
+<h4>ROI masks</h4>
+
+<p>
+    Select <b>Whole scene</b> or a compatible product mask from the <b>ROI</b> list. A compatible mask belongs to the
+    same product and has the same raster grid as the configured class bands. Geometry masks, Band Maths masks, existing
+    quality masks, and compatible vector or image masks can be used.
+</p>
+
+<p>
+    <b>Refresh statistics</b> is enabled only when the selected ROI differs from the ROI represented by the displayed
+    result. It recomputes the original-band statistics for that ROI.
+</p>
+
+<h4>Table and histogram</h4>
+
+<p>
+    The table provides valid-pixel count, minimum, maximum, mean, standard deviation, and estimated P05, P25, median,
+    P75, and P95 values for each class. Select a table row to display that class's 64-bin histogram below the table.
+</p>
+
+<h4>CSV export</h4>
+
+<p>
+    <b>Export CSV...</b> writes the product name, ROI, validity rule, pixel counts, class and source-band provenance,
+    summary statistics, percentiles, and histogram-bin counts. The CSV records analysis data; it does not export the
+    displayed RGB image.
+</p>
+
+<p>
+    Return to <a href="ClassFractionRenderer.html">Class Fraction / Probability Renderer</a> for configuration,
+    colours, display scale, and validity-policy details.
+</p>
+
+<hr>
+</body>
+</html>
