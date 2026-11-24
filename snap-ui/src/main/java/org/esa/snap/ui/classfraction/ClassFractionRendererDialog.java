@@ -95,6 +95,10 @@ public final class ClassFractionRendererDialog extends ModalDialog {
 
     @Override
     protected boolean verifyUserInput() {
+        return applyAndValidateModel();
+    }
+
+    private boolean applyAndValidateModel() {
         updateModel();
         try {
             controller.createConfiguration();
@@ -107,6 +111,9 @@ public final class ClassFractionRendererDialog extends ModalDialog {
 
     @Override
     protected void onOther() {
+        if (!applyAndValidateModel()) {
+            return;
+        }
         setButtonID(ID_SHOW_STATISTICS);
         hide();
     }

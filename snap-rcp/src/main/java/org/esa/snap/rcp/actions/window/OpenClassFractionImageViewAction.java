@@ -3,6 +3,7 @@ package org.esa.snap.rcp.actions.window;
 import com.bc.ceres.core.ProgressMonitor;
 import com.bc.ceres.swing.progress.ProgressMonitorSwingWorker;
 import eu.esa.snap.core.renderer.classfraction.ClassFractionStatistics;
+import eu.esa.snap.core.renderer.classfraction.ClassFractionRendererConfig;
 import eu.esa.snap.core.renderer.classfraction.ClassFractionStatisticsResult;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.ProductNode;
@@ -12,6 +13,7 @@ import org.esa.snap.ui.UIUtils;
 import org.esa.snap.ui.classfraction.ClassFractionRendererController;
 import org.esa.snap.ui.classfraction.ClassFractionRendererDialog;
 import org.esa.snap.ui.classfraction.ClassFractionRendererModel;
+import org.esa.snap.ui.classfraction.ClassFractionRendererConfigStore;
 import org.esa.snap.ui.classfraction.ClassFractionStatisticsController;
 import org.esa.snap.ui.classfraction.ClassFractionStatisticsDialog;
 import org.esa.snap.ui.product.ProductSceneImage;
@@ -60,14 +62,18 @@ public final class OpenClassFractionImageViewAction extends AbstractAction imple
         if (product == null) {
             return;
         }
-        ClassFractionRendererController controller = new ClassFractionRendererController(new ClassFractionRendererModel(product));
+        ClassFractionRendererModel model = new ClassFractionRendererModel(product);
+        restoreLastConfiguration(model);
+        ClassFractionRendererController controller = new ClassFractionRendererController(model);
         ClassFractionRendererDialog dialog = new ClassFractionRendererDialog(SnapApp.getDefault().getMainFrame(), controller);
 
         int result = dialog.show();
         dialog.getJDialog().dispose();
         if (result == ClassFractionRendererDialog.ID_OK) {
+            ClassFractionRendererConfigStore.remember(product, controller.createConfiguration());
             openProductSceneView(controller);
         } else if (result == ClassFractionRendererDialog.ID_SHOW_STATISTICS) {
+            ClassFractionRendererConfigStore.remember(product, controller.createConfiguration());
             openStatistics(new ClassFractionStatisticsController(controller.getModel()));
         }
     }
@@ -75,6 +81,18 @@ public final class OpenClassFractionImageViewAction extends AbstractAction imple
     @Override
     public HelpCtx getHelpCtx() {
         return HelpCtx.DEFAULT_HELP;
+    }
+
+    private void restoreLastConfiguration(ClassFractionRendererModel model) {
+        ClassFractionRendererConfig configuration = ClassFractionRendererConfigStore.getViewConfiguration(
+                product, SnapApp.getDefault().getSelectedProductSceneView());
+        if (configuration != null && model.applyConfiguration(configuration)) {
+            return;
+        }
+        configuration = ClassFractionRendererConfigStore.getLastConfiguration(product);
+        if (configuration != null) {
+            model.applyConfiguration(configuration);
+        }
     }
 
     private static void openProductSceneView(ClassFractionRendererController controller) {

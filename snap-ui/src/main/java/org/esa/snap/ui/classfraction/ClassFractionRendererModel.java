@@ -102,13 +102,48 @@ public final class ClassFractionRendererModel {
         rows.remove(row);
     }
 
+    /**
+     * Replaces this editable state with a compatible saved class-renderer configuration.
+     *
+     * @return {@code true} if every configured source can be restored from this product
+     */
+    public boolean applyConfiguration(ClassFractionRendererConfig configuration) {
+        Objects.requireNonNull(configuration, "configuration");
+        List<ClassBandRow> restoredRows = new ArrayList<>();
+        List<RasterDataNode> sources = new ArrayList<>();
+
+        for (ClassBandConfig configuredBand : configuration.getClassBandGroup().getBands()) {
+            if (!product.getName().equals(configuredBand.getProductName())) {
+                return false;
+            }
+            Band band = product.getBand(configuredBand.getBandName());
+            if (band == null || contains(restoredRows, band)) {
+                return false;
+            }
+            restoredRows.add(new ClassBandRow(band, configuredBand.getDisplayName(), new Color(configuredBand.getArgb(), true), configuredBand.isVisible()));
+            sources.add(band);
+        }
+
+        try {
+            ClassFractionRendererValidator.validate(configuration, sources);
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+
+        rows.clear();
+        rows.addAll(restoredRows);
+        displayName = configuration.getDisplayName();
+        displayScale = configuration.getClassBandGroup().getDisplayScale();
+        validityPolicy = configuration.getClassBandGroup().getValidityPolicy();
+        return true;
+    }
+
     public ClassFractionRendererConfig createConfiguration() {
         List<ClassBandConfig> bands = new ArrayList<>();
         List<RasterDataNode> sources = new ArrayList<>();
 
         for (ClassBandRow row : rows) {
-            bands.add(new ClassBandConfig(product.getName(), row.getBand().getName(), row.getDisplayName(),
-                                          row.getColor().getRGB(), row.isVisible()));
+            bands.add(new ClassBandConfig(product.getName(), row.getBand().getName(), row.getDisplayName(), row.getColor().getRGB(), row.isVisible()));
             sources.add(row.getBand());
         }
 
@@ -119,6 +154,10 @@ public final class ClassFractionRendererModel {
     }
 
     private boolean contains(Band candidate) {
+        return contains(rows, candidate);
+    }
+
+    private static boolean contains(List<ClassBandRow> rows, Band candidate) {
         for (ClassBandRow row : rows) {
             if (row.getBand() == candidate) {
                 return true;

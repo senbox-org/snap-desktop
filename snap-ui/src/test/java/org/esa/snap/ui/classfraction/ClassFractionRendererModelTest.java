@@ -96,6 +96,67 @@ public class ClassFractionRendererModelTest {
 
     @Test
     @STTM("SNAP-4339")
+    public void restoresACompleteCompatibleConfiguration() {
+        Product product = product("classes", 3);
+        ClassFractionRendererModel configured = new ClassFractionRendererModel(product);
+        configured.addBand(product.getBand("class_3"));
+        configured.setDisplayName("Configured view");
+        configured.setDisplayScale(3.0);
+        configured.setValidityPolicy(ClassBandGroupConfig.ValidityPolicy.FINITE_AND_DECLARED_NODATA);
+        configured.getRows().get(2).setDisplayName("Forest");
+        configured.getRows().get(2).setColor(new Color(3, 4, 5));
+        configured.getRows().get(2).setVisible(false);
+
+        ClassFractionRendererModel restored = new ClassFractionRendererModel(product);
+
+        assertTrue(restored.applyConfiguration(configured.createConfiguration()));
+        assertEquals("Configured view", restored.getDisplayName());
+        assertEquals(3.0, restored.getDisplayScale(), 0.0);
+        assertEquals(ClassBandGroupConfig.ValidityPolicy.FINITE_AND_DECLARED_NODATA, restored.getValidityPolicy());
+        assertEquals("Forest", restored.getRows().get(2).getDisplayName());
+        assertEquals(new Color(3, 4, 5), restored.getRows().get(2).getColor());
+        assertFalse(restored.getRows().get(2).isVisible());
+    }
+
+    @Test
+    @STTM("SNAP-4339")
+    public void retainsDefaultStateWhenAStoredConfigurationCannotBeRestored() {
+        Product configuredProduct = product("configured", 2);
+        Product currentProduct = product("current", 2);
+        ClassFractionRendererModel model = new ClassFractionRendererModel(currentProduct);
+
+        assertFalse(model.applyConfiguration(new ClassFractionRendererModel(configuredProduct).createConfiguration()));
+        assertEquals("current Class Fractions", model.getDisplayName());
+        assertBandNames(model.getRows().stream().map(ClassFractionRendererModel.ClassBandRow::getBand).toList(), "class_1", "class_2");
+    }
+
+    @Test
+    @STTM("SNAP-4339")
+    public void readsTheConfigurationEmbeddedInAnOpenClassFractionView() {
+        Product product = product("classes", 3);
+        ClassFractionRendererModel model = new ClassFractionRendererModel(product);
+        model.addBand(product.getBand("class_3"));
+        model.setDisplayName("Saved class view");
+        model.getRows().get(2).setDisplayName("Vegetation");
+        model.getRows().get(2).setVisible(false);
+        ProductSceneImage sceneImage = new ClassFractionRendererController(model).createSceneImage(new DefaultPropertyMap());
+        ProductSceneView view = new ProductSceneView(sceneImage);
+
+        try {
+            ClassFractionRendererConfig configuration = ClassFractionRendererConfigStore.getViewConfiguration(product, view);
+
+            assertNotNull(configuration);
+            assertEquals("Saved class view", configuration.getDisplayName());
+            assertEquals("Vegetation", configuration.getClassBandGroup().getBands().get(2).getDisplayName());
+            assertFalse(configuration.getClassBandGroup().getBands().get(2).isVisible());
+            assertNull(ClassFractionRendererConfigStore.getViewConfiguration(product("other", 3), view));
+        } finally {
+            view.dispose();
+        }
+    }
+
+    @Test
+    @STTM("SNAP-4339")
     public void opensSuppliedLayerSceneWithoutRgbImageInfo() {
         Product product = product("classes", 3);
         ClassFractionRendererModel model = new ClassFractionRendererModel(product);
