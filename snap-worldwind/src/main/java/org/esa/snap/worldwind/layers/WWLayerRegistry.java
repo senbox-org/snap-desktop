@@ -24,7 +24,7 @@ import org.openide.util.Lookup;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +34,8 @@ import java.util.Map;
 public class WWLayerRegistry {
 
     private static WWLayerRegistry instance = null;
-    private final Map<String, WWLayerDescriptor> wwLayerDescriptors = new HashMap<>();
+    // keeps the order of the layer folder (position attributes), which is the drawing order
+    private final Map<String, WWLayerDescriptor> wwLayerDescriptors = new LinkedHashMap<>();
 
     public WWLayerRegistry() {
         registerWWLayers();

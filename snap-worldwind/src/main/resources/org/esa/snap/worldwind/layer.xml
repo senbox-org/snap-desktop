@@ -1,10 +1,30 @@
 <filesystem>
 
     <folder name="WorldWindLayers">
+        <!-- drawing order: images below outlines, vector data and pins on top -->
+        <file name="ProductImageLayer">
+            <attr name="WWLayerClass" stringvalue="org.esa.snap.worldwind.layers.ProductImageLayer"/>
+            <attr name="showInWorldMapToolView" stringvalue="false"/>
+            <attr name="showIn3DToolView" stringvalue="true"/>
+            <attr name="position" intvalue="100"/>
+        </file>
         <file name="DefaultProductLayer">
             <attr name="WWLayerClass" stringvalue="org.esa.snap.worldwind.layers.DefaultProductLayer"/>
             <attr name="showInWorldMapToolView" stringvalue="true"/>
             <attr name="showIn3DToolView" stringvalue="true"/>
+            <attr name="position" intvalue="200"/>
+        </file>
+        <file name="VectorDataLayer">
+            <attr name="WWLayerClass" stringvalue="org.esa.snap.worldwind.layers.VectorDataLayer"/>
+            <attr name="showInWorldMapToolView" stringvalue="true"/>
+            <attr name="showIn3DToolView" stringvalue="true"/>
+            <attr name="position" intvalue="300"/>
+        </file>
+        <file name="ImageViewSyncLayer">
+            <attr name="WWLayerClass" stringvalue="org.esa.snap.worldwind.layers.ImageViewSyncLayer"/>
+            <attr name="showInWorldMapToolView" stringvalue="true"/>
+            <attr name="showIn3DToolView" stringvalue="true"/>
+            <attr name="position" intvalue="400"/>
         </file>
     </folder>
 

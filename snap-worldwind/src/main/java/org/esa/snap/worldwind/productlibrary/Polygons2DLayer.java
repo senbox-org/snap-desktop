@@ -29,18 +29,21 @@ public class Polygons2DLayer implements LayerCanvas.Overlay {
         AffineTransform modelToViewTransform = canvas.getViewport().getModelToViewTransform();
         while (iterator.hasNext()) {
             CustomPolyline polygon = iterator.next();
-            Path2D.Double path = (Path2D.Double) polygon.getPath().clone();
-            path.transform(modelToViewTransform);
+            // footprints crossing the antimeridian are drawn as two shapes, one at each edge of the map
+            for (Path2D.Double drawablePath : FootprintUtils.getDrawablePaths(polygon.getPath())) {
+                Path2D.Double path = (Path2D.Double) drawablePath.clone();
+                path.transform(modelToViewTransform);
 
-            if (polygon.isHighlighted()) {
-                g2d.setColor(WorldMapPanelWrapper.POLYGON_HIGHLIGHT_BORDER_COLOR);
-                g2d.setStroke(new BasicStroke(WorldMapPanelWrapper.POLYGON_LINE_WIDTH * 2.0f));
+                if (polygon.isHighlighted()) {
+                    g2d.setColor(WorldMapPanelWrapper.POLYGON_HIGHLIGHT_BORDER_COLOR);
+                    g2d.setStroke(new BasicStroke(WorldMapPanelWrapper.POLYGON_LINE_WIDTH * 2.0f));
+                    g2d.draw(path);
+                }
+
+                g2d.setColor(WorldMapPanelWrapper.POLYGON_BORDER_COLOR);
+                g2d.setStroke(new BasicStroke(WorldMapPanelWrapper.POLYGON_LINE_WIDTH));
                 g2d.draw(path);
             }
-
-            g2d.setColor(WorldMapPanelWrapper.POLYGON_BORDER_COLOR);
-            g2d.setStroke(new BasicStroke(WorldMapPanelWrapper.POLYGON_LINE_WIDTH));
-            g2d.draw(path);
         }
     }
 }

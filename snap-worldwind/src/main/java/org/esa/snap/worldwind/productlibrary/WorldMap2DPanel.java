@@ -68,6 +68,16 @@ public class WorldMap2DPanel extends LayerCanvas implements WorldMap {
     }
 
     @Override
+    public void enablePolygonSelection() {
+        this.map2DSelector.enablePolygon();
+    }
+
+    @Override
+    public boolean isDrawingPolygon() {
+        return this.map2DSelector.isDrawingPolygon();
+    }
+
+    @Override
     public Rectangle2D getSelectedArea() {
         return this.map2DSelector.getSelectedArea();
     }
@@ -107,6 +117,14 @@ public class WorldMap2DPanel extends LayerCanvas implements WorldMap {
 
         @Override
         public void paintOverlay(LayerCanvas canvas, Rendering rendering) {
+            Path2D.Double polygonInProgress = map2DSelector.getPolygonInProgress();
+            if (polygonInProgress != null) {
+                Graphics2D g2d = rendering.getGraphics();
+                polygonInProgress.transform(canvas.getViewport().getModelToViewTransform());
+                g2d.setColor(WorldMapPanelWrapper.SELECTION_BORDER_COLOR);
+                g2d.setStroke(new BasicStroke(WorldMapPanelWrapper.SELECTION_LINE_WIDTH));
+                g2d.draw(polygonInProgress);
+            }
             Rectangle2D selectionArea = map2DSelector.getSelectedArea();
             if (selectionArea != null) {
                 Graphics2D g2d = rendering.getGraphics();

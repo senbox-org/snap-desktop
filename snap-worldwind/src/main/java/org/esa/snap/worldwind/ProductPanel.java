@@ -16,8 +16,10 @@
 package org.esa.snap.worldwind;
 
 import gov.nasa.worldwind.WorldWindow;
+import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.util.SystemUtils;
 import org.esa.snap.worldwind.layers.DefaultProductLayer;
+import org.esa.snap.worldwind.layers.ProductImageLayer;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -31,18 +33,29 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Consumer;
 
 
 class ProductPanel extends JPanel {
     private final DefaultProductLayer defaultProductLayer;
+    private final ProductImageLayer imageLayer;
     private JPanel layersPanel;
     private JPanel westPanel;
     private JScrollPane scrollPane;
     private Font defaultFont = null;
 
-    public ProductPanel(WorldWindow wwd, DefaultProductLayer prodLayer) {
+    /**
+     * @param imageLayer the full-resolution images, or null. Products drawn by a layer of their own (e.g. S-1 OCN)
+     *                   have no outline in the product layer but may have an image; they are listed too, and their
+     *                   check box shows or hides that image.
+     */
+    public ProductPanel(WorldWindow wwd, DefaultProductLayer prodLayer, ProductImageLayer imageLayer) {
         super(new BorderLayout());
         defaultProductLayer = prodLayer;
+        this.imageLayer = imageLayer;
         this.makePanel(wwd, new Dimension(100, 400));
     }
 
@@ -74,18 +87,52 @@ class ProductPanel extends JPanel {
     }
 
     private void fill(WorldWindow wwd) {
-        final String[] productNames = defaultProductLayer.getProductNames();
-        for (String name : productNames) {
-            final LayerAction action = new LayerAction(defaultProductLayer, wwd, name, defaultProductLayer.getOpacity(name) != 0);
-            final JCheckBox jcb = new JCheckBox(action);
-
-            jcb.setSelected(action.selected);
-            this.layersPanel.add(jcb);
-
-            if (defaultFont == null) {
-                this.defaultFont = jcb.getFont();
+        for (String name : defaultProductLayer.getProductNames()) {
+            addCheckBox(wwd, name, defaultProductLayer.isProductVisible(name),
+                        visible -> defaultProductLayer.setProductVisible(name, visible));
+        }
+        if (imageLayer != null) {
+            final List<Product> imageOnly = new ArrayList<>();
+            for (Product product : imageLayer.getProducts()) {
+                if (!defaultProductLayer.hasProduct(product)) {
+                    imageOnly.add(product);
+                }
+            }
+            imageOnly.sort(Comparator.comparing(ProductPanel::displayName));
+            for (Product product : imageOnly) {
+                addCheckBox(wwd, displayName(product), imageLayer.isProductVisible(product),
+                            visible -> imageLayer.setProductVisible(product, visible));
             }
         }
+    }
+
+    // as the product layer names its products
+    private static String displayName(final Product product) {
+        return product.getProductRefString() + product.getName();
+    }
+
+    private void addCheckBox(final WorldWindow wwd, final String name, final boolean selected,
+                             final Consumer<Boolean> setVisible) {
+        final JCheckBox jcb = new JCheckBox(new LayerAction(wwd, name, setVisible));
+        jcb.setSelected(selected);
+        this.layersPanel.add(jcb);
+
+        if (defaultFont == null) {
+            this.defaultFont = jcb.getFont();
+        }
+    }
+
+    /**
+     * The check boxes, in order. For tests.
+     */
+    List<JCheckBox> getCheckBoxes() {
+        final List<JCheckBox> list = new ArrayList<>();
+        for (java.awt.Component component : layersPanel.getComponents()) {
+            if (component instanceof JCheckBox) {
+                list.add((JCheckBox) component);
+            }
+        }
+        return list;
     }
 
     public void update(WorldWindow wwd) {
@@ -103,30 +150,21 @@ class ProductPanel extends JPanel {
 
     private static class LayerAction extends AbstractAction {
         final WorldWindow wwd;
-        private final DefaultProductLayer layer;
-        private final boolean selected;
-        private final String name;
+        private final Consumer<Boolean> setVisible;
 
-        public LayerAction(DefaultProductLayer layer, WorldWindow wwd, String name, boolean selected) {
+        public LayerAction(WorldWindow wwd, String name, Consumer<Boolean> setVisible) {
             super(name);
             this.wwd = wwd;
-            this.layer = layer;
-            this.name = name;
-            this.selected = selected;
-            this.layer.setEnabled(this.selected);
+            this.setVisible = setVisible;
         }
 
         public void actionPerformed(ActionEvent actionEvent) {
             SystemUtils.LOG.fine("actionPerformed " + actionEvent);
-            // Simply enable or disable the layer based on its toggle button.
-            //System.out.println("Product click " + layer);
-            //System.out.println(layer.getOpacity());
-            if (((JCheckBox) actionEvent.getSource()).isSelected()) {
-                this.layer.setOpacity(name, this.layer.getOpacity());
-            } else {
-                this.layer.setOpacity(name, 0);
+            // show or hide this product only, not the whole layer
+            setVisible.accept(((JCheckBox) actionEvent.getSource()).isSelected());
+            if (wwd != null) {
+                wwd.redraw();
             }
-            wwd.redraw();
         }
     }
 }

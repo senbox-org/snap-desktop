@@ -47,6 +47,11 @@ public abstract class BaseLayer extends RenderableLayer {
 
     public void setSelectedProduct(final Product product) {
         selectedProduct = product;
+        // a raster of another (perhaps closed) product is no longer selected; the views clear the selected product
+        // before removing it, so the layers' removeProduct would not see it as selected
+        if (selectedRaster != null && (product == null || selectedRaster.getProduct() != product)) {
+            selectedRaster = null;
+        }
     }
 
     public Product getSelectedProduct() {

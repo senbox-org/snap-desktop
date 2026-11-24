@@ -20,6 +20,7 @@ import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.layers.Layer;
 import org.esa.snap.core.datamodel.Product;
 import org.esa.snap.core.datamodel.RasterDataNode;
+import org.esa.snap.ui.product.ProductSceneView;
 
 import javax.swing.JPanel;
 
@@ -43,4 +44,19 @@ public interface WWLayer extends Layer {
     void setSelectedRaster(final RasterDataNode raster);
 
     default void updateInfoAnnotation(final SelectEvent event) {}
+
+    /**
+     * Called on the EDT when an image view is selected; null when no image view is selected.
+     */
+    default void setSelectedSceneView(final ProductSceneView view) {}
+
+    /**
+     * True for layers that show something of every product (pins, vector data, full-resolution images) and are
+     * therefore also given products for which another layer is {@link BaseLayer.Suitability#INTENDED}, such as
+     * Sentinel-1 OCN or ETAD products. Other suitable layers (e.g. the default outline layer) are replaced by the
+     * intended layer.
+     */
+    default boolean isComplementary() {
+        return false;
+    }
 }

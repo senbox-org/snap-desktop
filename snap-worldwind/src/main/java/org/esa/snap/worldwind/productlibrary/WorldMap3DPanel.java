@@ -1,10 +1,9 @@
 package org.esa.snap.worldwind.productlibrary;
 
+import gov.nasa.worldwind.BasicModel;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.SceneController;
-import gov.nasa.worldwind.WorldWind;
-import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.globes.Earth;
@@ -16,18 +15,18 @@ import gov.nasa.worldwind.layers.LayerList;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
 import gov.nasa.worldwind.layers.StarsLayer;
 import gov.nasa.worldwind.layers.WorldMapLayer;
+import gov.nasa.worldwind.pick.PickedObject;
 import gov.nasa.worldwind.pick.PickedObjectList;
-import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.util.BasicGLCapabilitiesChooser;
 import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import gov.nasa.worldwind.view.orbit.FlatOrbitView;
-import org.esa.snap.worldwind.layers.FixingPlaceNameLayer;
+import org.esa.snap.remote.products.repository.geometry.PolygonArea;
+import org.esa.snap.worldwind.AppPanel;
+import org.esa.snap.worldwind.LayerConfiguration;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.Field;
 
 /**
  * The panel containing the 3D earth globe.
@@ -37,12 +36,13 @@ import java.lang.reflect.Field;
 public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
 
     private final Rectangle3DSelection selector;
+    private final Polygon3DSelection polygonSelector;
 
     public WorldMap3DPanel(boolean flatEarth, boolean removeExtraLayers, PolygonsLayerModel polygonsLayerModel) {
         super(null, Configuration.getRequiredGLCapabilities(), new BasicGLCapabilitiesChooser());
 
-        // create the default model as described in the current world wind properties
-        Model model = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
+        // SNAP's layer configuration, not WorldWind's defaults; the globe is set below
+        Model model = new BasicModel(new Earth(), LayerConfiguration.createLayers());
 
         setModel(model);
         if (flatEarth) {
@@ -61,36 +61,34 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
         this.selector.setBorderColor(WorldMapPanelWrapper.SELECTION_BORDER_COLOR);
         this.selector.setBorderWidth(WorldMapPanelWrapper.SELECTION_LINE_WIDTH);
         this.selector.getLayer().setEnabled(true);
+        this.polygonSelector = new Polygon3DSelection(this.wwd);
 
         LayerList layerList = this.wwd.getModel().getLayers();
 
         if (removeExtraLayers) {
             for (Layer layer : layerList) {
                 if (layer instanceof CompassLayer || layer instanceof WorldMapLayer || layer instanceof StarsLayer
-                        || layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer) {
+                        || layer instanceof LandsatI3WMSLayer || layer instanceof SkyGradientLayer
+                        || AppPanel.LANDSAT_LAYER_NAME.equals(layer.getName())) {
 
                     layerList.remove(layer);
                 }
             }
         }
 
-        // Instead of the default Place Name layer we use special implementation to replace
-        // wrong names in the original layer. https://senbox.atlassian.net/browse/SNAP-1476
-        final Layer placeNameLayer = layerList.getLayerByName("Place Names");
-        layerList.remove(placeNameLayer);
-
-        final FixingPlaceNameLayer fixingPlaceNameLayer = new FixingPlaceNameLayer();
-        layerList.add(fixingPlaceNameLayer);
-        fixingPlaceNameLayer.setEnabled(true);
+        AppPanel.addReferenceLayers(layerList);
 
         layerList.add(this.selector.getLayer());
+        layerList.add(this.polygonSelector.getLayer());
 
         layerList.add(new Polygons3DLayer(polygonsLayerModel));
     }
 
     @Override
     public void setSelectedArea(Rectangle2D selectedArea) {
-        this.selector.setSelectedArea(selectedArea);
+        // a polygon area is drawn by the polygon selector; as a rectangle it is only its bounding box
+        this.polygonSelector.setSelectedArea(selectedArea);
+        this.selector.setSelectedArea(selectedArea instanceof PolygonArea ? null : selectedArea);
     }
 
     @Override
@@ -100,17 +98,31 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
 
     @Override
     public void enableSelection() {
+        this.polygonSelector.clear();
         this.selector.enable();
     }
 
     @Override
     public void disableSelection() {
         this.selector.disable();
+        this.polygonSelector.clear();
+    }
+
+    @Override
+    public void enablePolygonSelection() {
+        this.selector.disable();
+        this.polygonSelector.start();
+    }
+
+    @Override
+    public boolean isDrawingPolygon() {
+        return this.polygonSelector.isDrawing();
     }
 
     @Override
     public Rectangle2D getSelectedArea() {
-        return this.selector.getSelectedArea();
+        final PolygonArea polygonArea = this.polygonSelector.getSelectedArea();
+        return polygonArea != null ? polygonArea : this.selector.getSelectedArea();
     }
 
     @Override
@@ -119,8 +131,9 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
         Point pickPoint = sceneController.getPickPoint();
         if (pickPoint != null && pickPoint.getX() == point.getX() && pickPoint.getY() == point.getY()) {
             PickedObjectList pickedObjectList = sceneController.getPickedObjectList();
-            if (pickedObjectList != null && pickedObjectList.size() > 0) {
-                Position position = (Position) pickedObjectList.get(0).getObject();
+            PickedObject terrainObject = (pickedObjectList != null) ? pickedObjectList.getTerrainObject() : null;
+            if (terrainObject != null && terrainObject.getPosition() != null) {
+                Position position = terrainObject.getPosition();
                 return new Point.Double(position.getLongitude().getDegrees(), position.getLatitude().getDegrees());
             }
         }
@@ -139,28 +152,5 @@ public class WorldMap3DPanel extends WorldWindowGLJPanel implements WorldMap {
 
     public boolean isGlobeEarth() {
         return (getModel().getGlobe() instanceof Earth);
-    }
-
-    void setBackgroundColor(Color backgroundColor) {
-        DrawContext drawContext = getSceneController().getDrawContext();
-        Color color = drawContext.getClearColor();
-        setValueByReflection(color, "value", backgroundColor.getRGB());
-    }
-
-    private static boolean setValueByReflection(Object object, String fieldName, Object fieldValue) {
-        Class<?> clazz = object.getClass();
-        while (clazz != null) {
-            try {
-                Field field = clazz.getDeclaredField(fieldName);
-                field.setAccessible(true);
-                field.set(object, fieldValue);
-                return true;
-            } catch (NoSuchFieldException e) {
-                clazz = clazz.getSuperclass();
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
-            }
-        }
-        return false;
     }
 }
