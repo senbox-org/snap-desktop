@@ -72,7 +72,7 @@ public class ColorFormModel {
     }
 
     public boolean isValid() {
-        return getProductSceneView() != null;
+        return getProductSceneView() != null && getProductSceneView().getImageInfo() != null;
     }
 
     public boolean isContinuous3BandImage() {

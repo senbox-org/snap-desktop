@@ -48,6 +48,7 @@ import org.esa.snap.core.layer.GraticuleLayer;
 import org.esa.snap.core.layer.MaskCollectionLayer;
 import org.esa.snap.core.layer.NoDataLayerType;
 import org.esa.snap.core.layer.ProductLayerContext;
+import org.esa.snap.core.layer.RgbImageLayerType;
 import org.esa.snap.core.util.PropertyMap;
 import org.esa.snap.core.util.StringUtils;
 import org.esa.snap.ui.BasicView;
@@ -510,7 +511,7 @@ public class ProductSceneView extends BasicView
     }
 
     public boolean isRGB() {
-        return getSceneImage().getRasters().length >= 3;
+        return getBaseImageLayer().getLayerType() instanceof RgbImageLayerType;
     }
 
     public boolean isNoDataOverlayEnabled() {

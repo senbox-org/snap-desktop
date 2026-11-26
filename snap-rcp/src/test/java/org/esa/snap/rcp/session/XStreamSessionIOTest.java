@@ -1,5 +1,6 @@
 package org.esa.snap.rcp.session;
 
+import com.bc.ceres.annotation.STTM;
 import org.esa.snap.core.util.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -63,5 +64,26 @@ public class XStreamSessionIOTest {
         assertEquals(1, readSession.viewRefs.length);
         assertEquals(viewRef.type, readSession.viewRefs[0].type);
         assertEquals(viewRef.productRefNo, readSession.viewRefs[0].productRefNo);
+    }
+
+    @Test
+    @STTM("SNAP-4339")
+    public void testWriteReadClassFractionViewDiscriminator() throws Exception {
+        Session session = new Session();
+        Session.ViewRef viewRef = new Session.ViewRef();
+        viewRef.type = "org.esa.snap.ui.product.ProductSceneView";
+        viewRef.productRefNo = 7;
+        viewRef.viewName = "Class fractions";
+        viewRef.rendererType = "eu.esa.snap.core.renderer.classfraction.ClassFractionImageLayerType";
+        viewRef.rendererConfig = "{\"displayName\":\"Q2xhc3MgZnJhY3Rpb25z\",\"displayScale\":1.0,\"validity\":\"STRICT_SOURCE_VALIDITY\",\"bands\":[]}";
+        session.viewRefs = new Session.ViewRef[]{viewRef};
+
+        File file = new File(tempDirectory.toFile(), "class-fraction-session.xml");
+        new XStreamSessionIO().writeSession(session, file);
+        Session restored = new XStreamSessionIO().readSession(new FileReader(file));
+
+        assertEquals(viewRef.rendererType, restored.viewRefs[0].rendererType);
+        assertEquals(viewRef.rendererConfig, restored.viewRefs[0].rendererConfig);
+        assertEquals(viewRef.viewName, restored.viewRefs[0].viewName);
     }
 }

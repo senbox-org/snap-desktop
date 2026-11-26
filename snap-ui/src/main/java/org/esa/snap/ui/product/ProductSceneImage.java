@@ -24,6 +24,7 @@ import com.bc.ceres.glayer.LayerFilter;
 import com.bc.ceres.glayer.LayerType;
 import com.bc.ceres.glayer.LayerTypeRegistry;
 import com.bc.ceres.glayer.support.ImageLayer;
+import com.bc.ceres.multilevel.MultiLevelSource;
 import com.bc.ceres.glayer.support.LayerUtils;
 import org.esa.snap.core.datamodel.GcpDescriptor;
 import org.esa.snap.core.datamodel.ImageInfo;
@@ -58,7 +59,8 @@ public class ProductSceneImage implements ProductLayerContext {
     private final PropertyMap configuration;
     private RasterDataNode[] rasters;
     private Layer rootLayer;
-    private ColoredBandImageMultiLevelSource coloredBandImageMultiLevelSource;
+    private MultiLevelSource multiLevelSource;
+    private ImageLayer suppliedBaseImageLayer;
 
     /**
      * Creates a color indexed product scene for the given product raster.
@@ -71,7 +73,7 @@ public class ProductSceneImage implements ProductLayerContext {
         this(raster.getDisplayName(),
              new RasterDataNode[]{raster},
              configuration);
-        coloredBandImageMultiLevelSource = ColoredBandImageMultiLevelSource.create(raster, pm);
+        multiLevelSource = ColoredBandImageMultiLevelSource.create(raster, pm);
         initRootLayer();
     }
 
@@ -85,7 +87,7 @@ public class ProductSceneImage implements ProductLayerContext {
         this(raster.getDisplayName(),
              new RasterDataNode[]{raster},
              view.getSceneImage().getConfiguration());
-        coloredBandImageMultiLevelSource = view.getSceneImage().getColoredBandImageMultiLevelSource();
+        multiLevelSource = view.getSceneImage().getColoredBandImageMultiLevelSource();
         initRootLayer();
     }
 
@@ -105,7 +107,18 @@ public class ProductSceneImage implements ProductLayerContext {
                              PropertyMap configuration,
                              ProgressMonitor pm) {
         this(name, new RasterDataNode[]{redRaster, greenRaster, blueRaster}, configuration);
-        coloredBandImageMultiLevelSource = ColoredBandImageMultiLevelSource.create(rasters, pm);
+        multiLevelSource = ColoredBandImageMultiLevelSource.create(rasters, pm);
+        initRootLayer();
+    }
+
+    /**
+     * Creates a scene image around a renderer-owned base layer.
+     */
+    public ProductSceneImage(String name, RasterDataNode[] rasters, PropertyMap configuration,
+                             MultiLevelSource multiLevelSource, ImageLayer baseImageLayer) {
+        this(name, rasters, configuration);
+        this.multiLevelSource = multiLevelSource;
+        this.suppliedBaseImageLayer = baseImageLayer;
         initRootLayer();
     }
 
@@ -124,11 +137,17 @@ public class ProductSceneImage implements ProductLayerContext {
     }
 
     public ImageInfo getImageInfo() {
-        return coloredBandImageMultiLevelSource.getImageInfo();
+        if (multiLevelSource instanceof ColoredBandImageMultiLevelSource) {
+            return ((ColoredBandImageMultiLevelSource) multiLevelSource).getImageInfo();
+        }
+        return null;
     }
 
     public void setImageInfo(ImageInfo imageInfo) {
-        coloredBandImageMultiLevelSource.setImageInfo(imageInfo);
+        if (!(multiLevelSource instanceof ColoredBandImageMultiLevelSource)) {
+            throw new IllegalStateException("Class-fraction scene images have no RGB image information");
+        }
+        ((ColoredBandImageMultiLevelSource) multiLevelSource).setImageInfo(imageInfo);
     }
 
     public RasterDataNode[] getRasters() {
@@ -263,17 +282,25 @@ public class ProductSceneImage implements ProductLayerContext {
     }
 
     private AffineTransform getImageToModelTransform() {
-        return coloredBandImageMultiLevelSource.getModel().getImageToModelTransform(0);
+        return multiLevelSource.getModel().getImageToModelTransform(0);
     }
 
     private Layer createBaseImageLayer() {
+        if (suppliedBaseImageLayer != null) {
+            final Layer layer = suppliedBaseImageLayer;
+            layer.setName(getName());
+            layer.setVisible(true);
+            layer.setId(ProductSceneView.BASE_IMAGE_LAYER_ID);
+            applyBaseImageLayerStyle(configuration, layer);
+            return layer;
+        }
         final Layer layer;
         if (getRasters().length == 1) {
             final RasterImageLayerType type = LayerTypeRegistry.getLayerType(RasterImageLayerType.class);
-            layer = type.createLayer(getRaster(), coloredBandImageMultiLevelSource);
+            layer = type.createLayer(getRaster(), (ColoredBandImageMultiLevelSource) multiLevelSource);
         } else {
             final RgbImageLayerType type = LayerTypeRegistry.getLayerType(RgbImageLayerType.class);
-            layer = type.createLayer(getRasters(), coloredBandImageMultiLevelSource);
+            layer = type.createLayer(getRasters(), (ColoredBandImageMultiLevelSource) multiLevelSource);
         }
 
         layer.setName(getName());
@@ -666,7 +693,7 @@ public class ProductSceneImage implements ProductLayerContext {
 
 
     private ColoredBandImageMultiLevelSource getColoredBandImageMultiLevelSource() {
-        return coloredBandImageMultiLevelSource;
+        return multiLevelSource instanceof ColoredBandImageMultiLevelSource ? (ColoredBandImageMultiLevelSource) multiLevelSource : null;
     }
 
     @Override

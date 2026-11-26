@@ -78,6 +78,9 @@ class BrightnessContrastPanel extends JPanel {
     }
 
     public void productSceneViewSelected(@NonNull ProductSceneView selectedSceneView) {
+        if (selectedSceneView.getImageInfo() == null) {
+            return;
+        }
         selectedSceneView.addPropertyChangeListener(ProductSceneView.PROPERTY_NAME_IMAGE_INFO, this.imageInfoChangeListener);
 
         BrightnessContrastData brightnessContrastData = this.visibleProductScenes.get(selectedSceneView);

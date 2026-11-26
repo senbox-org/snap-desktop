@@ -1,0 +1,117 @@
+<!--
+  ~ Copyright (C) 2026
+  ~ This file is part of the Sentinel Application Platform (SNAP).
+  ~
+  ~ SNAP is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+-->
+<html>
+<head>
+    <title>Sentinel Toolbox Help - Class Fraction / Probability Renderer</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+<table class="header">
+    <tr class="header">
+        <td class="header">&nbsp;Class Fraction / Probability Renderer</td>
+        <td class="header" align="right"><a href="../general/overview/SnapOverview.html"><img src="../images/snap_header.jpg" border="0"></a></td>
+    </tr>
+</table>
+
+<h3>Class Fraction / Probability Renderer</h3>
+
+<p>
+    The Class Fraction / Probability Renderer displays an arbitrary number of co-registered class bands as one colour
+    composite. It is intended for exploratory display of class fractions, probabilities, memberships, abundances, and
+    comparable numeric class layers. It does not create a product band or modify source samples.
+</p>
+
+<p>
+    Open it by selecting a product in Product Explorer and choosing <b>Window &gt; Open Class Fraction / Probability
+    View</b>, or by using the product context menu.
+</p>
+
+<p align="center"><img src="images/ClassFractionRendererDialog.png"
+                       alt="Class Fraction / Probability Renderer dialog"></p>
+
+<h4>Creating suitable input products</h4>
+
+<p>
+    The renderer does not run a classification or unmixing algorithm itself. It accepts any numeric class bands from
+    one product that share a raster grid. The following SNAP operators are common producers of suitable band groups:
+</p>
+
+<ul>
+    <li><b>EM Cluster Analysis</b> (<b>Raster &gt; Classification &gt; Unsupervised Classification &gt; EM Cluster Analysis</b>)
+        creates posterior cluster-probability bands when <b>Include probabilities</b> is selected. Use the complete
+        <code>probability_0</code> ... <code>probability_N</code> group. <code>class_indices</code> is a winning-class map,
+        not a probability-band group.</li>
+    <li><b>OWT Classification</b> (<b>Optical &gt; Thematic Water Processing &gt; OWT Classification</b>) creates optical
+        water-type membership bands. Use <code>norm_class_1</code> ... <code>norm_class_N</code> for the normalized
+        membership group. Raw <code>class_*</code> memberships can also be displayed, but normally require a larger
+        display scale. For OWT memberships, select <b>Ignore source masks; accept finite values (OWT zeros)</b> so a
+        finite zero membership remains valid.</li>
+    <li><b>Spectral Unmixing</b> (<b>Optical &gt; Spectral Unmixing</b>) creates one abundance band per endmember. For a fraction
+        group, select a fully constrained LSU model and use the resulting <code>&lt;endmember&gt;_abundance</code> bands,
+        not optional error bands.</li>
+</ul>
+
+<p>
+    Other operators or imported products are equally suitable when their selected bands describe related classes,
+    are co-registered, and have compatible numeric validity information.
+</p>
+
+<h4>Class-band table</h4>
+
+<p>Each row configures one original product band:</p>
+<ul>
+    <li><b>Band</b> identifies the source band. The renderer accepts only bands from the selected product on the same raster grid.</li>
+    <li><b>Class name</b> is the label used by the renderer and statistics.</li>
+    <li><b>Color</b> assigns the colour contributed by that class.</li>
+    <li><b>Show in View</b> controls whether the class contributes its colour. It does not exclude the band from validity checks or statistics.</li>
+</ul>
+
+<p>
+    Use <b>Add band</b> and <b>Remove selected</b> to configure the group. At least two bands are required.
+</p>
+
+<h4>Display scale and validity</h4>
+
+<p>
+    For every valid pixel, the renderer adds each visible class value multiplied by its assigned red, green, and blue
+    colour components. The final RGB channels are divided by <b>Display scale</b>, rounded, and limited to the display
+    range. A scale of <code>1.0</code> is the baseline. Increasing it makes the display darker but never changes
+    source values or statistics.
+</p>
+
+<ul>
+    <li><b>Use source validity masks (default)</b> requires every configured class value to be finite, not declared
+        NoData, and valid according to its source valid-pixel mask.</li>
+    <li><b>Ignore source masks; accept finite values (OWT zeros)</b> requires finite, non-NoData values but deliberately
+        ignores source valid-pixel masks. Use this for OWT normalized memberships whose valid-pixel expression excludes
+        meaningful zero memberships.</li>
+</ul>
+
+<p>
+    If any configured source is invalid under the selected policy, the rendered pixel is transparent. The renderer does
+    not infer science semantics, normalize classes per pixel, resample inputs, or reverse the colour composite into
+    class values.
+</p>
+
+<h4>Actions</h4>
+
+<ul>
+    <li><b>Open View</b> creates a display-only Class Fraction / Probability view.</li>
+    <li><b>Show Statistics</b> computes statistics from the original configured bands without opening an image view.</li>
+</ul>
+
+<p>
+    For common-validity statistics, ROI masks, histograms, percentiles, and CSV export, see
+    <a href="ClassFractionStatistics.html">Class Fraction / Probability Statistics and ROI Analysis</a>.
+</p>
+
+<hr>
+</body>
+</html>
