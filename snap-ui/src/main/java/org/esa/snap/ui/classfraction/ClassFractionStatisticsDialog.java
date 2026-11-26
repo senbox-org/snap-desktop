@@ -1,8 +1,10 @@
 package org.esa.snap.ui.classfraction;
 
 import com.bc.ceres.core.ProgressMonitor;
+import eu.esa.snap.core.renderer.classfraction.ClassFractionBandStatistics;
 import eu.esa.snap.core.renderer.classfraction.ClassFractionStatistics;
 import eu.esa.snap.core.renderer.classfraction.ClassFractionStatisticsResult;
+import eu.esa.snap.core.renderer.classfraction.ClassFractionValueDistribution;
 import org.esa.snap.core.datamodel.Mask;
 import org.esa.snap.ui.help.HelpDisplayer;
 
@@ -206,7 +208,7 @@ public final class ClassFractionStatisticsDialog extends JDialog {
         csv.append('\n');
         csv.append("Class,Source band,Valid pixels,Minimum,Maximum,Mean,Std. deviation,P05,P25,Median,P75,P95\n");
 
-        for (ClassFractionStatisticsResult.BandStatistics statistics : result.getBandStatistics()) {
+        for (ClassFractionBandStatistics statistics : result.getBandStatistics()) {
             appendCsvRow(csv, statistics.getClassBand().getDisplayName(), statistics.getClassBand().getBandName(),
                     Long.toString(statistics.getValidPixelCount()), Double.toString(statistics.getMinimum()),
                     Double.toString(statistics.getMaximum()), Double.toString(statistics.getMean()),
@@ -217,8 +219,8 @@ public final class ClassFractionStatisticsDialog extends JDialog {
         csv.append('\n');
         csv.append("Class,Histogram bin minimum,Histogram bin maximum,Pixel count\n");
 
-        for (ClassFractionStatisticsResult.BandStatistics statistics : result.getBandStatistics()) {
-            ClassFractionStatisticsResult.ValueDistribution distribution = statistics.getDistribution();
+        for (ClassFractionBandStatistics statistics : result.getBandStatistics()) {
+            ClassFractionValueDistribution distribution = statistics.getDistribution();
             for (int i = 0; i < distribution.getBinCount(); i++) {
                 appendCsvRow(csv, statistics.getClassBand().getDisplayName(),
                         Double.toString(distribution.getBinMinimum(i)), Double.toString(distribution.getBinMaximum(i)),
@@ -246,14 +248,14 @@ public final class ClassFractionStatisticsDialog extends JDialog {
     private static final class StatisticsTableModel extends AbstractTableModel {
 
         private static final String[] COLUMNS = {"Class", "Valid pixels", "Minimum", "Maximum", "Mean", "Std. deviation", "P05", "P25", "Median", "P75", "P95"};
-        private List<ClassFractionStatisticsResult.BandStatistics> rows = Collections.emptyList();
+        private List<ClassFractionBandStatistics> rows = Collections.emptyList();
 
         void setResult(ClassFractionStatisticsResult result) {
             rows = result.getBandStatistics();
             fireTableDataChanged();
         }
 
-        ClassFractionStatisticsResult.BandStatistics getRow(int row) {
+        ClassFractionBandStatistics getRow(int row) {
             return row >= 0 && row < rows.size() ? rows.get(row) : null;
         }
 
@@ -272,7 +274,7 @@ public final class ClassFractionStatisticsDialog extends JDialog {
 
         @Override
         public Object getValueAt(int row, int column) {
-            ClassFractionStatisticsResult.BandStatistics statistics = rows.get(row);
+            ClassFractionBandStatistics statistics = rows.get(row);
             return switch (column) {
                 case 0 -> statistics.getClassBand().getDisplayName();
                 case 1 -> statistics.getValidPixelCount();
@@ -292,7 +294,7 @@ public final class ClassFractionStatisticsDialog extends JDialog {
 
     private static final class HistogramPanel extends JPanel {
 
-        private ClassFractionStatisticsResult.BandStatistics statistics;
+        private ClassFractionBandStatistics statistics;
 
         private HistogramPanel() {
             setPreferredSize(new Dimension(900, 210));
@@ -300,7 +302,7 @@ public final class ClassFractionStatisticsDialog extends JDialog {
             setBorder(BorderFactory.createTitledBorder("Histogram"));
         }
 
-        void setStatistics(ClassFractionStatisticsResult.BandStatistics statistics) {
+        void setStatistics(ClassFractionBandStatistics statistics) {
             this.statistics = statistics;
             repaint();
         }
@@ -325,7 +327,7 @@ public final class ClassFractionStatisticsDialog extends JDialog {
                     return;
                 }
 
-                ClassFractionStatisticsResult.ValueDistribution distribution = statistics.getDistribution();
+                ClassFractionValueDistribution distribution = statistics.getDistribution();
                 long maximumCount = 0;
                 for (long count : distribution.getBinCounts()) {
                     maximumCount = Math.max(maximumCount, count);
